@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main # Hoặc 'master', tùy thuộc vào nhánh mặc định của bạn
+      - master # Hoặc 'master', tùy thuộc vào nhánh mặc định của bạn
 
 jobs:
   build-and-deploy:
