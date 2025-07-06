@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - master # Hoặc 'master', tùy thuộc vào nhánh mặc định của bạn
+      - master # Hoặc 'main', tùy thuộc vào nhánh mặc định của bạn
 
 jobs:
   build-and-deploy:
@@ -20,14 +20,15 @@ jobs:
           cache: 'yarn' # Thêm dòng này để cache dependencies của Yarn
 
       - name: Install dependencies 📦
-        run: yarn install --frozen-lockfile # Thay đổi từ npm install sang yarn install
+        run: yarn install --frozen-lockfile
 
-      - name: Build the project 🏗 
-        run: yarn build️
+      - name: Build the project 🏗
+        run: yarn build # Đã sửa lỗi ký tự lạ ở đây
         env:
-            REACT_APP_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}  # Thêm dòng này để chỉ định thư mục cache cho Yarn
+          # Đảm bảo tiền tố là VITE_ cho các biến môi trường của Vite
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
 
       - name: Deploy to GitHub Pages 🚀
-        run: yarn deploy # Thay đổi từ npm run deploy sang yarn deploy
+        run: yarn deploy
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
