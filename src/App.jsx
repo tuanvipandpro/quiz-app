@@ -23,7 +23,7 @@ function App() {
   // Load demo quiz
   const loadDemoQuiz = async () => {
     try {
-      const response = await fetch('/quiz.json');
+      const response = await fetch('/quiz-app/quiz.json');
       if (!response.ok) {
         throw new Error(`Failed to load demo quiz: ${response.status}`);
       }
@@ -205,7 +205,7 @@ function App() {
               <Title level={5}>Need a sample file?</Title>
               <Button 
                 type="link" 
-                href="/sample-quiz.json" 
+                href="/quiz-app/sample-quiz.json" 
                 download="sample-quiz.json"
               >
                 Download Sample Quiz File
