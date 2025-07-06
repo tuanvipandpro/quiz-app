@@ -8,6 +8,10 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Cấp quyền ghi vào repository
+      pages: write    # Cấp quyền ghi vào GitHub Pages
+      id-token: write # Cấp quyền cho OpenID Connect (đôi khi cần)
 
     steps:
       - name: Checkout 📚
