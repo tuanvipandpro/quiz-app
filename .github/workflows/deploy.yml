@@ -1,0 +1,30 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Hoặc 'master', tùy thuộc vào nhánh mặc định của bạn
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 📚
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 🟩
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Hoặc phiên bản Node.js bạn ưu tiên
+          cache: 'yarn' # Thêm dòng này để cache dependencies của Yarn
+          env:
+            REACT_APP_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}  # Thêm dòng này để chỉ định thư mục cache cho Yarn
+
+      - name: Install dependencies 📦
+        run: yarn install --frozen-lockfile # Thay đổi từ npm install sang yarn install
+
+      - name: Deploy to GitHub Pages 🚀
+        run: yarn deploy # Thay đổi từ npm run deploy sang yarn deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

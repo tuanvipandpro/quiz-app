@@ -1,7 +1,7 @@
 // src/utils/geminiApi.js
 
 // Replace with your actual API key or use environment variable
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "zvkyYQApcCRP1zCRjxku9Zv9OB1osg";
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || process.env.REACT_APP_GEMINI_API_KEY;
 
 export async function getExplanation(question, options, correctAnswer) {
   try {
