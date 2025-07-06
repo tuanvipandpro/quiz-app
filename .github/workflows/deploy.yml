@@ -9,9 +9,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Cấp quyền ghi vào repository
-      pages: write    # Cấp quyền ghi vào GitHub Pages
-      id-token: write # Cấp quyền cho OpenID Connect (đôi khi cần)
+      contents: write # Cần quyền ghi vào repository
+      pages: write    # Cần quyền ghi vào GitHub Pages
+      id-token: write # Cần quyền cho OpenID Connect
 
     steps:
       - name: Checkout 📚
@@ -21,26 +21,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20' # Hoặc phiên bản Node.js bạn ưu tiên
-          cache: 'yarn' # Thêm dòng này để cache dependencies của Yarn
+          cache: 'yarn'
 
       - name: Install dependencies 📦
         run: yarn install --frozen-lockfile
 
       - name: Build the project 🏗
-        run: yarn build # Đã sửa lỗi ký tự lạ ở đây
+        run: yarn build
         env:
-          # Đảm bảo tiền tố là VITE_ cho các biến môi trường của Vite
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
 
-      - name: Configure Git User 👤 # BƯỚC MỚI ĐƯỢC THÊM VÀO ĐÂY
+      - name: Configure Git User 👤
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Deploy to GitHub Pages 🚀
-        # Gán GH_TOKEN vào biến môi trường để gh-pages có thể sử dụng
-        # Hoặc truyền trực tiếp vào URL nếu cần (như trong package.json ở trên)
         run: |
-          # Thiết lập URL repository với token để xác thực
+          # Xây dựng URL xác thực ngay trong workflow YAML
+          # 'origin' là tên remote mặc định mà Git sử dụng
+          # 'x-access-token' là cách để truyền Personal Access Token hoặc GITHUB_TOKEN
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+          # Bây giờ, chạy lệnh deploy mà không cần tham số -r trong package.json
+          # gh-pages sẽ sử dụng remote 'origin' đã được cấu hình với token
           yarn deploy
