@@ -1,0 +1,13 @@
+#root {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.layout {
+  min-height: 100vh;
+}
+
+.ant-layout-header {
+  display: flex;
+  align-items: center;
+}
