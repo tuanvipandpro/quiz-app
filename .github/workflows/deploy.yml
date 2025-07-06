@@ -32,8 +32,12 @@ jobs:
           # Đảm bảo tiền tố là VITE_ cho các biến môi trường của Vite
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
 
+      - name: Configure Git User 👤 # BƯỚC MỚI ĐƯỢC THÊM VÀO ĐÂY
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Deploy to GitHub Pages 🚀
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+        run: yarn deploy # Đã quay lại sử dụng script từ package.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Cần thiết để gh-pages có quyền đẩy code
