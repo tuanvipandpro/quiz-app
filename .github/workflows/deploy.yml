@@ -38,6 +38,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Deploy to GitHub Pages 🚀
-        run: yarn deploy # Đã quay lại sử dụng script từ package.json
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Cần thiết để gh-pages có quyền đẩy code
+        # Gán GH_TOKEN vào biến môi trường để gh-pages có thể sử dụng
+        # Hoặc truyền trực tiếp vào URL nếu cần (như trong package.json ở trên)
+        run: |
+          # Thiết lập URL repository với token để xác thực
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          yarn deploy
