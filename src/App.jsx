@@ -120,9 +120,9 @@ function App() {
 
   // Simplified header without the back button
   const renderHeader = () => (
-    <Header style={{ padding: '0 24px', display: 'flex', alignItems: 'center' }}>
+    <Header className="ant-layout-header">
       <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={3} style={{ color: 'white', margin: '15px 0' }}>
+        <Title level={3} style={{ color: 'white', margin: 0 }}>
           Quiz Application
         </Title>
         <div></div>
@@ -152,7 +152,7 @@ function App() {
     <Layout className="layout" style={{ minHeight: '100vh' }}>
       {renderHeader()}
       
-      <Content style={{ padding: '50px', maxWidth: '800px', margin: '0 auto' }}>
+      <Content className="ant-layout-content">
         {startScreen ? (
           // Initial start screen with options
           <div style={{ textAlign: 'center' }}>
