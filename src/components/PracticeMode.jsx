@@ -161,6 +161,7 @@ function PracticeMode({ questions, onExit }) {
       <Card style={{ marginTop: '20px', marginBottom: '20px' }}>
         <Question 
           question={currentQuestion.question}
+          imageUrl={currentQuestion.imageUrl}
           options={currentQuestion.options}
           selectedAnswer={selectedAnswer}
           onSelectAnswer={handleAnswer}

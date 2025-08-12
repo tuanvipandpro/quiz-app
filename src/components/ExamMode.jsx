@@ -320,6 +320,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
       <Card style={{ marginTop: '20px', marginBottom: '20px' }}>
         <Question 
           question={currentQuestion.question}
+          imageUrl={currentQuestion.imageUrl}
           options={currentQuestion.options}
           selectedAnswer={answers[currentIndex]}
           onSelectAnswer={handleAnswer}

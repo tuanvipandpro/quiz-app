@@ -9,7 +9,8 @@ import rehypeSanitize from 'rehype-sanitize';
 const { Title, Text, Paragraph } = Typography;
 
 function Question({ 
-  question, 
+  question,
+  imageUrl, 
   options, 
   selectedAnswer, 
   onSelectAnswer, 
@@ -89,6 +90,21 @@ function Question({
       {/* Question title without the Explain button */}
       <Title level={4} style={{ marginBottom: '20px' }}>{question}</Title>
       
+      {/* Display image if imageUrl is provided */}
+      {imageUrl && imageUrl.trim() !== '' && (
+        <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+          <img 
+            src={imageUrl} 
+            alt="Question illustration" 
+            style={{ 
+              maxWidth: '100%', 
+              height: 'auto',
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }} 
+          />
+        </div>
+      )}
       {!isMultipleChoice ? (
         // Single choice (Radio buttons)
         <Radio.Group 
