@@ -41,7 +41,7 @@ Các lựa chọn:
           temperature: 0.5,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 1000,
+          maxOutputTokens: 10000,
         }
       })
     });
