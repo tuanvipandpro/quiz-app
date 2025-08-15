@@ -19,8 +19,10 @@ function Question({
   correctOptions,
   // Remove onExplain from here - we'll handle it at the parent component
 }) {
-  // Convert options object to array of {key, value} for rendering
-  const optionEntries = Object.entries(options).map(([key, value]) => ({ key, value }));
+  // Convert options object to array of {key, value} for rendering and sort by ABCD order
+  const optionEntries = Object.entries(options)
+    .map(([key, value]) => ({ key, value }))
+    .sort((a, b) => a.key.localeCompare(b.key)); // Sort by A, B, C, D order
   
   // Determine if this question has multiple correct answers
   const isMultipleChoice = Array.isArray(correctOptions) && correctOptions.length > 1;
@@ -39,6 +41,12 @@ function Question({
     }
     
     onSelectAnswer(newSelection);
+  };
+
+  // Check if enough options are selected for multiple choice questions
+  const hasEnoughSelections = () => {
+    if (!isMultipleChoice) return true;
+    return selectedAnswer && Array.isArray(selectedAnswer) && selectedAnswer.length === correctOptions.length;
   };
 
   // Determine the style for radio/checkbox options
@@ -65,7 +73,8 @@ function Question({
     } 
     // For multiple-choice questions
     else {
-      if (correctOptions.includes(optionKey)) {
+      // Only show correct answer highlighting when enough options are selected
+      if (hasEnoughSelections() && correctOptions.includes(optionKey)) {
         return { 
           backgroundColor: 'rgba(82, 196, 26, 0.2)', 
           borderRadius: '4px',
@@ -73,7 +82,8 @@ function Question({
           fontWeight: 'bold'
         };
       }
-      if (selectedAnswer && selectedAnswer.includes(optionKey) && !correctOptions.includes(optionKey)) {
+      // Only show wrong answer highlighting when enough options are selected
+      if (hasEnoughSelections() && selectedAnswer && selectedAnswer.includes(optionKey) && !correctOptions.includes(optionKey)) {
         return { 
           backgroundColor: 'rgba(255, 77, 79, 0.1)', 
           borderRadius: '4px',
@@ -142,7 +152,7 @@ function Question({
         </Space>
       )}
       
-      {showFeedback && (
+      {showFeedback && hasEnoughSelections() && (
         <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px' }}>
           {isCorrect ? (
             <Text type="success" strong>Correct answer!</Text>
@@ -152,16 +162,27 @@ function Question({
                 Incorrect. The correct answer{correctOptions.length > 1 ? 's are' : ' is'}:
               </Text>
               <div style={{ marginTop: '10px', paddingLeft: '15px' }}>
-                {correctOptions.map((opt) => (
-                  <div key={opt} style={{ marginBottom: '5px' , display: 'inline-block'}}>
-                    <Text strong style={{ color: '#52c41a' }}>
-                      {opt}. {options[opt]}
-                    </Text>
-                  </div>
-                ))}
+                {correctOptions
+                  .sort((a, b) => a.localeCompare(b)) // Sort correct answers by ABCD order
+                  .map((opt) => (
+                    <div key={opt} style={{ marginBottom: '5px' , display: 'inline-block'}}>
+                      <Text strong style={{ color: '#52c41a' }}>
+                        {opt}. {options[opt]}
+                      </Text>
+                    </div>
+                  ))}
               </div>
             </div>
           )}
+        </div>
+      )}
+      
+      {/* Show message for multiple choice questions when not enough options are selected */}
+      {showFeedback && isMultipleChoice && !hasEnoughSelections() && (
+        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0f8ff', borderRadius: '5px', border: '1px solid #1890ff' }}>
+          <Text type="info">
+            Please select {correctOptions.length} answer{correctOptions.length > 1 ? 's' : ''} to see the result.
+          </Text>
         </div>
       )}
     </Card>

@@ -88,7 +88,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   const getAnsweredQuestions = () => {
     return answers.filter((a, i) => {
       const q = examQuestions[i];
-      return q.answer.length > 1 ? (Array.isArray(a) && a.length > 0) : a !== null;
+      return q.answer.length > 1 ? (Array.isArray(a) && a.length === q.answer.length) : a !== null;
     }).length;
   };
   
@@ -262,8 +262,8 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   const allAnswered = answers.every((answer, index) => {
     const question = examQuestions[index];
     if (question.answer.length > 1) {
-      // For multiple answer questions, need at least one answer
-      return Array.isArray(answer) && answer.length > 0;
+      // For multiple answer questions, need exactly the correct number of answers
+      return Array.isArray(answer) && answer.length === question.answer.length;
     } else {
       // For single answer questions, need non-null value
       return answer !== null;
@@ -413,11 +413,13 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             
             <Title level={5}>Correct Answer:</Title>
             <div style={{ marginBottom: '15px' }}>
-              {currentQuestion.answer.map((opt) => (
-                <div key={opt} style={{ marginBottom: '5px' }}>
-                  <Text strong>{opt}. {currentQuestion.options[opt]}</Text>
-                </div>
-              ))}
+              {currentQuestion.answer
+                .sort((a, b) => a.localeCompare(b)) // Sort correct answers by ABCD order
+                .map((opt) => (
+                  <div key={opt} style={{ marginBottom: '5px' }}>
+                    <Text strong>{opt}. {currentQuestion.options[opt]}</Text>
+                  </div>
+                ))}
             </div>
             
             <Title level={5}>Explanation:</Title>

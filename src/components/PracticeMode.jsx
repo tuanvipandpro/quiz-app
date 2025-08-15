@@ -34,7 +34,18 @@ function PracticeMode({ questions, onExit }) {
   
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
-    setAnswered(true);
+    
+    // For multiple choice questions, only show feedback when enough options are selected
+    if (hasMultipleAnswers) {
+      if (Array.isArray(answer) && answer.length === correctAnswers.length) {
+        setAnswered(true);
+      } else {
+        setAnswered(false);
+      }
+    } else {
+      // For single choice questions, show feedback immediately
+      setAnswered(true);
+    }
   };
   
   // Check if the selected answers are correct
@@ -53,6 +64,12 @@ function PracticeMode({ questions, onExit }) {
       // For single answer
       return selectedAnswer === correctAnswers[0];
     }
+  };
+
+  // Check if enough options are selected for multiple choice questions
+  const hasEnoughSelections = () => {
+    if (!hasMultipleAnswers) return true;
+    return selectedAnswer && Array.isArray(selectedAnswer) && selectedAnswer.length === correctAnswers.length;
   };
   
   const goToNextQuestion = () => {
@@ -166,7 +183,7 @@ function PracticeMode({ questions, onExit }) {
           selectedAnswer={selectedAnswer}
           onSelectAnswer={handleAnswer}
           showFeedback={answered}
-          isCorrect={answered && checkIfCorrect()}
+          isCorrect={answered && hasEnoughSelections() && checkIfCorrect()}
           correctOptions={correctAnswers}
         />
       </Card>
@@ -232,11 +249,13 @@ function PracticeMode({ questions, onExit }) {
             
             <Title level={5}>Correct Answer:</Title>
             <div style={{ marginBottom: '15px' }}>
-              {correctAnswers.map((opt) => (
-                <div key={opt} style={{ marginBottom: '5px' }}>
-                  <Text strong>{opt}. {currentQuestion.options[opt]}</Text>
-                </div>
-              ))}
+              {correctAnswers
+                .sort((a, b) => a.localeCompare(b)) // Sort correct answers by ABCD order
+                .map((opt) => (
+                  <div key={opt} style={{ marginBottom: '5px' }}>
+                    <Text strong>{opt}. {currentQuestion.options[opt]}</Text>
+                  </div>
+                ))}
             </div>
             
             <Title level={5}>Explanation:</Title>

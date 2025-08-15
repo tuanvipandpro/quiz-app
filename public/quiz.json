@@ -2584,10 +2584,11 @@
       "B": "Create a Google Cloud service account, and download the service account key. Place the key file in a folder on your machine where gcloud CLI can find it.",
       "C": "Download your Cloud Identity user account key. Place the key file in a folder on your machine where gcloud CLI can find it.",
       "D": "Run gcloud config set compute/zone $my_zone to set the default zone for gcloud CLI.",
-      "A": "E.Run gcloud config set project $my_project to set the default project for gcloud CLI."
+      "E": "Run gcloud config set project $my_project to set the default project for gcloud CLI.",
+      "A": "Run gcloud auth login to authenticate with your Google account."
     },
     "answer": [
-      "A"
+      "A", "E"
     ]
   },
   {
@@ -2751,8 +2752,9 @@
     "options": {
       "A": "Use BigQuery BI Engine to analyze the issue.",
       "C": "Configure Cloud Trace to analyze the issue.",
-      "B": "E.View errors in Cloud Monitoring to analyze the issue.",
-      "D": "Use the INFORMATION_SCHEMA views to analyze the underlying issue."
+      "B": "Use the INFORMATION_SCHEMA views to analyze the underlying issue.",
+      "D": "Search errors in Cloud Audit Logs to analyze the issue.",
+      "E": "View errors in Cloud Monitoring to analyze the issue."
     },
     "answer": [
       "B",
@@ -4181,10 +4183,11 @@
       "A": "Split the users from business units to multiple projects.",
       "C": "Create separate copies of your BigQuery data warehouse for each business unit.",
       "D": "Split your BigQuery data warehouse into multiple data warehouses for each business unit.",
-      "B": "Apply a user- or project-level custom query quota for BigQuery data warehouse."
+      "B": "Apply a user- or project-level custom query quota for BigQuery data warehouse.",
+      "E": "Change your BigQuery query model from on-demand to flat rate. Apply the appropriate number of slots to each Project."
     },
     "answer": [
-      "B"
+      "B", "E"
     ]
   },
   {
