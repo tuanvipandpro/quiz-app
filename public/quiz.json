@@ -197,7 +197,7 @@
   },
   {
     "id": "15",
-    "question": "Your management has asked an external auditor to review all the resources in a specific project. The security team has enabled the Organization Policy called",
+    "question": "Your management has asked an external auditor to review all the resources in a specific project. The security team has enabled the Organization Policy called Domain Restricted Sharing on the organization node by specifying only your Cloud Identity domain. You want the auditor to only be able to view, but not modify, the resources in that project. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Ask the auditor for their Google account, and give them the Viewer role on the project.",
@@ -225,7 +225,7 @@
   },
   {
     "id": "17",
-    "question": "You need to assign a Cloud Identity and Access Management (Cloud IAM) role to an external auditor. The auditor needs to have permissions to review your",
+    "question": "You need to assign a Cloud Identity and Access Management (Cloud IAM) role to an external auditor. The auditor needs to have permissions to review your Google Cloud Platform (GCP) Audit Logs and also to review your Data Access logs. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Assign the auditor the IAM role roles/logging.privateLogViewer. Perform the export of logs to Cloud Storage.",
@@ -253,7 +253,7 @@
   },
   {
     "id": "19",
-    "question": "You need to reduce GCP service costs for a division of your company using the fewest possible steps. You need to turn off all configured services in an existing",
+    "question": "You need to reduce GCP service costs for a division of your company using the fewest possible steps. You need to turn off all configured services in an existing GCP project. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "1. Verify that you are assigned the Project Owners IAM role for this project. 2. Switch to the project in the GCP console, locate the resources and delete them.",
@@ -407,7 +407,7 @@
   },
   {
     "id": "30",
-    "question": "Your company publishes large files on an Apache web server that runs on a Compute Engine instance. The Apache web server is not the only application running in the project. You want to receive an email when the egress network costs for the server exceed 100 dollars for the current month as measured by Google Cloud.",
+    "question": "Your company publishes large files on an Apache web server that runs on a Compute Engine instance. The Apache web server is not the only application running in the project. You want to receive an email when the egress network costs for the server exceed 100 dollars for the current month as measured by Google Cloud. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Set up a budget alert on the project with an amount of 100 dollars, a threshold of 100%, and notification type of ג€email.ג€",
@@ -449,7 +449,7 @@
   },
   {
     "id": "33",
-    "question": "You have an application on a general-purpose Compute Engine instance that is experiencing excessive disk read throttling on its Zonal SSD Persistent Disk. The application primarily reads large files from disk. The disk size is currently 350 GB. You want to provide the maximum amount of throughput while minimizing costs.",
+    "question": "You have an application on a general-purpose Compute Engine instance that is experiencing excessive disk read throttling on its Zonal SSD Persistent Disk. The application primarily reads large files from disk. The disk size is currently 350 GB. You want to provide the maximum amount of throughput while minimizing costs. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Increase the size of the disk to 1 TB.",
@@ -491,7 +491,7 @@
   },
   {
     "id": "36",
-    "question": "You manage an App Engine Service that aggregates and visualizes data from BigQuery. The application is deployed with the default App Engine Service account.",
+    "question": "You manage an App Engine Service that aggregates and visualizes data from BigQuery. The application is deployed with the default App Engine Service account. The data that needs to be visualized resides in a different project managed by another team. You do not have access to this project, but you want your application to be able to read data from the BigQuery dataset. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Ask the other team to grant your default App Engine Service account the role of BigQuery Job User.",
@@ -505,7 +505,7 @@
   },
   {
     "id": "37",
-    "question": "You need to create a copy of a custom Compute Engine virtual machine (VM) to facilitate an expected increase in application traffic due to a business acquisition.",
+    "question": "You need to create a copy of a custom Compute Engine virtual machine (VM) to facilitate an expected increase in application traffic due to a business acquisition. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Create a Compute Engine snapshot of your base VM. Create your images from that snapshot.",
@@ -603,7 +603,7 @@
   },
   {
     "id": "44",
-    "question": "You have downloaded and installed the gcloud command line interface (CLI) and have authenticated with your Google Account. Most of your Compute Engine instances in your project run in the europe-west1-d zone. You want to avoid having to specify this zone with each CLI command when managing these instances.",
+    "question": "You have downloaded and installed the gcloud command line interface (CLI) and have authenticated with your Google Account. Most of your Compute Engine instances in your project run in the europe-west1-d zone. You want to avoid having to specify this zone with each CLI command when managing these instances. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "In the Settings page for Compute Engine under Default location, set the zone to europeג€\"west1-d.",
@@ -673,7 +673,7 @@
   },
   {
     "id": "49",
-    "question": "Your company has workloads running on Compute Engine and on-premises. The Google Cloud Virtual Private Cloud (VPC) is connected to your WAN over a",
+    "question": "Your company has workloads running on Compute Engine and on-premises. The Google Cloud Virtual Private Cloud (VPC) is connected to your WAN over a Virtual Private Network (VPN). You need to deploy a new Compute Engine instance and ensure that no public Internet traffic can be routed to it. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Create the instance with Private Google Access enabled.",
@@ -729,7 +729,7 @@
   },
   {
     "id": "53",
-    "question": "You have an application that uses Cloud Spanner as a database backend to keep current state information about users. Cloud Bigtable logs all events triggered by users. You export Cloud Spanner data to Cloud Storage during daily backups. One of your analysts asks you to join data from Cloud Spanner and Cloud",
+    "question": "You have an application that uses Cloud Spanner as a database backend to keep current state information about users. Cloud Bigtable logs all events triggered by users. You export Cloud Spanner data to Cloud Storage during daily backups. One of your analysts asks you to join data from Cloud Spanner and Cloud Bigtable for specific users. You want to complete this ad hoc request as efficiently as possible. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Create a dataflow job that copies data from Cloud Bigtable and Cloud Storage for specific users.",
@@ -743,7 +743,7 @@
   },
   {
     "id": "54",
-    "question": "You are hosting an application from Compute Engine virtual machines (VMs) in us`\"central1`\"a. You want to adjust your design to support the failure of a single",
+    "question": "You are hosting an application from Compute Engine virtual machines (VMs) in us`\"central1`\"a. You want to adjust your design to support the failure of a single Compute Engine zone, eliminate downtime, and minimize cost. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "ג€\" Create a Managed Instance Group and specify usג€\"central1ג€\"a as the zone. ג€\" Configure the Health Check with a short Health Interval.",
@@ -757,7 +757,7 @@
   },
   {
     "id": "55",
-    "question": "A colleague handed over a Google Cloud Platform project for you to maintain. As part of a security checkup, you want to review who has been granted the Project",
+    "question": "A colleague handed over a Google Cloud Platform project for you to maintain. As part of a security checkup, you want to review who has been granted the Project Owner role. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "In the console, validate which SSH keys have been stored as project-wide keys.",
@@ -827,7 +827,7 @@
   },
   {
     "id": "60",
-    "question": "Your company runs its Linux workloads on Compute Engine instances. Your company will be working with a new operations partner that does not use Google",
+    "question": "Your company runs its Linux workloads on Compute Engine instances. Your company will be working with a new operations partner that does not use Google Accounts. You need to grant access to the instances to your operations partner so they can maintain the installed tooling. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Tag all the instances with the same network tag. Create a firewall rule in the VPC to grant TCP access on port 22 for traffic from the operations partner to instances with the network tag.",
@@ -855,7 +855,7 @@
   },
   {
     "id": "62",
-    "question": "You have been asked to set up Object Lifecycle Management for objects stored in storage buckets. The objects are written once and accessed frequently for 30 days. After 30 days, the objects are not read again unless there is a special need. The objects should be kept for three years, and you need to minimize cost.",
+    "question": "You have been asked to set up Object Lifecycle Management for objects stored in storage buckets. The objects are written once and accessed frequently for 30 days. After 30 days, the objects are not read again unless there is a special need. The objects should be kept for three years, and you need to minimize cost. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Set up a policy that uses Nearline storage for 30 days and then moves to Archive storage for three years.",
@@ -911,7 +911,7 @@
   },
   {
     "id": "66",
-    "question": "Your company uses a large number of Google Cloud services centralized in a single project. All teams have specific projects for testing and development. The",
+    "question": "Your company uses a large number of Google Cloud services centralized in a single project. All teams have specific projects for testing and development. The DevOps team needs access to all of the production services in order to perform their job. You want to prevent Google Cloud product changes from broadening their permissions in the future. You want to follow Google-recommended practices. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Grant all members of the DevOps team the role of Project Editor on the organization level.",
@@ -925,13 +925,14 @@
   },
   {
     "id": "67",
-    "question": "You are building an application that processes data files uploaded from thousands of suppliers. Your primary goals for the application are data security and the expiration of aged data. You need to design the application to:",
+    "question": "You are building an application that processes data files uploaded from thousands of suppliers. Your primary goals for the application are data security and the expiration of aged data. You need to design the application to: * Restrict access so that suppliers can access only their own data. * Give suppliers write access to data only for 30 minutes. * Delete data that is over 45 days old. You have a very short development cycle, and you need to make sure that the application requires minimal maintenance. Which two strategies should you use? (Choose two.)",
     "imageUrl": "",
     "options": {
       "C": "Set up an SFTP server for your application, and create a separate user for each supplier.",
       "D": "Build a Cloud function that triggers a timer of 45 days to delete objects that have expired.",
-      "A": "E.Develop a script that loops through all Cloud Storage buckets and deletes any buckets that are older than 45 days.",
-      "B": "Build a lifecycle policy to delete Cloud Storage objects after 45 days."
+      "A": "Build a lifecycle policy to delete Cloud Storage objects after 45 days.",
+      "B": "Use signed URLs to allow suppliers limited time access to store their objects.",
+      "E": "Develop a script that loops through all Cloud Storage buckets and deletes any buckets that are older than 45 days."
     },
     "answer": [
       "A",
@@ -968,7 +969,7 @@
   },
   {
     "id": "70",
-    "question": "You are performing a monthly security check of your Google Cloud environment and want to know who has access to view data stored in your Google Cloud",
+    "question": "You are performing a monthly security check of your Google Cloud environment and want to know who has access to view data stored in your Google Cloud Project. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Enable Audit Logs for all APIs that are related to data storage.",
@@ -982,7 +983,7 @@
   },
   {
     "id": "71",
-    "question": "Your company has embraced a hybrid cloud strategy where some of the applications are deployed on Google Cloud. A Virtual Private Network (VPN) tunnel connects your Virtual Private Cloud (VPC) in Google Cloud with your company's on-premises network. Multiple applications in Google Cloud need to connect to an on-premises database server, and you want to avoid having to change the IP configuration in all of your applications when the IP of the database changes.",
+    "question": "Your company has embraced a hybrid cloud strategy where some of the applications are deployed on Google Cloud. A Virtual Private Network (VPN) tunnel connects your Virtual Private Cloud (VPC) in Google Cloud with your company's on-premises network. Multiple applications in Google Cloud need to connect to an on-premises database server, and you want to avoid having to change the IP configuration in all of your applications when the IP of the database changes. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Configure Cloud NAT for all subnets of your VPC to be used when egressing from the VM instances.",
@@ -1122,7 +1123,7 @@
   },
   {
     "id": "81",
-    "question": "You are working with a Cloud SQL MySQL database at your company. You need to retain a month-end copy of the database for three years for audit purposes.",
+    "question": "You are working with a Cloud SQL MySQL database at your company. You need to retain a month-end copy of the database for three years for audit purposes. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Save the automatic first-of-the-month backup for three years. Store the backup file in an Archive class Cloud Storage bucket.",
@@ -1234,7 +1235,7 @@
   },
   {
     "id": "89",
-    "question": "Your company is moving its entire workload to Compute Engine. Some servers should be accessible through the Internet, and other servers should only be accessible over the internal network. All servers need to be able to talk to each other over specific ports and protocols. The current on-premises network relies on a demilitarized zone (DMZ) for the public servers and a Local Area Network (LAN) for the private servers. You need to design the networking infrastructure on",
+    "question": "Your company is moving its entire workload to Compute Engine. Some servers should be accessible through the Internet, and other servers should only be accessible over the internal network. All servers need to be able to talk to each other over specific ports and protocols. The current on-premises network relies on a demilitarized zone (DMZ) for the public servers and a Local Area Network (LAN) for the private servers. You need to design the networking infrastructure on Google Cloud to match these requirements. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "1. Create a single VPC with a subnet for the DMZ and a subnet for the LAN. 2. Set up firewall rules to open up relevant traffic between the DMZ and the LAN subnets, and another firewall rule to allow public egress traffic for the DMZ.",
@@ -1276,7 +1277,7 @@
   },
   {
     "id": "92",
-    "question": "You have created a new project in Google Cloud through the gcloud command line interface (CLI) and linked a billing account. You need to create a new Compute",
+    "question": "You have created a new project in Google Cloud through the gcloud command line interface (CLI) and linked a billing account. You need to create a new Compute Engine instance using the CLI. You need to perform the prerequisite steps. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Create a Cloud Monitoring Workspace.",
@@ -1430,7 +1431,7 @@
   },
   {
     "id": "103",
-    "question": "You have deployed multiple Linux instances on Compute Engine. You plan on adding more instances in the coming weeks. You want to be able to access all of these instances through your SSH client over the internet without having to configure specific access on the existing and new instances. You do not want the",
+    "question": "You have deployed multiple Linux instances on Compute Engine. You plan on adding more instances in the coming weeks. You want to be able to access all of these instances through your SSH client over the internet without having to configure specific access on the existing and new instances. You do not want the Compute Engine instances to have a public IP. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Configure Cloud Identity-Aware Proxy for HTTPS resources.",
@@ -1458,7 +1459,7 @@
   },
   {
     "id": "105",
-    "question": "You are using Data Studio to visualize a table from your data warehouse that is built on top of BigQuery. Data is appended to the data warehouse during the day.",
+    "question": "You are using Data Studio to visualize a table from your data warehouse that is built on top of BigQuery. Data is appended to the data warehouse during the day. At night, the daily summary is recalculated by overwriting the table. You just noticed that the charts in Data Studio are broken, and you want to analyze the problem. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Review the Error Reporting page in the Cloud Console to find any errors.",
@@ -1710,7 +1711,7 @@
   },
   {
     "id": "123",
-    "question": "Your continuous integration and delivery (CI/CD) server can’t execute Google Cloud actions in a specific project because of permission issues. You need to validate whether the used service account has the appropriate roles in the specific project.",
+    "question": "Your continuous integration and delivery (CI/CD) server can’t execute Google Cloud actions in a specific project because of permission issues. You need to validate whether the used service account has the appropriate roles in the specific project. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Open the Google Cloud console, and check the organization policies.",
@@ -1724,7 +1725,7 @@
   },
   {
     "id": "124",
-    "question": "You have one GCP account running in your default region and zone and another account running in a non-default region and zone. You want to start a new",
+    "question": "You have one GCP account running in your default region and zone and another account running in a non-default region and zone. You want to start a new Compute Engine instance in these two Google Cloud Platform accounts using the command line interface. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Create two configurations using gcloud config configurations create [NAME]. Run gcloud configurations list to start the Compute Engine instances.",
@@ -1864,7 +1865,7 @@
   },
   {
     "id": "134",
-    "question": "You are planning to migrate the following on-premises data management solutions to Google Cloud:",
+    "question": "You are planning to migrate the following on-premises data management solutions to Google Cloud: • One MySQL cluster for your main database • Apache Kafka for your event streaming platform • One Cloud SQL for PostgreSQL database for your analytical and reporting needs. You want to implement Google-recommended solutions for the migration. You need to ensure that the new solutions provide global scalability and require minimal operational and infrastructure management. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Migrate from MySQL to Cloud SQL, from Kafka to Pub/Sub, and from Cloud SQL for PostgreSQL to BigQuery.",
@@ -2214,7 +2215,7 @@
   },
   {
     "id": "159",
-    "question": "You used the gcloud container clusters command to create two Google Cloud Kubernetes (GKE) clusters: prod-cluster and dev-cluster.",
+    "question": "You used the gcloud container clusters command to create two Google Cloud Kubernetes (GKE) clusters: prod-cluster and dev-cluster. • prod-cluster is a standard cluster. • dev-cluster is an auto-pilot cluster. When you run the kubectl get nodes command, you only see the nodes from prod-cluster. Which commands should you run to check the node status for dev-cluster?",
     "imageUrl": "",
     "options": {
       "B": "gcloud container clusters update -generate-password dev-cluster kubectl get nodes",
@@ -2228,7 +2229,7 @@
   },
   {
     "id": "160",
-    "question": "You recently discovered that your developers are using many service account keys during their development process. While you work on a long term improvement, you need to quickly implement a process to enforce short-lived service account credentials in your company. You have the following requirements:",
+    "question": "You recently discovered that your developers are using many service account keys during their development process. While you work on a long term improvement, you need to quickly implement a process to enforce short-lived service account credentials in your company. You have the following requirements: • All service accounts that require a key should be created in a centralized project called pj-sa. • Service account keys should only be valid for one day. You need a Google-recommended solution that minimizes cost. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Implement a Cloud Run job to rotate all service account keys periodically in pj-sa. Enforce an org policy to deny service account key creation with an exception to pj-sa.",
@@ -2284,7 +2285,7 @@
   },
   {
     "id": "164",
-    "question": "Your company wants to migrate their on-premises workloads to Google Cloud. The current on-premises workloads consist of:",
+    "question": "Your company wants to migrate their on-premises workloads to Google Cloud. The current on-premises workloads consist of: • A Flask web application • A backend API • A scheduled long-running background job for ETL and reporting. You need to keep operational costs low. You want to follow Google-recommended practices to migrate these workloads to serverless solutions on Google Cloud. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Migrate the web application to App Engine and the backend API to Cloud Run. Use Cloud Tasks to run your background job on Compute Engine.",
@@ -2354,7 +2355,7 @@
   },
   {
     "id": "169",
-    "question": "You need to migrate invoice documents stored on-premises to Cloud Storage. The documents have the following storage requirements:",
+    "question": "You need to migrate invoice documents stored on-premises to Cloud Storage. The documents have the following storage requirements: • Documents must be kept for five years. • Up to five revisions of the same invoice document must be stored, to allow for corrections. • Documents older than 365 days should be moved to lower cost storage tiers. You want to follow Google-recommended practices to minimize your operational and development costs. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Enable retention policies on the bucket, and use Cloud Scheduler to invoke a Cloud Function to move or delete your documents based on their metadata.",
@@ -2494,7 +2495,7 @@
   },
   {
     "id": "179",
-    "question": "You need to set up permissions for a set of Compute Engine instances to enable them to write data into a particular Cloud Storage bucket. You want to follow",
+    "question": "You need to set up permissions for a set of Compute Engine instances to enable them to write data into a particular Cloud Storage bucket. You want to follow Google-recommended practices. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Create a service account with an access scope. Use the access scope 'https://www.googleapis.com/auth/devstorage.write_only'.",
@@ -2593,7 +2594,7 @@
   },
   {
     "id": "186",
-    "question": "You are planning to migrate your on-premises data to Google Cloud. The data includes:",
+    "question": "You are planning to migrate your on-premises data to Google Cloud. The data includes: • 200 TB of video files in SAN storage • Data warehouse data stored on Amazon Redshift • 20 GB of PNG files stored on an S3 bucket. You need to load the video files into a Cloud Storage bucket, transfer the data warehouse data into BigQuery, and load the PNG files into a second Cloud Storage bucket. You want to follow Google-recommended practices and avoid writing any code for the migration. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Use gcloud storage for the video files, Dataflow for the data warehouse data, and Storage Transfer Service for the PNG files.",
@@ -3001,7 +3002,7 @@
   },
   {
     "id": "215",
-    "question": "Your company stores data from multiple sources that have different data storage requirements. These data include:",
+    "question": "Your company stores data from multiple sources that have different data storage requirements. These data include:  1. Customer data that is structured and read with complex queries 2. Historical log data that is large in volume and accessed infrequently. 3. Real-time sensor data with high-velocity writes, which needs to be available for analysis but can tolerate some data loss. You need to design the most cost-effective storage solution that fulfills all data storage requirements. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Use Cloud SQL for customer data. Cloud Storage (Coldline) for historical logs, and BigQuery for sensor data.",
@@ -3015,7 +3016,7 @@
   },
   {
     "id": "216",
-    "question": "You work for a financial services company that operates as a stock market broker. Your company is planning to migrate to Google Cloud. You need to plan the network design in Google Cloud. Your design must:",
+    "question": "You work for a financial services company that operates as a stock market broker. Your company is planning to migrate to Google Cloud. You need to plan the network design in Google Cloud. Your design must: • Minimize the latency between all production systems.• Minimize costs related to your development environment.",
     "imageUrl": "",
     "options": {
       "A": "Create a VPC in the Standard Tier and one in the Premium Tier. Deploy production workloads in the Standard Tier and development workloads in the Premium Tier.",
@@ -3197,7 +3198,7 @@
   },
   {
     "id": "229",
-    "question": "You need to monitor resources that are distributed over different projects in Google Cloud Platform. You want to consolidate reporting under the same Stackdriver",
+    "question": "You need to monitor resources that are distributed over different projects in Google Cloud Platform. You want to consolidate reporting under the same Stackdriver Monitoring dashboard. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Use Shared VPC to connect all projects, and link Stackdriver to one of the projects.",
@@ -3309,7 +3310,7 @@
   },
   {
     "id": "237",
-    "question": "You want to configure autohealing for network load balancing for a group of Compute Engine instances that run in multiple zones, using the fewest possible steps.",
+    "question": "You want to configure autohealing for network load balancing for a group of Compute Engine instances that run in multiple zones, using the fewest possible steps. You need to configure re-creation of VMs if they are unresponsive after 3 attempts of 10 seconds each. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Create an HTTP load balancer with a backend configuration that references an existing instance group. Set the health check to healthy (HTTP)",
@@ -3351,7 +3352,7 @@
   },
   {
     "id": "240",
-    "question": "You've deployed a microservice called myapp1 to a Google Kubernetes Engine cluster using the YAML file specified below:",
+    "question": "You've deployed a microservice called myapp1 to a Google Kubernetes Engine cluster using the YAML file specified below: You need to refactor this configuration so that the database password is not stored in plain text. You want to follow Google-recommended practices. What should you do?",
     "imageUrl": "https://www.examtopics.com/assets/media/exam-media/04338/0002100001.jpg",
     "options": {
       "A": "Store the database password inside the Docker image of the container, not in the YAML file.",
@@ -3365,7 +3366,7 @@
   },
   {
     "id": "241",
-    "question": "You are running an application on multiple virtual machines within a managed instance group and have autoscaling enabled. The autoscaling policy is configured so that additional instances are added to the group if the CPU utilization of instances goes above 80%. VMs are added until the instance group reaches its maximum limit of five VMs or until CPU utilization of instances lowers to 80%. The initial delay for HTTP health checks against the instances is set to 30 seconds.",
+    "question": "You are running an application on multiple virtual machines within a managed instance group and have autoscaling enabled. The autoscaling policy is configured so that additional instances are added to the group if the CPU utilization of instances goes above 80%. VMs are added until the instance group reaches its maximum limit of five VMs or until CPU utilization of instances lowers to 80%. The initial delay for HTTP health checks against the instances is set to 30 seconds. The virtual machine instances take around three minutes to become available for users. You observe that when the instance group autoscales, it adds more instances then necessary to support the levels of end-user traffic. You want to properly maintain instance group sizes when autoscaling. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Set the maximum number of instances to 1.",
@@ -3477,7 +3478,7 @@
   },
   {
     "id": "249",
-    "question": "You have production and test workloads that you want to deploy on Compute Engine. Production VMs need to be in a different subnet than the test VMs. All the",
+    "question": "You have production and test workloads that you want to deploy on Compute Engine. Production VMs need to be in a different subnet than the test VMs. All the VMs must be able to reach each other over Internal IP without creating additional routes. You need to set up VPC and the 2 subnets. Which configuration meets these requirements?",
     "imageUrl": "",
     "options": {
       "B": "Create a single custom VPC with 2 subnets. Create each subnet in the same region and with the same CIDR range.",
@@ -3505,7 +3506,7 @@
   },
   {
     "id": "251",
-    "question": "Your company has a Google Cloud Platform project that uses BigQuery for data warehousing. Your data science team changes frequently and has few members.",
+    "question": "Your company has a Google Cloud Platform project that uses BigQuery for data warehousing. Your data science team changes frequently and has few members. You need to allow members of this team to perform queries. You want to follow Google-recommended practices. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "1. Create an IAM entry for each data scientist's user account. 2. Assign the BigQuery jobUser role to the group.",
@@ -3519,7 +3520,7 @@
   },
   {
     "id": "252",
-    "question": "Your company has a 3-tier solution running on Compute Engine. The configuration of the current infrastructure is shown below.",
+    "question": "Your company has a 3-tier solution running on Compute Engine. The configuration of the current infrastructure is shown below. Each tier has a service account that is associated with all instances within it. You need to enable communication on TCP port 8080 between tiers as follows: \n* Instances in tier #1 must communicate with tier #2. * Instances in tier #2 must communicate with tier #3. What should you do?",
     "imageUrl": "https://www.examtopics.com/assets/media/exam-media/04338/0002700001.png",
     "options": {
       "A": "1. Create an ingress firewall rule with the following settings: ג€¢ Targets: all instances ג€¢ Source filter: IP ranges (with the range set to 10.0.2.0/24) ג€¢ Protocols: allow all 2. Create an ingress firewall rule with the following settings: ג€¢ Targets: all instances ג€¢ Source filter: IP ranges (with the range set to 10.0.1.0/24) ג€¢ Protocols: allow all",
@@ -3729,7 +3730,7 @@
   },
   {
     "id": "267",
-    "question": "You built an application on Google Cloud that uses Cloud Spanner. Your support team needs to monitor the environment but should not have access to table data.",
+    "question": "You built an application on Google Cloud that uses Cloud Spanner. Your support team needs to monitor the environment but should not have access to table data. You need a streamlined solution to grant the correct permissions to your support team, and you want to follow Google-recommended practices. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Add the support team group to the roles/spanner.databaseUser role.",
@@ -3757,7 +3758,7 @@
   },
   {
     "id": "269",
-    "question": "You are using Deployment Manager to create a Google Kubernetes Engine cluster. Using the same Deployment Manager deployment, you also want to create a",
+    "question": "You are using Deployment Manager to create a Google Kubernetes Engine cluster. Using the same Deployment Manager deployment, you also want to create a DaemonSet in the kube-system namespace of the cluster. You want a solution that uses the fewest possible services. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Use the Deployment Manager Runtime Configurator to create a new Config resource that contains the DaemonSet definition.",
@@ -3799,7 +3800,7 @@
   },
   {
     "id": "272",
-    "question": "You are using Container Registry to centrally store your company's container images in a separate project. In another project, you want to create a Google",
+    "question": "You are using Container Registry to centrally store your company's container images in a separate project. In another project, you want to create a Google Kubernetes Engine (GKE) cluster. You want to ensure that Kubernetes can download images from Container Registry. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "When you create the GKE cluster, choose the Allow full access to all Cloud APIs option under 'Access scopes'.",
@@ -3813,7 +3814,7 @@
   },
   {
     "id": "273",
-    "question": "You deployed a new application inside your Google Kubernetes Engine cluster using the YAML file specified below.",
+    "question": "You deployed a new application inside your Google Kubernetes Engine cluster using the YAML file specified below. You check the status of the deployed pods and notice that one of them is still in PENDING status:",
     "imageUrl": "https://www.examtopics.com/assets/media/exam-media/04338/0003900001.png",
     "options": {
       "A": "Review details of the myapp-service Service object and check for error messages.",
@@ -3841,7 +3842,7 @@
   },
   {
     "id": "275",
-    "question": "You want to configure an SSH connection to a single Compute Engine instance for users in the dev1 group. This instance is the only resource in this particular",
+    "question": "You want to configure an SSH connection to a single Compute Engine instance for users in the dev1 group. This instance is the only resource in this particular Google Cloud Platform project that the dev1 users should be able to connect to. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Set metadata to enable-oslogin=true for the instance. Set the service account to no service account for that instance. Direct them to use the Cloud Shell to ssh to that instance.",
@@ -3911,7 +3912,7 @@
   },
   {
     "id": "280",
-    "question": "You need to enable traffic between multiple groups of Compute Engine instances that are currently running two different GCP projects. Each group of Compute",
+    "question": "You need to enable traffic between multiple groups of Compute Engine instances that are currently running two different GCP projects. Each group of Compute Engine instances is running in its own VPC. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Verify that both projects are in a GCP Organization. Create a new VPC and add all instances.",
@@ -3939,7 +3940,7 @@
   },
   {
     "id": "282",
-    "question": "You want to add a new auditor to a Google Cloud Platform project. The auditor should be allowed to read, but not modify, all project items.",
+    "question": "You want to add a new auditor to a Google Cloud Platform project. The auditor should be allowed to read, but not modify, all project items. How should you configure the auditor's permissions?",
     "imageUrl": "",
     "options": {
       "A": "Create a custom role with view-only project permissions. Add the user's account to the custom role.",
@@ -3953,7 +3954,7 @@
   },
   {
     "id": "283",
-    "question": "You are operating a Google Kubernetes Engine (GKE) cluster for your company where different teams can run non-production workloads. Your Machine Learning",
+    "question": "You are operating a Google Kubernetes Engine (GKE) cluster for your company where different teams can run non-production workloads. Your Machine Learning (ML) team needs access to Nvidia Tesla P100 GPUs to train their models. You want to minimize effort and cost. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "Ask your ML team to add the ג€accelerator: gpuג€ annotation to their pod specification.",
@@ -3967,7 +3968,7 @@
   },
   {
     "id": "284",
-    "question": "Your VMs are running in a subnet that has a subnet mask of 255.255.255.240. The current subnet has no more free IP addresses and you require an additional",
+    "question": "Your VMs are running in a subnet that has a subnet mask of 255.255.255.240. The current subnet has no more free IP addresses and you require an additional 10 IP addresses for new VMs. The existing and new VMs should all be able to reach each other without additional routes. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Delete the subnet, and recreate it using a wider range of IP addresses.",
@@ -4107,7 +4108,7 @@
   },
   {
     "id": "294",
-    "question": "Your company's infrastructure is on-premises, but all machines are running at maximum capacity. You want to burst to Google Cloud. The workloads on Google",
+    "question": "Your company's infrastructure is on-premises, but all machines are running at maximum capacity. You want to burst to Google Cloud. The workloads on Google Cloud must be able to directly communicate to the workloads on-premises using a private IP range. What should you do?",
     "imageUrl": "",
     "options": {
       "A": "In Google Cloud, configure the VPC as a host for Shared VPC.",
@@ -4135,7 +4136,7 @@
   },
   {
     "id": "296",
-    "question": "Your company uses BigQuery for data warehousing. Over time, many different business units in your company have created 1000+ datasets across hundreds of projects. Your CIO wants you to examine all datasets to find tables that contain an employee_ssn column. You want to minimize effort in performing this task.",
+    "question": "Your company uses BigQuery for data warehousing. Over time, many different business units in your company have created 1000+ datasets across hundreds of projects. Your CIO wants you to examine all datasets to find tables that contain an employee_ssn column. You want to minimize effort in performing this task. What should you do?",
     "imageUrl": "",
     "options": {
       "B": "Write a shell script that uses the bq command line tool to loop through all the projects in your organization.",
@@ -4149,7 +4150,7 @@
   },
   {
     "id": "297",
-    "question": "You create a Deployment with 2 replicas in a Google Kubernetes Engine cluster that has a single preemptible node pool. After a few minutes, you use kubectl to examine the status of your Pod and observe that one of them is still in Pending status:",
+    "question": "You create a Deployment with 2 replicas in a Google Kubernetes Engine cluster that has a single preemptible node pool. After a few minutes, you use kubectl to examine the status of your Pod and observe that one of them is still in Pending status. What is the most likely cause of this issue?",
     "imageUrl": "https://www.examtopics.com/assets/media/exam-media/04338/0004900001.jpg",
     "options": {
       "A": "The pending Pod's resource requests are too large to fit on a single node of the cluster.",
@@ -4206,7 +4207,7 @@
   },
   {
     "id": "301",
-    "question": "Your customer has implemented a solution that uses Cloud Spanner and notices some read latency-related performance issues on one table. This table is accessed only by their users using a primary key. The table schema is shown below.",
+    "question": "Your customer has implemented a solution that uses Cloud Spanner and notices some read latency-related performance issues on one table. This table is accessed only by their users using a primary key. The table schema is shown below. You want to resolve the issue. What should you do?",
     "imageUrl": "https://www.examtopics.com/assets/media/exam-media/04338/0005100001.png",
     "options": {
       "A": "Remove the profile_picture field from the table.",
