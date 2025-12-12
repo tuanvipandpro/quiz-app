@@ -27,6 +27,7 @@ function App() {
     // AWS
     { id: 'aws-ace', name: 'AWS Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS' },
     { id: 'aws-saa', name: 'AWS Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS' },
+    { id: 'aws-dea', name: 'AWS Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS' },
     // Azure
     { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Azure' },
     // Google Cloud
