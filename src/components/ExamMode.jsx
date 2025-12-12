@@ -1,6 +1,6 @@
 // components/ExamMode.jsx
 import React, { useState, useEffect } from 'react';
-import { Button, Progress, Space, Typography, Card, Result, Badge, Statistic, Modal, Spin, Row, Col } from 'antd';
+import { Button, Progress, Space, Typography, Card, Result, Badge, Statistic, Modal, Spin, Row, Col, Input } from 'antd';
 import { 
   ArrowLeftOutlined, 
   ArrowRightOutlined, 
@@ -16,7 +16,7 @@ import Question from './Question';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
-import { getExplanation } from '../utils/geminiApi';
+import { getExplanation, saveApiKey, hasApiKey } from '../utils/geminiApi';
 import 'antd/dist/reset.css';
 
 
@@ -39,6 +39,10 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   const [explanation, setExplanation] = useState('');
   const [explanationModalVisible, setExplanationModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // API Key state
+  const [apiKeyModalVisible, setApiKeyModalVisible] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState('');
   
   // Initialize exam with 50 random questions and set up timer
   useEffect(() => {
@@ -204,6 +208,12 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   
   // Get explanation from Gemini API
   const handleExplainClick = async () => {
+    // Check if API key exists
+    if (!hasApiKey()) {
+      setApiKeyModalVisible(true);
+      return;
+    }
+    
     setIsLoading(true);
     setExplanationModalVisible(true);
     
@@ -215,10 +225,26 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
       );
       setExplanation(explanationText);
     } catch (error) {
-      setExplanation("Sorry, we encountered an error getting the explanation.");
+      if (error.code === 'NO_API_KEY') {
+        setExplanationModalVisible(false);
+        setApiKeyModalVisible(true);
+      } else {
+        setExplanation("Sorry, we encountered an error getting the explanation.");
+      }
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Handle saving API key
+  const handleSaveApiKey = () => {
+    if (apiKeyInput.trim()) {
+      saveApiKey(apiKeyInput.trim());
+      setApiKeyModalVisible(false);
+      setApiKeyInput('');
+      // Retry getting explanation
+      handleExplainClick();
     }
   };
 
@@ -458,6 +484,33 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             </div>
           </div>
         )}
+      </Modal>
+      
+      {/* API Key Input Modal */}
+      <Modal
+        title="Enter Gemini API Key"
+        open={apiKeyModalVisible}
+        onOk={handleSaveApiKey}
+        onCancel={() => setApiKeyModalVisible(false)}
+        okText="Save & Continue"
+        cancelText="Cancel"
+      >
+        <Paragraph>
+          To use the AI explanation feature, please enter your Google Gemini API key.
+        </Paragraph>
+        <Paragraph type="secondary" style={{ fontSize: '12px' }}>
+          Get your free API key at: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>
+        </Paragraph>
+        <Input.TextArea
+          placeholder="Enter your Gemini API key here..."
+          value={apiKeyInput}
+          onChange={(e) => setApiKeyInput(e.target.value)}
+          rows={3}
+          style={{ marginTop: '10px' }}
+        />
+        <Paragraph type="warning" style={{ fontSize: '12px', marginTop: '10px' }}>
+          Your API key will be stored locally in your browser.
+        </Paragraph>
       </Modal>
     </div>
   );

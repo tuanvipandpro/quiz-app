@@ -1,6 +1,6 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col } from 'antd';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select } from 'antd';
 import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import './App.css';
 import './markdown.css';
@@ -19,24 +19,49 @@ function App() {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [fileName, setFileName] = useState('');
   const [startScreen, setStartScreen] = useState(true); // New state for initial screen
+  const [showQuizSelection, setShowQuizSelection] = useState(false); // New state for quiz selection
+  const [selectedQuiz, setSelectedQuiz] = useState(null); // Selected quiz from dropdown
+  
+  // Available demo quizzes organized by folder
+  const availableQuizzes = [
+    // AWS
+    { id: 'aws-ace', name: 'AWS Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS' },
+    { id: 'aws-saa', name: 'AWS Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS' },
+    // Azure
+    { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Azure' },
+    // Google Cloud
+    { id: 'gcp-ace', name: 'Google Cloud Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud' },
+    { id: 'gcp-pca', name: 'Google Cloud Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud' }
+  ];
   
   // Load demo quiz
-  const loadDemoQuiz = async () => {
+  const loadDemoQuiz = async (quizFile, quizName) => {
     try {
-      const response = await fetch('/quiz-app/quiz.json');
+      const response = await fetch(`/quiz-app/${quizFile}`);
       if (!response.ok) {
-        throw new Error(`Failed to load demo quiz: ${response.status}`);
+        throw new Error(`Failed to load quiz: ${response.status}`);
       }
       const data = await response.json();
       setQuestions(data);
       setFileUploaded(true);
-      setFileName('Demo Quiz');
+      setFileName(quizName);
       setStartScreen(false);
-      message.success('Demo quiz loaded successfully!');
+      setShowQuizSelection(false);
+      message.success(`${quizName} loaded successfully!`);
     } catch (error) {
-      console.error('Error loading demo quiz:', error);
-      message.error('Failed to load demo quiz. Please try again or upload your own file.');
+      console.error('Error loading quiz:', error);
+      message.error('Failed to load quiz. Please try again or upload your own file.');
     }
+  };
+  
+  // Show quiz selection screen
+  const showQuizSelectionScreen = () => {
+    setShowQuizSelection(true);
+  };
+  
+  // Go back from quiz selection
+  const backFromQuizSelection = () => {
+    setShowQuizSelection(false);
   };
   
   // File upload props
@@ -153,7 +178,7 @@ function App() {
       {renderHeader()}
       
       <Content className="ant-layout-content">
-        {startScreen ? (
+        {startScreen && !showQuizSelection ? (
           // Initial start screen with options
           <div style={{ textAlign: 'center' }}>
             <Title level={2}>Welcome to Quiz Application</Title>
@@ -164,16 +189,16 @@ function App() {
                 <Card 
                   hoverable 
                   style={{ height: '100%' }}
-                  onClick={loadDemoQuiz}
+                  onClick={showQuizSelectionScreen}
                   className="option-card"
                 >
                   <PlayCircleOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '15px' }} />
-                  <Title level={4}>Use Demo Quiz</Title>
+                  <Title level={4}>Load Demo Quiz</Title>
                   <Paragraph>
-                    Start with our pre-loaded set of questions to try out the application.
+                    Choose from our pre-loaded set of questions to try out the application.
                   </Paragraph>
                   <Button type="primary" size="large" icon={<PlayCircleOutlined />} style={{ marginTop: '10px' }}>
-                    Load Demo Quiz
+                    Select Quiz
                   </Button>
                 </Card>
               </Col>
@@ -237,6 +262,66 @@ function App() {
                   </pre>
                 </Text>
               </div>
+            </div>
+          </div>
+        ) : showQuizSelection ? (
+          // Quiz selection screen
+          <div style={{ maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}>
+            <Title level={2} style={{ textAlign: 'center' }}>Select a Quiz</Title>
+            <Paragraph style={{ textAlign: 'center', marginBottom: '30px' }}>
+              Choose from our available quizzes:
+            </Paragraph>
+            
+            <Card style={{ marginBottom: '20px' }}>
+              <Select
+                size="large"
+                style={{ width: '100%' }}
+                placeholder="Select a quiz to load"
+                value={selectedQuiz}
+                onChange={(value) => setSelectedQuiz(value)}
+                showSearch
+                optionFilterProp="label"
+                options={(() => {
+                  // Group quizzes by category
+                  const categories = [...new Set(availableQuizzes.map(q => q.category))];
+                  return categories.map(category => ({
+                    label: category,
+                    options: availableQuizzes
+                      .filter(q => q.category === category)
+                      .map(quiz => ({
+                        label: quiz.name,
+                        value: quiz.id
+                      }))
+                  }));
+                })()}
+              />
+              
+              <Button 
+                type="primary" 
+                size="large"
+                block
+                style={{ marginTop: '20px' }}
+                disabled={!selectedQuiz}
+                icon={<PlayCircleOutlined />}
+                onClick={() => {
+                  const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
+                  if (quiz) {
+                    loadDemoQuiz(quiz.file, quiz.name);
+                  }
+                }}
+              >
+                Load Selected Quiz
+              </Button>
+            </Card>
+            
+            <div style={{ textAlign: 'center' }}>
+              <Button 
+                icon={<ArrowLeftOutlined />} 
+                size="large"
+                onClick={backFromQuizSelection}
+              >
+                Back
+              </Button>
             </div>
           </div>
         ) : !mode ? (
