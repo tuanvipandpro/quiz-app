@@ -3,13 +3,9 @@
 // Storage key for API key
 const STORAGE_KEY = 'gemini_api_key';
 
-// Get API key from localStorage or env variable
+// Get API key from localStorage only
 export function getApiKey() {
-  const storedKey = localStorage.getItem(STORAGE_KEY);
-  if (storedKey) {
-    return storedKey;
-  }
-  return import.meta.env.VITE_GEMINI_API_KEY;
+  return localStorage.getItem(STORAGE_KEY);
 }
 
 // Save API key to localStorage
