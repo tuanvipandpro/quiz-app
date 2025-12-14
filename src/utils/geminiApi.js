@@ -1,26 +1,78 @@
 // src/utils/geminiApi.js
+import userService from '../services/userService';
 
-// Storage key for API key
+// Storage key for API key (fallback for non-logged in users)
 const STORAGE_KEY = 'gemini_api_key';
 
-// Get API key from localStorage only
-export function getApiKey() {
+/**
+ * Get API key from Firestore (if user is logged in) or localStorage
+ * @param {string|null} uid - User ID (optional)
+ * @returns {Promise<string|null>}
+ */
+export async function getApiKey(uid = null) {
+  // If user is logged in, get from Firestore
+  if (uid) {
+    try {
+      const apiKey = await userService.getGeminiApiKey(uid);
+      if (apiKey) {
+        return apiKey;
+      }
+    } catch (error) {
+      console.error('Error getting API key from Firestore:', error);
+    }
+  }
+  
+  // Fallback to localStorage
   return localStorage.getItem(STORAGE_KEY);
 }
 
-// Save API key to localStorage
-export function saveApiKey(apiKey) {
+/**
+ * Save API key to Firestore (if user is logged in) and localStorage
+ * @param {string} apiKey - API key to save
+ * @param {string|null} uid - User ID (optional)
+ * @returns {Promise<void>}
+ */
+export async function saveApiKey(apiKey, uid = null) {
+  // Save to localStorage as fallback
   localStorage.setItem(STORAGE_KEY, apiKey);
+  
+  // If user is logged in, save to Firestore
+  if (uid) {
+    try {
+      await userService.saveGeminiApiKey(uid, apiKey);
+    } catch (error) {
+      console.error('Error saving API key to Firestore:', error);
+    }
+  }
 }
 
-// Remove API key from localStorage
-export function clearApiKey() {
+/**
+ * Remove API key from Firestore (if user is logged in) and localStorage
+ * @param {string|null} uid - User ID (optional)
+ * @returns {Promise<void>}
+ */
+export async function clearApiKey(uid = null) {
+  // Remove from localStorage
   localStorage.removeItem(STORAGE_KEY);
+  
+  // If user is logged in, clear from Firestore
+  if (uid) {
+    try {
+      await userService.clearGeminiApiKey(uid);
+    } catch (error) {
+      console.error('Error clearing API key from Firestore:', error);
+    }
+  }
 }
 
-// Check if API key exists
-export function hasApiKey() {
-  return !!getApiKey();
+/**
+ * Check if API key exists
+ * @param {string|null} uid - User ID (optional)
+ * @returns {Promise<boolean>}
+ */
+export async function hasApiKey(uid = null) {
+  const apiKey = await getApiKey(uid);
+  return !!apiKey;
 }
 
 // Available models with fallback order
@@ -61,8 +113,8 @@ async function callModelAPI(modelName, content, apiKey) {
   return response.json();
 }
 
-export async function getExplanation(question, options, correctAnswer) {
-  const API_KEY = getApiKey();
+export async function getExplanation(question, options, correctAnswer, uid = null) {
+  const API_KEY = await getApiKey(uid);
   
   // If no API key is available, throw a special error
   if (!API_KEY) {

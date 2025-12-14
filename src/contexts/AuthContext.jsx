@@ -1,14 +1,18 @@
 // contexts/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/authService';
+import userService from '../services/userService';
+import { saveApiKey, clearApiKey } from '../utils/geminiApi';
 
 // Create Auth Context
 const AuthContext = createContext({
   user: null,
+  userProfile: null,
   loading: true,
   signInWithGoogle: async () => {},
   signOut: async () => {},
-  isAuthenticated: false
+  isAuthenticated: false,
+  refreshUserProfile: async () => {}
 });
 
 /**
@@ -17,23 +21,60 @@ const AuthContext = createContext({
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  /**
+   * Initialize user in Firestore
+   */
+  const initializeUserInFirestore = async (firebaseUser) => {
+    try {
+      const userData = {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+        emailVerified: firebaseUser.emailVerified
+      };
+
+      // Initialize or update user in Firestore
+      const result = await userService.initializeUser(userData);
+      
+      if (result.success) {
+        setUserProfile(result.user);
+        
+        // Sync API key from Firestore to localStorage
+        if (result.user.geminiApiKey) {
+          await saveApiKey(result.user.geminiApiKey, userData.uid);
+          console.log('API key synced from Firestore to localStorage');
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing user in Firestore:', error);
+    }
+  };
 
   // Subscribe to auth state changes
   useEffect(() => {
-    const unsubscribe = authService.onAuthStateChanged((firebaseUser) => {
+    const unsubscribe = authService.onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
         // User is signed in
-        setUser({
+        const userData = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
           photoURL: firebaseUser.photoURL,
           emailVerified: firebaseUser.emailVerified
-        });
+        };
+        
+        setUser(userData);
+        
+        // Initialize user in Firestore and get profile
+        await initializeUserInFirestore(firebaseUser);
       } else {
         // User is signed out
         setUser(null);
+        setUserProfile(null);
       }
       
       setLoading(false);
@@ -42,6 +83,18 @@ export function AuthProvider({ children }) {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
+  /**
+   * Refresh user profile from Firestore
+   */
+  const refreshUserProfile = async () => {
+    if (user && user.uid) {
+      const result = await userService.getUserProfile(user.uid);
+      if (result.success) {
+        setUserProfile(result.user);
+      }
+    }
+  };
 
   /**
    * Sign in with Google
@@ -57,7 +110,12 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     const result = await authService.signOut();
     if (result.success) {
+      // Clear API key from localStorage when logging out
+      await clearApiKey(user?.uid);
+      console.log('API key cleared from localStorage on logout');
+      
       setUser(null);
+      setUserProfile(null);
     }
     return result;
   };
@@ -65,10 +123,12 @@ export function AuthProvider({ children }) {
   // Context value
   const value = {
     user,
+    userProfile,
     loading,
     signInWithGoogle,
     signOut,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    refreshUserProfile
   };
 
   return (

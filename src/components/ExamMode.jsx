@@ -20,6 +20,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import { getExplanation, saveApiKey, hasApiKey } from '../utils/geminiApi';
+import { useAuth } from '../hooks/useAuth';
 import 'antd/dist/reset.css';
 
 
@@ -28,6 +29,7 @@ const { Countdown } = Statistic;
 const { confirm } = Modal;
 
 function ExamMode({ questions, onExit, examTimeMinutes }) {
+  const { user } = useAuth();
   // Select 50 random questions for the exam
   const [examQuestions, setExamQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -229,7 +231,8 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   // Get explanation from Gemini API
   const handleExplainClick = async () => {
     // Check if API key exists
-    if (!hasApiKey()) {
+    const apiKeyExists = await hasApiKey(user?.uid);
+    if (!apiKeyExists) {
       setApiKeyModalVisible(true);
       return;
     }
@@ -241,7 +244,8 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
       const explanationText = await getExplanation(
         currentQuestion.question, 
         currentQuestion.options, 
-        currentQuestion.answer
+        currentQuestion.answer,
+        user?.uid
       );
       setExplanation(explanationText);
     } catch (error) {
