@@ -54,11 +54,13 @@
 - **API Key Management**: Lưu trữ và quản lý API key bảo mật
 - **Error Handling**: Xử lý lỗi graceful khi API không khả dụng
 
-### 🔐 Xác thực Firebase (Tùy chọn)
+### 🔐 Xác thực Firebase & User Profile
 - **Google Sign-In**: Đăng nhập nhanh chóng với tài khoản Google
 - **User Profile**: Hiển thị avatar và thông tin người dùng
+- **Firestore Integration**: Lưu trữ user profile và settings
+- **API Key Sync**: Gemini API key tự động đồng bộ trên mọi thiết bị
 - **Session Management**: Quản lý phiên đăng nhập tự động
-- **Secure**: Tích hợp Firebase Authentication
+- **Auto Sync**: Login → Load API key, Logout → Clear tokens
 
 ### 📁 Quản lý câu hỏi linh hoạt
 - **Upload JSON**: Tải lên file JSON câu hỏi tùy chỉnh
@@ -95,7 +97,11 @@ Truy cập: [https://tuanvipandpro.github.io/quiz-app](https://tuanvipandpro.git
 ### 5️⃣ Đăng nhập Google (Tùy chọn)
 - Nhấn **"Sign In"** trên header
 - Chọn tài khoản Google
-- Tận hưởng trải nghiệm cá nhân hóa
+- **Benefits khi đăng nhập:**
+  - ✅ API key tự động sync từ Firestore về localStorage
+  - ✅ Sử dụng API key trên mọi thiết bị
+  - ✅ User profile được lưu trữ an toàn
+  - ✅ Logout tự động clear tokens và API key
 
 ## 💻 Cài đặt & Phát triển
 
@@ -124,6 +130,34 @@ VITE_GEMINI_API_KEY=your_gemini_api_key_here
 > **Lấy API Key**: [https://aistudio.google.com/apikey](https://aistudio.google.com/apikey)
 
 #### Firebase Authentication (Tùy chọn - cho Google Sign-In)
+
+**Bước 1: Tạo Firebase Project**
+1. Truy cập [Firebase Console](https://console.firebase.google.com/)
+2. Tạo project mới hoặc chọn project có sẵn
+3. Vào **Authentication** → **Sign-in method** → Enable **Google**
+
+**Bước 2: Tạo Web App**
+1. Vào **Project Settings** → **General**
+2. Scroll xuống **Your apps** → Click **Web** icon
+3. Register app và copy Firebase config
+
+**Bước 3: Cấu hình Firestore**
+1. Vào **Firestore Database** → **Create database**
+2. Chọn **Start in production mode**
+3. Vào **Rules** tab và update rules:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+**Bước 4: Tạo file .env**
 ```env
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your-app.firebaseapp.com
@@ -132,8 +166,6 @@ VITE_FIREBASE_STORAGE_BUCKET=your-app.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
 VITE_FIREBASE_APP_ID=your-app-id
 ```
-
-> **Hướng dẫn chi tiết**: Xem file `FIREBASE_SETUP.md` hoặc `QUICKSTART.md`
 
 ### Chạy ứng dụng
 ```bash

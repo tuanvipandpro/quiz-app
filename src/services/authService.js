@@ -13,6 +13,10 @@ import { auth } from '../config/firebase';
 class AuthService {
   constructor() {
     this.googleProvider = new GoogleAuthProvider();
+    // Add custom parameters to reduce COOP warnings
+    this.googleProvider.setCustomParameters({
+      prompt: 'select_account'
+    });
   }
 
   /**

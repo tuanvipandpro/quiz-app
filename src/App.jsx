@@ -1,14 +1,14 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Input } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, MailOutlined, UserOutlined, LogoutOutlined, SettingOutlined, KeyOutlined } from '@ant-design/icons';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin } from 'antd';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { getApiKey, saveApiKey, hasApiKey, clearApiKey } from './utils/geminiApi';
 import './App.css';
 import './markdown.css';
 import QuizMode from './components/QuizMode';
 import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
+import SettingsModal from './components/SettingsModal';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -25,15 +25,6 @@ function App() {
   const [selectedQuiz, setSelectedQuiz] = useState(null); // Selected quiz from dropdown
   const [loginModalVisible, setLoginModalVisible] = useState(false); // Login modal state
   const [settingsModalVisible, setSettingsModalVisible] = useState(false); // Settings modal state
-  const [apiKeyInput, setApiKeyInput] = useState(''); // API key input
-  
-  // Load API key when component mounts
-  useEffect(() => {
-    const existingKey = getApiKey();
-    if (existingKey) {
-      setApiKeyInput(existingKey);
-    }
-  }, []);
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
@@ -168,12 +159,6 @@ function App() {
     
     if (result.success) {
       message.success(`Welcome, ${result.user.displayName}!`);
-      
-      // Load API key from localStorage if exists
-      const existingKey = getApiKey();
-      if (existingKey) {
-        setApiKeyInput(existingKey);
-      }
     } else {
       message.error(result.error || 'Failed to sign in with Google');
     }
@@ -192,27 +177,7 @@ function App() {
 
   // Handle settings click
   const handleSettingsClick = () => {
-    const existingKey = getApiKey();
-    setApiKeyInput(existingKey || '');
     setSettingsModalVisible(true);
-  };
-
-  // Handle save API key
-  const handleSaveApiKey = () => {
-    if (apiKeyInput.trim()) {
-      saveApiKey(apiKeyInput.trim());
-      message.success('API key saved successfully!');
-      setSettingsModalVisible(false);
-    } else {
-      message.warning('Please enter an API key');
-    }
-  };
-
-  // Handle clear API key
-  const handleClearApiKey = () => {
-    clearApiKey();
-    setApiKeyInput('');
-    message.info('API key cleared');
   };
 
   // Handle return to home page
@@ -519,7 +484,7 @@ function App() {
             </Button>
           </Space>
           
-          <Divider style={{ margin: '24px 0' }}>Or</Divider>
+          <Divider style={{ margin: '24px 0' }} />
           
           <Space direction="vertical" size="large" style={{ width: '100%' }}>
             <Button 
@@ -529,109 +494,17 @@ function App() {
               disabled
               style={{ height: '50px', fontSize: '16px' }}
             >
-              Login with GitHub
-            </Button>
-            
-            <Button 
-              icon={<MailOutlined />}
-              size="large"
-              block
-              disabled
-              style={{ height: '50px', fontSize: '16px' }}
-            >
-              Login with Email
+              Login with GitHub (Coming Soon)
             </Button>
           </Space>
         </div>
       </Modal>
       
       {/* Settings Modal */}
-      <Modal
-        title={
-          <Space>
-            <SettingOutlined />
-            <span>Settings</span>
-          </Space>
-        }
-        open={settingsModalVisible}
-        onCancel={() => setSettingsModalVisible(false)}
-        onOk={handleSaveApiKey}
-        okText="Save"
-        cancelText="Cancel"
-        width={600}
-      >
-        <div style={{ padding: '20px 0' }}>
-          <Card 
-            title={
-              <Space>
-                <KeyOutlined />
-                <span>Gemini API Key</span>
-              </Space>
-            }
-            size="small"
-            style={{ marginBottom: '20px' }}
-          >
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <div>
-                <Text type="secondary" style={{ fontSize: '12px' }}>
-                  Enter your Google Gemini API key to enable AI-powered explanations for quiz questions.
-                </Text>
-              </div>
-              
-              <Input.TextArea
-                placeholder="Enter your Gemini API key here..."
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
-                rows={3}
-                style={{ fontFamily: 'monospace', fontSize: '12px' }}
-              />
-              
-              <div>
-                <Text type="secondary" style={{ fontSize: '11px' }}>
-                  Get your free API key at:{' '}
-                  <a 
-                    href="https://aistudio.google.com/app/apikey" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    style={{ fontSize: '11px' }}
-                  >
-                    Google AI Studio
-                  </a>
-                </Text>
-              </div>
-              
-              {hasApiKey() && (
-                <Button 
-                  danger 
-                  size="small" 
-                  onClick={handleClearApiKey}
-                  icon={<LogoutOutlined />}
-                >
-                  Clear API Key
-                </Button>
-              )}
-              
-              <div style={{ 
-                backgroundColor: '#f0f5ff', 
-                padding: '12px', 
-                borderRadius: '4px',
-                border: '1px solid #d6e4ff'
-              }}>
-                <Text style={{ fontSize: '12px' }}>
-                  <strong>Note:</strong> Your API key is stored locally in your browser and is never sent to our servers.
-                </Text>
-              </div>
-            </Space>
-          </Card>
-          
-          {/* Future settings can be added here */}
-          <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#fafafa', borderRadius: '4px' }}>
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              More settings coming soon...
-            </Text>
-          </div>
-        </div>
-      </Modal>
+      <SettingsModal
+        visible={settingsModalVisible}
+        onClose={() => setSettingsModalVisible(false)}
+      />
     </Layout>
   );
 }

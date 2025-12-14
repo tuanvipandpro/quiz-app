@@ -120,7 +120,8 @@ function PracticeMode({ questions, onExit }) {
     }
     
     // Check if API key exists
-    if (!hasApiKey()) {
+    const apiKeyExists = await hasApiKey(user?.uid);
+    if (!apiKeyExists) {
       setApiKeyModalVisible(true);
       return;
     }
@@ -132,7 +133,8 @@ function PracticeMode({ questions, onExit }) {
       const explanationText = await getExplanation(
         currentQuestion.question, 
         currentQuestion.options, 
-        currentQuestion.answer
+        currentQuestion.answer,
+        user?.uid
       );
       setExplanation(explanationText);
     } catch (error) {
