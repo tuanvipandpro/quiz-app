@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider } from 'antd';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, MailOutlined } from '@ant-design/icons';
 import './App.css';
 import './markdown.css';
 import QuizMode from './components/QuizMode';
@@ -21,6 +21,7 @@ function App() {
   const [startScreen, setStartScreen] = useState(true); // New state for initial screen
   const [showQuizSelection, setShowQuizSelection] = useState(false); // New state for quiz selection
   const [selectedQuiz, setSelectedQuiz] = useState(null); // Selected quiz from dropdown
+  const [loginModalVisible, setLoginModalVisible] = useState(false); // Login modal state
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
@@ -144,6 +145,13 @@ function App() {
     setStartScreen(true);
   };
 
+  // Handle login type selection
+  const handleLoginType = (type) => {
+    setLoginModalVisible(false);
+    message.info(`${type} login will be implemented soon!`);
+    // TODO: Implement actual login logic here
+  };
+
   // Simplified header without the back button
   const renderHeader = () => (
     <Header className="ant-layout-header">
@@ -151,7 +159,14 @@ function App() {
         <Title level={3} style={{ color: 'white', margin: 0 }}>
           Quiz Application
         </Title>
-        <div></div>
+        <Button 
+          type="primary"
+          icon={<LoginOutlined />}
+          onClick={() => setLoginModalVisible(true)}
+          style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+        >
+          Login
+        </Button>
       </div>
     </Header>
   );
@@ -359,8 +374,54 @@ function App() {
             style={{ marginTop: '50px' }}
           />
         )}
-      </Content>
-    </Layout>
+      </Content>      
+      {/* Login Modal */}
+      <Modal
+        title="Choose Login Method"
+        open={loginModalVisible}
+        onCancel={() => setLoginModalVisible(false)}
+        footer={null}
+        centered
+      >
+        <div style={{ padding: '20px 0' }}>
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Button 
+              type="primary"
+              icon={<GoogleOutlined />}
+              size="large"
+              block
+              onClick={() => handleLoginType('Google')}
+              style={{ height: '50px', fontSize: '16px' }}
+            >
+              Login with Google
+            </Button>
+          </Space>
+          
+          <Divider style={{ margin: '24px 0' }}>Or</Divider>
+          
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Button 
+              icon={<GithubOutlined />}
+              size="large"
+              block
+              disabled
+              style={{ height: '50px', fontSize: '16px' }}
+            >
+              Login with GitHub
+            </Button>
+            
+            <Button 
+              icon={<MailOutlined />}
+              size="large"
+              block
+              disabled
+              style={{ height: '50px', fontSize: '16px' }}
+            >
+              Login with Email
+            </Button>
+          </Space>
+        </div>
+      </Modal>    </Layout>
   );
 }
 
