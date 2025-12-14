@@ -1,8 +1,16 @@
 # Quiz App - Ứng dụng trắc nghiệm thông minh
 
-Ứng dụng trắc nghiệm được xây dựng bằng React và Ant Design, hỗ trợ nhiều chế độ học tập và tích hợp AI để giải thích câu trả lời.
+Ứng dụng trắc nghiệm được xây dựng bằng React và Ant Design, hỗ trợ nhiều chế độ học tập, tích hợp AI để giải thích câu trả lời, và xác thực người dùng với Firebase.
 
 ## 🌟 Tính năng chính
+
+### 🔐 Xác thực người dùng (Mới!)
+- **Google Sign-In**: Đăng nhập nhanh chóng với tài khoản Google
+- **User Profile**: Hiển thị thông tin người dùng
+- **Session Management**: Quản lý phiên đăng nhập tự động
+- **Firebase Integration**: Bảo mật và đáng tin cậy
+
+### 📚 Chế độ học tập đa dạng
 
 ### 📚 Chế độ học tập đa dạng
 - **Practice Mode**: Học từng câu hỏi một, nhận phản hồi ngay lập tức
@@ -28,7 +36,17 @@
 
 ## 🚀 Cách sử dụng
 
-### 1. Khởi động ứng dụng
+### 1. Cài đặt Firebase Authentication (Tùy chọn)
+Nếu bạn muốn sử dụng tính năng đăng nhập:
+```bash
+# Xem hướng dẫn nhanh
+cat QUICKSTART.md
+
+# Hoặc hướng dẫn chi tiết
+cat FIREBASE_SETUP.md
+```
+
+### 2. Khởi động ứng dụng
 ```bash
 # Cài đặt dependencies
 yarn install
@@ -77,9 +95,22 @@ yarn build
 
 - **Frontend**: React 19, Vite
 - **UI Framework**: Ant Design 5
+- **Authentication**: Firebase Auth (Google Sign-In)
 - **AI Integration**: Google Gemini API
 - **Markdown**: React Markdown với sanitization
 - **Deployment**: GitHub Pages
+
+## 📁 Cấu trúc dự án
+
+```
+src/
+├── config/              # Cấu hình (Firebase, etc.)
+├── services/           # Business logic (Auth, API)
+├── contexts/           # React Context (Auth state)
+├── hooks/              # Custom hooks (useAuth)
+├── components/         # React components
+└── utils/              # Utilities
+```
 
 ## 🔧 Cài đặt
 
