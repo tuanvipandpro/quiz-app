@@ -214,6 +214,16 @@ function App() {
     message.info('API key cleared');
   };
 
+  // Handle return to home page
+  const handleReturnHome = () => {
+    setStartScreen(true);
+    setShowQuizSelection(false);
+    setMode(null);
+    setFileUploaded(false);
+    setFileName('');
+    setQuestions([]);
+  };
+
   // User menu items
   const userMenuItems = [
     {
@@ -247,7 +257,11 @@ function App() {
   const renderHeader = () => (
     <Header className="ant-layout-header">
       <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={3} style={{ color: 'white', margin: 0 }}>
+        <Title 
+          level={3} 
+          style={{ color: 'white', margin: 0, cursor: 'pointer' }}
+          onClick={handleReturnHome}
+        >
           Quiz Application
         </Title>
         
