@@ -29,6 +29,7 @@
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@google/generative-ai": "^0.24.0",
     "antd": "^5.27.0",
+    "firebase": "^12.6.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-markdown": "^10.1.0",

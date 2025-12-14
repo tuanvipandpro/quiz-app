@@ -1,16 +1,18 @@
 // components/PracticeMode.jsx
 import React, { useState } from 'react';
-import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, Input } from 'antd';
+import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, Input, message } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import Question from './Question';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import { getExplanation, saveApiKey, hasApiKey } from '../utils/geminiApi';
+import { useAuth } from '../hooks/useAuth';
 
 const { Title, Text, Paragraph } = Typography;
 
 function PracticeMode({ questions, onExit }) {
+  const { isAuthenticated } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
@@ -111,6 +113,12 @@ function PracticeMode({ questions, onExit }) {
 
   // Get explanation from Gemini API
   const handleExplainClick = async () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      message.warning('Please login to use the Explain feature');
+      return;
+    }
+    
     // Check if API key exists
     if (!hasApiKey()) {
       setApiKeyModalVisible(true);
@@ -214,40 +222,47 @@ function PracticeMode({ questions, onExit }) {
         />
       </Card>
       
-      <Space>
-        <Button 
-          type="primary"
-          icon={<ArrowLeftOutlined />}
-          onClick={goToPreviousQuestion}
-          disabled={currentIndex === 0}
-        >
-          Previous
-        </Button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Left side: Navigation and Explain buttons */}
+        <Space>
+          <Button 
+            type="primary"
+            icon={<ArrowLeftOutlined />}
+            onClick={goToPreviousQuestion}
+            disabled={currentIndex === 0}
+          >
+            Previous
+          </Button>
+          
+          <Button 
+            type="primary"
+            onClick={goToNextQuestion}
+            disabled={currentIndex === questions.length - 1}
+          >
+            Next <ArrowRightOutlined />
+          </Button>
+          
+          <Tooltip title={!isAuthenticated ? 'Please login to use this feature' : ''}>
+            <Button 
+              type="primary"
+              icon={<QuestionCircleOutlined />}
+              onClick={handleExplainClick}
+              disabled={!isAuthenticated}
+              style={isAuthenticated ? { backgroundColor: '#722ed1', borderColor: '#722ed1' } : {}}
+            >
+              Explain
+            </Button>
+          </Tooltip>
+        </Space>
         
-        <Button 
-          type="primary"
-          onClick={goToNextQuestion}
-          disabled={currentIndex === questions.length - 1}
-        >
-          Next <ArrowRightOutlined />
-        </Button>
-        
-        <Button 
-          type="primary"
-          icon={<QuestionCircleOutlined />}
-          onClick={handleExplainClick}
-          style={{ backgroundColor: '#722ed1', borderColor: '#722ed1' }}
-        >
-          Explain
-        </Button>
-        
+        {/* Right side: Exit button */}
         <Button 
           icon={<HomeOutlined />}
           onClick={onExit}
         >
           Exit to Menu
         </Button>
-      </Space>
+      </div>
       
       {/* Explanation Modal */}
       <Modal

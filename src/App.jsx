@@ -1,7 +1,9 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, MailOutlined } from '@ant-design/icons';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Input } from 'antd';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, MailOutlined, UserOutlined, LogoutOutlined, SettingOutlined, KeyOutlined } from '@ant-design/icons';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { getApiKey, saveApiKey, hasApiKey, clearApiKey } from './utils/geminiApi';
 import './App.css';
 import './markdown.css';
 import QuizMode from './components/QuizMode';
@@ -22,6 +24,16 @@ function App() {
   const [showQuizSelection, setShowQuizSelection] = useState(false); // New state for quiz selection
   const [selectedQuiz, setSelectedQuiz] = useState(null); // Selected quiz from dropdown
   const [loginModalVisible, setLoginModalVisible] = useState(false); // Login modal state
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false); // Settings modal state
+  const [apiKeyInput, setApiKeyInput] = useState(''); // API key input
+  
+  // Load API key when component mounts
+  useEffect(() => {
+    const existingKey = getApiKey();
+    if (existingKey) {
+      setApiKeyInput(existingKey);
+    }
+  }, []);
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
@@ -145,12 +157,91 @@ function App() {
     setStartScreen(true);
   };
 
-  // Handle login type selection
-  const handleLoginType = (type) => {
+  // Get auth context
+  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+
+  // Handle Google login
+  const handleGoogleLogin = async () => {
     setLoginModalVisible(false);
-    message.info(`${type} login will be implemented soon!`);
-    // TODO: Implement actual login logic here
+    const result = await signInWithGoogle();
+    
+    if (result.success) {
+      message.success(`Welcome, ${result.user.displayName}!`);
+      
+      // Load API key from localStorage if exists
+      const existingKey = getApiKey();
+      if (existingKey) {
+        setApiKeyInput(existingKey);
+      }
+    } else {
+      message.error(result.error || 'Failed to sign in with Google');
+    }
   };
+
+  // Handle logout
+  const handleLogout = async () => {
+    const result = await signOut();
+    
+    if (result.success) {
+      message.success('Signed out successfully');
+    } else {
+      message.error('Failed to sign out');
+    }
+  };
+
+  // Handle settings click
+  const handleSettingsClick = () => {
+    const existingKey = getApiKey();
+    setApiKeyInput(existingKey || '');
+    setSettingsModalVisible(true);
+  };
+
+  // Handle save API key
+  const handleSaveApiKey = () => {
+    if (apiKeyInput.trim()) {
+      saveApiKey(apiKeyInput.trim());
+      message.success('API key saved successfully!');
+      setSettingsModalVisible(false);
+    } else {
+      message.warning('Please enter an API key');
+    }
+  };
+
+  // Handle clear API key
+  const handleClearApiKey = () => {
+    clearApiKey();
+    setApiKeyInput('');
+    message.info('API key cleared');
+  };
+
+  // User menu items
+  const userMenuItems = [
+    {
+      key: 'profile',
+      label: (
+        <div>
+          <div style={{ fontWeight: 'bold' }}>{user?.displayName}</div>
+          <div style={{ fontSize: '12px', color: '#888' }}>{user?.email}</div>
+        </div>
+      ),
+      disabled: true
+    },
+    {
+      type: 'divider'
+    },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: 'Settings',
+      onClick: handleSettingsClick
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Sign Out',
+      onClick: handleLogout
+    }
+  ];
 
   // Simplified header without the back button
   const renderHeader = () => (
@@ -159,14 +250,30 @@ function App() {
         <Title level={3} style={{ color: 'white', margin: 0 }}>
           Quiz Application
         </Title>
-        <Button 
-          type="primary"
-          icon={<LoginOutlined />}
-          onClick={() => setLoginModalVisible(true)}
-          style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
-        >
-          Login
-        </Button>
+        
+        {authLoading ? (
+          <Spin />
+        ) : user ? (
+          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+            <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '8px' }}>
+              <Avatar 
+                src={user.photoURL} 
+                icon={<UserOutlined />}
+                style={{ marginRight: '8px' }}
+              />
+              <span style={{ color: 'white' }}>{user.displayName}</span>
+            </div>
+          </Dropdown>
+        ) : (
+          <Button 
+            type="primary"
+            icon={<LoginOutlined />}
+            onClick={() => setLoginModalVisible(true)}
+            style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+          >
+            Login
+          </Button>
+        )}
       </div>
     </Header>
   );
@@ -390,7 +497,7 @@ function App() {
               icon={<GoogleOutlined />}
               size="large"
               block
-              onClick={() => handleLoginType('Google')}
+              onClick={handleGoogleLogin}
               style={{ height: '50px', fontSize: '16px' }}
             >
               Login with Google
@@ -421,7 +528,96 @@ function App() {
             </Button>
           </Space>
         </div>
-      </Modal>    </Layout>
+      </Modal>
+      
+      {/* Settings Modal */}
+      <Modal
+        title={
+          <Space>
+            <SettingOutlined />
+            <span>Settings</span>
+          </Space>
+        }
+        open={settingsModalVisible}
+        onCancel={() => setSettingsModalVisible(false)}
+        onOk={handleSaveApiKey}
+        okText="Save"
+        cancelText="Cancel"
+        width={600}
+      >
+        <div style={{ padding: '20px 0' }}>
+          <Card 
+            title={
+              <Space>
+                <KeyOutlined />
+                <span>Gemini API Key</span>
+              </Space>
+            }
+            size="small"
+            style={{ marginBottom: '20px' }}
+          >
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+              <div>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  Enter your Google Gemini API key to enable AI-powered explanations for quiz questions.
+                </Text>
+              </div>
+              
+              <Input.TextArea
+                placeholder="Enter your Gemini API key here..."
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                rows={3}
+                style={{ fontFamily: 'monospace', fontSize: '12px' }}
+              />
+              
+              <div>
+                <Text type="secondary" style={{ fontSize: '11px' }}>
+                  Get your free API key at:{' '}
+                  <a 
+                    href="https://aistudio.google.com/app/apikey" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ fontSize: '11px' }}
+                  >
+                    Google AI Studio
+                  </a>
+                </Text>
+              </div>
+              
+              {hasApiKey() && (
+                <Button 
+                  danger 
+                  size="small" 
+                  onClick={handleClearApiKey}
+                  icon={<LogoutOutlined />}
+                >
+                  Clear API Key
+                </Button>
+              )}
+              
+              <div style={{ 
+                backgroundColor: '#f0f5ff', 
+                padding: '12px', 
+                borderRadius: '4px',
+                border: '1px solid #d6e4ff'
+              }}>
+                <Text style={{ fontSize: '12px' }}>
+                  <strong>Note:</strong> Your API key is stored locally in your browser and is never sent to our servers.
+                </Text>
+              </div>
+            </Space>
+          </Card>
+          
+          {/* Future settings can be added here */}
+          <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#fafafa', borderRadius: '4px' }}>
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              More settings coming soon...
+            </Text>
+          </div>
+        </div>
+      </Modal>
+    </Layout>
   );
 }
 
