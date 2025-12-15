@@ -1,7 +1,7 @@
 {
   "name": "quiz-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "19.2.0",
   "type": "module",
   "homepage": "https://tuanvipandpro.github.io/quiz-app",
   "description": "A simple quiz application built with React and Ant Design.",
