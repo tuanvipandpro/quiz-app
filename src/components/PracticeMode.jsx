@@ -12,7 +12,7 @@ import { useAuth } from '../hooks/useAuth';
 const { Title, Text, Paragraph } = Typography;
 
 function PracticeMode({ questions, onExit }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
