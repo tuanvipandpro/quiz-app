@@ -193,6 +193,32 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
       return;
     }
 
+    // Already saved HERE → confirm remove
+    if (markedIndex === currentIndex) {
+      Modal.confirm({
+        title: 'Remove saved progress?',
+        icon: <BookFilled style={{ color: '#fa8c16' }} />,
+        content: `Question ${currentIndex + 1} is your current checkpoint. Do you want to remove it?`,
+        okText: 'Remove',
+        okButtonProps: { danger: true },
+        cancelText: 'Keep',
+        onOk: async () => {
+          setIsMarking(true);
+          try {
+            await userService.clearQuizProgress(user.uid, quizId);
+            setMarkedIndex(null);
+            message.success('Saved progress removed');
+          } catch (err) {
+            message.error('Failed to remove progress');
+          } finally {
+            setIsMarking(false);
+          }
+        }
+      });
+      return;
+    }
+
+    // Save (overrides any previous progress for any quiz)
     Modal.confirm({
       title: 'Save progress?',
       icon: <BookFilled style={{ color: '#fa8c16' }} />,
@@ -200,7 +226,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         <span>
           Save <strong>Question {currentIndex + 1}</strong> as your checkpoint?
           Next time you load this quiz, you can resume from here.
-          {markedIndex !== null && markedIndex !== currentIndex && (
+          {markedIndex !== null && (
             <div style={{ marginTop: 8, color: '#888', fontSize: 12 }}>
               This will override your current checkpoint at Question {markedIndex + 1}.
             </div>

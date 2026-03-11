@@ -200,8 +200,8 @@ class UserService {
   }
 
   /**
-   * Save quiz practice progress for a user
-   * Stored as quizProgress.{quizId} inside the user document
+   * Save quiz practice progress for a user.
+   * Replaces the ENTIRE quizProgress map so only one quiz is tracked at a time.
    * @param {string} uid - User ID
    * @param {string} quizId - Quiz ID
    * @param {number} questionIndex - 0-based question index
@@ -211,10 +211,12 @@ class UserService {
     try {
       const userDocRef = this.getUserDocRef(uid);
       await updateDoc(userDocRef, {
-        [`quizProgress.${quizId}`]: {
-          quizId,
-          questionIndex,
-          savedAt: serverTimestamp()
+        quizProgress: {
+          [quizId]: {
+            quizId,
+            questionIndex,
+            savedAt: serverTimestamp()
+          }
         },
         updatedAt: serverTimestamp()
       });
