@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
 import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, ExclamationCircleOutlined, BookFilled } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 import './markdown.css';
@@ -29,6 +29,7 @@ function App() {
   const [resumeModalVisible, setResumeModalVisible] = useState(false); // Resume progress modal state
   const [savedProgress, setSavedProgress] = useState(null); // Saved progress data
   const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
+  const [quizSelectionProgress, setQuizSelectionProgress] = useState(null); // Progress hint shown on quiz selection screen
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
@@ -79,11 +80,14 @@ function App() {
   // Show quiz selection screen
   const showQuizSelectionScreen = () => {
     setShowQuizSelection(true);
+    setQuizSelectionProgress(null);
   };
   
   // Go back from quiz selection
   const backFromQuizSelection = () => {
     setShowQuizSelection(false);
+    setSelectedQuiz(null);
+    setQuizSelectionProgress(null);
   };
   
   // File upload props
@@ -416,7 +420,14 @@ function App() {
                 style={{ width: '100%' }}
                 placeholder="Select a quiz to load"
                 value={selectedQuiz}
-                onChange={(value) => setSelectedQuiz(value)}
+                onChange={async (value) => {
+                  setSelectedQuiz(value);
+                  setQuizSelectionProgress(null);
+                  if (user && value) {
+                    const progress = await userService.getQuizProgress(user.uid, value);
+                    setQuizSelectionProgress(progress ?? null);
+                  }
+                }}
                 showSearch
                 optionFilterProp="label"
                 options={(() => {
@@ -434,8 +445,27 @@ function App() {
                 })()}
               />
               
-              <Button 
-                type="primary" 
+              {quizSelectionProgress && (
+                <div style={{
+                  marginTop: '14px',
+                  padding: '10px 14px',
+                  backgroundColor: '#fff7e6',
+                  border: '1px solid #ffd591',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <BookFilled style={{ color: '#fa8c16', fontSize: '16px', flexShrink: 0 }} />
+                  <Text style={{ flex: 1 }}>
+                    You have a saved checkpoint at <Text strong>Question {quizSelectionProgress.questionIndex + 1}</Text>.
+                    Load the quiz to resume from there.
+                  </Text>
+                </div>
+              )}
+
+              <Button
+                type="primary"
                 size="large"
                 block
                 style={{ marginTop: '20px' }}
