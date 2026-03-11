@@ -5,6 +5,7 @@ import {
   getDoc, 
   setDoc, 
   updateDoc,
+  deleteField,
   serverTimestamp 
 } from 'firebase/firestore';
 import app from '../config/firebase';
@@ -200,6 +201,7 @@ class UserService {
 
   /**
    * Save quiz practice progress for a user
+   * Stored as quizProgress.{quizId} inside the user document
    * @param {string} uid - User ID
    * @param {string} quizId - Quiz ID
    * @param {number} questionIndex - 0-based question index
@@ -207,11 +209,14 @@ class UserService {
    */
   async saveQuizProgress(uid, quizId, questionIndex) {
     try {
-      const progressDocRef = doc(db, USERS_COLLECTION, uid, 'quizProgress', quizId);
-      await setDoc(progressDocRef, {
-        quizId,
-        questionIndex,
-        markedAt: serverTimestamp()
+      const userDocRef = this.getUserDocRef(uid);
+      await updateDoc(userDocRef, {
+        [`quizProgress.${quizId}`]: {
+          quizId,
+          questionIndex,
+          savedAt: serverTimestamp()
+        },
+        updatedAt: serverTimestamp()
       });
       return { success: true };
     } catch (error) {
@@ -228,10 +233,11 @@ class UserService {
    */
   async getQuizProgress(uid, quizId) {
     try {
-      const progressDocRef = doc(db, USERS_COLLECTION, uid, 'quizProgress', quizId);
-      const progressDoc = await getDoc(progressDocRef);
-      if (progressDoc.exists()) {
-        return progressDoc.data();
+      const userDocRef = this.getUserDocRef(uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        return data.quizProgress?.[quizId] ?? null;
       }
       return null;
     } catch (error) {
@@ -248,9 +254,11 @@ class UserService {
    */
   async clearQuizProgress(uid, quizId) {
     try {
-      const { deleteDoc } = await import('firebase/firestore');
-      const progressDocRef = doc(db, USERS_COLLECTION, uid, 'quizProgress', quizId);
-      await deleteDoc(progressDocRef);
+      const userDocRef = this.getUserDocRef(uid);
+      await updateDoc(userDocRef, {
+        [`quizProgress.${quizId}`]: deleteField(),
+        updatedAt: serverTimestamp()
+      });
       return { success: true };
     } catch (error) {
       console.error('Error clearing quiz progress:', error);

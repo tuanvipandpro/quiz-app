@@ -182,42 +182,71 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
     }
   }, [currentIndex, hasMultipleAnswers, selectedAnswer]);
 
-  // Mark current question as progress checkpoint in Firestore
-  const handleMarkQuestion = async () => {
+  // Save current question as progress checkpoint in Firestore
+  const handleSaveQuestion = () => {
     if (!isAuthenticated) {
-      message.warning('Please login to use the Mark feature');
+      message.warning('Please login to use the Save feature');
       return;
     }
     if (!quizId) {
-      message.warning('Cannot mark progress for custom-uploaded quizzes');
+      message.warning('Save is only available for demo quizzes');
       return;
     }
 
-    // If already marked at current index, unmark (clear)
+    // If already saved at this question → confirm remove
     if (markedIndex === currentIndex) {
-      setIsMarking(true);
-      try {
-        await userService.clearQuizProgress(user.uid, quizId);
-        setMarkedIndex(null);
-        message.success('Mark removed');
-      } catch (err) {
-        message.error('Failed to remove mark');
-      } finally {
-        setIsMarking(false);
-      }
+      Modal.confirm({
+        title: 'Remove saved position?',
+        icon: <ExclamationCircleOutlined style={{ color: '#fa8c16' }} />,
+        content: `Question ${currentIndex + 1} is your current checkpoint. Do you want to remove it?`,
+        okText: 'Remove',
+        okButtonProps: { danger: true },
+        cancelText: 'Keep',
+        onOk: async () => {
+          setIsMarking(true);
+          try {
+            await userService.clearQuizProgress(user.uid, quizId);
+            setMarkedIndex(null);
+            message.success('Saved position removed');
+          } catch (err) {
+            message.error('Failed to remove saved position');
+          } finally {
+            setIsMarking(false);
+          }
+        }
+      });
       return;
     }
 
-    setIsMarking(true);
-    try {
-      await userService.saveQuizProgress(user.uid, quizId, currentIndex);
-      setMarkedIndex(currentIndex);
-      message.success(`Question ${currentIndex + 1} marked! You can resume from here next time.`);
-    } catch (err) {
-      message.error('Failed to save mark');
-    } finally {
-      setIsMarking(false);
-    }
+    // Confirm before saving
+    Modal.confirm({
+      title: 'Save position?',
+      icon: <BookFilled style={{ color: '#fa8c16' }} />,
+      content: (
+        <span>
+          Save <strong>Question {currentIndex + 1}</strong> as your checkpoint? Next time you load this quiz, you can resume from here.
+          {markedIndex !== null && (
+            <div style={{ marginTop: 8, color: '#888', fontSize: 12 }}>
+              This will replace your current checkpoint at Question {markedIndex + 1}.
+            </div>
+          )}
+        </span>
+      ),
+      okText: 'Save',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        setIsMarking(true);
+        try {
+          await userService.saveQuizProgress(user.uid, quizId, currentIndex);
+          setMarkedIndex(currentIndex);
+          message.success(`Question ${currentIndex + 1} saved! You can resume from here next time.`);
+        } catch (err) {
+          message.error('Failed to save position');
+        } finally {
+          setIsMarking(false);
+        }
+      }
+    });
   };
 
   return (
@@ -229,10 +258,10 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         <Space>
           <Text strong>Question {currentIndex + 1} of {questions.length}</Text>
           {markedIndex !== null && (
-            <Tooltip title={`Marked at question ${markedIndex + 1}`}>
-              <span style={{ color: '#fa8c16', fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+            <Tooltip title={`Saved at question ${markedIndex + 1} — click Save to update`}>
+              <span style={{ color: '#fa8c16', fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '2px', cursor: 'default' }}>
                 <BookFilled />
-                <Text style={{ color: '#fa8c16', fontSize: '12px' }}>Q{markedIndex + 1} marked</Text>
+                <Text style={{ color: '#fa8c16', fontSize: '12px' }}>Q{markedIndex + 1} saved</Text>
               </span>
             </Tooltip>
           )}
@@ -312,16 +341,18 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
 
           <Tooltip title={
             !isAuthenticated
-              ? 'Please login to mark your progress'
+              ? 'Please login to save your progress'
               : !quizId
-              ? 'Mark is only available for demo quizzes'
+              ? 'Save is only available for demo quizzes'
               : markedIndex === currentIndex
-              ? 'Click to remove mark'
-              : 'Mark this question as your checkpoint'
+              ? 'Click to remove saved position'
+              : markedIndex !== null
+              ? `Click to update checkpoint (currently at Q${markedIndex + 1})`
+              : 'Save this question as your resume checkpoint'
           }>
             <Button
               icon={markedIndex === currentIndex ? <BookFilled /> : <BookOutlined />}
-              onClick={handleMarkQuestion}
+              onClick={handleSaveQuestion}
               loading={isMarking}
               disabled={!isAuthenticated || !quizId}
               style={
@@ -330,7 +361,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
                   : {}
               }
             >
-              {markedIndex === currentIndex ? 'Marked' : 'Mark'}
+              {markedIndex === currentIndex ? 'Saved' : 'Save'}
             </Button>
           </Tooltip>
         </Space>
