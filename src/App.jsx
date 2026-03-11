@@ -9,6 +9,7 @@ import QuizMode from './components/QuizMode';
 import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
 import SettingsModal from './components/SettingsModal';
+import userService from './services/userService';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -58,26 +59,16 @@ function App() {
       setFileName(quizName);
       setStartScreen(false);
       setShowQuizSelection(false);
-      
-      // Check for saved progress
-      const savedProgressStr = localStorage.getItem('quiz-practice-progress');
-      if (savedProgressStr) {
-        try {
-          const progress = JSON.parse(savedProgressStr);
-          // Check if saved progress matches the current quiz
-          if (progress.quizId === quizId && progress.questionIndex < data.length) {
-            setSavedProgress(progress);
-            setResumeModalVisible(true);
-          } else {
-            // Clear invalid saved progress
-            localStorage.removeItem('quiz-practice-progress');
-          }
-        } catch (e) {
-          console.error('Error parsing saved progress:', e);
-          localStorage.removeItem('quiz-practice-progress');
+
+      // Check Firestore for saved progress (only for authenticated users)
+      if (user && quizId) {
+        const progress = await userService.getQuizProgress(user.uid, quizId);
+        if (progress && progress.questionIndex < data.length) {
+          setSavedProgress(progress);
+          setResumeModalVisible(true);
         }
       }
-      
+
       message.success(`${quizName} loaded successfully!`);
     } catch (error) {
       console.error('Error loading quiz:', error);
@@ -163,13 +154,15 @@ function App() {
   };
 
   // Handle resume progress choice
-  const handleResumeChoice = (shouldResume) => {
+  const handleResumeChoice = async (shouldResume) => {
     if (shouldResume && savedProgress) {
       setInitialQuestionIndex(savedProgress.questionIndex);
       message.info(`Resuming from question ${savedProgress.questionIndex + 1}`);
     } else {
-      // Clear saved progress
-      localStorage.removeItem('quiz-practice-progress');
+      // Clear saved progress from Firestore
+      if (user && selectedQuiz) {
+        await userService.clearQuizProgress(user.uid, selectedQuiz);
+      }
       setInitialQuestionIndex(0);
     }
     setSavedProgress(null);

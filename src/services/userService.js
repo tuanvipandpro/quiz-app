@@ -199,6 +199,66 @@ class UserService {
   }
 
   /**
+   * Save quiz practice progress for a user
+   * @param {string} uid - User ID
+   * @param {string} quizId - Quiz ID
+   * @param {number} questionIndex - 0-based question index
+   * @returns {Promise<Object>}
+   */
+  async saveQuizProgress(uid, quizId, questionIndex) {
+    try {
+      const progressDocRef = doc(db, USERS_COLLECTION, uid, 'quizProgress', quizId);
+      await setDoc(progressDocRef, {
+        quizId,
+        questionIndex,
+        markedAt: serverTimestamp()
+      });
+      return { success: true };
+    } catch (error) {
+      console.error('Error saving quiz progress:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Get saved quiz progress for a user
+   * @param {string} uid - User ID
+   * @param {string} quizId - Quiz ID
+   * @returns {Promise<Object|null>} progress data or null
+   */
+  async getQuizProgress(uid, quizId) {
+    try {
+      const progressDocRef = doc(db, USERS_COLLECTION, uid, 'quizProgress', quizId);
+      const progressDoc = await getDoc(progressDocRef);
+      if (progressDoc.exists()) {
+        return progressDoc.data();
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting quiz progress:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear saved quiz progress for a user
+   * @param {string} uid - User ID
+   * @param {string} quizId - Quiz ID
+   * @returns {Promise<Object>}
+   */
+  async clearQuizProgress(uid, quizId) {
+    try {
+      const { deleteDoc } = await import('firebase/firestore');
+      const progressDocRef = doc(db, USERS_COLLECTION, uid, 'quizProgress', quizId);
+      await deleteDoc(progressDocRef);
+      return { success: true };
+    } catch (error) {
+      console.error('Error clearing quiz progress:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Initialize or update user on login
    * Creates user if first time, updates last login if returning
    * @param {Object} userData - User data from Firebase Auth
