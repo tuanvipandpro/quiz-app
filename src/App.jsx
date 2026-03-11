@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
 import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 import './markdown.css';
@@ -25,6 +25,9 @@ function App() {
   const [selectedQuiz, setSelectedQuiz] = useState(null); // Selected quiz from dropdown
   const [loginModalVisible, setLoginModalVisible] = useState(false); // Login modal state
   const [settingsModalVisible, setSettingsModalVisible] = useState(false); // Settings modal state
+  const [resumeModalVisible, setResumeModalVisible] = useState(false); // Resume progress modal state
+  const [savedProgress, setSavedProgress] = useState(null); // Saved progress data
+  const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
@@ -43,7 +46,7 @@ function App() {
   ];
   
   // Load demo quiz
-  const loadDemoQuiz = async (quizFile, quizName) => {
+  const loadDemoQuiz = async (quizFile, quizName, quizId) => {
     try {
       const response = await fetch(`/quiz-app/${quizFile}`);
       if (!response.ok) {
@@ -55,6 +58,26 @@ function App() {
       setFileName(quizName);
       setStartScreen(false);
       setShowQuizSelection(false);
+      
+      // Check for saved progress
+      const savedProgressStr = localStorage.getItem('quiz-practice-progress');
+      if (savedProgressStr) {
+        try {
+          const progress = JSON.parse(savedProgressStr);
+          // Check if saved progress matches the current quiz
+          if (progress.quizId === quizId && progress.questionIndex < data.length) {
+            setSavedProgress(progress);
+            setResumeModalVisible(true);
+          } else {
+            // Clear invalid saved progress
+            localStorage.removeItem('quiz-practice-progress');
+          }
+        } catch (e) {
+          console.error('Error parsing saved progress:', e);
+          localStorage.removeItem('quiz-practice-progress');
+        }
+      }
+      
       message.success(`${quizName} loaded successfully!`);
     } catch (error) {
       console.error('Error loading quiz:', error);
@@ -139,8 +162,23 @@ function App() {
     }
   };
 
+  // Handle resume progress choice
+  const handleResumeChoice = (shouldResume) => {
+    if (shouldResume && savedProgress) {
+      setInitialQuestionIndex(savedProgress.questionIndex);
+      message.info(`Resuming from question ${savedProgress.questionIndex + 1}`);
+    } else {
+      // Clear saved progress
+      localStorage.removeItem('quiz-practice-progress');
+      setInitialQuestionIndex(0);
+    }
+    setSavedProgress(null);
+    setResumeModalVisible(false);
+  };
+
   const resetApp = () => {
     setMode(null);
+    setInitialQuestionIndex(0);
   };
   
   const goToStartScreen = () => {
@@ -149,6 +187,7 @@ function App() {
     setFileName('');
     setMode(null);
     setStartScreen(true);
+    setInitialQuestionIndex(0);
   };
 
   // Get auth context
@@ -190,6 +229,7 @@ function App() {
     setFileUploaded(false);
     setFileName('');
     setQuestions([]);
+    setInitialQuestionIndex(0);
   };
 
   // User menu items
@@ -411,7 +451,7 @@ function App() {
                 onClick={() => {
                   const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
                   if (quiz) {
-                    loadDemoQuiz(quiz.file, quiz.name);
+                    loadDemoQuiz(quiz.file, quiz.name, quiz.id);
                   }
                 }}
               >
@@ -450,7 +490,12 @@ function App() {
             {renderBackButton()}
           </>
         ) : mode === 'practice' && questions.length > 0 ? (
-          <PracticeMode questions={questions} onExit={resetApp} />
+          <PracticeMode 
+            questions={questions} 
+            onExit={resetApp} 
+            initialQuestionIndex={initialQuestionIndex}
+            quizId={selectedQuiz}
+          />
         ) : mode === 'exam' && questions.length > 0 ? (
           <ExamMode 
             questions={questions} 
@@ -507,6 +552,34 @@ function App() {
         visible={settingsModalVisible}
         onClose={() => setSettingsModalVisible(false)}
       />
+      
+      {/* Resume Progress Modal */}
+      <Modal
+        title="Resume Practice Progress?"
+        open={resumeModalVisible}
+        onCancel={() => handleResumeChoice(false)}
+        footer={[
+          <Button key="start-fresh" onClick={() => handleResumeChoice(false)}>
+            Start from Beginning
+          </Button>,
+          <Button key="resume" type="primary" onClick={() => handleResumeChoice(true)}>
+            Resume from Question {savedProgress ? savedProgress.questionIndex + 1 : 1}
+          </Button>
+        ]}
+        centered
+        closable={false}
+      >
+        <div style={{ padding: '10px 0' }}>
+          <ExclamationCircleOutlined style={{ fontSize: '24px', color: '#faad14', marginRight: '10px' }} />
+          <Text>
+            You have saved progress in this quiz. Would you like to continue from where you left off?
+          </Text>
+          <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '5px' }}>
+            <Text strong>Last saved position: </Text>
+            <Text>Question {savedProgress ? savedProgress.questionIndex + 1 : 1} of {questions.length}</Text>
+          </div>
+        </div>
+      </Modal>
     </Layout>
   );
 }

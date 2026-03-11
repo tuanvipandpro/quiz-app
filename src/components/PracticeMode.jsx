@@ -11,9 +11,9 @@ import { useAuth } from '../hooks/useAuth';
 
 const { Title, Text, Paragraph } = Typography;
 
-function PracticeMode({ questions, onExit }) {
+function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = null }) {
   const { isAuthenticated, user } = useAuth();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialQuestionIndex);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [jumpToQuestion, setJumpToQuestion] = useState(null);
@@ -174,6 +174,18 @@ function PracticeMode({ questions, onExit }) {
       setSelectedAnswer(null);
     }
   }, [currentIndex, hasMultipleAnswers, selectedAnswer]);
+
+  // Save current question index to localStorage whenever it changes
+  React.useEffect(() => {
+    if (quizId) {
+      const savedProgress = {
+        quizId: quizId,
+        questionIndex: currentIndex,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('quiz-practice-progress', JSON.stringify(savedProgress));
+    }
+  }, [currentIndex, quizId]);
 
   return (
     <div>
