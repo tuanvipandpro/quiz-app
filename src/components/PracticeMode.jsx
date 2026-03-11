@@ -1,7 +1,7 @@
 // components/PracticeMode.jsx
 import React, { useState } from 'react';
 import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, Input, message, Badge } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, ExclamationCircleOutlined, BookFilled, BookOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined } from '@ant-design/icons';
 import Question from './Question';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -182,7 +182,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
     }
   }, [currentIndex, hasMultipleAnswers, selectedAnswer]);
 
-  // Save current question as progress checkpoint in Firestore
+  // Save current question as progress checkpoint in Firestore (always overrides)
   const handleSaveQuestion = () => {
     if (!isAuthenticated) {
       message.warning('Please login to use the Save feature');
@@ -193,41 +193,16 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
       return;
     }
 
-    // If already saved at this question → confirm remove
-    if (markedIndex === currentIndex) {
-      Modal.confirm({
-        title: 'Remove saved position?',
-        icon: <ExclamationCircleOutlined style={{ color: '#fa8c16' }} />,
-        content: `Question ${currentIndex + 1} is your current checkpoint. Do you want to remove it?`,
-        okText: 'Remove',
-        okButtonProps: { danger: true },
-        cancelText: 'Keep',
-        onOk: async () => {
-          setIsMarking(true);
-          try {
-            await userService.clearQuizProgress(user.uid, quizId);
-            setMarkedIndex(null);
-            message.success('Saved position removed');
-          } catch (err) {
-            message.error('Failed to remove saved position');
-          } finally {
-            setIsMarking(false);
-          }
-        }
-      });
-      return;
-    }
-
-    // Confirm before saving
     Modal.confirm({
-      title: 'Save position?',
+      title: 'Save progress?',
       icon: <BookFilled style={{ color: '#fa8c16' }} />,
       content: (
         <span>
-          Save <strong>Question {currentIndex + 1}</strong> as your checkpoint? Next time you load this quiz, you can resume from here.
-          {markedIndex !== null && (
+          Save <strong>Question {currentIndex + 1}</strong> as your checkpoint?
+          Next time you load this quiz, you can resume from here.
+          {markedIndex !== null && markedIndex !== currentIndex && (
             <div style={{ marginTop: 8, color: '#888', fontSize: 12 }}>
-              This will replace your current checkpoint at Question {markedIndex + 1}.
+              This will override your current checkpoint at Question {markedIndex + 1}.
             </div>
           )}
         </span>
@@ -239,9 +214,9 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         try {
           await userService.saveQuizProgress(user.uid, quizId, currentIndex);
           setMarkedIndex(currentIndex);
-          message.success(`Question ${currentIndex + 1} saved! You can resume from here next time.`);
+          message.success(`Question ${currentIndex + 1} saved!`);
         } catch (err) {
-          message.error('Failed to save position');
+          message.error('Failed to save progress');
         } finally {
           setIsMarking(false);
         }
@@ -345,9 +320,9 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
               : !quizId
               ? 'Save is only available for demo quizzes'
               : markedIndex === currentIndex
-              ? 'Click to remove saved position'
+              ? 'Progress saved here — click to update'
               : markedIndex !== null
-              ? `Click to update checkpoint (currently at Q${markedIndex + 1})`
+              ? `Click to move checkpoint from Q${markedIndex + 1} to here`
               : 'Save this question as your resume checkpoint'
           }>
             <Button
