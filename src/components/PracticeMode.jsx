@@ -1,19 +1,20 @@
 // components/PracticeMode.jsx
 import React, { useState } from 'react';
-import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, Input, message } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, Input, message, Badge } from 'antd';
+import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined } from '@ant-design/icons';
 import Question from './Question';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import { getExplanation, saveApiKey, hasApiKey } from '../utils/geminiApi';
 import { useAuth } from '../hooks/useAuth';
+import userService from '../services/userService';
 
 const { Title, Text, Paragraph } = Typography;
 
-function PracticeMode({ questions, onExit }) {
+function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = null }) {
   const { isAuthenticated, user } = useAuth();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialQuestionIndex);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [jumpToQuestion, setJumpToQuestion] = useState(null);
@@ -26,6 +27,12 @@ function PracticeMode({ questions, onExit }) {
   // API Key state
   const [apiKeyModalVisible, setApiKeyModalVisible] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
+
+  // Marked question state (tracks the saved checkpoint index)
+  const [markedIndex, setMarkedIndex] = useState(
+    initialQuestionIndex > 0 ? initialQuestionIndex : null
+  );
+  const [isMarking, setIsMarking] = useState(false);
   
   const currentQuestion = questions[currentIndex];
   
@@ -175,13 +182,91 @@ function PracticeMode({ questions, onExit }) {
     }
   }, [currentIndex, hasMultipleAnswers, selectedAnswer]);
 
+  // Save current question as progress checkpoint in Firestore (always overrides)
+  const handleSaveQuestion = () => {
+    if (!isAuthenticated) {
+      message.warning('Please login to use the Save feature');
+      return;
+    }
+    if (!quizId) {
+      message.warning('Save is only available for demo quizzes');
+      return;
+    }
+
+    // Already saved HERE → confirm remove
+    if (markedIndex === currentIndex) {
+      Modal.confirm({
+        title: 'Remove saved progress?',
+        icon: <BookFilled style={{ color: '#fa8c16' }} />,
+        content: `Question ${currentIndex + 1} is your current checkpoint. Do you want to remove it?`,
+        okText: 'Remove',
+        okButtonProps: { danger: true },
+        cancelText: 'Keep',
+        onOk: async () => {
+          setIsMarking(true);
+          try {
+            await userService.clearQuizProgress(user.uid, quizId);
+            setMarkedIndex(null);
+            message.success('Saved progress removed');
+          } catch (err) {
+            message.error('Failed to remove progress');
+          } finally {
+            setIsMarking(false);
+          }
+        }
+      });
+      return;
+    }
+
+    // Save (overrides any previous progress for any quiz)
+    Modal.confirm({
+      title: 'Save progress?',
+      icon: <BookFilled style={{ color: '#fa8c16' }} />,
+      content: (
+        <span>
+          Save <strong>Question {currentIndex + 1}</strong> as your checkpoint?
+          Next time you load this quiz, you can resume from here.
+          {markedIndex !== null && (
+            <div style={{ marginTop: 8, color: '#888', fontSize: 12 }}>
+              This will override your current checkpoint at Question {markedIndex + 1}.
+            </div>
+          )}
+        </span>
+      ),
+      okText: 'Save',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        setIsMarking(true);
+        try {
+          await userService.saveQuizProgress(user.uid, quizId, currentIndex);
+          setMarkedIndex(currentIndex);
+          message.success(`Question ${currentIndex + 1} saved!`);
+        } catch (err) {
+          message.error('Failed to save progress');
+        } finally {
+          setIsMarking(false);
+        }
+      }
+    });
+  };
+
   return (
     <div>
       <Title level={2}>Practice Mode</Title>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         {/* Question navigation */}
-        <Text strong>Question {currentIndex + 1} of {questions.length}</Text>
+        <Space>
+          <Text strong>Question {currentIndex + 1} of {questions.length}</Text>
+          {markedIndex !== null && (
+            <Tooltip title={`Saved at question ${markedIndex + 1} — click Save to update`}>
+              <span style={{ color: '#fa8c16', fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '2px', cursor: 'default' }}>
+                <BookFilled />
+                <Text style={{ color: '#fa8c16', fontSize: '12px' }}>Q{markedIndex + 1} saved</Text>
+              </span>
+            </Tooltip>
+          )}
+        </Space>
         
         {/* Jump to question input */}
         <Space>
@@ -244,8 +329,7 @@ function PracticeMode({ questions, onExit }) {
             Next <ArrowRightOutlined />
           </Button>
           
-          <Tooltip title={!isAuthenticated ? 'Please login to use this feature' : ''}>
-            <Button 
+          <Tooltip title={!isAuthenticated ? 'Please login to use this feature' : ''}>            <Button 
               type="primary"
               icon={<QuestionCircleOutlined />}
               onClick={handleExplainClick}
@@ -253,6 +337,32 @@ function PracticeMode({ questions, onExit }) {
               style={isAuthenticated ? { backgroundColor: '#722ed1', borderColor: '#722ed1' } : {}}
             >
               Explain
+            </Button>
+          </Tooltip>
+
+          <Tooltip title={
+            !isAuthenticated
+              ? 'Please login to save your progress'
+              : !quizId
+              ? 'Save is only available for demo quizzes'
+              : markedIndex === currentIndex
+              ? 'Progress saved here — click to update'
+              : markedIndex !== null
+              ? `Click to move checkpoint from Q${markedIndex + 1} to here`
+              : 'Save this question as your resume checkpoint'
+          }>
+            <Button
+              icon={markedIndex === currentIndex ? <BookFilled /> : <BookOutlined />}
+              onClick={handleSaveQuestion}
+              loading={isMarking}
+              disabled={!isAuthenticated || !quizId}
+              style={
+                markedIndex === currentIndex
+                  ? { backgroundColor: '#fa8c16', borderColor: '#fa8c16', color: '#fff' }
+                  : {}
+              }
+            >
+              {markedIndex === currentIndex ? 'Saved' : 'Save'}
             </Button>
           </Tooltip>
         </Space>

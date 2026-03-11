@@ -5,6 +5,7 @@ import {
   getDoc, 
   setDoc, 
   updateDoc,
+  deleteField,
   serverTimestamp 
 } from 'firebase/firestore';
 import app from '../config/firebase';
@@ -195,6 +196,94 @@ class UserService {
         success: false,
         error: error.message
       };
+    }
+  }
+
+  /**
+   * Save quiz practice progress for a user.
+   * Replaces the ENTIRE quizProgress map so only one quiz is tracked at a time.
+   * @param {string} uid - User ID
+   * @param {string} quizId - Quiz ID
+   * @param {number} questionIndex - 0-based question index
+   * @returns {Promise<Object>}
+   */
+  async saveQuizProgress(uid, quizId, questionIndex) {
+    try {
+      const userDocRef = this.getUserDocRef(uid);
+      await updateDoc(userDocRef, {
+        quizProgress: {
+          [quizId]: {
+            quizId,
+            questionIndex,
+            savedAt: serverTimestamp()
+          }
+        },
+        updatedAt: serverTimestamp()
+      });
+      return { success: true };
+    } catch (error) {
+      console.error('Error saving quiz progress:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Get the entire quizProgress map for a user
+   * @param {string} uid - User ID
+   * @returns {Promise<Object>} map of quizId -> { questionIndex, savedAt } or {}
+   */
+  async getAllQuizProgress(uid) {
+    try {
+      const userDocRef = this.getUserDocRef(uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        return userDoc.data().quizProgress ?? {};
+      }
+      return {};
+    } catch (error) {
+      console.error('Error getting all quiz progress:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Get saved quiz progress for a user
+   * @param {string} uid - User ID
+   * @param {string} quizId - Quiz ID
+   * @returns {Promise<Object|null>} progress data or null
+   */
+  async getQuizProgress(uid, quizId) {
+    try {
+      const userDocRef = this.getUserDocRef(uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        return data.quizProgress?.[quizId] ?? null;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting quiz progress:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear saved quiz progress for a user
+   * @param {string} uid - User ID
+   * @param {string} quizId - Quiz ID
+   * @returns {Promise<Object>}
+   */
+  async clearQuizProgress(uid, quizId) {
+    try {
+      const userDocRef = this.getUserDocRef(uid);
+      await updateDoc(userDocRef, {
+        [`quizProgress.${quizId}`]: deleteField(),
+        updatedAt: serverTimestamp()
+      });
+      return { success: true };
+    } catch (error) {
+      console.error('Error clearing quiz progress:', error);
+      return { success: false, error: error.message };
     }
   }
 

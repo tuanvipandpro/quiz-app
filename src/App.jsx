@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
 import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 import './markdown.css';
@@ -9,6 +9,7 @@ import QuizMode from './components/QuizMode';
 import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
 import SettingsModal from './components/SettingsModal';
+import userService from './services/userService';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -25,6 +26,9 @@ function App() {
   const [selectedQuiz, setSelectedQuiz] = useState(null); // Selected quiz from dropdown
   const [loginModalVisible, setLoginModalVisible] = useState(false); // Login modal state
   const [settingsModalVisible, setSettingsModalVisible] = useState(false); // Settings modal state
+  const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
+  const [quizSelectionProgress, setQuizSelectionProgress] = useState(null); // Saved progress found during quiz selection
+  const [quizSelectionLoading, setQuizSelectionLoading] = useState(false); // Loading state while checking Firestore
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
@@ -42,8 +46,8 @@ function App() {
     { id: 'gcp-pcde', name: 'Google Cloud Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud' }
   ];
   
-  // Load demo quiz
-  const loadDemoQuiz = async (quizFile, quizName) => {
+  // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
+  const loadDemoQuiz = async (quizFile, quizName, quizId) => {
     try {
       const response = await fetch(`/quiz-app/${quizFile}`);
       if (!response.ok) {
@@ -61,15 +65,71 @@ function App() {
       message.error('Failed to load quiz. Please try again or upload your own file.');
     }
   };
+
+  // Load quiz and jump directly to Practice mode at a specific question
+  const loadAndResumePractice = async (quizFile, quizName, quizId, questionIndex) => {
+    try {
+      const response = await fetch(`/quiz-app/${quizFile}`);
+      if (!response.ok) throw new Error(`Failed to load quiz: ${response.status}`);
+      const data = await response.json();
+      setQuestions(data);
+      setFileUploaded(true);
+      setFileName(quizName);
+      setInitialQuestionIndex(questionIndex);
+      setMode('practice');
+      setStartScreen(false);
+      setShowQuizSelection(false);
+      setQuizSelectionProgress(null);
+      message.success(`Resuming ${quizName} from question ${questionIndex + 1}`);
+    } catch (error) {
+      console.error('Error loading quiz:', error);
+      message.error('Failed to load quiz. Please try again.');
+    }
+  };
   
-  // Show quiz selection screen
-  const showQuizSelectionScreen = () => {
+  // Show quiz selection screen — auto-selects the most recently saved quiz if any
+  const showQuizSelectionScreen = async () => {
     setShowQuizSelection(true);
+    setQuizSelectionProgress(null);
+    setSelectedQuiz(null);
+
+    if (!user) {
+      setQuizSelectionLoading(false);
+      return;
+    }
+
+    setQuizSelectionLoading(true);
+    try {
+      const allProgress = await userService.getAllQuizProgress(user.uid);
+      // Find the most recently saved quiz that exists in availableQuizzes
+      const availableIds = availableQuizzes.map(q => q.id);
+      const candidates = Object.entries(allProgress)
+        .filter(([id]) => availableIds.includes(id))
+        .sort((a, b) => {
+          // Sort by savedAt descending (most recent first)
+          const timeA = a[1].savedAt?.toMillis?.() ?? 0;
+          const timeB = b[1].savedAt?.toMillis?.() ?? 0;
+          return timeB - timeA;
+        });
+
+      if (candidates.length > 0) {
+        const [quizId, progress] = candidates[0];
+        setSelectedQuiz(quizId);
+        setQuizSelectionProgress(progress);
+      }
+    } catch (err) {
+      console.error('Error pre-loading quiz progress:', err);
+    } finally {
+      setQuizSelectionLoading(false);
+    }
   };
   
   // Go back from quiz selection
   const backFromQuizSelection = () => {
     setShowQuizSelection(false);
+    setSelectedQuiz(null);
+    setQuizSelectionProgress(null);
+    setQuizSelectionLoading(false);
   };
   
   // File upload props
@@ -141,6 +201,7 @@ function App() {
 
   const resetApp = () => {
     setMode(null);
+    setInitialQuestionIndex(0);
   };
   
   const goToStartScreen = () => {
@@ -149,6 +210,7 @@ function App() {
     setFileName('');
     setMode(null);
     setStartScreen(true);
+    setInitialQuestionIndex(0);
   };
 
   // Get auth context
@@ -190,6 +252,7 @@ function App() {
     setFileUploaded(false);
     setFileName('');
     setQuestions([]);
+    setInitialQuestionIndex(0);
   };
 
   // User menu items
@@ -383,7 +446,16 @@ function App() {
                 style={{ width: '100%' }}
                 placeholder="Select a quiz to load"
                 value={selectedQuiz}
-                onChange={(value) => setSelectedQuiz(value)}
+                onChange={async (value) => {
+                  setSelectedQuiz(value);
+                  setQuizSelectionProgress(null);
+                  if (user && value) {
+                    setQuizSelectionLoading(true);
+                    const progress = await userService.getQuizProgress(user.uid, value);
+                    setQuizSelectionProgress(progress ?? null);
+                    setQuizSelectionLoading(false);
+                  }
+                }}
                 showSearch
                 optionFilterProp="label"
                 options={(() => {
@@ -401,22 +473,71 @@ function App() {
                 })()}
               />
               
-              <Button 
-                type="primary" 
-                size="large"
-                block
-                style={{ marginTop: '20px' }}
-                disabled={!selectedQuiz}
-                icon={<PlayCircleOutlined />}
-                onClick={() => {
-                  const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
-                  if (quiz) {
-                    loadDemoQuiz(quiz.file, quiz.name);
-                  }
-                }}
-              >
-                Load Selected Quiz
-              </Button>
+              {/* Firestore progress check result */}
+              {quizSelectionLoading && (
+                <div style={{ marginTop: '14px', textAlign: 'center', padding: '10px' }}>
+                  <Spin size="small" /> <Text style={{ marginLeft: 8 }} type="secondary">Checking saved progress...</Text>
+                </div>
+              )}
+
+              {!quizSelectionLoading && quizSelectionProgress && (
+                <div style={{
+                  marginTop: '14px',
+                  padding: '14px 16px',
+                  backgroundColor: '#fff7e6',
+                  border: '1px solid #ffd591',
+                  borderRadius: '8px',
+                }}>                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <BookFilled style={{ color: '#fa8c16', fontSize: '16px' }} />
+                    <Text strong style={{ color: '#d46b08' }}>Saved progress found!</Text>
+                  </div>
+                  <Text>You left off at <Text strong>Question {quizSelectionProgress.questionIndex + 1}</Text>. Do you want to continue from there?</Text>
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+                    <Button
+                      type="primary"
+                      icon={<PlayCircleOutlined />}
+                      style={{ flex: 1, backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
+                      onClick={() => {
+                        const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
+                        if (quiz) loadAndResumePractice(quiz.file, quiz.name, quiz.id, quizSelectionProgress.questionIndex);
+                      }}
+                    >
+                      Yes, resume from Q{quizSelectionProgress.questionIndex + 1}
+                    </Button>
+                    <Button
+                      style={{ flex: 1 }}
+                      onClick={async () => {
+                        if (user && selectedQuiz) {
+                          await userService.clearQuizProgress(user.uid, selectedQuiz);
+                        }
+                        setQuizSelectionProgress(null);
+                      }}
+                    >
+                      No, start from beginning
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {!quizSelectionLoading && !quizSelectionProgress && (
+                <Button
+                  type="primary"
+                  size="large"
+                  block
+                  style={{ marginTop: '20px' }}
+                  disabled={!selectedQuiz}
+                  icon={<PlayCircleOutlined />}
+                  onClick={() => {
+                    const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
+                    if (quiz) {
+                      loadDemoQuiz(quiz.file, quiz.name, quiz.id);
+                    }
+                  }}
+                >
+                  Load Selected Quiz
+                </Button>
+              )}
             </Card>
             
             <div style={{ textAlign: 'center' }}>
@@ -450,7 +571,12 @@ function App() {
             {renderBackButton()}
           </>
         ) : mode === 'practice' && questions.length > 0 ? (
-          <PracticeMode questions={questions} onExit={resetApp} />
+          <PracticeMode 
+            questions={questions} 
+            onExit={resetApp} 
+            initialQuestionIndex={initialQuestionIndex}
+            quizId={selectedQuiz}
+          />
         ) : mode === 'exam' && questions.length > 0 ? (
           <ExamMode 
             questions={questions} 
