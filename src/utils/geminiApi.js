@@ -78,7 +78,9 @@ export async function hasApiKey(uid = null) {
 // Available models with fallback order
 const MODELS = [
   'gemini-2.5-flash-lite',
+  'gemini-3.1-flash-lite',
   'gemini-2.5-flash',
+  'gemini-3-flash',
   'gemma-3-27b'
 ];
 
@@ -162,8 +164,8 @@ Các lựa chọn:
       lastError = error;
       
       // Check if we've exceeded max attempts
-      if (attemptCount >= 3) {
-        console.error('Max retry attempts reached (3)');
+      if (attemptCount >= MODELS.length) {
+        console.error(`Max retry attempts reached (${MODELS.length})`);
         break;
       }
       
