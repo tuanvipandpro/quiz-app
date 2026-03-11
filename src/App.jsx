@@ -87,11 +87,41 @@ function App() {
     }
   };
   
-  // Show quiz selection screen
-  const showQuizSelectionScreen = () => {
+  // Show quiz selection screen — auto-selects the most recently saved quiz if any
+  const showQuizSelectionScreen = async () => {
     setShowQuizSelection(true);
     setQuizSelectionProgress(null);
-    setQuizSelectionLoading(false);
+    setSelectedQuiz(null);
+
+    if (!user) {
+      setQuizSelectionLoading(false);
+      return;
+    }
+
+    setQuizSelectionLoading(true);
+    try {
+      const allProgress = await userService.getAllQuizProgress(user.uid);
+      // Find the most recently saved quiz that exists in availableQuizzes
+      const availableIds = availableQuizzes.map(q => q.id);
+      const candidates = Object.entries(allProgress)
+        .filter(([id]) => availableIds.includes(id))
+        .sort((a, b) => {
+          // Sort by savedAt descending (most recent first)
+          const timeA = a[1].savedAt?.toMillis?.() ?? 0;
+          const timeB = b[1].savedAt?.toMillis?.() ?? 0;
+          return timeB - timeA;
+        });
+
+      if (candidates.length > 0) {
+        const [quizId, progress] = candidates[0];
+        setSelectedQuiz(quizId);
+        setQuizSelectionProgress(progress);
+      }
+    } catch (err) {
+      console.error('Error pre-loading quiz progress:', err);
+    } finally {
+      setQuizSelectionLoading(false);
+    }
   };
   
   // Go back from quiz selection

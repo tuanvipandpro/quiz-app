@@ -226,6 +226,25 @@ class UserService {
   }
 
   /**
+   * Get the entire quizProgress map for a user
+   * @param {string} uid - User ID
+   * @returns {Promise<Object>} map of quizId -> { questionIndex, savedAt } or {}
+   */
+  async getAllQuizProgress(uid) {
+    try {
+      const userDocRef = this.getUserDocRef(uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        return userDoc.data().quizProgress ?? {};
+      }
+      return {};
+    } catch (error) {
+      console.error('Error getting all quiz progress:', error);
+      return {};
+    }
+  }
+
+  /**
    * Get saved quiz progress for a user
    * @param {string} uid - User ID
    * @param {string} quizId - Quiz ID
