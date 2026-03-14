@@ -482,20 +482,21 @@ function App() {
               )}
 
               {!quizSelectionLoading && quizSelectionProgress && (
-                <div style={{
+                <div className="quiz-progress-notice" style={{
                   marginTop: '14px',
                   padding: '14px 16px',
                   backgroundColor: '#fff7e6',
                   border: '1px solid #ffd591',
                   borderRadius: '8px',
                 }}>                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <div className="quiz-progress-notice-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                     <BookFilled style={{ color: '#fa8c16', fontSize: '16px' }} />
                     <Text strong style={{ color: '#d46b08' }}>Saved progress found!</Text>
                   </div>
-                  <Text>You left off at <Text strong>Question {quizSelectionProgress.questionIndex + 1}</Text>. Do you want to continue from there?</Text>
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+                  <Text className="quiz-progress-notice-text">You left off at <Text strong>Question {quizSelectionProgress.questionIndex + 1}</Text>. Do you want to continue from there?</Text>
+                  <div className="quiz-progress-notice-actions" style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
                     <Button
+                      className="quiz-progress-action-button"
                       type="primary"
                       icon={<PlayCircleOutlined />}
                       style={{ flex: 1, backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
@@ -507,6 +508,7 @@ function App() {
                       Yes, resume from Q{quizSelectionProgress.questionIndex + 1}
                     </Button>
                     <Button
+                      className="quiz-progress-action-button"
                       style={{ flex: 1 }}
                       onClick={async () => {
                         if (user && selectedQuiz) {
