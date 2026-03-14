@@ -96,3 +96,33 @@ html, body {
     overflow-x: hidden;
   }
 }
+
+.quiz-progress-notice {
+  width: 100%;
+}
+
+.quiz-progress-notice-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.quiz-progress-action-button {
+  flex: 1 1 0;
+  min-width: 0;
+  height: auto;
+  white-space: normal;
+  text-wrap: balance;
+  line-height: 1.3;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .quiz-progress-notice-actions {
+    flex-direction: column;
+  }
+
+  .quiz-progress-action-button {
+    width: 100%;
+  }
+}
