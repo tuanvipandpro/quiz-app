@@ -43,7 +43,8 @@ function App() {
     { id: 'gcp-ace', name: 'Google Cloud Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud' },
     { id: 'gcp-pca', name: 'Google Cloud Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud' },
     { id: 'gcp-pcd', name: 'Google Cloud Professional Cloud Developer (PCD)', file: 'quiz/Google/GCP_PCD.json', category: 'Google Cloud' },
-    { id: 'gcp-pcde', name: 'Google Cloud Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud' }
+    { id: 'gcp-pcde', name: 'Google Cloud Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud' },
+    { id: 'gcp-gal', name: 'Google Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud' }
   ];
   
   // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
