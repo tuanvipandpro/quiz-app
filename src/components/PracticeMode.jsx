@@ -251,7 +251,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   };
 
   return (
-    <div>
+    <div data-testid="practice-mode-screen">
       <Title level={2}>Practice Mode</Title>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
@@ -278,12 +278,14 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
             onChange={value => setJumpToQuestion(value)}
             style={{ width: '70px' }}
             onPressEnter={handleJumpToQuestion}
+            data-testid="jump-to-question-input"
           />
           <Tooltip title="Jump to question">
             <Button 
               icon={<EnterOutlined />} 
               onClick={handleJumpToQuestion}
               disabled={!jumpToQuestion || jumpToQuestion < 1 || jumpToQuestion > questions.length}
+              data-testid="jump-to-question-button"
             />
           </Tooltip>
         </Space>
@@ -317,6 +319,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
             icon={<ArrowLeftOutlined />}
             onClick={goToPreviousQuestion}
             disabled={currentIndex === 0}
+            data-testid="practice-previous-question"
           >
             Previous
           </Button>
@@ -325,6 +328,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
             type="primary"
             onClick={goToNextQuestion}
             disabled={currentIndex === questions.length - 1}
+            data-testid="practice-next-question"
           >
             Next <ArrowRightOutlined />
           </Button>
@@ -335,6 +339,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
               onClick={handleExplainClick}
               disabled={!isAuthenticated}
               style={isAuthenticated ? { backgroundColor: '#722ed1', borderColor: '#722ed1' } : {}}
+              data-testid="practice-explain-question"
             >
               Explain
             </Button>
@@ -356,6 +361,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
               onClick={handleSaveQuestion}
               loading={isMarking}
               disabled={!isAuthenticated || !quizId}
+              data-testid="practice-save-progress"
               style={
                 markedIndex === currentIndex
                   ? { backgroundColor: '#fa8c16', borderColor: '#fa8c16', color: '#fff' }
@@ -371,6 +377,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         <Button 
           icon={<HomeOutlined />}
           onClick={onExit}
+          data-testid="practice-exit-to-menu"
         >
           Exit to Menu
         </Button>

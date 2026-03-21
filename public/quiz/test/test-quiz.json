@@ -1,0 +1,112 @@
+[
+  {
+    "id": "1",
+    "question": "What is React?",
+    "options": {
+      "A": "A JavaScript library for building UIs",
+      "B": "A Python framework",
+      "C": "A database system",
+      "D": "A server framework"
+    },
+    "answer": ["A"]
+  },
+  {
+    "id": "2",
+    "question": "Which of the following are JavaScript features? (Select TWO)",
+    "options": {
+      "A": "Dynamic typing",
+      "B": "Static typing only",
+      "C": "First-class functions",
+      "D": "Mandatory semicolons"
+    },
+    "answer": ["A", "C"]
+  },
+  {
+    "id": "3",
+    "question": "What does useState hook do in React?",
+    "options": {
+      "A": "Manages component state",
+      "B": "Fetches data from API",
+      "C": "Creates routing rules",
+      "D": "Connects to database"
+    },
+    "answer": ["A"]
+  },
+  {
+    "id": "4",
+    "question": "Which of these are ways to style React components? (Select TWO)",
+    "options": {
+      "A": "CSS-in-JS libraries",
+      "B": "Inline styles",
+      "C": "CSS Modules",
+      "D": "HTML style tag"
+    },
+    "answer": ["A", "B"]
+  },
+  {
+    "id": "5",
+    "question": "What is the virtual DOM?",
+    "options": {
+      "A": "A lightweight in-memory representation of the UI",
+      "B": "The actual browser DOM",
+      "C": "A CSS framework",
+      "D": "A testing library"
+    },
+    "answer": ["A"]
+  },
+  {
+    "id": "6",
+    "question": "Which of the following are React hooks? (Select TWO)",
+    "options": {
+      "A": "useState",
+      "B": "useClass",
+      "C": "useEffect",
+      "D": "useTemplate"
+    },
+    "answer": ["A", "C"]
+  },
+  {
+    "id": "7",
+    "question": "How do you pass data from parent to child component?",
+    "options": {
+      "A": "Using props",
+      "B": "Using global variables",
+      "C": "Using localStorage",
+      "D": "Direct DOM manipulation"
+    },
+    "answer": ["A"]
+  },
+  {
+    "id": "8",
+    "question": "What are the benefits of component composition? (Select TWO)",
+    "options": {
+      "A": "Code reusability",
+      "B": "Easier testing",
+      "C": "Automatic performance",
+      "D": "Reduced bundle size"
+    },
+    "answer": ["A", "B"]
+  },
+  {
+    "id": "9",
+    "question": "What is JSX?",
+    "options": {
+      "A": "A syntax extension for JavaScript",
+      "B": "A template language",
+      "C": "A CSS preprocessor",
+      "D": "A build tool"
+    },
+    "answer": ["A"]
+  },
+  {
+    "id": "10",
+    "question": "Which of these are true about React keys? (Select TWO)",
+    "options": {
+      "A": "Help identify elements in a list",
+      "B": "Must be globally unique",
+      "C": "Improve rendering performance",
+      "D": "Replace component IDs"
+    },
+    "answer": ["A", "C"]
+  }
+]

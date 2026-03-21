@@ -102,6 +102,7 @@ function SettingsModal({ visible, onClose }) {
       cancelText="Cancel"
       width={600}
       confirmLoading={loading}
+      data-testid="settings-modal"
     >
       <Spin spinning={loading}>
         <div style={{ padding: '20px 0' }}>
@@ -163,6 +164,7 @@ function SettingsModal({ visible, onClose }) {
                 rows={3}
                 style={{ fontFamily: 'monospace', fontSize: '12px' }}
                 disabled={loading}
+                data-testid="settings-api-key-input"
               />
               
               <div>
@@ -186,6 +188,7 @@ function SettingsModal({ visible, onClose }) {
                   onClick={handleClearApiKey}
                   icon={<LogoutOutlined />}
                   disabled={loading}
+                  data-testid="settings-clear-api-key"
                 >
                   Clear API Key
                 </Button>

@@ -96,9 +96,9 @@ function Question({
   };
 
   return (
-    <Card>
+    <Card data-testid="question-card">
       {/* Question title without the Explain button */}
-      <Title level={4} style={{ marginBottom: '20px' }}>{question}</Title>
+      <Title level={4} style={{ marginBottom: '20px' }} data-testid="question-prompt">{question}</Title>
       
       {/* Display image if imageUrl is provided */}
       {imageUrl && imageUrl.trim() !== '' && (
@@ -121,13 +121,15 @@ function Question({
           onChange={(e) => onSelectAnswer(e.target.value)} 
           value={selectedAnswer}
           style={{ width: '100%' }}
+          data-testid="single-answer-group"
         >
           <Space direction="vertical" style={{ width: '100%' }}>
             {optionEntries.map((option) => (
-              <div key={option.key} style={getOptionStyle(option.key)}>
+              <div key={option.key} style={getOptionStyle(option.key)} data-testid={`answer-option-${option.key}`}>
                 <Radio 
                   value={option.key} 
                   style={{ marginBottom: '10px' }}
+                  data-testid={`answer-control-${option.key}`}
                 >
                   {option.key}. {option.value}
                 </Radio>
@@ -139,11 +141,12 @@ function Question({
         // Multiple choice (Checkboxes)
         <Space direction="vertical" style={{ width: '100%' }}>
           {optionEntries.map((option) => (
-            <div key={option.key} style={getOptionStyle(option.key)}>
+            <div key={option.key} style={getOptionStyle(option.key)} data-testid={`answer-option-${option.key}`}>
               <Checkbox 
                 checked={selectedAnswer ? selectedAnswer.includes(option.key) : false}
                 onChange={() => handleCheckboxChange(option.key)}
                 style={{ marginBottom: '10px' }}
+                data-testid={`answer-control-${option.key}`}
               >
                 {option.key}. {option.value}
               </Checkbox>
@@ -153,7 +156,7 @@ function Question({
       )}
       
       {showFeedback && hasEnoughSelections() && (
-        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px' }}>
+        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px' }} data-testid="question-feedback">
           {isCorrect ? (
             <Text type="success" strong>Correct answer!</Text>
           ) : (
@@ -179,7 +182,7 @@ function Question({
       
       {/* Show message for multiple choice questions when not enough options are selected */}
       {showFeedback && isMultipleChoice && !hasEnoughSelections() && (
-        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0f8ff', borderRadius: '5px', border: '1px solid #1890ff' }}>
+        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0f8ff', borderRadius: '5px', border: '1px solid #1890ff' }} data-testid="question-selection-hint">
           <Text type="info">
             Please select {correctOptions.length} answer{correctOptions.length > 1 ? 's' : ''} to see the result.
           </Text>

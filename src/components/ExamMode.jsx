@@ -441,8 +441,9 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
         status="success"
         title={timeExpired ? "Time's Up!" : "Exam Completed!"}
         subTitle={`Your score: ${score}/${examQuestions.length} (${(score / examQuestions.length * 100).toFixed(2)}%)`}
+        data-testid="exam-result-screen"
         extra={[
-          <Button type="primary" key="back" onClick={onExit}>
+          <Button type="primary" key="back" onClick={onExit} data-testid="exam-return-to-menu">
             Return to Menu
           </Button>
         ]}
@@ -451,13 +452,13 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   }
 
   return (
-    <div>
+    <div data-testid="exam-mode-screen">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Title level={2}>Exam Mode</Title>
         
         {/* Timer display */}
         <Badge.Ribbon text="Time Remaining" color="blue">
-          <Card style={{ width: 180 }}>
+          <Card style={{ width: 180 }} data-testid="exam-timer-card">
             <Space>
               <ClockCircleOutlined />
               <Countdown 
@@ -501,6 +502,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             icon={<ArrowLeftOutlined />}
             onClick={goToPreviousQuestion}
             disabled={currentIndex === 0}
+            data-testid="exam-previous-question"
           >
             Previous
           </Button>
@@ -509,6 +511,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             type="primary"
             onClick={goToNextQuestion}
             disabled={currentIndex === examQuestions.length - 1}
+            data-testid="exam-next-question"
           >
             Next <ArrowRightOutlined />
           </Button>
@@ -517,6 +520,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             type="default"
             icon={flaggedQuestions.includes(currentIndex) ? <FlagFilled /> : <FlagOutlined />}
             onClick={() => toggleFlag(currentIndex)}
+            data-testid="exam-toggle-flag"
             style={{ 
               color: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined,
               borderColor: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined
@@ -531,6 +535,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             type="default"
             icon={<EyeOutlined />}
             onClick={() => setReviewModalVisible(true)}
+            data-testid="exam-open-review"
           >
             Review
           </Button>
@@ -540,6 +545,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             danger
             icon={<CheckOutlined />}
             onClick={handleSubmit}
+            data-testid="exam-finish"
           >
             Finish Exam
           </Button>
@@ -637,6 +643,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
           </Button>
         ]}
         width={800}
+        data-testid="exam-review-modal"
       >
         <div style={{ marginBottom: '20px' }}>
           <Row gutter={[16, 16]}>
@@ -702,6 +709,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
                       hoverable
                       size="small"
                       onClick={() => goToQuestion(index)}
+                      data-testid={`exam-review-question-${index + 1}`}
                       style={{
                         textAlign: 'center',
                         backgroundColor: isCurrent ? '#1890ff' : (isAnswered ? '#f6ffed' : '#fff'),
@@ -742,6 +750,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
         onCancel={() => setApiKeyModalVisible(false)}
         okText="Save & Continue"
         cancelText="Cancel"
+        data-testid="exam-api-key-modal"
       >
         <Paragraph>
           To use the AI explanation feature, please enter your Google Gemini API key.

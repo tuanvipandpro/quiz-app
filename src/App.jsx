@@ -10,6 +10,7 @@ import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
 import SettingsModal from './components/SettingsModal';
 import userService from './services/userService';
+import { getAssetUrl } from './utils/paths';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -32,6 +33,8 @@ function App() {
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
+    // Test Quiz (for E2E testing)
+    { id: 'test-quiz', name: 'Test Quiz (E2E)', file: 'quiz/test/test-quiz.json', category: 'Test' },
     // AWS
     { id: 'aws-ace', name: 'AWS Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS' },
     { id: 'aws-saa', name: 'AWS Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS' },
@@ -50,7 +53,7 @@ function App() {
   // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
   const loadDemoQuiz = async (quizFile, quizName, quizId) => {
     try {
-      const response = await fetch(`/quiz-app/${quizFile}`);
+      const response = await fetch(getAssetUrl(quizFile));
       if (!response.ok) {
         throw new Error(`Failed to load quiz: ${response.status}`);
       }
@@ -70,7 +73,7 @@ function App() {
   // Load quiz and jump directly to Practice mode at a specific question
   const loadAndResumePractice = async (quizFile, quizName, quizId, questionIndex) => {
     try {
-      const response = await fetch(`/quiz-app/${quizFile}`);
+      const response = await fetch(getAssetUrl(quizFile));
       if (!response.ok) throw new Error(`Failed to load quiz: ${response.status}`);
       const data = await response.json();
       setQuestions(data);
@@ -293,6 +296,7 @@ function App() {
           level={3} 
           style={{ color: 'white', margin: 0, cursor: 'pointer' }}
           onClick={handleReturnHome}
+          data-testid="app-home-link"
         >
           Quiz Application
         </Title>
@@ -316,6 +320,7 @@ function App() {
             icon={<LoginOutlined />}
             onClick={() => setLoginModalVisible(true)}
             style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+            data-testid="open-login-modal"
           >
             Login
           </Button>
@@ -360,6 +365,7 @@ function App() {
                   style={{ height: '100%' }}
                   onClick={showQuizSelectionScreen}
                   className="option-card"
+                  data-testid="demo-quiz-card"
                 >
                   <PlayCircleOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '15px' }} />
                   <Title level={4}>Load Demo Quiz</Title>
@@ -377,6 +383,7 @@ function App() {
                   hoverable 
                   style={{ height: '100%' }}
                   className="option-card"
+                  data-testid="upload-quiz-card"
                 >
                   <div>
                     <CloudUploadOutlined style={{ fontSize: '48px', color: '#52c41a', marginBottom: '15px' }} />
@@ -385,8 +392,8 @@ function App() {
                       Use your own JSON file with custom questions.
                     </Paragraph>
                     
-                    <Upload {...uploadProps}>
-                      <Button type="primary" size="large" icon={<UploadOutlined />} style={{ marginTop: '10px' }}>
+                    <Upload {...uploadProps} data-testid="upload-quiz">
+                      <Button type="primary" size="large" icon={<UploadOutlined />} style={{ marginTop: '10px' }} data-testid="upload-quiz-button">
                         Upload Quiz File
                       </Button>
                     </Upload>
@@ -399,8 +406,9 @@ function App() {
               <Title level={5}>Need a sample file?</Title>
               <Button 
                 type="link" 
-                href="/quiz-app/sample-quiz.json" 
+                href={getAssetUrl('sample-quiz.json')} 
                 download="sample-quiz.json"
+                data-testid="download-sample-quiz"
               >
                 Download Sample Quiz File
               </Button>
@@ -447,6 +455,7 @@ function App() {
                 style={{ width: '100%' }}
                 placeholder="Select a quiz to load"
                 value={selectedQuiz}
+                data-testid="quiz-select"
                 onChange={async (value) => {
                   setSelectedQuiz(value);
                   setQuizSelectionProgress(null);
@@ -500,6 +509,7 @@ function App() {
                       type="primary"
                       icon={<PlayCircleOutlined />}
                       style={{ flex: 1, backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
+                      data-testid="resume-saved-progress"
                       onClick={() => {
                         const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
                         if (quiz) loadAndResumePractice(quiz.file, quiz.name, quiz.id, quizSelectionProgress.questionIndex);
@@ -510,6 +520,7 @@ function App() {
                     <Button
                       className="quiz-progress-action-button"
                       style={{ flex: 1 }}
+                      data-testid="start-from-beginning"
                       onClick={async () => {
                         if (user && selectedQuiz) {
                           await userService.clearQuizProgress(user.uid, selectedQuiz);
@@ -531,6 +542,7 @@ function App() {
                   style={{ marginTop: '20px' }}
                   disabled={!selectedQuiz}
                   icon={<PlayCircleOutlined />}
+                  data-testid="load-selected-quiz"
                   onClick={() => {
                     const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
                     if (quiz) {
@@ -548,6 +560,7 @@ function App() {
                 icon={<ArrowLeftOutlined />} 
                 size="large"
                 onClick={backFromQuizSelection}
+                data-testid="back-from-quiz-selection"
               >
                 Back
               </Button>
@@ -563,11 +576,11 @@ function App() {
               marginBottom: '20px'
             }}>
               <Title level={2}>Quiz Questions Loaded!</Title>
-              <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />}>Change File</Button>
+              <Upload {...uploadProps} data-testid="change-quiz-file">
+                <Button icon={<UploadOutlined />} data-testid="change-quiz-file-button">Change File</Button>
               </Upload>
             </div>
-            <Text>Loaded {questions.length} questions from {fileName}</Text>
+            <Text data-testid="loaded-quiz-summary">Loaded {questions.length} questions from {fileName}</Text>
             <QuizMode onSelectMode={handleModeSelect} />
             
             {/* Back button rendered at the bottom */}
@@ -610,6 +623,7 @@ function App() {
               block
               onClick={handleGoogleLogin}
               style={{ height: '50px', fontSize: '16px' }}
+              data-testid="login-with-google"
             >
               Login with Google
             </Button>
@@ -624,6 +638,7 @@ function App() {
               block
               disabled
               style={{ height: '50px', fontSize: '16px' }}
+              data-testid="login-with-github"
             >
               Login with GitHub (Coming Soon)
             </Button>
