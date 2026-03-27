@@ -39,6 +39,7 @@ function App() {
     { id: 'aws-dea', name: 'AWS Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS' },
     // Azure
     { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Azure' },
+    { id: 'gh-300', name: 'Github Copilot (GH-300)', file: 'quiz/Azure/GH-300.json', category: 'Azure' },
     // Google Cloud
     { id: 'gcp-ace', name: 'Google Cloud Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud' },
     { id: 'gcp-pca', name: 'Google Cloud Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud' },
