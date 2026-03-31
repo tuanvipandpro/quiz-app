@@ -276,6 +276,73 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   const handleCloseModal = () => {
     setExplanationModalVisible(false);
   };
+
+  const hasAnyAnswer = (questionIndex) => {
+    const question = examQuestions[questionIndex];
+    const answer = answers[questionIndex];
+
+    if (!question) {
+      return false;
+    }
+
+    if (question.answer.length > 1) {
+      return Array.isArray(answer) && answer.length > 0;
+    }
+
+    return answer !== null;
+  };
+
+  const formatSelectedAnswers = (questionIndex) => {
+    const question = examQuestions[questionIndex];
+    const answer = answers[questionIndex];
+
+    if (!question) {
+      return [];
+    }
+
+    if (question.answer.length > 1) {
+      if (!Array.isArray(answer) || answer.length === 0) {
+        return [];
+      }
+
+      return [...answer].sort((left, right) => left.localeCompare(right));
+    }
+
+    return answer ? [answer] : [];
+  };
+
+  const getReviewCardStyle = (questionIndex) => {
+    const answered = hasAnyAnswer(questionIndex);
+    const correct = isAnswerCorrect(questionIndex);
+    const isCurrent = questionIndex === currentIndex;
+
+    if (isCurrent) {
+      return {
+        backgroundColor: '#1890ff',
+        borderColor: '#1890ff',
+        borderWidth: '2px'
+      };
+    }
+
+    if (!answered) {
+      return {
+        backgroundColor: '#fff',
+        borderColor: '#d9d9d9'
+      };
+    }
+
+    if (correct) {
+      return {
+        backgroundColor: '#f6ffed',
+        borderColor: '#b7eb8f'
+      };
+    }
+
+    return {
+      backgroundColor: '#fff2f0',
+      borderColor: '#ffccc7'
+    };
+  };
   
   // Check if an answer is correct
   const isAnswerCorrect = (questionIndex) => {
@@ -436,17 +503,148 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   });
   
   if (examSubmitted) {
+    const incorrectCount = examQuestions.length - score;
+    const reviewedQuestion = examQuestions[currentIndex];
+    const selectedAnswers = formatSelectedAnswers(currentIndex);
+    const questionCorrect = isAnswerCorrect(currentIndex);
+
     return (
-      <Result
-        status="success"
-        title={timeExpired ? "Time's Up!" : "Exam Completed!"}
-        subTitle={`Your score: ${score}/${examQuestions.length} (${(score / examQuestions.length * 100).toFixed(2)}%)`}
-        extra={[
-          <Button type="primary" key="back" onClick={onExit}>
-            Return to Menu
-          </Button>
-        ]}
-      />
+      <div>
+        <Result
+          status="success"
+          title={timeExpired ? "Time's Up!" : "Exam Completed!"}
+          subTitle={`Your score: ${score}/${examQuestions.length} (${(score / examQuestions.length * 100).toFixed(2)}%)`}
+          extra={[
+            <Button type="primary" key="back" onClick={onExit}>
+              Return to Menu
+            </Button>
+          ]}
+        />
+
+        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+          <Col xs={24} sm={8}>
+            <Card size="small">
+              <Statistic
+                title="Correct"
+                value={score}
+                prefix={<CheckCircleOutlined />}
+                valueStyle={{ color: '#52c41a' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card size="small">
+              <Statistic
+                title="Incorrect"
+                value={incorrectCount}
+                prefix={<CloseCircleOutlined />}
+                valueStyle={{ color: '#ff4d4f' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card size="small">
+              <Statistic
+                title="Answered"
+                value={answers.filter((_, index) => hasAnyAnswer(index)).length}
+                prefix={<QuestionCircleOutlined />}
+                valueStyle={{ color: '#1890ff' }}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        <Card
+          title={`Review Question ${currentIndex + 1} of ${examQuestions.length}`}
+          extra={
+            <Text strong type={questionCorrect ? 'success' : 'danger'}>
+              {questionCorrect ? 'Correct' : 'Incorrect'}
+            </Text>
+          }
+          style={{ marginBottom: '20px' }}
+        >
+          <Question
+            question={reviewedQuestion.question}
+            imageUrl={reviewedQuestion.imageUrl}
+            options={reviewedQuestion.options}
+            selectedAnswer={answers[currentIndex]}
+            onSelectAnswer={() => {}}
+            showFeedback={true}
+            isCorrect={questionCorrect}
+            correctOptions={reviewedQuestion.answer}
+            readOnly={true}
+          />
+
+          <div style={{ marginTop: '16px', padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
+            <Title level={5} style={{ marginTop: 0 }}>Selected Answer{selectedAnswers.length > 1 ? 's' : ''}</Title>
+            {selectedAnswers.length > 0 ? (
+              selectedAnswers.map((optionKey) => (
+                <div key={optionKey} style={{ marginBottom: '6px' }}>
+                  <Text>
+                    <Text strong>{optionKey}.</Text> {reviewedQuestion.options[optionKey]}
+                  </Text>
+                </div>
+              ))
+            ) : (
+              <Text type="secondary">No answer selected.</Text>
+            )}
+          </div>
+        </Card>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
+          <Space>
+            <Button
+              type="primary"
+              icon={<ArrowLeftOutlined />}
+              onClick={goToPreviousQuestion}
+              disabled={currentIndex === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              type="primary"
+              onClick={goToNextQuestion}
+              disabled={currentIndex === examQuestions.length - 1}
+            >
+              Next <ArrowRightOutlined />
+            </Button>
+          </Space>
+
+          <Space>
+            <Badge color="#52c41a" text="Correct" />
+            <Badge color="#ff4d4f" text="Incorrect" />
+            <Badge color="#d9d9d9" text="Unanswered" />
+          </Space>
+        </div>
+
+        <Card title="Jump To Question">
+          <Row gutter={[8, 8]}>
+            {examQuestions.map((question, index) => {
+              const cardStyle = getReviewCardStyle(index);
+              const isCurrent = index === currentIndex;
+
+              return (
+                <Col xs={6} sm={4} md={3} lg={2} key={index}>
+                  <Card
+                    hoverable
+                    size="small"
+                    onClick={() => setCurrentIndex(index)}
+                    style={{
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      ...cardStyle
+                    }}
+                  >
+                    <Text strong style={{ color: isCurrent ? '#fff' : '#000' }}>
+                      {index + 1}
+                    </Text>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        </Card>
+      </div>
     );
   }
 

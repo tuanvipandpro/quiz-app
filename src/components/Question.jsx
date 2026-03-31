@@ -17,6 +17,7 @@ function Question({
   showFeedback, 
   isCorrect, 
   correctOptions,
+  readOnly = false,
   // Remove onExplain from here - we'll handle it at the parent component
 }) {
   // Convert options object to array of {key, value} for rendering and sort by ABCD order
@@ -45,6 +46,7 @@ function Question({
 
   // Check if enough options are selected for multiple choice questions
   const hasEnoughSelections = () => {
+    if (readOnly) return true;
     if (!isMultipleChoice) return true;
     return selectedAnswer && Array.isArray(selectedAnswer) && selectedAnswer.length === correctOptions.length;
   };
@@ -120,6 +122,7 @@ function Question({
         <Radio.Group 
           onChange={(e) => onSelectAnswer(e.target.value)} 
           value={selectedAnswer}
+          disabled={readOnly}
           style={{ width: '100%' }}
         >
           <Space direction="vertical" style={{ width: '100%' }}>
@@ -143,6 +146,7 @@ function Question({
               <Checkbox 
                 checked={selectedAnswer ? selectedAnswer.includes(option.key) : false}
                 onChange={() => handleCheckboxChange(option.key)}
+                disabled={readOnly}
                 style={{ marginBottom: '10px' }}
               >
                 {option.key}. {option.value}
