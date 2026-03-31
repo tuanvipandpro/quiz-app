@@ -46,6 +46,7 @@ function Question({
 
   // Check if enough options are selected for multiple choice questions
   const hasEnoughSelections = () => {
+    if (readOnly) return true;
     if (!isMultipleChoice) return true;
     return selectedAnswer && Array.isArray(selectedAnswer) && selectedAnswer.length === correctOptions.length;
   };
