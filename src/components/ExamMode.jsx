@@ -28,7 +28,7 @@ const { Title, Text, Paragraph } = Typography;
 const { Countdown } = Statistic;
 const { confirm } = Modal;
 
-function ExamMode({ questions, onExit, examTimeMinutes }) {
+function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }) {
   const { user } = useAuth();
   // Select 50 random questions for the exam
   const [examQuestions, setExamQuestions] = useState([]);
@@ -50,12 +50,33 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
   // API Key state
   const [apiKeyModalVisible, setApiKeyModalVisible] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
+
+  const shuffleArray = (items) => {
+    const copied = [...items];
+    for (let i = copied.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copied[i], copied[j]] = [copied[j], copied[i]];
+    }
+    return copied;
+  };
+
+  const shuffleQuestionOptions = (question) => {
+    const optionEntries = Object.entries(question.options || {});
+    const shuffledOptions = Object.fromEntries(shuffleArray(optionEntries));
+    return {
+      ...question,
+      options: shuffledOptions
+    };
+  };
   
-  // Initialize exam with 50 random questions and set up timer
+  // Initialize exam with selected random questions and set up timer
   useEffect(() => {
-    const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    const examSize = Math.min(50, questions.length);
-    const selected = shuffled.slice(0, examSize);
+    const shuffled = shuffleArray(questions);
+    const requestedQuestionCount = Number.isFinite(examQuestionCount) ? examQuestionCount : 50;
+    const examSize = Math.min(Math.max(1, requestedQuestionCount), questions.length);
+    const selected = shuffled
+      .slice(0, examSize)
+      .map(shuffleQuestionOptions);
     setExamQuestions(selected);
     
     // Initialize answers array with null for single-answer questions and empty arrays for multiple-answer questions
@@ -65,7 +86,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
     // Set exam end time
     const deadline = Date.now() + (examTimeMinutes * 60 * 1000);
     setExamEndTime(deadline);
-  }, [questions, examTimeMinutes]);
+  }, [questions, examTimeMinutes, examQuestionCount]);
   
   // Update time left counter each second
   useEffect(() => {
@@ -507,19 +528,25 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
     const reviewedQuestion = examQuestions[currentIndex];
     const selectedAnswers = formatSelectedAnswers(currentIndex);
     const questionCorrect = isAnswerCorrect(currentIndex);
+    const scorePercentage = (score / examQuestions.length) * 100;
+    const isPassed = scorePercentage > 80;
 
     return (
       <div>
         <Result
-          status="success"
+          status={isPassed ? 'success' : 'error'}
           title={timeExpired ? "Time's Up!" : "Exam Completed!"}
-          subTitle={`Your score: ${score}/${examQuestions.length} (${(score / examQuestions.length * 100).toFixed(2)}%)`}
+          subTitle={`Your score: ${score}/${examQuestions.length} (${scorePercentage.toFixed(2)}%). Passing requires more than 80%.`}
           extra={[
             <Button type="primary" key="back" onClick={onExit}>
               Return to Menu
             </Button>
           ]}
         />
+
+        <Paragraph strong type={isPassed ? 'success' : 'danger'} style={{ textAlign: 'center', marginTop: '-12px', marginBottom: '20px' }}>
+          {isPassed ? 'Result: PASS' : 'Result: FAIL'}
+        </Paragraph>
 
         <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
           <Col xs={24} sm={8}>
@@ -573,6 +600,8 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
             isCorrect={questionCorrect}
             correctOptions={reviewedQuestion.answer}
             readOnly={true}
+            showOptionKey={false}
+            sortOptions={false}
           />
 
           <div style={{ marginTop: '16px', padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
@@ -581,7 +610,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
               selectedAnswers.map((optionKey) => (
                 <div key={optionKey} style={{ marginBottom: '6px' }}>
                   <Text>
-                    <Text strong>{optionKey}.</Text> {reviewedQuestion.options[optionKey]}
+                    {reviewedQuestion.options[optionKey]}
                   </Text>
                 </div>
               ))
@@ -689,11 +718,13 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
           onSelectAnswer={handleAnswer}
           showFeedback={false}
           correctOptions={currentQuestion.answer}
+          showOptionKey={false}
+          sortOptions={false}
         />
       </Card>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <Space wrap>
           <Button 
             type="primary"
             icon={<ArrowLeftOutlined />}
@@ -724,7 +755,7 @@ function ExamMode({ questions, onExit, examTimeMinutes }) {
           </Button>
         </Space>
         
-        <Space>
+        <Space wrap style={{ marginLeft: 'auto' }}>
           <Button 
             type="default"
             icon={<EyeOutlined />}

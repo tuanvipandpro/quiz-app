@@ -18,12 +18,16 @@ function Question({
   isCorrect, 
   correctOptions,
   readOnly = false,
+  showOptionKey = true,
+  sortOptions = true,
   // Remove onExplain from here - we'll handle it at the parent component
 }) {
-  // Convert options object to array of {key, value} for rendering and sort by ABCD order
+  // Convert options object to array of {key, value}; keep incoming order when sortOptions is false.
   const optionEntries = Object.entries(options)
-    .map(([key, value]) => ({ key, value }))
-    .sort((a, b) => a.key.localeCompare(b.key)); // Sort by A, B, C, D order
+    .map(([key, value]) => ({ key, value }));
+  const renderedOptions = sortOptions
+    ? [...optionEntries].sort((a, b) => a.key.localeCompare(b.key))
+    : optionEntries;
   
   // Determine if this question has multiple correct answers
   const isMultipleChoice = Array.isArray(correctOptions) && correctOptions.length > 1;
@@ -126,13 +130,13 @@ function Question({
           style={{ width: '100%' }}
         >
           <Space direction="vertical" style={{ width: '100%' }}>
-            {optionEntries.map((option) => (
+            {renderedOptions.map((option) => (
               <div key={option.key} style={getOptionStyle(option.key)}>
                 <Radio 
                   value={option.key} 
                   style={{ marginBottom: '10px' }}
                 >
-                  {option.key}. {option.value}
+                  {showOptionKey ? `${option.key}. ${option.value}` : option.value}
                 </Radio>
               </div>
             ))}
@@ -141,7 +145,7 @@ function Question({
       ) : (
         // Multiple choice (Checkboxes)
         <Space direction="vertical" style={{ width: '100%' }}>
-          {optionEntries.map((option) => (
+          {renderedOptions.map((option) => (
             <div key={option.key} style={getOptionStyle(option.key)}>
               <Checkbox 
                 checked={selectedAnswer ? selectedAnswer.includes(option.key) : false}
@@ -149,7 +153,7 @@ function Question({
                 disabled={readOnly}
                 style={{ marginBottom: '10px' }}
               >
-                {option.key}. {option.value}
+                {showOptionKey ? `${option.key}. ${option.value}` : option.value}
               </Checkbox>
             </div>
           ))}
@@ -171,7 +175,7 @@ function Question({
                   .map((opt) => (
                     <div key={opt} style={{ marginBottom: '5px' , display: 'inline-block'}}>
                       <Text strong style={{ color: '#52c41a' }}>
-                        {opt}. {options[opt]}
+                        {showOptionKey ? `${opt}. ${options[opt]}` : options[opt]}
                       </Text>
                     </div>
                   ))}
