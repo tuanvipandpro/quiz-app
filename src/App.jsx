@@ -19,6 +19,7 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [mode, setMode] = useState(null); // 'practice' or 'exam'
   const [examTime, setExamTime] = useState(60); // Default 1 hour in minutes
+  const [examQuestionCount, setExamQuestionCount] = useState(50); // Default exam question count
   const [fileUploaded, setFileUploaded] = useState(false);
   const [fileName, setFileName] = useState('');
   const [startScreen, setStartScreen] = useState(true); // New state for initial screen
@@ -194,16 +195,20 @@ function App() {
     }
   };
 
-  const handleModeSelect = (selectedMode, time) => {
+  const handleModeSelect = (selectedMode, time, questionCount) => {
     setMode(selectedMode);
     if (time) {
       setExamTime(time);
+    }
+    if (questionCount) {
+      setExamQuestionCount(questionCount);
     }
   };
 
   const resetApp = () => {
     setMode(null);
     setInitialQuestionIndex(0);
+    setExamQuestionCount(Math.min(50, questions.length || 50));
   };
   
   const goToStartScreen = () => {
@@ -213,6 +218,7 @@ function App() {
     setMode(null);
     setStartScreen(true);
     setInitialQuestionIndex(0);
+    setExamQuestionCount(50);
   };
 
   // Get auth context
@@ -569,7 +575,7 @@ function App() {
               </Upload>
             </div>
             <Text>Loaded {questions.length} questions from {fileName}</Text>
-            <QuizMode onSelectMode={handleModeSelect} />
+            <QuizMode onSelectMode={handleModeSelect} totalQuestions={questions.length} />
             
             {/* Back button rendered at the bottom */}
             {renderBackButton()}
@@ -586,6 +592,7 @@ function App() {
             questions={questions} 
             onExit={resetApp} 
             examTimeMinutes={examTime}
+            examQuestionCount={examQuestionCount}
           />
         ) : (
           <Empty 
