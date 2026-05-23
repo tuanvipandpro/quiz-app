@@ -1,0 +1,596 @@
+[
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "1",
+    "imageUrl": "",
+    "options": {
+      "A": "Checklist 1",
+      "B": "Checklist 2",
+      "C": "Checklist 3",
+      "D": "Checklist 4"
+    },
+    "question": "Your organization is implementing a food ordering application intended to feature an intuitive user interface (easy navigation and quick search) and offering functions such as: personalization of the order (option to modify ingredients, comments for the restaurant) verification of the correctness of the order before it is sent real-time order tracking view order history Management decided to test the requirements mentioned above using a checklist and has asked you to prepare this. Consider the following four checklists."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "2",
+    "imageUrl": "",
+    "options": {
+      "A": "Difficulty in understanding the rules for calculating interest on loans",
+      "B": "Difficulty in understanding the interface in English",
+      "C": "Difficulty in using the multi-factor authentication mechanism",
+      "D": "Difficulty in running the app on an iOS phone"
+    },
+    "question": "As a test analyst, you have been asked to conduct a role-based review of the usability of the electronic banking system’s user interface. The interface allows the user to choose a language from English, Spanish, or Italian. The system is secured with a multi-factor authentication mechanism. After logging in, the user can manage their loans. During the review, you take the role described by the following persona:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "3",
+    "imageUrl": "",
+    "options": {
+      "A": "3",
+      "B": "4",
+      "C": "5",
+      "D": "6"
+    },
+    "question": "You are designing test cases based on the following use case: Use case: logging in to the online banking system"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "4",
+    "imageUrl": "",
+    "options": {
+      "A": "(11, 11), (10, 11), (11, 12).",
+      "B": "(10, 10), (10, 11), (10, 9).",
+      "C": "(10, 10), (11, 11), (10,11).",
+      "D": "(11,11), (10, 12), (11, 9)."
+    },
+    "question": "A system takes as input two natural numbers, T1 and T2, representing two consecutive temperature measurements. The temperature is measured in whole degrees Celsius. The system returns temperature change information according to the following logic: • IF T1 = T2, return the message “Temperature has not changed.” • IF T1 ≠ T2, return the message “Temperature has changed.” You use domain-based testing to verify the correct implementation of the above requirement. You follow the SIMPLIFIED coverage technique. Which set of test points, understood as temperature pairs (T1, T2), achieves 100% of this coverage?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "5",
+    "imageUrl": "",
+    "options": {
+      "A": "Designing test cases based on risk analysis for installation and uninstallation procedures",
+      "B": "Verifying that the system under test can share its target environment with other products",
+      "C": "Verifying that all planned functionality has actually been implemented",
+      "D": "Finding defects in communication protocols that describe data exchange"
+    },
+    "question": "Which of the following shows the test analyst’s contribution to interoperability testing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "6",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878225818-mt0w8iwh.png",
+    "options": {
+      "A": "The system implemented according to this specification will work properly",
+      "B": "The system allows the PIN to be entered incorrectly an arbitrary number of times",
+      "C": "The system blocks the card after entering the correct PIN",
+      "D": "The system does not block the card after the PIN is entered incorrectly three times"
+    },
+    "question": "Below is a state transition diagram that models the behavior of the component responsible for verifying the correctness of the PIN code entered by the user. The system begins operating in the “Welcome screen” state and ends in the “End” state."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "7",
+    "imageUrl": "",
+    "options": {
+      "A": "Changing the position of the figure (but so that it is still visible in its entirety) does not change the system’s answer",
+      "B": "Rotating the image 90 degrees to the right or left does not change the system’s response",
+      "C": "Changing the figure's color does not change the system’s response",
+      "D": "Scaling down the figure does not change the system’s response"
+    },
+    "question": "You are testing an image recognition system. The system is based on a deep neural network. As input, the system receives an image (1000x1000 pixels) of a geometric figure - a triangle, square, or circle. The figure is one color and is depicted on a solid background of another color. The figure can be of any size and placed anywhere on the picture. The system classifies the figure on output as a triangle, square, or circle. If the system receives an image that does not meet the above requirements, it responds with “unrecognized shape.” You want to test the correctness of this system using metamorphic testing. Which of the following is NOT a valid metamorphic relation for this scenario?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "8",
+    "imageUrl": "",
+    "options": {
+      "A": "Verify that the program does not leave undeleted files after uninstallation",
+      "B": "Verify that the program can handle workload variability",
+      "C": "Verify that the system is compatible with the products with which it interacts",
+      "D": "Verify that a specific system component can be replaced seamlessly by another"
+    },
+    "question": "Which of the following BEST shows a test analyst’s contribution to flexibility testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "9",
+    "imageUrl": "",
+    "options": {
+      "A": "Test management tools",
+      "B": "Defect management tools",
+      "C": "Test data management tools",
+      "D": "Version control tools"
+    },
+    "question": "Which type of tools provide traceability of test cases to test basis elements?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "10",
+    "imageUrl": "",
+    "options": {
+      "A": "In sequential models, the test analyst focuses primarily on functional testing. In iterative models, the test analyst focuses primarily on non-functional testing.",
+      "B": "In sequential and incremental models, the test analyst focuses on automating regression testing. In iterative models, the test analyst focuses on manual testing.",
+      "C": "In sequential models, the test analyst executes tests in the late phases of the software lifecycle. In incremental models, the test analyst executes tests in each increment.",
+      "D": "In sequential models, the test analyst mainly uses experience-based test techniques. In iterative models, the test analyst mainly uses black-box test techniques."
+    },
+    "question": "Which option BEST describes a test analyst’s involvement in different software development lifecycles?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "11",
+    "imageUrl": "",
+    "options": {
+      "A": "Session duration 2 hours Start date and time March 14, 2:00 p.m. Exploratory tester: John Smith. Motivation: verification of overflow rules.",
+      "B": "Verify that after entering the correct data about the source account, target account, and the transfer amount, the funds transfer time is less than 5 seconds in 90% of the cases.",
+      "C": "Verify that the system correctly displays the list of recent transactions when the total number of transactions for the account is 0, 9, 10, and 11.",
+      "D": "Check the transfer to the same account, transfer an amount that is 1 cent more than the balance, and transfer an amount exactly equal to the balance."
+    },
+    "question": "You are testing an online banking application. These features have been implemented and are ready for testing: Funds transfer: allows you to transfer funds between accounts at the bank Transaction history: displays a list of the last 10 transactions Account balance: displays the current balance for each account Your task as a test analyst is to create a test charter for a 2-hour session to evaluate the functionality of the funds transfer function, focusing on basic scenarios and usability aspects. Your test charter currently looks like this: Test the correctness of transfers Using the data: account number, account balance, transfer amount To discover a potential violation of the rules of correct transfer Scope of testing: ... What will be MOST useful as part of the test scope in this test charter?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "12",
+    "imageUrl": "",
+    "options": {
+      "A": "Participating in risk analysis meetings",
+      "B": "Participating, as a reviewer in requirements reviews",
+      "C": "Identifying possible improvements during retrospective meetings",
+      "D": "Failure detection during dynamic test execution"
+    },
+    "question": "Which of the following is NOT an example of a test analyst’s contribution to defect prevention?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "13",
+    "imageUrl": "",
+    "options": {
+      "A": "Functional correctness testing",
+      "B": "Adaptability testing",
+      "C": "Compatibility testing",
+      "D": "Usability testing"
+    },
+    "question": "What testing do test analysts perform when they verify the system’s compliance with accessibility standards such as WCAG?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "14",
+    "imageUrl": "",
+    "options": {
+      "A": "When the user enters the order history, does the system show recent orders'?",
+      "B": "Does the system allow customers to rate meals and restaurants?",
+      "C": "Does the system validate the client's address before accepting the order?",
+      "D": "Does the system allow adding a comment for the restaurant to an order?"
+    },
+    "question": "Your organization is implementing a food ordering application intended to feature an intuitive user interface (easy navigation and quick search) and offering functions such as: personalization of the order (option to modify ingredients, comments for the restaurant) verification of the correctness of the order before it is sent real-time order tracking view order history You analyze a four-point checklist for functional testing that was prepared by another test analyst. Which of these points is NOT a good example of an item for this checklist?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "15",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878244630-gg9zgx66.png",
+    "options": {
+      "A": "2",
+      "B": "3",
+      "C": "4",
+      "D": "5"
+    },
+    "question": "You are testing a loan allocation decision process, modeled with this activity diagram:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "16",
+    "imageUrl": "",
+    "options": {
+      "A": "High quality of testers",
+      "B": "Facilitated communication and information sharing",
+      "C": "Testing in different test environments",
+      "D": "Better repeatability of tests"
+    },
+    "question": "Which of the following is a benefit of crowd testing?"
+  },
+  {
+    "answer": [
+      "D",
+      "E"
+    ],
+    "id": "17",
+    "imageUrl": "",
+    "options": {
+      "A": "TC1",
+      "B": "TC2",
+      "C": "TC3",
+      "D": "TC4",
+      "E": "TC5"
+    },
+    "question": "Your regression test suite includes five test cases, TC1-TC5. They cover the use case scenarios UC1-UC10 as follows: TC1 covers UC1, UC2, UC3, UC4, UC5, UC6, UC7, UC8"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "18",
+    "imageUrl": "",
+    "options": {
+      "A": "During test analysis",
+      "B": "During test design",
+      "C": "During test implementation",
+      "D": "During test execution"
+    },
+    "question": "The test analyst defined four test cases for the test condition: “Verify that the system refuses to log in if the login information is incorrect.” Where in the test process did the test analyst perform this task?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "19",
+    "imageUrl": "",
+    "options": {
+      "A": "Because analyzing each defect separately could take too much time",
+      "B": "Because it provides information about the effectiveness of individual testers",
+      "C": "Because its absence makes it impossible to assess the risks associated with the defects analyzed",
+      "D": "Because defect classification is a mandatory preliminary step in root cause analysis"
+    },
+    "question": "Why does defect classification support root cause analysis?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "20",
+    "imageUrl": "",
+    "options": {
+      "A": "On weekends, the load from end-user requests is 5 times greater than during working days (Monday-Friday)",
+      "B": "The execution time of each component test for the discount calculation feature should take no longer than 3 seconds",
+      "C": "The user should be able to log into the system with a login and password, and through a social media account",
+      "D": "Tests should be performed on the latest versions of the three most popular web browsers: Chrome, Safari and Edge"
+    },
+    "question": "Which of the following is an example of a test environment requirement for an online store?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "21",
+    "imageUrl": "",
+    "options": {
+      "A": "Conducting requirement reviews to mitigate risks",
+      "B": "Conducting interviews with users to identify risks",
+      "C": "Performing risk impact assessment",
+      "D": "Assisting in the categorization of identified risks"
+    },
+    "question": "Which task is NOT performed by a test analyst as part of product risk analysis?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "22",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878262680-12tcj4et.png",
+    "options": {
+      "A": "30%",
+      "B": "50%",
+      "C": "75%",
+      "D": "100%"
+    },
+    "question": "You are designing test cases based on the following state transition diagram."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "23",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878264730-jphbb8zg.png",
+    "options": {
+      "A": "The checksum of this table is greater than 16, so the table must have overlapping rules",
+      "B": "The checksum of this table is greater than 16, so the table cannot be consistent",
+      "C": "The checksum of this table is equal to 16, so the table must be consistent and complete",
+      "D": "The checksum of this table is equal to 16, so the table cannot be consistent"
+    },
+    "question": "You are testing a loan assignment system. You have been given the following decision table to analyze, each condition can only take the value of Y (yes, the condition holds) or N (no, the condition does not hold)."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "24",
+    "imageUrl": "",
+    "options": {
+      "A": "Start: P1, end: P3, one-way streets: S1, S2. Result: route length = 500 m",
+      "B": "Start: P1, end: P3, one-way streets: S1, S2, S3. Result: route length = 2080 m",
+      "C": "Start: P2, end: P3, one-way streets: S1, S3. Result: route length = 580 m",
+      "D": "Start: P1, end: P2. one-way streets: S1, S2, S3. Result: route length = 1500 m"
+    },
+    "question": "A route-finding application receives as input - a starting point, an ending point, and a map with information on which streets are one-way. The application returns the length of the shortest possible route (in meters). You want to test the correctness of this system with metamorphic testing using the following two metamorphic relations: MR1: for a given route from point A to point B, if one or more one-way streets are changed to two-way streets, the route length cannot increase. MR2: for a given map and points A, B, and C, the length of a route from A to C cannot be longer than the sum of the lengths of two routes: from A to B and from B to C. You have two source test cases: TC1: Start: P1, end: P2, one-way streets: S1, S2, S3. Result: route length = 1680 m. TC2: Start: P2, end: P3, one-way streets: S1, S2, S3. Result: route length = 400 m. Which test case reveals a system failure due to a violation of metamorphic relation MR1 or MR2?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "25",
+    "imageUrl": "",
+    "options": {
+      "A": "Omission of important test conditions from the software model",
+      "B": "High cost of test execution due to software changes",
+      "C": "Difficulty in analyzing the results of the automated test execution",
+      "D": "Reduction of repetitive work involving manual test specification"
+    },
+    "question": "What is an example of a risk associated with automated test design?"
+  },
+  {
+    "answer": [
+      "B",
+      "D"
+    ],
+    "id": "26",
+    "imageUrl": "",
+    "options": {
+      "A": "Information on existing test design tools",
+      "B": "Description of the test environment",
+      "C": "Information on existing test management tools",
+      "D": "Description of the other modules of the ProTask application",
+      "E": "Information on existing project management standards"
+    },
+    "question": "A technology company called TechSoft has just completed the development phase of a new module in its Pro Task project management mobile application. The new module - “Notifications and alerts” - allows users to receive notifications about the status of their tasks and messages. The functionality includes configuring different types of notifications (email, SMS, push), notification frequency, and customizing notifications according to the user's role. Due to the many possible combinations of settings and the various usage scenarios, the project team has decided to do exploratory testing, with a focus on verifying the functionality of notifications in an environment that replicates the end-user environment as closely as possible. Tech Soft has software for designing tests that meet combinatorial coverage criteria, such as pairwise coverage. It also has the latest version of a test management tool. As a test analyst, you have been asked to prepare a test charter for exploratory testing. Which TWO pieces of information should be included in the charter? (Choose two.)"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "27",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878271650-rm74fnxe.png",
+    "options": {
+      "A": "VerifyState(2.75).",
+      "B": "VerifyState(1.75).",
+      "C": "VerifyState(1.25).",
+      "D": "VenfyState(3.00)."
+    },
+    "question": "You are testing a beverage vending machine. The beverage price is $1. The machine accepts coins with denominations of 25c, 50c, and $1. When the sum of the coins inserted equals or exceeds the beverage price, the system dispenses the beverage and returns the change. However, if the system is unable to dispense change due to a lack of coins or the user presses the cancel button, the system does not dispense the beverage and returns the inserted coins. You use a keyword-based approach. You have the following keywords at your disposal."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "28",
+    "imageUrl": "",
+    "options": {
+      "A": "4",
+      "B": "8",
+      "C": "10",
+      "D": "16"
+    },
+    "question": "You plan to test a computer game on various configurations. A configuration consists of: operating system (2 possible values: Windows 10, Windows 11) browser (4 possible values: Edge, Chrome, Firefox, Opera) RAM type (4 possible values: 8 GB, 16 GB, 32 GB, 64 GB) Market research shows that 90% of gamers own the same configuration: Windows 11, Chrome, 32 GB. You use combinatorial testing with the base choice coverage. What is the MINIMUM number of configurations that need to be tested to achieve 100% base choice coverage?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "29",
+    "imageUrl": "",
+    "options": {
+      "A": "Role-based review",
+      "B": "Checklist-based review",
+      "C": "Perspective-based reading",
+      "D": "Scenario-based review"
+    },
+    "question": "BeRich company is preparing to launch a mobile application for managing personal finances. The app is expected to eventually attract a wide range of users, from young people to adults to retirees. The app offers a range of functions, such as budgeting, expense analysis, saving, and financial advice. The team responsible for the project consists of experts from different departments: marketing, product development, testing, UX, and system architecture. To ensure consistent performance and positive application reception, the team will review the functional documentation before moving into the intensive implementation phase. Each department looks at the app through the lens of its goals and specialties. For the marketing department, it is crucial that the application has unique features that distinguish it in the market and are intuitive for users. The system architecture team focuses on scalability, security, and user data protection. On the other hand, testers are focused on ensuring that each function is easy to test and anticipating scenarios that could cause user problems. In contrast, UX specialists focus on the application's accessibility for a wide range of users. What type of review applied to functional documentation would be the BEST solution in this scenario?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "30",
+    "imageUrl": "",
+    "options": {
+      "A": "3",
+      "B": "4",
+      "C": "7",
+      "D": "12"
+    },
+    "question": "You plan to test a computer game on various configurations. A configuration consists of: operating system (2 possible values: Windows 10, Windows 11) browser (3 possible values: Edge, Chrome, Firefox) RAM type (3 possible values: 16 GB, 32 GB, 64 GB) You apply the pairwise testing. So far, you have designed the following test cases:"
+  },
+  {
+    "answer": [
+      "B",
+      "E"
+    ],
+    "id": "31",
+    "imageUrl": "",
+    "options": {
+      "A": "Pairwise testing",
+      "B": "State transition testing",
+      "C": "Crowd testing",
+      "D": "Decision table testing",
+      "E": "Metamorphic testing"
+    },
+    "question": "You are a test analyst on a project producing a critical system—an air traffic management application to support controllers in monitoring, planning, and managing flights in real-time. The application's goal is to improve flight safety, airspace management, and route optimization, considering changing factors such as weather conditions, alternate routes, flight priorities, and dynamic schedule changes. In a conversation with the system architect, you learn that the application has to handle many different combinations of variables, such as flight type, weather conditions, flight priority, or current airspace status. When you talk to air traffic controllers, you learn that the application performs complex operations that not only process data but also generate data based on already existing information. For example, when weather conditions change, the flight route is dynamically recalculated, and the system automatically modifies the route. This makes some data dependencies difficult to grasp and predict directly. Based on this scenario, which TWO test techniques will be best suited for this project? (Choose two.)"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "32",
+    "imageUrl": "",
+    "options": {
+      "A": "A high-level test case is the detailed refinement of a low-level test case",
+      "B": "Low-level test cases must be implemented as automatic test scripts",
+      "C": "One high-level test case can be implemented in one low-level test case",
+      "D": "Low-level test cases are suitable for test execution high-level test cases are not"
+    },
+    "question": "Which sentence correctly describes high-level and low-level test cases?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "33",
+    "imageUrl": "",
+    "options": {
+      "A": "Domain-based testing",
+      "B": "Metamorphic testing",
+      "C": "State transition testing",
+      "D": "CRUD testing"
+    },
+    "question": "The execution of a certain test case went as follows: create customer record “John Smith”; result: record created modify customer record “John Smith”; result: data modified correctly delete customer record “John Smith”; result: record deleted correctly What test technique was used to design this test case?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "34",
+    "imageUrl": "",
+    "options": {
+      "A": "Customer information should include realistic customer profiles with various names, addresses, phone numbers, and email address formats",
+      "B": "Order details should be described in an XML file, the format and structure of which comply with the rules described in section 6.5 of this document",
+      "C": "The geographical coordinates representing the customer’s residence should be given to 4 decimal places",
+      "D": "The application should be tested on emulators of Apple iPhone 15, Samsung Galaxy S24, Apple iPhone 15 Pro, and Samsung Galaxy S24 Ultra"
+    },
+    "question": "Which of the following is NOT an example of a test data requirement for an online food ordering application?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "35",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878288707-js825zan.png",
+    "options": {
+      "A": "50%",
+      "B": "62.5%",
+      "C": "87.5%",
+      "D": "100%"
+    },
+    "question": "A credit risk scoring system receives two integers, L and E, as input, representing credit scores calculated by two independent systems. The system evaluates credit risk according to the following business logic: IF L >= 50 OR E >= 50 THEN the risk is high IF L <= 49 AND E <= 49 THEN the risk is low"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "36",
+    "imageUrl": "",
+    "options": {
+      "A": "CRUD testing",
+      "B": "Crowd testing",
+      "C": "Random testing",
+      "D": "Scenario-based testing"
+    },
+    "question": "You are a test analyst on a project to develop a multiplayer computer game where players can cooperate or compete when communicating over a network. The game will also allow the purchase and exchange between players of various artifacts that can be used during gameplay. Your organization predicts that the game will be a hit. It will likely be purchased by tens of thousands of players worldwide. The following is an excerpt from the risk analysis that was conducted for this product: Incompatibility of operation on different devices and hardware configurations User interface problems on different screen resolutions Unpredictable player behavior leading to crashes Weak security mechanisms against fraudsters Which test technique would be the BEST choice to mitigate these risks?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "37",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878295323-62jy676u.png",
+    "options": {
+      "A": "Flight stabilization component",
+      "B": "Altitude control component",
+      "C": "Navigation component",
+      "D": "Collision avoidance component"
+    },
+    "question": "You work as a test analyst on a project involving the implementation of autopilot software in an aircraft. You are now analyzing test results for four components of this system, shown in this table."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "38",
+    "imageUrl": "",
+    "options": {
+      "A": "Neglecting the semantics of generated test input values",
+      "B": "Dependency on an automated test oracle",
+      "C": "Random outputs leading to inconsistent test results",
+      "D": "Generation of test cases with the same input values"
+    },
+    "question": "Which of the following limitations applies to unguided random testing, but can be avoided in guided random testing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "39",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878297205-90upvo7a.png",
+    "options": {
+      "A": "The “Team member cockpit” function does not allow the creation or deletion of any object",
+      "B": "The “Project Administration” function allows no operation against tasks",
+      "C": "Making a task update is possible by more than one function",
+      "D": "No function allows user deletion operation"
+    },
+    "question": "You are working on a project to develop a project management system. The system has three types of objects: projects, tasks, and users. You are currently performing a CRUD matrix analysis to detect possible defects in a specification."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "40",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing the adaptation of the user interface for visually impaired users",
+      "B": "Testing the allocation of discounts depending on the number of purchases",
+      "C": "Testing whether the social media login function has been implemented in the system",
+      "D": "Testing whether a group order requires fewer steps than a regular order"
+    },
+    "question": "What is an example of FUNCTIONAL CORRECTNESS testing of a food ordering app?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "41",
+    "imageUrl": "",
+    "options": {
+      "A": "Test analysis",
+      "B": "Test reporting",
+      "C": "Test execution",
+      "D": "Test monitoring"
+    },
+    "question": "The system returned an unexpected result during test execution. The test analyst is currently analyzing the cause of this anomaly. Which part of the test process is the test analyst working on?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "42",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1774878306141-vanaiqag.png",
+    "options": {
+      "A": "Architecture review",
+      "B": "Requirements review",
+      "C": "Component implementation",
+      "D": "Component integration"
+    },
+    "question": "Your organization produces a computer game tested at four major stages: requirements review, architecture review, component implementation, and component integration. One year after the game's release, you analyze data on the number of defects reported."
+  }
+]
