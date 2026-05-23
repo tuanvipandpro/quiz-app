@@ -1,0 +1,1654 @@
+[
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "1",
+    "imageUrl": "",
+    "options": {
+      "A": "Clustering is classification of a continuous quantity.",
+      "B": "Clustering is done without prior knowledge of output classes.",
+      "C": "Clustering is supervised learning.",
+      "D": "Clustering requires you to know the classes."
+    },
+    "question": "Which ONE of the following options BEST describes clustering?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "2",
+    "imageUrl": "",
+    "options": {
+      "A": "Natural language processing on textual requirements",
+      "B": "Analyzing source code for generating test cases",
+      "C": "GUI analysis using computer vision",
+      "D": "Machine learning on logs of execution"
+    },
+    "question": "What requirements are given in text documents, which ONE of the following is the BEST way to generate test cases from these requirements?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "3",
+    "imageUrl": "",
+    "options": {
+      "A": "Specialist hardware is necessary for ML",
+      "B": "Less bits are required for hardware supporting ML",
+      "C": "Support for complex operations is required",
+      "D": "A higher clock speed is required"
+    },
+    "question": "Which ONE of the following statements about the hardware used to implement ML systems is MOST likely to be correct?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "4",
+    "imageUrl": "",
+    "options": {
+      "A": "A new application which is in the early stages of the first test cycle",
+      "B": "An old application with lots of defect records but a brand new development and test team",
+      "C": "An old application where defect records are linked to failed tests and production incidents",
+      "D": "An old application with few critical defect records and many non-critical defect records"
+    },
+    "question": "In which ONE of the following situations would an ML model be MOST effective at determining the criticality of new defects?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "5",
+    "imageUrl": "",
+    "options": {
+      "A": "Developers associated with previous code changes",
+      "B": "Cyclomatic complexity",
+      "C": "Lines of code changed",
+      "D": "Commit size"
+    },
+    "question": "Which ONE of the following would be the MOST effective input to an AI-based defect prediction tool?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "6",
+    "imageUrl": "",
+    "options": {
+      "A": "Genetic algorithms",
+      "B": "Autonomy",
+      "C": "Classification",
+      "D": "Reinforcement learning"
+    },
+    "question": "Which ONE of the following options is a technology used to implement AI?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "7",
+    "imageUrl": "",
+    "options": {
+      "A": "The model is vulnerable to adversarial attacks",
+      "B": "The model fails to generalize on new data",
+      "C": "The model uses a large amount of resources to make a prediction",
+      "D": "The model is inaccurate on data similar to the training data"
+    },
+    "question": "Which ONE of the below is MOST likely to indicate a problem with underfitting in an ML model?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "8",
+    "imageUrl": "",
+    "options": {
+      "A": "Bias",
+      "B": "Activation values from the previous layer",
+      "C": "Activation values from the current layer",
+      "D": "The weights assigned to the connections"
+    },
+    "question": "Which ONE of the below is NOT an input to an activation function in a neural network?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "9",
+    "imageUrl": "",
+    "options": {
+      "A": "ROC",
+      "B": "Intra-cluster",
+      "C": "AUC",
+      "D": "Recall"
+    },
+    "question": "A test engineer is planning the best functional performance metrics to evaluate an unsupervised learning model. The model groups data points based on their similarity. The test engineer wants to measure how similar the data points in each group actually are. Which is the MOST likely metric they should use?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "10",
+    "imageUrl": "",
+    "options": {
+      "A": "A test model describing the application functionality",
+      "B": "A list of possible web pages that comprise the application",
+      "C": "A pseudo-oracle",
+      "D": "An XML schema"
+    },
+    "question": "Which ONE of the following options for a test basis would give the LEAST coverage when using AI-based test generation?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "11",
+    "imageUrl": "",
+    "options": {
+      "A": "Previously failing tests",
+      "B": "Defect reports",
+      "C": "Test environment downtime",
+      "D": "Source control data"
+    },
+    "question": "Which ONE of the following would be the LEAST effective input to an AI-based test optimization process?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "12",
+    "imageUrl": "",
+    "options": {
+      "A": "A/B testing",
+      "B": "Back-to-back testing",
+      "C": "Metamorphic testing",
+      "D": "Experience-based testing"
+    },
+    "question": "You are a test manager planning testing for an invoice financing company. The company buys unpaid invoices from companies and provides them with immediate cash. The company is replacing their existing conventional system, which takes company accounting records as inputs, with an ML system that classifies each invoice for sales as something that should, or should not be bought. Significant historical production data is available. It is important that invoices are not bought incorrectly. Which ONE of the following test techniques would be MOST appropriate for you to plan for system testing?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "13",
+    "imageUrl": "",
+    "options": {
+      "A": "The algorithm used for the model is known to the tester",
+      "B": "The approach relies on the transferability of the attacks",
+      "C": "The training data is manipulated",
+      "D": "Combinatorial testing techniques are used"
+    },
+    "question": "Which ONE of the following statements is MOST true about black-box adversarial testing?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "14",
+    "imageUrl": "",
+    "options": {
+      "A": "Unsupervised learning that identifies clusters in training data that relate to people’s ages.",
+      "B": "Supervised learning classification system that is re-trained based on new data, including whether they later provided ID that showed they were over 18.",
+      "C": "Supervised learning regression system that is re-trained based on new data, including whether they provided ID that showed their age.",
+      "D": "Reinforcement learning classification system with a reward function of correct behavior."
+    },
+    "question": "You have been asked for your opinion on the ML approach to be used for a new age verification system. A training dataset is available with many pictures of faces and the subject's age. When new users sign-up to a mobile app, they have to take a picture of their face. If the system believes they are under 18 years old it will ask them to provide a picture of their passport to prove their age. Which ONE of the following approaches do you expect to be MOST likely to succeed?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "15",
+    "imageUrl": "",
+    "options": {
+      "A": "When systems change themselves the results of previously passing tests may change",
+      "B": "It is necessary to test whether the system will relinquish control to a human at the right time",
+      "C": "External data sources might be required to ensure that the system is unbiased",
+      "D": "In can be difficult to explain the link between test inputs and outputs"
+    },
+    "question": "Which ONE of the following statements BEST describes a testing challenge that specifically applied to a self-learning system?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "16",
+    "imageUrl": "",
+    "options": {
+      "A": "A loan approval system that can continue to process loan applications indefinitely, within a defined amount of aggregate credit, until an operator reduces the amount of aggregate credit available.",
+      "B": "A self-driving car that automatically stops the car if the driver is not responding to voice prompts, in order to ensure they are awake.",
+      "C": "A chatbot that learns the most effective responses to humans (in order to ensure the humans continue to converse) based on prior experiences.",
+      "D": "A fraud detection system that alerts operators when it sees a specific fraud risk associated with a transaction, in order to obtain human input to make a final decision."
+    },
+    "question": "Which ONE of the following statements about a system MOST describes an autonomous system?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "17",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing for concept drift",
+      "B": "Adversarial testing",
+      "C": "Testing for explainability",
+      "D": "Testing for transparency"
+    },
+    "question": "A facial recognition system is being deployed at airports in order to scan passengers’ faces and compare them to a database of vaccinations, in order to identify unvaccinated passengers in a pandemic. There are a number of components involved including cameras, a model to segment the image, and a model to identify the face and match it against a known photograph. It is important that there are few false negatives, and that passengers cannot subvert the system. Which ONE of the following types of testing is the MOST appropriate options for the tests you would choose in system testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "18",
+    "imageUrl": "",
+    "options": {
+      "A": "The system should be able to accept natural language input on a variety of topics and respond correctly",
+      "B": "The system should respond more quickly than the system it is replacing",
+      "C": "The system should be 100% accurate with no tolerance for failure",
+      "D": "The system should not require human intervention until a specific failure scenario is encountered"
+    },
+    "question": "Which ONE of the following requirements for an AI-based system is MOST likely to cause a challenge for testing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "19",
+    "imageUrl": "",
+    "options": {
+      "A": "Missing records for some accounts",
+      "B": "Missing data relating to whether loans were previously granted and repaid",
+      "C": "Inconsistent pre-processing of some records",
+      "D": "Irrelevant data included in the account records"
+    },
+    "question": "A data scientist is performing unsupervised learning on a set of financial records relating to previous loan applications, and trying to predict defaults on future loans. They are reporting poor functional performance because of data issues. Which ONE of the below is LEAST likely to be a contributory factor?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "20",
+    "imageUrl": "",
+    "options": {
+      "A": "It can be necessary to obtain additional attributes about the data being processed",
+      "B": "Reviewing the source of the training data can reveal inappropriate bias",
+      "C": "Inappropriate bias only needs to be tested when protected characteristics such as race and gender are present in the inputs",
+      "D": "Testing should never be conducted in production"
+    },
+    "question": "Which ONE of the following statements is true about dynamic testing for inappropriate bias?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "21",
+    "imageUrl": "",
+    "options": {
+      "A": "As AI systems improve, the likelihood of reaching the technological singularity increases.",
+      "B": "AI systems get better over time as they are exposed to more data.",
+      "C": "The systems used to play chess against human experts in the 1990’s are no longer considered AI.",
+      "D": "AI systems increasingly behave like humans."
+    },
+    "question": "Which ONE of the following statements provides the BEST description of the AI effect?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "22",
+    "imageUrl": "",
+    "options": {
+      "A": "Tools may be required to simulate extreme scenarios",
+      "B": "Non-determinism may need to be introduced into the environment",
+      "C": "AI-specific hardware may be required",
+      "D": "Tools may be required to provide explanations of system behavior"
+    },
+    "question": "Which ONE of the below statements BEST describes why test environments for autonomous systems might need to be different to other test environments?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "23",
+    "imageUrl": "",
+    "options": {
+      "A": "Complexity",
+      "B": "Lack of standards",
+      "C": "Lack of robustness",
+      "D": "Lack of transparency"
+    },
+    "question": "Which of the below is NOT a characteristic that makes it difficult to use AI-based systems?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "24",
+    "imageUrl": "",
+    "options": {
+      "A": "Obtaining data from public benchmark datasets",
+      "B": "Obtaining data that has not been pre-processed by the system under test.",
+      "C": "Manual creation of test data",
+      "D": "Obtaining appropriate data from users"
+    },
+    "question": "Which ONE of the following is a factor associated with the test data that can create challenges specific to testing AI-based systems?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "25",
+    "imageUrl": "",
+    "options": {
+      "A": "Each neuron can be treated as a parameter for pairwise tests",
+      "B": "Two variants of the system can be used and compared",
+      "C": "Inputs to the system and environment factors can be considered parameters for pairwise tests",
+      "D": "Combinatorial testing cannot yet be applied to AI"
+    },
+    "question": "Which ONE of the below statements BEST describes how combinatorial testing can be applied to AI-based systems?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "26",
+    "imageUrl": "",
+    "options": {
+      "A": "Exploring training data to understand its variety, patterns, structure and shape - then using that to inform testing",
+      "B": "Usability testing of the format of the output predictions",
+      "C": "Using knowledge about previous ML systems to identify potential biases",
+      "D": "Using an industry checklist to assess the steps used to prepare an ML system"
+    },
+    "question": "Which ONE of the below types of testing is NOT a type of experience-based testing applied to an AI-based system?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "27",
+    "imageUrl": "",
+    "options": {
+      "A": "The number of inaccurate recommendations per day",
+      "B": "The amount of system resources consumed by each recommendation",
+      "C": "The number of accurate recommendations per day",
+      "D": "The accuracy of the human decision when presented with an inaccurate recommendation"
+    },
+    "question": "You are conducting a user acceptance test of a decision-support recommendation system used in a data processing business. In addition to testing the functional performance of the recommendation systems, what else would you be MOST likely to test?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "28",
+    "imageUrl": "",
+    "options": {
+      "A": "Accuracy",
+      "B": "MSE",
+      "C": "R-Squared",
+      "D": "Precision"
+    },
+    "question": "A test engineer is planning testing for a wearable medical device using AI. The medical device will detect possible heart issues in patients and dispatch emergency services automatically. It is not expected that many patients will have heart issues, and this is reflected in the available data. In this case, it is decided it is more important that emergency services are not sent un-necessarily, than it is to detect actual heart problems. Which ONE of the following metrics should the test engineer choose to ensure that the emergency services are sent only when needed?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "29",
+    "imageUrl": "",
+    "options": {
+      "A": "The time and associated costs required",
+      "B": "Functional performance",
+      "C": "Designing a reward function",
+      "D": "Specification of acceptance criteria"
+    },
+    "question": "Which ONE of the below is MOST likely to be a challenge in ML data preparation?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "30",
+    "imageUrl": "",
+    "options": {
+      "A": "The functional performance of the system may exhibit bias",
+      "B": "The system may be vulnerable to adversarial attacks inherited from the pre-trained model",
+      "C": "Differences in data preparation steps between the training of the pre-trained model and consequent use of the model may result in reduced functional performance",
+      "D": "The functional performance of the pre-trained model could be lower than stakeholders expect"
+    },
+    "question": "You are evaluating the use of a highly accurate pre-trained model that is used widely in industry for a similar use case. There is an intention to apply transfer learning techniques to further customize the model. Which ONE of the following is the LEAST likely to be a significant risk with this approach?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "31",
+    "imageUrl": "",
+    "options": {
+      "A": "Many test cases can be generated",
+      "B": "The purpose is to detect defects",
+      "C": "Production data is not used",
+      "D": "The purpose is to compare two variants of a system"
+    },
+    "question": "Which ONE of the following statements is MOST true in relation to A/B testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "32",
+    "imageUrl": "",
+    "options": {
+      "A": "A house cleaning robot adjusts the path it takes on a daily basis based on the most efficient route and the amount of dirt it is able to remove.",
+      "B": "A financial system that chooses which stocks to buy regularly optimizes based on new changes in stock price to improve its performance.",
+      "C": "An image recognition system regularly searches the internet to find new examples to add to its training data.",
+      "D": "A health warning system uses data from thousands of people to predict who is most likely to suffer from a particular health condition based on their behavior."
+    },
+    "question": "Which of the following options BEST describes an example of reinforcement learning?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "33",
+    "imageUrl": "",
+    "options": {
+      "A": "Inappropriate bias is caused by overweighting of particular classes in algorithms",
+      "B": "Inappropriate bias is caused by data used for training not being representative of the real world",
+      "C": "Inappropriate bias only affects ML systems that process data about people",
+      "D": "Inappropriate bias can be caused by aspects of the algorithm or the data"
+    },
+    "question": "Which of the following statements about bias in AI-based systems is MOST correct?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "34",
+    "imageUrl": "",
+    "options": {
+      "A": "Inappropriate bias",
+      "B": "Adaptability",
+      "C": "Ethics",
+      "D": "Explainability"
+    },
+    "question": "A robotic AI-based system is being built by a logistics company to operate within its unmanned warehouses. The warehouses can all be very different and new ones are being added each year. It is expected that the system will not require retraining for each warehouse, and will be able to learn the location of different items and move them to specified locations on request. Which ONE of the following attributes should be MOST carefully considered when specifying the objectives and acceptance criteria for the system?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "35",
+    "imageUrl": "",
+    "options": {
+      "A": "Internal",
+      "B": "Annotation",
+      "C": "Augmentation",
+      "D": "Benchmarking"
+    },
+    "question": "An ML engineer performing supervised learning needs to label images of football games based on the location of the football in the image. Which ONE of the below labeling approaches can be used?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "36",
+    "imageUrl": "",
+    "options": {
+      "A": "Obtaining test data is harder",
+      "B": "It is necessary to measure how changes in the test inputs cause changes in the test outputs",
+      "C": "Unexpected changes in system behavior can occur",
+      "D": "Sometimes the system can only be tested as a black-box"
+    },
+    "question": "Which ONE of the following statements BEST describes how system complexity can cause challenges when testing an AI-based system?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "37",
+    "imageUrl": "",
+    "options": {
+      "A": "1, 3",
+      "B": "1, 4",
+      "C": "2, 3",
+      "D": "1, 2"
+    },
+    "question": "Which TWO of the below examples of systems BEST describe regression?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "38",
+    "imageUrl": "",
+    "options": {
+      "A": "Neuron coverage",
+      "B": "Value-change coverage",
+      "C": "Sign-change coverage",
+      "D": "None of the coverage measures"
+    },
+    "question": "While measuring the test coverage of a neural network, a test engineer wants to measure the number of neurons that have each output two activation function results with a minimum difference between the two results of 0.5. Which ONE of the below coverage measures would achieve that goal?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "39",
+    "imageUrl": "",
+    "options": {
+      "A": "Security issues",
+      "B": "Hardware issues",
+      "C": "Incorrect weights",
+      "D": "Faulty sensors"
+    },
+    "question": "Which ONE of the below is NOT likely to cause a data quality issue affecting a single ML model?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "40",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775086617189-eiriwj2h.png",
+    "options": {
+      "A": "60 / (60 + 20) * 100% = 75%",
+      "B": "60 / (60 + 9) * 100% = 87%",
+      "C": "2 * (60 / (60 + 20) * 60 / (60 + 9)) / (60 / (60 + 20) + 60 / (60 + 9)) * 100% = 80%",
+      "D": "(60 + 11) / (60 + 11 + 20 + 9) * 100% = 71%"
+    },
+    "question": "The following confusion matrix represents the functional performance of a classifier."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "41",
+    "imageUrl": "",
+    "options": {
+      "A": "Data labeling",
+      "B": "Data sampling",
+      "C": "Feature selection",
+      "D": "Data augmentation"
+    },
+    "question": "Which ONE of the following activities is MOST relevant when addressing the scenario where you have more than the required amount of data available for the training?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "42",
+    "imageUrl": "",
+    "options": {
+      "A": "Only training data and test data",
+      "B": "All three: training data, validation data, and test data",
+      "C": "Only training data and validation data",
+      "D": "Only validation data and test data"
+    },
+    "question": "Which ONE of the following combinations of training, validation, and test data is used during the process of learning/creating a model?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "43",
+    "imageUrl": "",
+    "options": {
+      "A": "Privacy issues",
+      "B": "Security issues",
+      "C": "Robustness issues",
+      "D": "Accuracy issues"
+    },
+    "question": "Data used for an object detection ML system was found to have been labeled incorrectly in many cases."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "44",
+    "imageUrl": "",
+    "options": {
+      "A": "This statement is correct. In general, what is considered AI today may change over time.",
+      "B": "This statement is incorrect. Current AI is true AI, and there is no reason to believe that this fact will change over time.",
+      "C": "This statement is correct. In general, the term AI is presently utilized incorrectly.",
+      "D": "This statement is incorrect. What is considered AI today will continue to be AI even as technology evolves and changes."
+    },
+    "question": "In a conference on artificial intelligence (AI), a speaker made the statement, “the current implementation of AI using machine learning (ML) may NOT be considered AI in the future”."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "45",
+    "imageUrl": "",
+    "options": {
+      "A": "Narrow AI",
+      "B": "Super AI",
+      "C": "Technological singularity",
+      "D": "General AI"
+    },
+    "question": "“In the near future, technology will have evolved, and AI will be able to learn multiple tasks by itself without needing to be retrained, allowing it to operate even in new environments. The cognitive abilities of AI will be similar to a child of 1-2 years.”"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "46",
+    "imageUrl": "",
+    "options": {
+      "A": "Genetic algorithms",
+      "B": "Search engines",
+      "C": "Procedural programming",
+      "D": "Case-control structures"
+    },
+    "question": "Which ONE of the following technologies is MOST TYPICALLY used to implement AI?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "47",
+    "imageUrl": "",
+    "options": {
+      "A": "Powerful CPUs",
+      "B": "Hardware supporting fast matrix multiplication",
+      "C": "Hardware supporting high-precision floating point operations",
+      "D": "64-bit CPUs"
+    },
+    "question": "Which ONE of the following hardware is MOST SUITABLE for implementing AI when using Machine Learning (ML)?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "48",
+    "imageUrl": "",
+    "options": {
+      "A": "A system that is fully able to respond to its environment.",
+      "B": "A system that utilizes a tool like Selenium.",
+      "C": "A fully automated manufacturing plant that uses no software.",
+      "D": "A system that utilizes human beings for all important decisions."
+    },
+    "question": "Which ONE of the following BEST describes an example of a system with AI-based autonomous functions?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "49",
+    "imageUrl": "",
+    "options": {
+      "A": "This is an example of algorithmic bias.",
+      "B": "This is an example of hyperparameter bias.",
+      "C": "This is an example of expert system bias.",
+      "D": "This is an example of sample bias."
+    },
+    "question": "An image classification system is being trained to classify the faces of humans. The data distribution is 70% for ethnicity A and 30% for ethnicities B, C, and D."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "50",
+    "imageUrl": "",
+    "options": {
+      "A": "Non-determinism",
+      "B": "High complexity",
+      "C": "Robustness",
+      "D": "Self-learning"
+    },
+    "question": "Which ONE of the following characteristics is the LEAST likely to cause safety-related issues for an AI system?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "51",
+    "imageUrl": "",
+    "options": {
+      "A": "Clustering",
+      "B": "Reinforcement learning",
+      "C": "Regression",
+      "D": "Classification"
+    },
+    "question": "A software component uses machine learning to recognize the digits from a scan of handwritten numbers."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "52",
+    "imageUrl": "",
+    "options": {
+      "A": "Deploying the model",
+      "B": "Data testing",
+      "C": "Tuning the model",
+      "D": "Evaluating the model"
+    },
+    "question": "Which ONE of the following options is the MOST APPROPRIATE stage of the ML workflow to set model and algorithm hyperparameters?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "53",
+    "imageUrl": "",
+    "options": {
+      "A": "Association",
+      "B": "Clustering",
+      "C": "Regression",
+      "D": "Classification"
+    },
+    "question": "A company producing consumable goods wants to identify groups of people with similar tastes to target different products for each group. You have to choose and apply an appropriate ML type for this problem."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "54",
+    "imageUrl": "",
+    "options": {
+      "A": "Individual bias at the neuron level, activation values of neurons in the previous layer, and weights assigned to the connections between the neurons.",
+      "B": "Activation values of neurons in the previous layer, and weights assigned to the connections between the neurons.",
+      "C": "Individual bias at the neuron level, and activation values of neurons in the previous layer.",
+      "D": "Individual bias at the neuron level, and weights assigned to the connections between the neurons."
+    },
+    "question": "The activation value output for a neuron in a neural network is obtained by applying computation to the neuron."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "55",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775089316084-5f1imkjq.png",
+    "options": {
+      "A": "0.84, 1, 0.9",
+      "B": "0.87, 0.9, 0.84",
+      "C": "1, 0.9, 0.8",
+      "D": "1, 0.87, 0.84"
+    },
+    "question": "Upon testing a model used to detect rotten tomatoes, the following data was observed by the test engineer, based on a certain number of tomato images."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "56",
+    "imageUrl": "",
+    "options": {
+      "A": "Value coverage",
+      "B": "Sign change coverage",
+      "C": "Neuron coverage",
+      "D": "Threshold coverage"
+    },
+    "question": "Which ONE of the following types of coverage SHOULD be used if the test cases need to cause each neuron to achieve both positive and negative activation values?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "57",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing the speed of the training of the model",
+      "B": "Testing the speed of the prediction of the model",
+      "C": "Testing the API of the service powered by the ML model",
+      "D": "Testing the accuracy of the classification model"
+    },
+    "question": "Which ONE of the following tests is LEAST likely to be performed during the ML model testing phase?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "58",
+    "imageUrl": "",
+    "options": {
+      "A": "Pre-labeled dataset",
+      "B": "Internal",
+      "C": "Outsourced",
+      "D": "AI-assisted"
+    },
+    "question": "Which ONE of the following approaches to labeling requires the least time and effort?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "59",
+    "imageUrl": "",
+    "options": {
+      "A": "The number of classes",
+      "B": "The quality of the labeling",
+      "C": "Biased data",
+      "D": "The quality of the data pipeline"
+    },
+    "question": "“Arihant Meditation” is a startup using AI to aid people in deeper and better meditation based on analysis of various factors such as time and duration of the meditation, pulse, blood pressure, EEG patterns, etc. Their model accuracy and other functional performance parameters have not yet reached their desired level."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "60",
+    "imageUrl": "",
+    "options": {
+      "A": "Maximize recall and precision",
+      "B": "Maximize specificity and number of classes",
+      "C": "Maximize precision and accuracy",
+      "D": "Maximize accuracy and recall"
+    },
+    "question": "“Splendid Healthcare” has started developing a cancer detection system based on ML. The type of cancer they plan to detect has a 2% prevalence rate in the population of a particular geography. It is required that the model performs well for both normal and cancer patients."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "61",
+    "imageUrl": "",
+    "options": {
+      "A": "Determining the optimal age for a chicken’s egg laying production using input data of the chicken’s age and average daily egg production for one million chickens",
+      "B": "Recognizing a knife in carry on luggage at a security checkpoint in an airport scanner",
+      "C": "Determining if an animal is a pig or a cow based on image recognition",
+      "D": "Predicting shopper purchasing behavior based on the category of shopper and the positioning of promotional displays within a store"
+    },
+    "question": "Which of the following problems would best be solved using the supervised learning category of regression?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "62",
+    "imageUrl": "",
+    "options": {
+      "A": "Insufficient data",
+      "B": "Invalid data",
+      "C": "Wanted outliers",
+      "D": "Numbers stored as strings"
+    },
+    "question": "Which of the following is a dataset issue that can be resolved using pre-processing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "63",
+    "imageUrl": "",
+    "options": {
+      "A": "The nature of data constantly changes with time.",
+      "B": "The data for the use case is being generated at a fast pace.",
+      "C": "Compliance with data privacy laws requires proper care to be taken of personal data.",
+      "D": "Test data is being sourced from public sources."
+    },
+    "question": "Which ONE of the following does NOT describe a challenge for acquiring test data in ML systems?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "64",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing for security",
+      "B": "Testing for accuracy",
+      "C": "Testing for concept drift",
+      "D": "Testing for bias"
+    },
+    "question": "In a certain coffee-producing region of Colombia, there have been some weather storms, resulting in massive losses in production. This caused a massive drop in stock prices of coffee bean-producing companies."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "65",
+    "imageUrl": "",
+    "options": {
+      "A": "A lack of similarity between the training and testing data.",
+      "B": "A lack of focus on choosing the right functional performance metrics.",
+      "C": "A lack of focus on non-functional requirements testing.",
+      "D": "The input data has not been tested for data quality before its use for model testing."
+    },
+    "question": "“BioSearch” is creating an AI model used for predicting cancer occurrence by examining X-ray images. The accuracy of the model in isolation has been found to be good. However, the users of the model started complaining about the poor quality of results, especially the inability to detect real cancer cases, when put into practice in the diagnosis lab, leading to the stopping of the usage of the model."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "66",
+    "imageUrl": "",
+    "options": {
+      "A": "The fast pace of change caused a deviation from the trained model.",
+      "B": "There was an algorithmic bias in the A system.",
+      "C": "The unknown nature and insufficient specification of the operating environment might have caused the poor performance.",
+      "D": "The difficulty of defining criteria for improvement before the model can be accepted."
+    },
+    "question": "“AterEgo” is a product that uses self-learning to predict the behavior of a pilot under combat situations for various terrains and enemy aircraft formations. Post-training, when the model was exposed to real-world data, the model was found to be behaving poorly. A lot of data collected from real fights and combat exercises in real planes was used for training and testing the product. Furthermore, the data has undergone quality tests to make it suitable for training and testing purposes."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "67",
+    "imageUrl": "",
+    "options": {
+      "A": "Test for human handover after a given time interval",
+      "B": "Test for human handover when it should actually not be relinquishing control",
+      "C": "Test for human handover to give rest to the system",
+      "D": "Test for human handover requiring mandatory relinquishing control"
+    },
+    "question": "Which ONE of the following options is the LEAST appropriate test to be performed for testing a feature related to autonomy?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "68",
+    "imageUrl": "",
+    "options": {
+      "A": "Test the distribution shift in the training data for inappropriate bias.",
+      "B": "Test the model during model evaluation for bias.",
+      "C": "Check the input test data for potential sample bias.",
+      "D": "Testing the data pipeline for any sources of algorithmic bias."
+    },
+    "question": "Which ONE of the following tests is MOST likely to describe a useful test to help detect different kinds of biases in an ML pipeline?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "69",
+    "imageUrl": "",
+    "options": {
+      "A": "Aspects 1, 4, and 5",
+      "B": "Aspects 2, 3, and 4",
+      "C": "Aspects 1, 2, and 3",
+      "D": "Aspects 3, 4, and 5"
+    },
+    "question": "AI-enabled medical devices are used nowadays for automating certain parts of the medical diagnostic processes. Since these are life-critical processes, the relevant authorities are considering obtaining suitable certifications for these AI-enabled medical devices. This certification may involve several facets of AI testing (1– 5):"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "70",
+    "imageUrl": "",
+    "options": {
+      "A": "These attacks cannot be prevented by retraining the model with these examples augmented to the training data.",
+      "B": "These attack examples cause a model to predict the correct class with slightly less accuracy even though they look like the original image.",
+      "C": "Black box attacks based on adversarial examples create a duplicate model of the original.",
+      "D": "These examples are model-specific and are not likely to cause another model trained on the same task to fail."
+    },
+    "question": "Which ONE of the following statements is a CORRECT adversarial example in the context of machine learning systems that are working on image classifiers?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "71",
+    "imageUrl": "",
+    "options": {
+      "A": "Different features like ADAS, lane change assistance, etc.",
+      "B": "Different road types",
+      "C": "ML model metrics that evaluate functional performance",
+      "D": "Different weather conditions"
+    },
+    "question": "Pairwise testing can be used in the context of self-driving cars for controlling an explosion in the number of combinations of parameters."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "72",
+    "imageUrl": "",
+    "options": {
+      "A": "Comparison of the results of a home-grown neural network model ML model with results in a neural network model implemented in a standard implementation (e.g., Pytorch) for the same data.",
+      "B": "Comparison of the results of a current neural network model ML model implemented in platform A (e.g. Pytorch) with a similar neural network model ML model implemented in platform B (e.g. Tensorflow), for the same data.",
+      "C": "Comparison of the results of the current neural network ML model on the current data set with a slightly modified data set.",
+      "D": "Comparison of the results of a neural network ML model with a current decision tree ML model for the same data."
+    },
+    "question": "Which ONE of the following describes a situation of back-to-back testing the LEAST?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "73",
+    "imageUrl": "",
+    "options": {
+      "A": "A performance comparison of two different ML implementations on the same input data.",
+      "B": "A performance comparison of an ML system on two different input datasets.",
+      "C": "A comparison of two different offers in a recommendation system to decide on the more effective offer for the same users.",
+      "D": "A comparison of two different websites to observe from a user acceptance perspective."
+    },
+    "question": "Which ONE of the following options describes a scenario of A/B testing the MOST?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "74",
+    "imageUrl": "",
+    "options": {
+      "A": "Compare the R-Square score of the model X with a different model created using a different programming language while using the same algorithm and the same training and testing data.",
+      "B": "Add 10% of the rows randomly, create another model, and compare the R-Square scores of both models.",
+      "C": "Train various models by changing the order of input features and verify that the R-Square scores of these models varies significantly.",
+      "D": "Drop 10% of the rows randomly, create another model, and compare the R-Square scores of both models."
+    },
+    "question": "An ML engineer is trying to determine the correctness of a new open-source implementation, “X”, of a supervised regression algorithm implementation. R-Square is one of the functional performance metrics used to determine the quality of the model."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "75",
+    "imageUrl": "",
+    "options": {
+      "A": "1 and 3",
+      "B": "Only 3",
+      "C": "1 and 2",
+      "D": "Only 2"
+    },
+    "question": "A System was developed for screening the X-rays of patients for potential cancer detection. A workflow system has been developed to screen multiple cancers by using several individually trained ML models chained together in the workflow. The order of model chaining should not impact the accuracy of each model."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "76",
+    "imageUrl": "",
+    "options": {
+      "A": "Challenges resulting from low accuracy of the models",
+      "B": "The challenge of providing explainability to the decision made by the system",
+      "C": "The challenge of mimicking undefined scenarios generated due to self-learning",
+      "D": "Challenges in the creation of scenarios of human handover for autonomous systems"
+    },
+    "question": "Which ONE of the following does NOT describe an AI technology-related characteristic that differentiates AI test environments from other test environments?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "77",
+    "imageUrl": "",
+    "options": {
+      "A": "Identifying suitable tests by looking at the complexity of the test cases.",
+      "B": "Using a random subset of tests.",
+      "C": "Using an AI-based tool to optimize the regression test suite by analyzing past test results.",
+      "D": "Automating test scripts using AI-based test automation tools."
+    },
+    "question": "Which ONE of the following is the BEST option to optimize regression test selection and prevent the regression suite from growing large?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "78",
+    "imageUrl": "",
+    "options": {
+      "A": "Clustering of similar code modules to predict based on similarity.",
+      "B": "Search for similar code based on natural language processing.",
+      "C": "Using a classification model to predict the presence of a defect by using code quality metrics as the input data.",
+      "D": "Identifying the relationship between developers and the modules developed by them."
+    },
+    "question": "Which ONE of the following models BEST describes a way to model defect prediction by looking at the history of bugs in modules by using code quality metrics of modules of historical versions as input?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "79",
+    "imageUrl": "",
+    "options": {
+      "A": "Using an ML-based classifier to flag if changes in GUI are to be flagged for humans.",
+      "B": "Using a computer vision to compare the GUI before and after the test object changes.",
+      "C": "Using a pixel comparison of the GUI before and after the change to check the differences.",
+      "D": "Using a vision-based detection of the GUI layout changes before and after test object changes."
+    },
+    "question": "Which ONE of the following options describes the LEAST likely usage of AI for the detection of GUI changes resulting from changes in test objects?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "80",
+    "imageUrl": "",
+    "options": {
+      "A": "It could identify the objects multiple ways and then determine the most commonly used and stable identification for each object",
+      "B": "It could modify the automation code to ignore unrecognizable objects to avoid failures.",
+      "C": "It could dynamically name the objects, altering the source code, so the object names will match the object names used in the automation",
+      "D": "It could generate a model that will anticipate developer changes and pre-alter the test automation code accordingly"
+    },
+    "question": "You have been developing test automation for an e-commerce system. One of the problems you are seeing is that object recognition in the GUI is having frequent failures. You have determined this is because the developers are changing the identifiers when they make code updates."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "81",
+    "imageUrl": "",
+    "options": {
+      "A": "The team tests the time required for the fast and slow vehicles to travel the same route as the medium vehicle. Then, by calculating the speed difference, they then predict how much faster or slower the vehicles will travel. That information is then used to verify that the arrival time of the vehicles meets the expected result.",
+      "B": "The team decomposes each route into the relevant components that affect the travel time such as traffic density and vehicle power. The team then uses statistical analysis to characterize the influence of each component to calculate the fast and slow vehicle route times.",
+      "C": "The team uses an AI system to select the most dissimilar routes. With this information, any of the AI routes can be metaphorically transformed into a fast or slow route.",
+      "D": "The team uses the same AI route planner to create routes that are longer and shorter but follow the same track. Finally, by driving the fast vehicles on the long routes and slow vehicles on the short routes and vice versa, the AI system will have enough information to infer travel times for all vehicles on all routes."
+    },
+    "question": "A transportation company operates three types of delivery vehicles in its fleet. The vehicles operate at different speeds (slow, medium, and fast). The transportation company is attempting to optimize scheduling and has created an AI-based program to plan routes for its vehicles using records from the medium-speed vehicle traveling to selected destinations. The test team uses this data in metamorphic testing to test the accuracy of the estimated travel times created by the AI route planner with the actual routes and times."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "82",
+    "imageUrl": "",
+    "options": {
+      "A": "Prepare and pre-process the data that will be used to train and test the model",
+      "B": "Tune the machine learning algorithm based on objectives and business priorities",
+      "C": "Agree on defined acceptance criteria for the machine learning model",
+      "D": "Evaluate the selection of the framework and the model"
+    },
+    "question": "The stakeholders of a machine learning model have confirmed that they understand the objective and purpose of the model, and ensured that the proposed model aligns with their business priorities. They have also selected a framework and a machine learning model that they will be using."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "83",
+    "imageUrl": "",
+    "options": {
+      "A": "Decision trees",
+      "B": "Equivalence partitioning",
+      "C": "Boundary value analysis",
+      "D": "Decision tables"
+    },
+    "question": "Which of the following is a technique used in machine learning?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "84",
+    "imageUrl": "",
+    "options": {
+      "A": "The model is not able to generalize to accommodate new types of data",
+      "B": "The model is too simplistic for the data",
+      "C": "The model is missing relationships between the inputs and outputs",
+      "D": "The model discards data it considers to be noise or outliers"
+    },
+    "question": "Which of the following is an example of overfitting?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "85",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775089368155-vye83mzt.png",
+    "options": {
+      "A": "F1-score",
+      "B": "Precision",
+      "C": "Recall",
+      "D": "Accuracy"
+    },
+    "question": "Consider a machine learning model where the model is attempting to predict if a patient is at risk for stroke. The model collects information on each patient regarding their blood pressure, red blood cell count, smoking status, history of heart disease, cholesterol level, and demographics. Then, using a decision tree the model predicts whether or not the associated patient is likely to have a stroke in the near future. Once the model is created using a training data set, it is used to predict a stroke in 80 additional patients. The table below shows a confusion matrix on whether or not the model made a correct or incorrect prediction."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "86",
+    "imageUrl": "",
+    "options": {
+      "A": "Explainability",
+      "B": "Autonomy",
+      "C": "Self-learning",
+      "D": "Non-determinism"
+    },
+    "question": "Before deployment of an AI based system, a developer is expected to demonstrate in a test environment how decisions are made. Which of the following characteristics does decision making fall under?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "87",
+    "imageUrl": "",
+    "options": {
+      "A": "Test automation can be built quickly and easily from the test cases developed during black-box testing",
+      "B": "The tester wishes to better understand the logic of the software used to create the internal structure",
+      "C": "The black-box testing method will allow the tester to check the transparency of the algorithm used to create the internal structure",
+      "D": "Black-box testing eliminates the need for the tester to understand the internal structure of the AI-system"
+    },
+    "question": "Consider an AI-system in which the complex internal structure has been generated by another software system. Why would the tester choose to do black-box testing on this particular system?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "88",
+    "imageUrl": "",
+    "options": {
+      "A": "The robot must evolve to optimize its routing",
+      "B": "The robot must recharge for no more than six hours a day",
+      "C": "The robot must record the time of each delivery which is compiled into a report",
+      "D": "The robot must complete 99.99% of its deliveries each day"
+    },
+    "question": "A local business has a mail pickup/delivery robot for their office. The robot currently uses a track to move between pickup/drop off locations. When it arrives at a destination, the robot stops to allow a human to remove or deposit mail."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "89",
+    "imageUrl": "",
+    "options": {
+      "A": "Metamorphic testing",
+      "B": "A/B testing",
+      "C": "Exploratory testing",
+      "D": "Pairwise testing"
+    },
+    "question": "Consider a natural language processing (NLP) algorithm that attempts to predict the next word that you would like to type in a text message. An update to the algorithm has been created that should increase the accuracy of the predictions based on user typing patterns. The old algorithm was rated for accuracy by the users. Then, after the new update was released, the users rated the updated algorithm. A statistical test was used to compare between the two versions of the algorithm to see whether or not the update should remain in place."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "90",
+    "imageUrl": "",
+    "options": {
+      "A": "Simplicity",
+      "B": "Sustainability",
+      "C": "Non-determinism",
+      "D": "Robustness"
+    },
+    "question": "Which of the following characteristics of AI-based systems make it more difficult to ensure they are safe?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "91",
+    "imageUrl": "",
+    "options": {
+      "A": "EDA can help detect the outlier emails from the real emails",
+      "B": "EDA can detect and remove the false emails",
+      "C": "EDA can restrict how many inputs can be provided by unique users",
+      "D": "EDA cannot be used to detect the attack"
+    },
+    "question": "A company is using a spam fitter to attempt to identify which emails should be marked as spam. Detection rules are created by the filter that causes a message to be classified as spam. An attacker wishes to have all messages internal to the company be classified as spam. So, the attacker sends messages with obvious red flags in the body of the email and modifies the from portion of the email to make it appear that the emails have been sent by company members. The testers plan to use exploratory data analysis (EDA) to detect the attack and use this information to prevent future adversarial attacks."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "92",
+    "imageUrl": "",
+    "options": {
+      "A": "By using a clustering method to quantify the relationships between test cases and then assigning each test case to a category",
+      "B": "By performing optimization of the data from past iterations to see where the most common defects occurred and select the corresponding test cases",
+      "C": "By performing bayesian analysis to estimate the types of human interactions that are expected to be seen in the system and then selecting those test cases",
+      "D": "By using A/B testing to compare the last update with the newest change and compare metrics between the two"
+    },
+    "question": "A team of software testers is attempting to create an AI algorithm to assist in software testing. This particular team has gone through over 40 iterations of testing and cannot afford to spend as much time as it takes to run the full regression test suite. They are hoping to have the algorithm reduce the amount of testing required thus reducing the time needed for each testing cycle."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "93",
+    "imageUrl": "",
+    "options": {
+      "A": "Experienced-based testing should be used to confirm that the training data set is operationally relevant. This can include applying exploratory data analysis (EDA) to check for bias within the training data set.",
+      "B": "Back-to-back testing should be used to compare the model created using the training data set to another model created using the test data set. If the two models significantly differ, it will indicate there is bias in the original model",
+      "C": "Acceptance testing should be used to make sure the algorithm is suitable for the customer. The team can re-work the acceptance criteria such that the algorithm is sure to correctly predict the remaining applicants that have been set aside for the validation data set ensuring no bias is present.",
+      "D": "A/B testing should be used to verify that the test data set does not detect any bias that might have been introduced by the original training data. If the two models significantly differ, it will indicate there is bias in the original model."
+    },
+    "question": "A bank wants to use an algorithm to determine which applicants should be given a loan. The bank hires a data scientist to construct a logistic regression model to predict whether the applicant will repay the loan or not. The bank has enough data on past customers to randomly split the data into a training data set and a test/validation data set. A logistic regression model is constructed on the training data set using the following independent variables:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "94",
+    "imageUrl": "",
+    "options": {
+      "A": "Use it to prioritize defects automatically based on the time expected for the fix to be made, the speed of the fix, and the likelihood of regressions",
+      "B": "Use it to assign defects to the best developer to resolve the problem and to load balance the defect assignments among the developers",
+      "C": "Use it to determine the root cause of each defect and develop a process improvement plan that can be implemented to remove the most common root causes",
+      "D": "Use it to review the code and determine where more defects are likely to occur so that testing can be targeted to those areas"
+    },
+    "question": "There is a growing backlog of unresolved defects for your project. You know the developers have an ML model that they have created which has learned which developers work on which type of software and the speed with which they resolve issues. How could you use this model to help reduce the backlog and implement more efficient defect resolution?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "95",
+    "imageUrl": "",
+    "options": {
+      "A": "It has been trained to recognize cats and is given an image of a dog",
+      "B": "It has been trained to recognize human faces at a particular resolution and it is given a human face image captured with a higher resolution",
+      "C": "It has been trained to analyze mathematical models and is given a set of landscape pictures to classify",
+      "D": "It has been trained to analyze customer buying trend data and is given information on supplier cost data"
+    },
+    "question": "Which of the following is an example of an input change where it would be expected that the AI system should be able to adapt?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "96",
+    "imageUrl": "",
+    "options": {
+      "A": "Error-short-circuiting",
+      "B": "Reward-hacking",
+      "C": "Transparency",
+      "D": "Interpretability"
+    },
+    "question": "You are using a neural network to train a robot vacuum to navigate without bumping into objects. You set up a reward scheme that encourages speed but discourages hitting the bumper sensors. Instead of whet you expected, the vacuum has now learned to drive backwards because there are no bumpers on the back."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "97",
+    "imageUrl": "",
+    "options": {
+      "A": "Geographical/Locality",
+      "B": "Automation/Complacency",
+      "C": "Complacency/Disregard",
+      "D": "Ignorance/Cognitive"
+    },
+    "question": "A word processing company is developing an automatic text correction tool. A machine learning algorithm was used to develop the auto text correction feature. The testers have discovered when they start typing “Isle of Wight” it fills in “Isle of Eight”. Several UAT testers have accepted this change without noticing. What type of bias is this?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "98",
+    "imageUrl": "",
+    "options": {
+      "A": "Cleaning, transforming, augmenting",
+      "B": "Feature selecting, feature growing, feature augmenting",
+      "C": "Identifying, gathering, labeling",
+      "D": "Building, approving, deploying"
+    },
+    "question": "Which of the following are the three activities in the data acquisition activities for data preparation?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "99",
+    "imageUrl": "",
+    "options": {
+      "A": "General AI",
+      "B": "Narrow AI",
+      "C": "Super AI",
+      "D": "Conventional AI"
+    },
+    "question": "A tourist calls an airline to book a ticket and is connected with an automated system which is able to recognize speech, understand requests related to purchasing a ticket, and provide relevant travel options. When the tourist asks about the expected weather at the destination or potential impacts on operations because of the tight labor market the only response from the automated system is, “I don’t understand your question.”"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "100",
+    "imageUrl": "",
+    "options": {
+      "A": "Exploratory testing",
+      "B": "Static analysis",
+      "C": "Equivalence partitioning",
+      "D": "State transition testing"
+    },
+    "question": "A mobile app start-up company is implementing an AI-based chat assistant for e-commerce customers. In the process of planning the testing, the team realizes that the specifications are insufficient."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "101",
+    "imageUrl": "",
+    "options": {
+      "A": "Metamorphic testing because the application domain is not clearly understood at this point",
+      "B": "Adversarial testing to verify that no incorrect images have been used in the training",
+      "C": "Pairwise testing using combinatorics to look at a long list of photo parameters",
+      "D": "Back-to-back testing using the version of the model before training and the new version of the model after being trained with additional images"
+    },
+    "question": "A wildlife conservation group would like to use a neural network to classify images of different animals. The algorithm is going to be used on a social media platform to automatically pick out pictures of the chosen animal of the month. This month’s animal is set to be a wolf. The test team has already observed that the algorithm could classify a picture of a dog as being a wolf because of the similar characteristics between dogs and wolves. To handle such instances, the team is planning to train the model with additional images of wolves and dogs so that the model is able to better differentiate between the two."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "102",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775089397125-8804ct9j.png",
+    "options": {
+      "A": "90.0%",
+      "B": "94.5%",
+      "C": "98.9%",
+      "D": "94.2%"
+    },
+    "question": "A motorcycle engine repair shop over wants to detect a leaking exhaust valve and fix it before it fails and causes catastrophic damage to the engine. The shop developed and trained a predictive model with historical data files from known healthy engines and ones which experienced a catastrophic failure due to exhaust valve failure. The shop evaluated 200 engines using this model and then disassembled the engines to assess the true state of the valves, recording the results in the confusion matrix below."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "103",
+    "imageUrl": "",
+    "options": {
+      "A": "The model suffers from drift and therefore should be regularly tested to ensure that any occurrences of drift are detected soon enough for the problem to be mitigated",
+      "B": "The model suffers from drift and therefore the performance standard should be eased until a new model with more transparency can be developed",
+      "C": "The model suffers from corruption and therefore should be reloaded into the computer system being used, preferably with a method of version control to prevent further changes",
+      "D": "The model suffers from a lack of transparency and therefore should be regularly tested to ensure that any progressive errors are detected soon enough for the problem to be mitigated"
+    },
+    "question": "An airline has created a ML model to project fuel requirements for future flights. The model imports weather data such as wind speeds and temperatures, calculates flight routes based on historical routings from air traffic control, and estimates loads from average passenger and baggage weights. The model performed within an acceptable standard for the airline throughout the summer but as winter set in the load weights became less accurate. After some exploratory data analysis it became apparent that luggage weights were higher in the winter than in summer."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "104",
+    "imageUrl": "",
+    "options": {
+      "A": "The feedback requires a physical connection and cannot be sent over the Internet",
+      "B": "Mobile operating systems cannot process machine learning algorithms",
+      "C": "The size of the application is consuming too much of the phone’s storage capacity",
+      "D": "The training, processing, and diagnostic generation are too computationally intensive for the mobile device hardware to handle"
+    },
+    "question": "A startup company has implemented a new facial recognition system for a banking application for mobile devices. The application is intended to learn at run-time on the device to determine if the user should be granted access. It also sends feedback over the Internet to the application developers. The application deployment resulted in continuous restarts of the mobile devices."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "105",
+    "imageUrl": "",
+    "options": {
+      "A": "Run the test several times to ensure that the AI always returns the same correct test result",
+      "B": "Decompose the system test into multiple data ingestion tests to determine if the AI system is getting a sufficient volume of input data",
+      "C": "Decompose the system test into multiple data ingestion tests to determine if the AI system is getting precise and accurate input data",
+      "D": "Run the test several times to generate a statistically valid test result to ensure that an appropriate number of answers are accurate"
+    },
+    "question": "Which of the following approaches would help overcome testing challenges associated with probabilistic and non-deterministic AI-based systems?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "106",
+    "imageUrl": "",
+    "options": {
+      "A": "There is only an input and output layer",
+      "B": "There is at least one internal hidden layer",
+      "C": "There must be a minimum of five total layers to be considered deep",
+      "D": "The output layer is not connected with the other layers to maintain integrity"
+    },
+    "question": "Which of the following is correct regarding the layers of a deep neural network?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "107",
+    "imageUrl": "",
+    "options": {
+      "A": "Test cases to verify that the system automatically confirms the correct classification of training data",
+      "B": "Test cases to detect the system appropriately automating its data input",
+      "C": "Test cases to detect the system prompting for unnecessary human intervention",
+      "D": "Test cases to verify that the system automatically suppresses invalid output data"
+    },
+    "question": "When verifying that an autonomous AI-based system is acting appropriately, which of the following are MOST important to include?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "108",
+    "imageUrl": "",
+    "options": {
+      "A": "Associating shoppers with their shopping tendencies",
+      "B": "Grouping individual fish together based on their types of fins",
+      "C": "Classifying muffin purchases based on the perceived attractiveness of their packaging",
+      "D": "Estimating the expected purchase of cat food after a particularly successful ad campaign"
+    },
+    "question": "Which of the following is an example of a clustering problem that can be resolved by unsupervised learning?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "109",
+    "imageUrl": "",
+    "options": {
+      "A": "Selecting training data by purposely excluding specific faulty conditions",
+      "B": "Selecting training data by purposely including all known faulty conditions.",
+      "C": "Selecting testing data from a different dataset than the training dataset",
+      "D": "Selecting testing data from a boat manufacturer’s bolt longevity data"
+    },
+    "question": "An engine manufacturing facility wants to apply machine learning to detect faulty bolts. Which of the following would result in bias in the model?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "110",
+    "imageUrl": "",
+    "options": {
+      "A": "There is no risk, as the model has already been trained",
+      "B": "Insufficient function; the model was not trained to check for colors or words",
+      "C": "Improper data preparation",
+      "D": "Inherited bias; the model could have inherited unknown defects"
+    },
+    "question": "A beer company is trying to understand how much recognition its logo has in the market. It plans to do that by monitoring images on various social media platforms using a pre-trained neural network for logo detection. This particular model has been trained by looking for words, as well as matching colors on social media images. The company logo has a big word across the middle with a bold blue end magenta border."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "111",
+    "imageUrl": "",
+    "options": {
+      "A": "Labeling the data correctly",
+      "B": "Minimizing the amount of time spent training the algorithm",
+      "C": "Selecting the correct data pipeline for the ML training",
+      "D": "Grouping similar products together before feeding them into the algorithm"
+    },
+    "question": "An e-commerce developer built an application for automatic classification of online products in order to allow customers to select products faster. The goal is to provide more relevant products to the user based on prior purchases."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "112",
+    "imageUrl": "",
+    "options": {
+      "A": "The number of parameters to test can be reduced to less than a dozen",
+      "B": "All high priority defects will be identified using this method",
+      "C": "While the number of tests needed can be reduced, there may still be a large enough set of tests that automation will be required to execute all of them",
+      "D": "Pairwise cannot be applied to this problem because there is AI involved and the evolving values may result in unexpected results that cannot be verified"
+    },
+    "question": "You are testing an autonomous vehicle which uses AI to determine proper driving actions and responses. You have evaluated the parameters and combinations to be tested and have determined that there are too many to test in the time allowed."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "113",
+    "imageUrl": "",
+    "options": {
+      "A": "Personal data or confidential data",
+      "B": "Output data or intermediate data",
+      "C": "Video frame speed or aspect ratio",
+      "D": "Data frameworks or machine learning frameworks"
+    },
+    "question": "Which of the following aspects in a challenge when handling test data for an AI-based system?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "114",
+    "imageUrl": "",
+    "options": {
+      "A": "Autonomy",
+      "B": "Explorability",
+      "C": "Transparency",
+      "D": "Accessibility"
+    },
+    "question": "You have access to the training data that was used to train an AI-based system. You can review this information and use it as a guideline when creating your tests. What type of characteristic is this?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "115",
+    "imageUrl": "",
+    "options": {
+      "A": "They are slow and will usually not be able to execute in the time allowed",
+      "B": "They are defect prone because they are unable to detect nuances in the requirements",
+      "C": "They make debugging more complicated because the number of steps is usually high in order to induce the target failure",
+      "D": "They are usually missing the expected results, so verification is difficult or must resort to only detecting significant failures"
+    },
+    "question": "Which of the following is a problem with AI-generated test cases that are generated from the requirements?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "116",
+    "imageUrl": "",
+    "options": {
+      "A": "Lack of domain knowledge",
+      "B": "Expert knowledge",
+      "C": "Interoperability error",
+      "D": "Small datasets"
+    },
+    "question": "Which of the following is one of the reasons for data mislabeling?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "117",
+    "imageUrl": "",
+    "options": {
+      "A": "Threshold coverage",
+      "B": "Neuron coverage",
+      "C": "Sign-change coverage 5",
+      "D": "Value-change coverage"
+    },
+    "question": "A neural network has been designed and created to assist day-traders improve efficiency when buying and selling commodities in a rapidly changing market. Suppose the test team executes a test on the neural network where each neuron is examined. For this network the shortest path indicates a buy, and it will only occur when the one-day predicted value of the commodity is greater than the spot price by 0.75%. The neurons are stimulated by entering commodity prices and testers verify that they activate only when the future value exceeds the spot price by at least 0.75%."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "118",
+    "imageUrl": "",
+    "options": {
+      "A": "1, 2",
+      "B": "1, 3",
+      "C": "3, 4",
+      "D": "2, 4"
+    },
+    "question": "Which of the below TWO examples of AI system behavior are reward hacking:"
+  }
+]

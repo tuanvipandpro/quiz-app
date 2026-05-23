@@ -1,0 +1,3354 @@
+[
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "1",
+    "imageUrl": "",
+    "options": {
+      "A": "The quality of defects will improve",
+      "B": "Ease of access to statistics about test progress",
+      "C": "Disk space is not required to track versions of test artifacts",
+      "D": "Less network traffic generated"
+    },
+    "question": "What is one potential benefit of using a test automation tool?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "2",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775054930796-f9epp1xj.png",
+    "options": {
+      "A": "The security test case should be executed first as it is related to access control",
+      "B": "The test cases should contain all steps required for execution, including navigation information and SQL statements required to perform the verification",
+      "C": "The test cases are not being executed in the proper order",
+      "D": "The test cases do not indicate the expected result"
+    },
+    "question": "You have been given the following story:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "3",
+    "imageUrl": "",
+    "options": {
+      "A": "It can be gathered early and then used to make changes after the product goes to production to make it more user friendly",
+      "B": "It allows the project manager to get a better view of the changes that will be needed for the next version",
+      "C": "The developers get a better understanding of what they are building",
+      "D": "The testers get a better understanding of the test automation requirements"
+    },
+    "question": "Which of the following is a benefit of early stakeholder feedback?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "4",
+    "imageUrl": "",
+    "options": {
+      "A": "0, 100",
+      "B": "-1, 1, 99, 101",
+      "C": "0, 1, 99, 100",
+      "D": "-1, 0, 1, 99, 100, 101"
+    },
+    "question": "You are using boundary value analysis to determine your test data. What values should you use to test a routine that requires an integer input (x) to be greater than zero and less than 100 to achieve 100% minimum coverage using the two-point boundary value analysis technique?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "5",
+    "imageUrl": "",
+    "options": {
+      "A": "Analytical thinking",
+      "B": "Communicating with empathy",
+      "C": "Curiosity",
+      "D": "Tool knowledge"
+    },
+    "question": "Testing can be seen as a destructive activity. Which of the following generic skills will help a tester overcome this barrier?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "6",
+    "imageUrl": "",
+    "options": {
+      "A": "E is 46.3 days, SD = 35",
+      "B": "E is 40 days, SD = 6.67",
+      "C": "E is 37.3 days, SD = 43.3",
+      "D": "E is 43.3 days, SD = 5"
+    },
+    "question": "You are working on calculating the estimation for a project. You have been given the following numbers by your manager, who is considered to be an expert in estimation:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "7",
+    "imageUrl": "",
+    "options": {
+      "A": "3, 1, 5, 2, 4",
+      "B": "1, 2, 5, 4, 3",
+      "C": "1, 3, 5, 2, 4",
+      "D": "4, 3, 1, 2, 5"
+    },
+    "question": "You have been given the following test cases for execution. You have been told that security and usability are the highest priorities respectively for this banking application. What is the proper execution order for these test cases?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "8",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing shows the presence of defects",
+      "B": "Exhaustive testing is impossible",
+      "C": "Tests wear out",
+      "D": "Defects tend to cluster in a few modules"
+    },
+    "question": "Which testing principle provides a good reason to base testing upon risk mitigation priorities?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "9",
+    "imageUrl": "",
+    "options": {
+      "A": "Prompt and prepared attendance to stand-up meetings",
+      "B": "Step-by-step test case documentation",
+      "C": "Ensuring there is a corresponding testing activity for every software development activity",
+      "D": "Involving the stakeholders in reviewing all acceptance criteria prior to designing test cases"
+    },
+    "question": "Which of the following is a good testing practice that applies regardless of the specific software development lifecycle being used?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "10",
+    "imageUrl": "",
+    "options": {
+      "A": "Project management",
+      "B": "Entry criteria",
+      "C": "Exit criteria",
+      "D": "The expected test completion date"
+    },
+    "question": "In an Agile development model, the completion of testing or “done” is defined by which of the following?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "11",
+    "imageUrl": "",
+    "options": {
+      "A": "Points > Reservation",
+      "B": "Login > Points, Points > Flight, Points > Hotel",
+      "C": "Login > Login, Login > Points, Login > Flight, Login > Hotel, Points > Flight, Points > Hotel",
+      "D": "Login > Login, Login > Points, Login > Flight, Login > Hotel, Flight > Hotel, Hotel > Flight, Flight > Login, Hotel > Login"
+    },
+    "question": "You are testing web application software that allows a person to use their travel points to make flight and hotel reservations. When the user logs into the software (username/password) they are presented with a set of options. From that set of options, they can pick the following:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "12",
+    "imageUrl": "",
+    "options": {
+      "A": "Exploratory",
+      "B": "Decision-based",
+      "C": "Checklist-based",
+      "D": "Control flow"
+    },
+    "question": "If you are using test results to learn more about the software and are then creating additional tests based on those results, what type of testing are you doing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "13",
+    "imageUrl": "",
+    "options": {
+      "A": "Any person in the team with the right skills can perform any task",
+      "B": "Tasks are assigned to specific team members who will own that task until completion",
+      "C": "Testers have clear ownership of quality and this eliminates confusion and overlap",
+      "D": "Business representatives are not included in the team so they can supply independent assessment during UAT"
+    },
+    "question": "Which of the following is an advantage of the whole team approach?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "14",
+    "imageUrl": "",
+    "options": {
+      "A": "Use case testing",
+      "B": "Decision table testing",
+      "C": "State transition testing",
+      "D": "Equivalence partitioning"
+    },
+    "question": "Which black-box technique should be used to verify different responses of the system, depending on its current conditions or previous history?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "15",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775058259027-xpe0c6h6.png",
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "3",
+      "D": "4"
+    },
+    "question": "An anti-intrusion system is battery powered and is activated by pressing the only available button. To deactivate the system, the operator must enter a PIN code. The system will stay in alert mode within a configurable timeout and an alarm bell will ring if the system is not deactivated before the timeout expires. The following state transition diagram describes the behavior of the system:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "16",
+    "imageUrl": "",
+    "options": {
+      "A": "i, ii and iii are characteristics of sequential models; iv and v are characteristics of iterative and incremental models",
+      "B": "iii and iv are characteristics of sequential models; and i, ii and v are characteristics of iterative and incremental models",
+      "C": "i and iv are characteristics of sequential models; ii, iii and v are characteristics of iterative and incremental models",
+      "D": "ii and iv are characteristics of sequential models; i in and v are characteristics of iterative and incremental models"
+    },
+    "question": "A number of characteristics are given for impact of SDLC on the testing effort."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "17",
+    "imageUrl": "",
+    "options": {
+      "A": "QA is the responsibility of everyone on a project while QC is the responsibility of a dedicated team",
+      "B": "QA is a process-oriented approach, while QC is a product-oriented approach.",
+      "C": "QA is preventive while QC is corrective",
+      "D": "QA is focused on implementation, while QC is focused on improvement"
+    },
+    "question": "Which of the following is the main difference between quality assurance (QA) and quality control (QC)?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "18",
+    "imageUrl": "",
+    "options": {
+      "A": "The shift-left approach can only be implemented with test automation.",
+      "B": "The shift-left approach in testing is compatible with DevOps practices.",
+      "C": "The shift-left approach can involve security vulnerabilities.",
+      "D": "The shift-left approach can be supported by static analysis tools."
+    },
+    "question": "Which of the following statements about the shift-left approach is FALSE?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "19",
+    "imageUrl": "",
+    "options": {
+      "A": "There are 3 partitions - one for negative numbers, one for numbers up to 100 and the last one for numbers up to 200",
+      "B": "The requirements are not correct because the partitions are overlapping",
+      "C": "The equivalence partitions cannot be determined for this question because the error message for two partitions is exactly same",
+      "D": "The equivalence partitions cannot be determined for this question because factorial of numbers close to 200 will be very large"
+    },
+    "question": "Consider a program that computes the factorial of a number (n). From the specifications you know that:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "20",
+    "imageUrl": "",
+    "options": {
+      "A": "Increased test effectiveness / efficiency",
+      "B": "Team bonding and learning",
+      "C": "Improved quality of the test basis",
+      "D": "Increased quality of the test cases"
+    },
+    "question": "You have just completed a retrospective at the end of a sprint. One of the developers raised an issue with defect reports not containing information about the configuration, data, and system being used when the failure occurred. When this happens, they reject the defect report and the tester has to update it and send it again. This sometimes takes three or four iterations to get all the information on the report. The test team will take this feedback and will improve the details included in the defect reports. This is an example of which type of benefit for testing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "21",
+    "imageUrl": "",
+    "options": {
+      "A": "Failures found in alpha testing",
+      "B": "The initial release of the software",
+      "C": "Changing requirements during pre-deployment activities",
+      "D": "Adding a new feature to an existing system"
+    },
+    "question": "Which of the following best suggests the need for maintenance testing?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "22",
+    "imageUrl": "",
+    "options": {
+      "A": "Portability of test automation code",
+      "B": "Understandability of test reports",
+      "C": "Dependability of test environments",
+      "D": "Stability of the system under test"
+    },
+    "question": "Which of the following is supported by good information traceability?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "23",
+    "imageUrl": "",
+    "options": {
+      "A": "Create a list of possible failures and defects and design tests to address each one",
+      "B": "Ask the developers where the likely errors will be and discuss how to test for each one",
+      "C": "Review the code to determine areas of high complexity and target those areas with tests",
+      "D": "Determine all the decisions in the code and design tests to address each one"
+    },
+    "question": "Which of the following is a methodical approach to error guessing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "24",
+    "imageUrl": "",
+    "options": {
+      "A": "By taking the number of branches in the code that have been tested and dividing that by the number of total branches in the code",
+      "B": "By taking the number of branches in the code on one path that has been tested and dividing that number by the total paths through the code",
+      "C": "By taking the number of statements in the code and dividing those by the number of branches that have been tested",
+      "D": "By counting the number of branches in the code that have been tested"
+    },
+    "question": "How is branch coverage determined?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "25",
+    "imageUrl": "",
+    "options": {
+      "A": "It verifies that the test cases are executed in the correct order",
+      "B": "It ensures that regressions do not occur",
+      "C": "It enforces proper unit testing and measurement",
+      "D": "It uniquely identifies the items to be tested"
+    },
+    "question": "In what way does configuration management help the tester?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "26",
+    "imageUrl": "",
+    "options": {
+      "A": "A series of tests where pressure is set to 98, 110, and 201 pounds",
+      "B": "A series of tests where pressure is set to 98, 100, and 200 pounds",
+      "C": "A series of tests where pressure is set to 100, 110, and 200 pounds",
+      "D": "A series of tests where pressure is set to -1, 0, 175, and 297 pounds"
+    },
+    "question": "A functional requirement states that pressure values must always be positive and stay within a range of 100 to 200 pounds for a particular tank (100 and 200 are valid within the range). Which of the following is the minimum set of values that would achieve coverage using the equivalence partitioning technique?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "27",
+    "imageUrl": "",
+    "options": {
+      "A": "Project planning",
+      "B": "Iteration planning",
+      "C": "Release planning",
+      "D": "Epic planning"
+    },
+    "question": "When is the detailed risk analysis for a story first conducted?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "28",
+    "imageUrl": "",
+    "options": {
+      "A": "Only the decisions in the code",
+      "B": "Only the loops in the code",
+      "C": "Only the executable statements in the code",
+      "D": "All lines of code including executable statements and comments"
+    },
+    "question": "When tests are being created to achieve statement coverage, what are they exercising?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "29",
+    "imageUrl": "",
+    "options": {
+      "A": "Daily stand-up meetings with everyone",
+      "B": "Dashboards connected to the test management and defect management systems that automatically update when a change is made",
+      "C": "Email sent out hourly to all team members with red text for any new issues with a “must read” note in the subject line",
+      "D": "Formal test reports issued each week with trend charts and residual defect status information"
+    },
+    "question": "You are working with a geographically and time zone distributed team. It is important that the entire team always have access to the latest test execution information. Which of these is the most appropriate method for communicating that status?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "30",
+    "imageUrl": "",
+    "options": {
+      "A": "TC1 would highlight the fault.",
+      "B": "TC2 would highlight the fault.",
+      "C": "TC3 would highlight the fault.",
+      "D": "None of the three test cases would highlight the fault."
+    },
+    "question": "A requirement specifies that if the total amount of sales (TAS) made during the year by a corporate seller is 300,000€ or more, the bonus that must be paid to the seller is 100% of a certain amount agreed upon at the beginning of the year. The software contains a fault as it implements this requirement with the decision \"IF (TAS = 300,000)\" instead of \"IF (TAS >= 300,000)\". The application of the 3-value boundary value analysis to this problem consists of the following three test cases (TAS is an integer variable):"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "31",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775058764700-v2kexc97.png",
+    "options": {
+      "A": "1 is correct",
+      "B": "2 is correct",
+      "C": "3 is correct",
+      "D": "4 is correct"
+    },
+    "question": "You are getting ready to test software that will be used to dispatch spa pool technicians. You have decided to use a decision table to determine when chemicals will be needed and when maintenance functions should be performed. You have been given the following requirements:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "32",
+    "imageUrl": "",
+    "options": {
+      "A": "DevOps",
+      "B": "CI/CD",
+      "C": "Brainstorming",
+      "D": "Equivalence Partitioning"
+    },
+    "question": "Which of the following is a technique that can be used to develop user stories in collaboration with the developers and business?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "33",
+    "imageUrl": "",
+    "options": {
+      "A": "Beta testing",
+      "B": "Retirement testing",
+      "C": "System integration testing",
+      "D": "Maintenance testing"
+    },
+    "question": "A test manager has started a cycle of testing for an e-commerce application. The reason for testing is the change in the protocol for connecting to the payment gateway because of new regulations. Which of the following correctly names this type of testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "34",
+    "imageUrl": "",
+    "options": {
+      "A": "Conduct formal reviews to detect defects as early as possible.",
+      "B": "Perform a usability analysis prior to user interface design.",
+      "C": "Automate error detection at the beginning of acceptance testing.",
+      "D": "Hire low-cost, outsourced testing staff for system testing."
+    },
+    "question": "What is a reasonable way to control and minimize the cost of testing and development?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "35",
+    "imageUrl": "",
+    "options": {
+      "A": "Functional",
+      "B": "Reliability",
+      "C": "Performance",
+      "D": "Maintainability"
+    },
+    "question": "Given the following requirement: The system shall compute the car’s position using the following equation: new_distance_traveled + old_position Which type of testing should be implemented to help ensure this requirement is met?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "36",
+    "imageUrl": "",
+    "options": {
+      "A": "Business analyst",
+      "B": "Test manager",
+      "C": "Developer",
+      "D": "Tester"
+    },
+    "question": "If you are responsible for test analysis and test design what is your primary role in your team?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "37",
+    "imageUrl": "",
+    "options": {
+      "A": "Facilitates management and control of testing activities",
+      "B": "Generates test data based on test management criteria",
+      "C": "Generates detailed test specifications based on the test plan",
+      "D": "Analyzes and enforces coding and testing standards"
+    },
+    "question": "Which is a key function of a test management tool?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "38",
+    "imageUrl": "",
+    "options": {
+      "A": "Memory leak during execution",
+      "B": "Performance of a module under load",
+      "C": "Interactive output from a debugger",
+      "D": "Test plan"
+    },
+    "question": "Which of the following should you review using static testing?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "39",
+    "imageUrl": "",
+    "options": {
+      "A": "Initiating",
+      "B": "Planning",
+      "C": "Analysis",
+      "D": "Fixing"
+    },
+    "question": "During which activity in the review process are the quality characteristics selected for evaluation?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "40",
+    "imageUrl": "",
+    "options": {
+      "A": "It is technology facing, supports the team, and contains component and component integration tests",
+      "B": "It is business facing, critiques the product, and contains exploratory and usability testing",
+      "C": "It is technology facing, critiques the product, and contains the smoke tests and performance tests",
+      "D": "It is business facing, supports the team, and contains functional tests and API tests"
+    },
+    "question": "Which of the following is a correct statement regarding Quadrant Q2 of the testing quadrants?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "41",
+    "imageUrl": "",
+    "options": {
+      "A": "Deny risk, Mitigate risk by testing",
+      "B": "Accept risk, Abandon risk",
+      "C": "Abandon risk, Delay risk",
+      "D": "Transfer risk, Accept risk"
+    },
+    "question": "Which of the following provides two defined risk response actions to help control product risk?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "42",
+    "imageUrl": "",
+    "options": {
+      "A": "No change is required. The current approach will still be applicable.",
+      "B": "There will be additional emphasis on test automation to supply continuous testing.",
+      "C": "Additional time will be needed to analyze the requirements and design test cases.",
+      "D": "There will be a need for less technical testers because the developers will handle all the technical testing."
+    },
+    "question": "Your company has been working in a waterfall lifecycle model. They have now decided to implement DevOps and will be using CI/CD. Which of the following is a change that will be required from the testing team?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "43",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing",
+      "B": "Design and Analysis",
+      "C": "Debugging",
+      "D": "Configuration management"
+    },
+    "question": "If a developer is analyzing a failure to determine the cause, he is engaging in what type of activity?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "44",
+    "imageUrl": "",
+    "options": {
+      "A": "Test-driven development",
+      "B": "Acceptance test-driven development",
+      "C": "Business-driven development",
+      "D": "Behavior-driven development"
+    },
+    "question": "If test cases are written in the given/when/then format, what type of test-first software development is being used?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "45",
+    "imageUrl": "",
+    "options": {
+      "A": "Finding the stable areas of the code which do not require testing",
+      "B": "Debugging incidents to determine the cause of the problem",
+      "C": "Finding failures and defects in the test object",
+      "D": "Participating in code reviews to improve scripting skills"
+    },
+    "question": "Which of the following is a valid test objective?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "46",
+    "imageUrl": "",
+    "options": {
+      "A": "The test environment in which the test was executed",
+      "B": "Test case expected results",
+      "C": "The name of the developer who should have caught their error in unit testing",
+      "D": "Frequency of occurrence"
+    },
+    "question": "You are a functional tester, performing system testing of a flight reservation application. After logging into the system, you selected the “New Reservation” option on the main menu, and clicked the “Submit” button without making any changes to the default values on the screen. The system charged your test credit card for $523.00 instead of the expected $1046.00. This happens every time you execute the test case. You are entering a defect into your system, and submitting it to development for correction. Your defect report currently includes:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "47",
+    "imageUrl": "",
+    "options": {
+      "A": "Test plan",
+      "B": "Test platform selection",
+      "C": "Code base",
+      "D": "Test tool selection"
+    },
+    "question": "Which of the following is an example of a test work product?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "48",
+    "imageUrl": "",
+    "options": {
+      "A": "Performing detailed review based on past experience",
+      "B": "Organizing the logistics of the review meeting",
+      "C": "Ensuring that sufficient time is available for review",
+      "D": "Measuring the performance of each reviewer"
+    },
+    "question": "In a review which of the following is the responsibility of the manager?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "49",
+    "imageUrl": "",
+    "options": {
+      "A": "[I] and [II].",
+      "B": "[II] and [III].",
+      "C": "[II], [III] and [V].",
+      "D": "[I], [IV] and [V]."
+    },
+    "question": "As a tester, as part of a V-model project, you are currently executing some tests aimed at verifying if a mobile app asks the user to grant the proper access permissions during the installation process and after the installation process. The requirements specification states that in both cases the app shall ask the user to grant access permissions only to the camera and photos stored on the device. However, you observe that the app also asks the user to grant access permission to all contacts on the device. Consider the following items:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "50",
+    "imageUrl": "",
+    "options": {
+      "A": "Where a developer and a tester work together on the same workstation: while the developer actively writes code, the tester explores the code to find defects.",
+      "B": "That can be organized into sessions guided by test charters outlining test objectives that will guide the testers' exploration.",
+      "C": "Where a team of testers explores all possible test techniques in order to determine the most suitable combination of these techniques to apply for a test project.",
+      "D": "That aims at finding defects by designing tests that exercise all possible combinations of input values and preconditions."
+    },
+    "question": "Exploratory testing is an experience-based test technique:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "51",
+    "imageUrl": "",
+    "options": {
+      "A": "Determine the most appropriate level of detail with which to design test cases.",
+      "B": "Verify the compliance of the test object with regulatory requirements.",
+      "C": "Plan test activities in accordance with the existing test policy and test strategy.",
+      "D": "Verify the correct creation and configuration of the test environment."
+    },
+    "question": "A typical objective of testing is to:"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "53",
+    "imageUrl": "",
+    "options": {
+      "A": "It helps avoid the risk of tasks associated with a user story not moving through the Agile task board at an acceptable rate during an iteration.",
+      "B": "It helps team members understand the current status of an iteration by visualizing the amount of work left to do compared to the time allotted for the iteration.",
+      "C": "It helps the whole team be more effective in test case design by requiring all team members to master all types of test techniques.",
+      "D": "It helps team members develop better relationships with each other and make their collaboration more effective for the benefit of the Project."
+    },
+    "question": "Which of the following is an advantage of the whole team approach?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "54",
+    "imageUrl": "",
+    "options": {
+      "A": "Checklist-based testing is a technique for managing the review meeting that can be applied in those reviews where the use of checklists is mandatory, as is often the case in formal reviews.",
+      "B": "Checklist-based testing is a review technique that can be used in a formal review process where reviewers, during individual review, try to detect issues within the work product based on a checklist.",
+      "C": "In checklist-based testing, using checklists at a high level of detail is more likely to produce test cases that are easier to reproduce than those using checklists at a low level of detail.",
+      "D": "Checklists used in checklist-based testing should be reviewed periodically for updates as, over time, test cases designed using the same checklist may become less effective at finding defects."
+    },
+    "question": "Which of the following statements about checklist-based testing is TRUE?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "55",
+    "imageUrl": "",
+    "options": {
+      "A": "The user should be able to provide three inputs to test the product - the AI model to be tested, the data used and an optional text file",
+      "B": "An unregistered user shouldn't be shown any report",
+      "C": "Verify that a registered user can create add a new project with name having more than 100 characters",
+      "D": "A user is already logged in then on navigating to the AI model testing page the user should be directly shown the report of last test run"
+    },
+    "question": "Which of the following is an example of scenario-oriented acceptance criteria?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "56",
+    "imageUrl": "",
+    "options": {
+      "A": "The slowdown is a failure while the memory leak is a defect.",
+      "B": "The slowdown is a defect while the memory leak is an error.",
+      "C": "The slowdown is an error, the memory leak is a defect.",
+      "D": "The slowdown is a defect; the memory leak is a failure."
+    },
+    "question": "An application is subjected to a constant load for an extended period of time as part of a performance test. While running this test, the response time of the application steadily slows down, which results in a requirement not being met. This slowdown is caused by a memory leak where the application code does not properly release some of the dynamically allocated memory when it is no longer needed. Which of the following statements is TRUE?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "57",
+    "imageUrl": "",
+    "options": {
+      "A": "Tests wear out.",
+      "B": "Absence-of-errors fallacy.",
+      "C": "Working software over comprehensive documentation.",
+      "D": "Defects cluster together."
+    },
+    "question": "In addition to thorough testing of the requirements specification, a development team aims to involve users as early as possible in the development process, using practices such as prototyping, to ensure that the software systems being developed will meet the users’ expectations. This approach is especially useful at mitigating the risks associated with one of the seven testing principles, which one?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "58",
+    "imageUrl": "",
+    "options": {
+      "A": "7",
+      "B": "6",
+      "C": "5",
+      "D": "3"
+    },
+    "question": "A requirement specifies that a certain identifier (ID) must be between 5 and 10 characters long, must contain only alphanumeric characters, and its first character must be a letter. As a tester, you want to apply one-dimensional equivalence partitioning to test this ID. This means that you have to apply equivalence partitioning individually: to the length of the ID, the type of characters contained within the ID, and the type of the first character of the ID. What is the number of partitions to cover?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "59",
+    "imageUrl": "",
+    "options": {
+      "A": "Test execution.",
+      "B": "Test design.",
+      "C": "Test analysis.",
+      "D": "Test planning."
+    },
+    "question": "Determining the schedule for each testing activity and test milestones for a test project, using activity estimates, available resources, and other constraints is a typical task performed during:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "60",
+    "imageUrl": "",
+    "options": {
+      "A": "Traceability between test basis items and the test cases designed to cover them, makes it possible to determine which test basis items have been covered by the executed test cases.",
+      "B": "Traceability between test basis items and the test cases designed to cover them, enables experience-based test techniques to be applied.",
+      "C": "Traceability between test basis items and the test cases designed to cover them, enables identification of which test cases will be affected by changes to the test basis items.",
+      "D": "Traceability can be established and maintained through all the test documentation for a given test level, such as from test conditions through test cases to test scripts."
+    },
+    "question": "Which of the following statements about traceability is FALSE?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "61",
+    "imageUrl": "",
+    "options": {
+      "A": "Reduced feedback times regarding software quality compared to manual testing.",
+      "B": "Reduced test execution times compared to manual testing.",
+      "C": "Reduced repeatability and consistency of tests compared to manual testing.",
+      "D": "Underestimation of effort required to maintain test scripts."
+    },
+    "question": "Which of the following is a typical potential risk of using test automation tools?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "62",
+    "imageUrl": "",
+    "options": {
+      "A": "Each test level should have its own specific test objectives that should be consistent with the software development lifecycle phase or type of activities it addresses.",
+      "B": "Test analysis and design for any test levels should begin as soon as coding is complete, and all system components are available for testing.",
+      "C": "The most efficient and effective method of conveying information to and within a development team is face-to-face conversation.",
+      "D": "All the tests should be automated and run as part of the continuous integration process with every software change."
+    },
+    "question": "Which of the following statements refers to a good testing practice that applies to all software development lifecycles?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "63",
+    "imageUrl": "",
+    "options": {
+      "A": "The new user enters valid values in the fields of the registration form, except for the email address, where he/she enters an e-mail address provided by a free online mail service that allow to create disposable email addresses. Then he/she is informed by the website about this issue.",
+      "B": "The new user enters valid values in the fields of the registration form, except for the first name, where he/she enters a first name with 10 characters that contains a number. Then he/she is informed by the website about this issue.",
+      "C": "The user accesses the website with a username and password, and successfully places a purchase order for five items, paying by Mastercard credit card.",
+      "D": "The new user enters valid values in all the fields of the registration form, confirms to accept all the terms and conditions, submits the registration request and then receives an e-mail containing the confirmation link to the e-mail address specified in the registration form."
+    },
+    "question": "Consider the following user story about an e-commerce website's registration feature that only allows registered users to make purchases:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "64",
+    "imageUrl": "",
+    "options": {
+      "A": "No maintenance testing is required as this system will not be replaced.",
+      "B": "Data migration testing is required as part of maintenance testing.",
+      "C": "Confirmation testing is required as part of maintenance testing.",
+      "D": "Regression testing is required as part of maintenance testing."
+    },
+    "question": "After being in operation for many years, a document management system must be decommissioned as it has reached its end of life. This system will not be replaced by any other new system. A legal obligation provides that all documents within the system must be kept for at least 20 years in a state archive. Which of the following statements about maintenance testing for decommissioning of this system is TRUE?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "65",
+    "imageUrl": "",
+    "options": {
+      "A": "Review leader.",
+      "B": "Facilitator.",
+      "C": "Recorder.",
+      "D": "Moderator."
+    },
+    "question": "Which of the following is a role that is usually responsible for documenting the findings (e.g., action items, decisions, recommendations) made by the review team as part of a typical formal review?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "66",
+    "imageUrl": "",
+    "options": {
+      "A": "Individual review is only mandatory when the size of the work product under review is too large to cover at the review meeting.",
+      "B": "Various review techniques that may be applied by participants during individual review are described in the ISO/IEC/IEEE 29119-3 standard.",
+      "C": "Choosing which standards to follow during the review process is usually made during review planning.",
+      "D": "One of the main goals of the review meeting is to make sure that all participants are aware of their roles and responsibilities in the review process."
+    },
+    "question": "Which of the following statements about the typical activities of a formal review process is TRUE?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "67",
+    "imageUrl": "",
+    "options": {
+      "A": "The final estimate of the user story in story points is determined by applying the three-point estimation technique with the following input values: most optimistic estimate = 1, most likely estimate = 3, and most pessimistic estimate = 21.",
+      "B": "Further estimation rounds should be performed until all team members will pick the card having the same value: this value will represent the final estimate of the user story in story points.",
+      "C": "The final estimate of the user story in story points is determined by calculating the average value between the most optimistic estimate of 21 story points (Memb4) and the most pessimistic estimate of 1 story point (Memb6).",
+      "D": "Memb6 and Memb4 which have produced the most pessimistic and the most optimistic estimates respectively, should explain the reasons of their choices to stimulate a discussion between all members before proceeding to another estimation round."
+    },
+    "question": "Consider an estimation session in which a six-member Agile team (Mempb1, ..., Memb6) uses the planning poker technique to estimate a user story (in story points). The team members will use a set of cards with the following values: 1, 2, 3, 5, 8, 13, 21. Below is the outcome of the first round of estimation for this session:"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "68",
+    "imageUrl": "",
+    "options": {
+      "A": "Experience-based test techniques provide more systematic coverage criteria than black-box and white-box test techniques.",
+      "B": "Experience-based test techniques completely rely on the tester’s past experience for designing test cases.",
+      "C": "Experience-based test techniques allow designing test cases that are usually easier to reproduce than those designed with black-box and white-box test techniques.",
+      "D": "Experience-based test techniques tend to find defects that may be difficult to find with black-box and white-box test techniques and are often useful to complement these more systematic techniques."
+    },
+    "question": "Which of the following answers describes a reason for adopting experience-based testing techniques?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "69",
+    "imageUrl": "",
+    "options": {
+      "A": "Choosing a tool for automated unit testing to reduce the risks",
+      "B": "Using a third-party testing company to transfer the risk to that company",
+      "C": "Selecting a tester with required knowledge related to compliance and standards",
+      "D": "Increasing the number of testers to be able to take care of all the risks"
+    },
+    "question": "You are a test manager responsible for implementing risk-based testing in your organization which deals with software in the healthcare domain. You are writing a handbook of various product risk mitigation options. Which ONE of the following options correctly represent the correct mitigation options?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "70",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775082545653-lt0bztxc.png",
+    "options": {
+      "A": "7",
+      "B": "1",
+      "C": "8",
+      "D": "3"
+    },
+    "question": "The following decision table is an excerpt of a larger decision table used to assist a doctor in determining the drug therapy to prescribe for a patient (aged 6 to 65 years) diagnosed with acute sinusitis. The table consists of four Boolean conditions and six actions:"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "71",
+    "imageUrl": "",
+    "options": {
+      "A": "The idea that fixing defects is NOT important to meeting user needs",
+      "B": "The need for constant system quality assurance and improvements.",
+      "C": "A misconception that software verification is unnecessary",
+      "D": "The belief that thoroughly testing all requirements guarantees system success"
+    },
+    "question": "What does the \"absence-of-defects fallacy\" refer to in software development?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "72",
+    "imageUrl": "",
+    "options": {
+      "A": "It is the quadrant that component testing.",
+      "B": "It is the quadrant that Non-functional testing such as performance and the tests are created on the basis of user scenarios",
+      "C": "It is the quadrant that deals with tests created on the basis of user stories",
+      "D": "Exploratory tests are generally used for this quadrant"
+    },
+    "question": "Which of the following statements correctly describe the business facing quadrant that supports the team?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "73",
+    "imageUrl": "",
+    "options": {
+      "A": "20",
+      "B": "120",
+      "C": "180",
+      "D": "197"
+    },
+    "question": "Calculate the measurement error SD for the following estimates done using three-point estimation technique:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "74",
+    "imageUrl": "",
+    "options": {
+      "A": "Refactoring is a practice that is an integral part of TDD and is applied both to tests and to code written to satisfy those tests.",
+      "B": "ATDD is a black-box test design technique that is applicable exclusively at acceptance test level.",
+      "C": "BDD is a developer practice where business stakeholders are not usually involved as the tests are directly written at unit/component test level.",
+      "D": "ATDD is the practice of running the automated acceptance tests as part of a continuous integration process."
+    },
+    "question": "Which of the following statements about TDD, BDD and ATDD is TRUE?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "75",
+    "imageUrl": "",
+    "options": {
+      "A": "This test quadrant contains smoke tests and non-functional tests (except usability tests). These tests are often automated.",
+      "B": "This test quadrant is business-facing and criticizes the system. It contains exploratory testing, usability testing, and user acceptance testing.",
+      "C": "This test quadrant contains functional tests, examples, user story tests, user experience prototypes, API testing, and simulations. These tests check the acceptance criteria and can be manual or automated.",
+      "D": "This test quadrant is technology-facing and supports the team. These tests should be automated and included in the continuous integration (CI) process."
+    },
+    "question": "Which ONE of the following options BEST describes the third test quadrant (3)?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "76",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775082579203-27ca357q.png",
+    "options": {
+      "A": "NORMAL MODE >> DIAGNOSTIC MODE >> DEGRADED MODE >> EMERGENCY MODE >> DIAGNOSTIC MODE >> NORMAL MODE >> DIAGNOSTIC MODE",
+      "B": "NORMAL MODE >> DEGRADED MODE >> NORMAL MODE >> DIAGNOSTIC MODE >> DEGRADED MODE >> EMERGENCY MODE >> DIAGNOSTIC MODE",
+      "C": "NORMAL MODE >> DIAGNOSTIC MODE >> DEGRADED MODE >> EMERGENCY MODE >> DIAGNOSTIC MODE >> NORMAL MODE >> DEGRADED MODE",
+      "D": "NORMAL MODE >> DIAGNOSTIC MODE >> NORMAL MODE >> DIAGNOSTIC MODE >> EMERGENCY MODE >> DIAGNOSTIC MODE >> NORMAL MODE"
+    },
+    "question": "The following state transition diagram describes the behavior of a control system in terms of its possible modes of operation. The initial start state will be the “NORMAL MODE”."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "77",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775082580553-70nguhey.png",
+    "options": {
+      "A": "No test case is needed; the existing test cases already achieve the required coverage",
+      "B": "17 years old, passed both vision and driving test; expected result: grant a license",
+      "C": "18 years old, passed vision test, failed driving test; expected result: do not grant a license",
+      "D": "20 years old failed vision test passed driving test-expected result: do not grant a license"
+    },
+    "question": "You test a system that grants a driving license. You design test cases based on the following minimized decision table."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "78",
+    "imageUrl": "",
+    "options": {
+      "A": "100.01, 499.99, 500.01",
+      "B": "50.99, 500, 500.10",
+      "C": "99.99, 100, 500",
+      "D": "0, 10, 50"
+    },
+    "question": "You validate the correctness of price calculation in a food ordering application. The input parameter is the order amount (in $), and the result is the final price reflecting the discount. If the order amount is less than $100, the discount is not granted (0% discount). If the order amount is greater than $500, a 50% discount is granted. In other cases, the 10% discount is granted."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "79",
+    "imageUrl": "",
+    "options": {
+      "A": "Security testing",
+      "B": "Component testing",
+      "C": "API testing",
+      "D": "Exploratory testing"
+    },
+    "question": "In the testing quadrants model, which testing is business-facing and supports the team?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "80",
+    "imageUrl": "",
+    "options": {
+      "A": "1P, 2R, 3S, 4Q",
+      "B": "1S, 2R, 3P, 4Q",
+      "C": "1S, 2Q, 3P, 4R",
+      "D": "1P, 2Q, 3S, 4R"
+    },
+    "question": "Match test activities (1)-(4) with related tasks (P)-(S): (1) Test analysis (2) Test completion (3) Test implementation (4) Test execution"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "81",
+    "imageUrl": "",
+    "options": {
+      "A": "Testers are involved in reviewing work products as soon as the final version of this documentation is available so that this earlier testing and defect detection can support the “shift-left” strategy.",
+      "B": "Test analysis and design for a specific test level begin during the corresponding development phase of the SDLC, allowing testing to follow the principle of late testing.",
+      "C": "For every software development activity, there is a corresponding testing activity, ensuring that all development activities are subject to quality assurance.",
+      "D": "Different test levels have specific and overlapping test objectives, allowing tests to be appropriate to specific test object types while managing redundancy."
+    },
+    "question": "Which ONE of the following is a GOOD testing practice that is INDEPENDENT of the chosen SDLC (Software Development Life Cycle) model?"
+  },
+  {
+    "answer": [
+      "C",
+      "E"
+    ],
+    "id": "82",
+    "imageUrl": "",
+    "options": {
+      "A": "All functional tests for the payment process are automated",
+      "B": "A test basis describing the business rules for discounts is available",
+      "C": "All smoke tests of the registering and logging features passed",
+      "D": "The appropriate functional tests cover all use cases",
+      "E": "There are no critical and at most 3 major defects unresolved"
+    },
+    "question": "Which TWO are the examples of entry criteria for system testing of a food order app? (Choose two.)"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "83",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775083426531-298n2as0.png",
+    "options": {
+      "A": "TC1",
+      "B": "TC2",
+      "C": "TC3",
+      "D": "TC4"
+    },
+    "question": "You prioritize test cases using the additional coverage prioritization technique, using the requirements coverage as a coverage measure. All four test cases must be executed. The coverage achieved by your test cases is shown in the table below."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "84",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775083428281-0jz2iam1.png",
+    "options": {
+      "A": "{7, 8, 21, 22, 29, 30}",
+      "B": "{7, 8, 22, 23, 29, 30}",
+      "C": "{6, 7, 8, 21, 22, 29, 31}",
+      "D": "{6, 7, 21, 22, 29, 30}"
+    },
+    "question": "Scenario “Happy Tomatoes”"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "85",
+    "imageUrl": "",
+    "options": {
+      "A": "Review leader",
+      "B": "Facilitator",
+      "C": "Scribe",
+      "D": "Manager"
+    },
+    "question": "Which role is responsible for ensuring the effective running of review meetings?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "86",
+    "imageUrl": "",
+    "options": {
+      "A": "Defect management",
+      "B": "Configuration management",
+      "C": "Change management",
+      "D": "Risk management"
+    },
+    "question": "As a result of the joint evaluation of a product version with the customer, it has been concluded that it would be appropriate to retrieve an earlier version of the product and carry out a benchmark. Depending on the result, further development will be carried out based on the current version or the retrieved version."
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "87",
+    "imageUrl": "",
+    "options": {
+      "A": "Specify the impediments to carrying out the planned test activities in the reporting period and the corresponding solutions put in place to remove them.",
+      "B": "Be produced as part of test completion activities and report unmitigated product risks to support the decision whether or not to release the product.",
+      "C": "Always be based on the same template within an organization, as its structure and contents should not be affected by the audience to which the report is presented.",
+      "D": "Specify the lines of communication between testing, other lifecycle activities, and within the organization that were chosen at the outset of the test project."
+    },
+    "question": "A test status report SHOULD:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "88",
+    "imageUrl": "",
+    "options": {
+      "A": "Acceptance criteria 8 has not been fully covered during the above test cycle.",
+      "B": "Acceptance criteria 4 has not been fully covered during the above test cycle.",
+      "C": "All acceptance criteria have been fully covered during the above test cycle.",
+      "D": "Acceptance criteria 6 has not been fully covered during the above test cycle."
+    },
+    "question": "User Story:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "89",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing based on the structure of the software under test (SUT) is white-box testing whereas testing the input-output behaviour without pre-written test cases is experience based testing.",
+      "B": "Testing the software under test (SUT) based on the design is black-box testing whereas testing the input-output behaviour is experience based testing.",
+      "C": "Testing the software under test (SUT) is possible only after implementation in white-box testing whereas testing the software even before implementation is possible in exploratory testing.",
+      "D": "Testing the software under test (SUT) using knowledge of the tester is experience based testing whereas testing the specification based behaviour without pre-written test cases is using black-box testing techniques."
+    },
+    "question": "Which of the following statements is CORRECT?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "90",
+    "imageUrl": "",
+    "options": {
+      "A": "(iii), (v) - black-box; (ii), (iv) - white-box; (i) - experience-based",
+      "B": "(ii), (iv) - black-box; (i), (v) - white-box; (iii) - experience-based",
+      "C": "(i) - black-box; (ii), (iii) - white-box; (iv), (v) - experience-based",
+      "D": "(i), (iii) - black-box; (ii) - white-box; (iv), (v) - experience-based"
+    },
+    "question": "Consider the following characteristics of test techniques."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "91",
+    "imageUrl": "",
+    "options": {
+      "A": "Add expected results after each step in the “steps to reproduce” section",
+      "B": "Add environment data and link to the test case that caused the failure",
+      "C": "Reduce severity and priority levels",
+      "D": "Add a suggestion how a source code could he chanced to fix the underlying defect"
+    },
+    "question": "You prepared the following defect report."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "92",
+    "imageUrl": "",
+    "options": {
+      "A": "Collaboration tools",
+      "B": "Test design and test implementation tools",
+      "C": "Test management tools",
+      "D": "DevOps tools"
+    },
+    "question": "Which tools support delivery pipelines, automated build processes, and practices such as Continuous Integration/Continuous Delivery?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "93",
+    "imageUrl": "",
+    "options": {
+      "A": "Retrospectives lead to increased project budget",
+      "B": "Retrospectives allow for a quick resolution of technical debt",
+      "C": "Retrospectives improve the quality of the test basis",
+      "D": "Retrospectives facilitate discussions about new product features"
+    },
+    "question": "Which of the following is an example of how retrospectives can be used for process improvement?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "94",
+    "imageUrl": "",
+    "options": {
+      "A": "Risk impact and risk likelihood",
+      "B": "Risk likelihood and risk priority",
+      "C": "Risk impact and risk severity",
+      "D": "Risk priority and risk severity"
+    },
+    "question": "What does the risk level depend on?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "95",
+    "imageUrl": "",
+    "options": {
+      "A": "-1°С, 0°С, 1°С, 3°C",
+      "B": "0°С, 1°С, 2°С, 3°С",
+      "C": "-2°С, -1 °С, 1°С, 2°С",
+      "D": "-3°С, 0°С, 1°С, 2°С"
+    },
+    "question": "The temperature controller receives the temperature in full degrees Celsius (°C) as input. For 0 degrees, it returns the message ‘zero temperature’. For positive temperatures, it returns the message ‘positive temperature’. For negative temperatures, it returns the message ‘negative temperature’."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "96",
+    "imageUrl": "",
+    "options": {
+      "A": "4 hours",
+      "B": "2 hours",
+      "C": "3 hours",
+      "D": "6 hours"
+    },
+    "question": "Your team is developing a new functionality for an employee management system, a Simple Reporting feature. The team is tasked with estimating the test effort required to test this feature."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "97",
+    "imageUrl": "",
+    "options": {
+      "A": "ЕС/С + EU/U",
+      "B": "(EC+EU) / (C+U)",
+      "C": "EC/С",
+      "D": "EC + EU"
+    },
+    "question": "If:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "98",
+    "imageUrl": "",
+    "options": {
+      "A": "Defect management",
+      "B": "Configuration management",
+      "C": "Test automation",
+      "D": "Test estimation"
+    },
+    "question": "The customer reported the software failure in the form of a defect report, providing the version number of the software they use. Based on this information, the team identified the files used to build this version and the elements of the environment in which this version was created. This made it possible to identify and fix the defect quickly."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "99",
+    "imageUrl": "",
+    "options": {
+      "A": "Acceptance Test-Driven Development",
+      "B": "Test Coverage-Driven Development",
+      "C": "Behavior-Driven Development",
+      "D": "Test-Driven Development"
+    },
+    "question": "Which of the following is NOT an example of a test-first approach to development?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "100",
+    "imageUrl": "",
+    "options": {
+      "A": "It is more effective when a tester is less experienced and has no domain knowledge",
+      "B": "It uses test results to learn more about the test object and create more focused tests",
+      "C": "It allows the use of experience-based test techniques but not black-box test techniques",
+      "D": "It focuses not only on defect detection but also on defect avoidance through collaboration"
+    },
+    "question": "Which of the following is TRUE about exploratory testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "101",
+    "imageUrl": "",
+    "options": {
+      "A": "Test progress report",
+      "B": "Defect report",
+      "C": "Test completion report",
+      "D": "Risk register"
+    },
+    "question": "Which type of report will MOST LIKELY contain information about testing planned for the next period?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "102",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775085504995-ylusjbew.png",
+    "options": {
+      "A": "Both variants use a scenario-oriented format",
+      "B": "Both variants use a rule-oriented format",
+      "C": "Variant 1 is rule-oriented; Variant 2 is scenario-oriented",
+      "D": "Variant 1 is scenario-oriented; Variant 2 is rule-oriented"
+    },
+    "question": "Consider the following two versions of acceptance criteria for a user story: “As a registered user, I want to be able to change my user’s name to update my personal data”"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "103",
+    "imageUrl": "",
+    "options": {
+      "A": "Only work products with a structure against which they can be checked by a tool",
+      "B": "Only work products that can be read and understood",
+      "C": "Only work products that are difficult to interpret by humans",
+      "D": "Only non-executable work products"
+    },
+    "question": "What kind of work products can be examined by reviews?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "104",
+    "imageUrl": "",
+    "options": {
+      "A": "Each executable statement with a defect had to be exercised at least once",
+      "B": "The test set triggered no failures in the tested code",
+      "C": "All requirements related to the code under test are met",
+      "D": "Each decision outcome in the code had to be evaluated both for true and false"
+    },
+    "question": "You work on a project where the executed test set achieved 100% statement coverage."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "105",
+    "imageUrl": "",
+    "options": {
+      "A": "(i), (ii), and (iv) are product risks; (iii) and (v) are project risks",
+      "B": "(ii) and (v) are product risks; (i), (iii), and (iv) are project risks",
+      "C": "(iii) and (v) are product risks; (i), (ii), and (iv) are project risks",
+      "D": "(iii) and (iv) are product risks; (i), (ii) and (v) are project risks"
+    },
+    "question": "Categorize these risks into project risks and product risks."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "106",
+    "imageUrl": "",
+    "options": {
+      "A": "Ease of configuration management",
+      "B": "More objective assessment",
+      "C": "Better defect prevention",
+      "D": "Dependency on tool vendor"
+    },
+    "question": "Which of the following BEST illustrates the benefit of using test coverage tools?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "107",
+    "imageUrl": "",
+    "options": {
+      "A": "Test activities should be planned for each iteration separately",
+      "B": "Test design for a given test level should begin just after the implementation is done",
+      "C": "All test levels should have the same specific test objectives",
+      "D": "Each development activity should have a corresponding test activity"
+    },
+    "question": "Which practice should be applied to ALL software development lifecycles?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "108",
+    "imageUrl": "",
+    "options": {
+      "A": "Collaboration-based test approach",
+      "B": "Whole team approach",
+      "C": "Exploratory testing",
+      "D": "Test-first approach"
+    },
+    "question": "Which approach BEST improves team dynamics, enhances communication, and creates synergy by allowing the various skill sets within the team to be leveraged for the benefit of the project?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "109",
+    "imageUrl": "",
+    "options": {
+      "A": "A test technique in which the tester anticipates the mistakes the developer might make, defects they might introduce, and failures that may occur due to these defects",
+      "B": "A test technique in which a tester designs, implements, and executes tests to cover test conditions from a checklist built based on knowledge about how software fails",
+      "C": "A test estimation technique in which testers use their knowledge and experience to estimate the effort needed to fix problems in the test process due to testers’ mistakes",
+      "D": "A type of software testing that identifies vulnerabilities, threats, and risks in a system to ensure its resources are protected from unauthorized access and malicious attacks"
+    },
+    "question": "What is error guessing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "110",
+    "imageUrl": "",
+    "options": {
+      "A": "Shift left",
+      "B": "Independence of testing",
+      "C": "Confirmation testing",
+      "D": "Retrospectives"
+    },
+    "question": "A developer assumed users would always filter items by category to narrow their search. However, a tester conducted usability testing and found that most users prefer using the search bar instead, highlighting a potential gap in the user interface design."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "111",
+    "imageUrl": "",
+    "options": {
+      "A": "Performing non-functional testing using functional test cases",
+      "B": "Monitoring system performance after the release",
+      "C": "Using Acceptance Test-Driven Development",
+      "D": "Participating in retrospectives"
+    },
+    "question": "Which of the following is an example of a shift left?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "112",
+    "imageUrl": "",
+    "options": {
+      "A": "Both (1) and (2) are defects",
+      "B": "(1) is an error, (2) is a failure",
+      "C": "(1) is a defect, (2) is a failure",
+      "D": "Both (1) and (2) are errors"
+    },
+    "question": "Consider two situations:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "113",
+    "imageUrl": "",
+    "options": {
+      "A": "To calculate requirements coverage after test execution",
+      "B": "To derive test data that meet the specified coverage criteria",
+      "C": "To analyze the test execution log to detect possible root causes",
+      "D": "To ensure consistency and control across IT environments"
+    },
+    "question": "How can a tester use traceability?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "114",
+    "imageUrl": "",
+    "options": {
+      "A": "Static testing can detect that a component has too many lines of code; dynamic testing can force a component to return the wrong result",
+      "B": "Static testing can force a component to return the wrong result; dynamic testing can force a component to return the correct result",
+      "C": "Static testing can demonstrate that software fails when given specific input data; dynamic testing finds defects directly",
+      "D": "Static testing can be performed at all test levels; dynamic testing can be performed only at system, system integration, and acceptance test levels"
+    },
+    "question": "Which of the following statements about static and dynamic testing is TRUE?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "115",
+    "imageUrl": "",
+    "options": {
+      "A": "Informal review",
+      "B": "Technical review",
+      "C": "Inspection",
+      "D": "Static analysis"
+    },
+    "question": "The development team is finalizing the design of a database schema for a banking application. Before implementation, architects want to get a consensus among team members on the details of this scheme."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "116",
+    "imageUrl": "",
+    "options": {
+      "A": "“Steps: 1) enter valid username; 2) enter a correct password; 3) click “Login”; expected result: the user is logged”",
+      "B": "“Check that the user can successfully log in to the application with valid credentials”",
+      "C": "“Number of test cases run: 55; number of test cases passed: 35; number of test cases failed: 20”",
+      "D": "“When a user enters valid credentials and clicks the “Login” button, no action occurs, and the user remains on the login page”"
+    },
+    "question": "Which of the following is a testware created during test analysis?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "117",
+    "imageUrl": "",
+    "options": {
+      "A": "Exhaustive testing is impossible",
+      "B": "Tests wear out",
+      "C": "Defects cluster together",
+      "D": "Early testing saves time and money"
+    },
+    "question": "The Pareto principle states that a few causes are responsible for most effects."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "118",
+    "imageUrl": "",
+    "options": {
+      "A": "To fix defects efficiently and effectively",
+      "B": "To ensure the software is free of defects",
+      "C": "To verify that the software meets specified requirements",
+      "D": "To confirm that all possible input combinations have been tested"
+    },
+    "question": "Which of the following is a typical test objective?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "119",
+    "imageUrl": "",
+    "options": {
+      "A": "Confirmation testing verifies that specific defects have been fixed, while regression testing ensures that recent changes have not introduced new defects in existing functionality.",
+      "B": "Confirmation testing is performed by developers as unit or unit integration testing, while regression testing is performed by testers as system integration, system, or acceptance testing.",
+      "C": "There is no difference. These two terms are synonymous.",
+      "D": "Confirmation testing verifies that the test object works correctly under expected conditions, while regression testing verifies the system's robustness with unexpected or incorrect data."
+    },
+    "question": "What is the difference between confirmation testing and regression testing?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "120",
+    "imageUrl": "",
+    "options": {
+      "A": "Expresses the desired behavior of an application with test cases written in a simple form of natural language that is easy to understand by stakeholders — usually using the Preconditions/Input Values/Process/Output Values/Postconditions format. Test cases are then automatically translated into executable tests.",
+      "B": "Expresses the desired behavior of an application with test cases written in a simple form of natural language that is easy to understand by stakeholders — usually using the Given/When/Then format. Test cases are then automatically translated into executable tests.",
+      "C": "Derives tests from acceptance criteria as part of the system design process. Tests are written before the part of the application is developed to satisfy the tests. Tests will persist as automated tests to ensure code maintainability in future adaptions/refactoring.",
+      "D": "Derives tests from acceptance criteria as part of the system design process. Tests are written before the part of the application is developed to satisfy the tests. Tests may persist as automated tests to ensure the code quality in future adaptions/refactoring."
+    },
+    "question": "Which ONE of the following options BEST characterizes the Behavior-Driven Development (BDD) approach?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "121",
+    "imageUrl": "",
+    "options": {
+      "A": "Statements I, III, and V",
+      "B": "Statements II, IV, and V",
+      "C": "Statements II and V",
+      "D": "Statements I and IV"
+    },
+    "question": "Consider the following statements about acceptance test levels (I to V):"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "122",
+    "imageUrl": "",
+    "options": {
+      "A": "Product owner, development, and testing",
+      "B": "Business, architecture, and testing",
+      "C": "Business, development, and testing",
+      "D": "Business, development, and acceptance testing"
+    },
+    "question": "Which ONE of the following options identifies the perspectives through which a collective authorship process generates a shared vision of user stories?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "123",
+    "imageUrl": "",
+    "options": {
+      "A": "Manager",
+      "B": "Reviewer",
+      "C": "Review leader",
+      "D": "Moderator"
+    },
+    "question": "Which ONE of the following roles is responsible for mediating, managing time, and generating a safe review environment in which everyone can speak freely?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "124",
+    "imageUrl": "",
+    "options": {
+      "A": "Reviewing the specification from the perspective of testing.",
+      "B": "Write the test cases before writing the code and run the code in a test harness during code implementation.",
+      "C": "Using continuous integration (CI) and even better continuous delivery (CD).",
+      "D": "Performing non-functional testing starting at the system test level."
+    },
+    "question": "Which ONE of the following options is a practice that does NOT TYPICALLY correspond to a shift left approach?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "125",
+    "imageUrl": "",
+    "options": {
+      "A": "Capitalizing on the combined skills of business representatives, testers, and developers working together to contribute to project success.",
+      "B": "Reducing the involvement of business representatives because of enhanced communication and collaboration between testers and developers.",
+      "C": "Avoiding requirements misunderstandings that may not have been detected until dynamic testing when they are more expensive to fix.",
+      "D": "Having an automated build and test process, at least once a day, that detects integration errors early and quickly."
+    },
+    "question": "Which ONE of the following statements would you expect to be the MOST DIRECT advantage of the whole-team approach?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "126",
+    "imageUrl": "",
+    "options": {
+      "A": "Obstacles and their workarounds",
+      "B": "A detailed assessment of product quality",
+      "C": "Test metrics to show the current status of the test process",
+      "D": "New or changed risks"
+    },
+    "question": "Which ONE of the following elements is TYPICALLY NOT part of a test progress report?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "127",
+    "imageUrl": "",
+    "options": {
+      "A": "Checklists should contain general guidelines to ensure that all aspects of the software are covered.",
+      "B": "Checklists should contain specific test conditions that can be individually and directly checked.",
+      "C": "Checklists should primarily consist of automated test cases to maximize efficiency.",
+      "D": "Checklists should be used exclusively for functional testing, as they are unsuitable for non-functional testing."
+    },
+    "question": "Which ONE of the following statements BEST applies checklist-based testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "128",
+    "imageUrl": "",
+    "options": {
+      "A": "A test charter that defines the testing objectives for the test session.",
+      "B": "A comprehensive specification that must be fully available before testing begins.",
+      "C": "A detailed test script that prescribes all the steps to be performed.",
+      "D": "A predefined test case that must be executed exactly as documented."
+    },
+    "question": "Which ONE of the following elements is TYPICALLY used to guide testing during exploratory testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "129",
+    "imageUrl": "",
+    "options": {
+      "A": "Test logs that document the results of test execution.",
+      "B": "Automated test scripts used for test execution.",
+      "C": "A test plan that describes the test strategy and test objectives.",
+      "D": "A list of test conditions prioritized during test analysis."
+    },
+    "question": "Which ONE of the following work products TYPICALLY belongs to test execution?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "130",
+    "imageUrl": "",
+    "options": {
+      "A": "A separate defect report is created for each identified defect so that corrective actions can be tracked.",
+      "B": "Each reviewer conducts an individual review to identify anomalies, recommendations, and questions.",
+      "C": "The purpose and scope of the review are defined, as well as the work product to be reviewed and the exit criteria.",
+      "D": "The reviewers analyze and discuss the anomalies found during the review in a joint meeting."
+    },
+    "question": "Which ONE of the following activities TYPICALLY belongs to the planning phase of the review process?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "131",
+    "imageUrl": "",
+    "options": {
+      "A": "Reduced test execution times",
+      "B": "More objective assessment",
+      "C": "Prevention of simple human errors",
+      "D": "Eliminating completely the need for manual testing"
+    },
+    "question": "Which ONE of the following options is NOT a benefit of test automation?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "132",
+    "imageUrl": "",
+    "options": {
+      "A": "Test design",
+      "B": "Test analysis",
+      "C": "Test implementation",
+      "D": "Test execution"
+    },
+    "question": "Which ONE of the following options corresponds to an activity in the testing process in which testable features are identified?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "133",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775085642586-evcjf2ha.png",
+    "options": {
+      "A": "{TC 20; TC 30; TC 10; TC 40; TC 50; TC 70; TC 60; TC 80; TC 90}",
+      "B": "{TC 10; TC 30; TC 20; TC 60; TC 40; TC 80; TC 90; TC 50; TC 70}",
+      "C": "{TC 80; TC 70; TC 50; TC 60; TC 20; TC 30; TC 10; TC 40; TC 90}",
+      "D": "{TC 60; TC 80; TC 40; TC 90; TC 50; TC 10; TC 70; TC 30; TC 20}"
+    },
+    "question": "Consider the following table, which contains information about test cases from the test management system:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "134",
+    "imageUrl": "",
+    "options": {
+      "A": "Activities III, IV, and V",
+      "B": "Activities II and V",
+      "C": "Activities I and V",
+      "D": "Activities I, III, and IV"
+    },
+    "question": "Consider the following list of activities (I to V):"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "135",
+    "imageUrl": "",
+    "options": {
+      "A": "The objective of testing is to implement exhaustive testing and execute as many test cases as possible.",
+      "B": "Exhaustive testing can only be carried out using behavior-based techniques.",
+      "C": "It is impossible to test all possible combinations of inputs and preconditions of a system.",
+      "D": "Automated testing enables exhaustive testing."
+    },
+    "question": "Which ONE of the following options CORRECTLY describes one of the seven principles of the testing process?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "136",
+    "imageUrl": "",
+    "options": {
+      "A": "In branch testing, the coverage items are executable statements. The aim is to design test cases that exercise statements in the code until an acceptable level of coverage is achieved, expressed as a percentage.",
+      "B": "In branch testing, the coverage items are control flow transfers between decisions, and the aim is to design test cases to exercise flow transfers in the code until an acceptable level of coverage is achieved. Coverage is measured as the number of branches exercised by the test cases divided by the total number of branches expressed as a percentage.",
+      "C": "In branch testing, the coverage items are branches, and the aim is to design test cases to exercise branches in the code until an acceptable level of coverage is achieved. Coverage is measured as the number of branches exercised by the test cases divided by the total number of branches expressed as a percentage.",
+      "D": "In branch testing, the coverage items are executable decisions. The aim is to design test cases that exercise statements in the code until an acceptable level of coverage is achieved. Coverage is expressed as a percentage."
+    },
+    "question": "Which ONE of the following options MOST ACCURATELY describes branch testing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "137",
+    "imageUrl": "",
+    "options": {
+      "A": "Black-Box testing techniques are based on experience with the test object without knowing the internal structure.",
+      "B": "In Black-Box testing techniques, test cases are created based on the software's implementation.",
+      "C": "Black-box testing techniques are based on analyzing the test object's specified and implied behavior without knowledge of its internal data structure.",
+      "D": "Black-box testing techniques involve analyzing the specified behavior of the test object without knowledge of its internal structure."
+    },
+    "question": "Which ONE of the following options BEST describes black-box test techniques?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "138",
+    "imageUrl": "",
+    "options": {
+      "A": "The budget and schedule for the test project.",
+      "B": "A detailed analysis of the defects found and their causes.",
+      "C": "A detailed report on the test results after the test project is completed.",
+      "D": "A list of test logs from the test execution."
+    },
+    "question": "Which ONE of the following elements is TYPICALLY part of the test plan?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "139",
+    "imageUrl": "",
+    "options": {
+      "A": "Statements I, III, and IV",
+      "B": "Statements II, IV, and V",
+      "C": "Statements I, II, and IV",
+      "D": "Statements II, III, and V"
+    },
+    "question": "Consider the following statements (I to V) about software testing:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "140",
+    "imageUrl": "",
+    "options": {
+      "A": "Test design and implementation tools are specifically designed for creating test cases, test data, and test procedures.",
+      "B": "Static testing tools as they assist the tester in conducting reviews and static analysis.",
+      "C": "DevOps tools, as they support the automated build process and CI/CD.",
+      "D": "Test execution and coverage tools facilitate the automated execution of tests and the measurement of test coverage."
+    },
+    "question": "Which ONE of the following tools would be MOST SUITABLE for facilitating the creation of test cases, test data, and test procedures?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "141",
+    "imageUrl": "",
+    "options": {
+      "A": "COTS (Commercial off-the-shelf)",
+      "B": "Source code",
+      "C": "BPMN (Business Process Modeling and Notation) models",
+      "D": "UML (Unified Modeling Language) models"
+    },
+    "question": "Which ONE of the following options CANNOT be subjected to static analysis?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "142",
+    "imageUrl": "",
+    "options": {
+      "A": "A1 – B4 – C3 – D2",
+      "B": "A2 – B1 – C4 – D3",
+      "C": "A4 – B3 – C2 – D1",
+      "D": "A3 – B2 – C1 – D4"
+    },
+    "question": "Consider the following list of possible benefits of retrospectives (A to D):"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "143",
+    "imageUrl": "",
+    "options": {
+      "A": "750 person-days",
+      "B": "180 person-days",
+      "C": "720 person-days",
+      "D": "270 person-days"
+    },
+    "question": "Your organization's test strategy states that it is desirable to use more than one method for estimating the test effort. You are responsible for establishing the test effort for the next project. Based on historical information, the type of project you are going to estimate has a development-to-test effort ratio of 5:3."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "144",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775085666374-vby7hf4a.png",
+    "options": {
+      "A": "{7, 10, 21, 40}",
+      "B": "{8, 10, 25, 40}",
+      "C": "{7, 10, 25, 29}",
+      "D": "{7, 10, 25, 40}"
+    },
+    "question": "Scenario “Happy Tomatoes”"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "145",
+    "imageUrl": "",
+    "options": {
+      "A": "Incorrect calculation logic in the software, leading to inaccurate results.",
+      "B": "Poor communication between team members, making project management more difficult.",
+      "C": "Staff shortages in the project leading to scheduling problems.",
+      "D": "Delays in the delivery of work products by the project team."
+    },
+    "question": "Which ONE of the following options is a PRODUCT risk and NOT a PROJECT risk?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "146",
+    "imageUrl": "",
+    "options": {
+      "A": "Determining the test strategy",
+      "B": "Participating in the detailed risk analysis of user stories and determining their testability",
+      "C": "Planning the testing for the release",
+      "D": "Writing testable user stories and acceptance criteria"
+    },
+    "question": "Consider the following iteration planning tasks where a tester can provide value:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "147",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775085672620-fcslk1jc.png",
+    "options": {
+      "A": "Identification of the test object and test environment",
+      "B": "A concise title and a short summary of the defect being reported",
+      "C": "Description of the structure of the test team",
+      "D": "Expected results and actual results"
+    },
+    "question": "Scenario “Happy Tomatoes”"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "148",
+    "imageUrl": "",
+    "options": {
+      "A": "The purpose of confirmation testing is to confirm that the defect giving rise to a failure has been successfully fixed. The regression test aims to ensure that no defects have been introduced or discovered in unmodified areas of the software as a result of the changes made.",
+      "B": "The purpose of confirmation testing is to confirm that the defect giving rise to a failure has been satisfactorily fixed. The regression test aims to ensure that no defects have been introduced or discovered in modified areas of the software as a result of the changes made.",
+      "C": "Confirmation testing aims to confirm that the observed failure is not a false positive. The regression test aims to ensure that no defects have been introduced or discovered in unmodified areas of the software as a result of the changes made.",
+      "D": "The purpose of regression testing is to confirm that the defect giving rise to a failure has been satisfactorily resolved. The purpose of the confirmation testing is to ensure that no defects have been introduced or discovered in unmodified areas of the software as a result of the changes made."
+    },
+    "question": "Which ONE of the following statements about the objectives of confirmation and regression testing is the BEST?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "149",
+    "imageUrl": "",
+    "options": {
+      "A": "Verifying whether specified requirements have been fulfilled",
+      "B": "Triggering failures and finding defects",
+      "C": "Finding errors",
+      "D": "Validating whether the test object is complete and works as expected by the stakeholders"
+    },
+    "question": "Which ONE of the following options is NOT a test objective?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "150",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing triggers a failure that is caused by a defect in the software, whereas debugging is concerned with finding the causes of this failure (defects), analyzing these causes, and eliminating them.",
+      "B": "Testing triggers a failure that is caused by a defect in the software, whereas debugging is concerned with finding the causes of this failure (defects), analyzing these causes, and reproducing them.",
+      "C": "Testing identifies a defect that is caused by an error in the software, whereas debugging is concerned with finding the causes of this defect, analyzing these causes, and eliminating them.",
+      "D": "Testing triggers a defect that is caused by an error in the software, whereas debugging is concerned with finding the causes of this defect, analyzing these causes, and eliminating them."
+    },
+    "question": "Which ONE of the following options MOST ACCURATELY describes the activities of “testing” and “debugging”?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "151",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775085684336-y41k7wc6.png",
+    "options": {
+      "A": "5 decision rules",
+      "B": "6 decision rules",
+      "C": "32 decision rules",
+      "D": "8 decision rules"
+    },
+    "question": "Scenario “Big Drop”:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "152",
+    "imageUrl": "",
+    "options": {
+      "A": "White-box testing helps find defects because they can be used to measure statement coverage",
+      "B": "White-box testing helps find defects because it focuses on defects rather than failures",
+      "C": "White-box testing helps find defects even when specifications are vague because it takes into account the code",
+      "D": "White-box testing helps find defects because it provides for requirements-based coverage"
+    },
+    "question": "Which of the following statements is CORRECT about White-box testing?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "153",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775085899054-c1dzyzcj.png",
+    "options": {
+      "A": "C1",
+      "B": "C2",
+      "C": "C3",
+      "D": "C4"
+    },
+    "question": "A tester created a decision table (DT) given below. While reviewing the DT some of the actions for the given conditions were found to be incorrect. The user is trying to view the profile which of the given conditions has CORRECT action(s) listed?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "154",
+    "imageUrl": "",
+    "options": {
+      "A": "Static analysis can be used against a work product containing unstructured artifacts",
+      "B": "There may be legal issues in performing static testing on a commercially available executable library",
+      "C": "Difficult to interpret work products are best tested using static analysis",
+      "D": "Test cases can be tested using static testing techniques but not the models"
+    },
+    "question": "Which ONE of the following statements is correct?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "155",
+    "imageUrl": "",
+    "options": {
+      "A": "Error guessing depends on the developers guessing what mistakes testers might make and miss the possible defects",
+      "B": "While reviewing the test cases, testers have to make guess about the kind of mistakes test cases might contain",
+      "C": "Error guessing doesn't make use of past failures as past failures are not indicators of correct defects",
+      "D": "Fault attacks are an example of a technique for implementing error guessing"
+    },
+    "question": "Which of the following statements is CORRECT about error guessing?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "156",
+    "imageUrl": "",
+    "options": {
+      "A": "Tests are derived from acceptance criteria and run to check that the code passes these tests",
+      "B": "Application behaviour is written in Given/When/Then format and tests are then written and run",
+      "C": "First the tests fail then the code is written to pass the tests and this is iterated",
+      "D": "Code is refactored first then tests are written and run"
+    },
+    "question": "Which of the following correctly represents a test first approach?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "157",
+    "imageUrl": "",
+    "options": {
+      "A": "Adding new test cases",
+      "B": "Diagnosing the root cause",
+      "C": "Fixing the cause",
+      "D": "Reproducing the failure"
+    },
+    "question": "Which of the following is NOT a typical debugging activity when a failure is triggered by dynamic testing?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "158",
+    "imageUrl": "",
+    "options": {
+      "A": "Incident Management Tool",
+      "B": "Configuration Management Tool",
+      "C": "Backup tool",
+      "D": "Test Execution tool"
+    },
+    "question": "An organization is working on updating test cases for a particular module of their software."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "159",
+    "imageUrl": "",
+    "options": {
+      "A": "Review initiation is the stage when the review team starts the discussion on the review comments",
+      "B": "Independent of the size of the work products, planning for the review should be performed",
+      "C": "Large sized work products should be reviewed in one go because you will have to spend too much time if you split it into multiple reviews",
+      "D": "Defect reports should be created for every review found"
+    },
+    "question": "Shripriya is defining the guidelines for the review process implementation in her company. Which of the following statements is LEAST likely to have been recommended by her?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "160",
+    "imageUrl": "",
+    "options": {
+      "A": "It is an example of DevOps related tools",
+      "B": "It is an example of collaboration tool",
+      "C": "It is an example of test implementation tool",
+      "D": "It is an example of automated unit testing tool"
+    },
+    "question": "A software development company invests heavily in tools to support the entire software development lifecycle, including testing. They have a tool that allows automated creation and installation of builds and subsequent execution of various types of automated tests. Which ONE of the following is a CORRECT statement about this type of test tool?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "161",
+    "imageUrl": "",
+    "options": {
+      "A": "It signifies a comment or documentation within the code and it doesn’t indicate a defect",
+      "B": "It marks a point where the program’s execution will terminate bringing the program to a halt",
+      "C": "It indicates a decision point where the program can follow different paths based on specific conditions",
+      "D": "It represents a programming error and therefore a conditional branch should be avoided"
+    },
+    "question": "In branch testing, what is the significance of a conditional branch in a software program?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "162",
+    "imageUrl": "",
+    "options": {
+      "A": "Logon to the site and book an exam for the 8 AM (GMT) timeslot. Expected result: You should get 10% discounted price. Change the time to any other timeslot. Expected result: Discount should be removed.",
+      "B": "Logon to the site. Book an exam for the current date. Expected result: timeslots should be shown. Change the time to any other date prior to the selected date. Expected result: New slot should become visible.",
+      "C": "Logon to the site. Book 5 exams for the current date. Expected result: Exams should be booked. Book 6th timeslot for the same date. Expected result: The exam should be booked but no discount should be given.",
+      "D": "Logon to the site. Expected result: Default 8 AM (GMT) timeslot should be selected. Change the time to any other timeslot Expected result. New slot should be booked."
+    },
+    "question": "You are working on creating test cases for a user story."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "163",
+    "imageUrl": "",
+    "options": {
+      "A": "Anyone can perform a task they are capable of",
+      "B": "Sharing same physical workspace is a must",
+      "C": "Testing is the responsibility of the entire team",
+      "D": "Developers should depend on the business analysts as there is no distinction between testers and developers"
+    },
+    "question": "Which of the following is the BEST example of whole team approach?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "164",
+    "imageUrl": "",
+    "options": {
+      "A": "Not all development activities should have corresponding test activities",
+      "B": "Large amount of redundancy between test levels is good because it prevents bug leakage",
+      "C": "Reviews should be done after the work products have been finalized",
+      "D": "Each test level should have an appropriate test objective"
+    },
+    "question": "Which of the following is a good testing practice which is applicable INDEPENDENT of the software development lifecycle followed?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "165",
+    "imageUrl": "",
+    "options": {
+      "A": "9,52001",
+      "B": "9, 10, 5000, 5001",
+      "C": "10, 5000",
+      "D": "9, 10, 11, 4999, 5000, 5001"
+    },
+    "question": "An e-commerce site accepts credit cards for processing the payment. The payment processing form has a field for the amount of money to be deducted. The minimum amount of money that can be processed is $10. The credit cards have a limit of $5,000 (Five Thousand). Assume that only integers can be accepted as inputs. Which of the following set of boundary values you will choose for EFFICIENT testing for the amount of money that can be spent?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "166",
+    "imageUrl": "",
+    "options": {
+      "A": "In statement testing, the coverage items are control flow transfers between branches. The aim is to design test cases to exercise branches in the code until an acceptable level of coverage is achieved, expressed as a percentage.",
+      "B": "In statement testing, the coverage items are decisions and statements. The aim is to design test cases that exercise statements in the code until an acceptable level of coverage is achieved, expressed as a percentage.",
+      "C": "In statement testing, the coverage items are branches, and the aim is to design test cases to exercise branches in the code until an acceptable level of coverage is achieved, expressed as a percentage.",
+      "D": "In statement testing, the coverage items are executable statements. The aim is to design test cases that exercise statements in the code until an acceptable level of coverage is achieved, expressed as a percentage."
+    },
+    "question": "Which ONE of the following options MOST ACCURATELY describes statement testing?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "167",
+    "imageUrl": "",
+    "options": {
+      "A": "The testers can be isolated from the development team and thus avoid acquiring the same bias as the developers.",
+      "B": "Independent testers may lack information regarding the test object.",
+      "C": "Independent testers are likely to recognize different types of failures compared to developers.",
+      "D": "Developers may lose a sense of responsibility for the quality of the product they develop."
+    },
+    "question": "Which ONE of the following options explains a benefit of independent testing the BEST?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "168",
+    "imageUrl": "",
+    "options": {
+      "A": "Repeating the test case with different browsers and logging a separate defect for each one of them.",
+      "B": "The defect Id used is alphanumeric in nature. It should be a number only.",
+      "C": "Providing better severity and priority. It is not clear why this is a high severity problem as the exams can be booked without any problem.",
+      "D": "Providing exact steps that lead to this defect. It is not clear from the description if this is a problem for any scheduled exam or for a specific user."
+    },
+    "question": "Consider the following defect report for an Exam Booking System."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "169",
+    "imageUrl": "",
+    "options": {
+      "A": "Since the stakeholders include upper management, formal reports delivered face-to-face are critical",
+      "B": "Since the stakeholders include customers frequent informal communication without a specific frequency works better",
+      "C": "Distributed nature of teams working in various time zones means email communication will work better.",
+      "D": "Agile nature of the project means very less documentation and hence the status need not be documented and shared in a formal manner"
+    },
+    "question": "An agile software development organization has recently hired a senior tester. The organization has distributed teams spread across time zones. They need to share test status with various stakeholders including upper management and customers at a regular interval. Which of the following statements seems to be correct with regards to the communication?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "170",
+    "imageUrl": "",
+    "options": {
+      "A": "Evaluate test basis and test object",
+      "B": "Create test completion report",
+      "C": "Define test environment requirements",
+      "D": "Assess testability of test object"
+    },
+    "question": "Which of the following is LEAST likely to describe a task performed by someone in a testing role?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "171",
+    "imageUrl": "",
+    "options": {
+      "A": "They try to perform 100% automation for every project because automation is a must for efficiency",
+      "B": "Same set of testing processes are used by them without needing any tweaks because that is the hallmark of a mature testing company",
+      "C": "The company uses same test strategy for all the projects doing minor changes based on test manager responsible for the project because their test strategy template is very mature and do not need to change",
+      "D": "The question about the test design techniques to be used is determined based on various factors such as the domain and expectations of the stakeholders"
+    },
+    "question": "Pariksha labs is a mature software testing company. They are TMMi level 5 certified. Their testing processes are well defined. Which ONE of the following statements is likely to be CORRECT about them?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "172",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing the system based on specifications using simulator for a sub-system",
+      "B": "Testing an application in development environment which is similar to the production environment",
+      "C": "Testing an application's behaviour to check if it fulfils business needs",
+      "D": "Testing if e-commerce website works correctly with a third-party payment gateway"
+    },
+    "question": "Which of the following examples represents System Integration testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "173",
+    "imageUrl": "",
+    "options": {
+      "A": "Variables that were declared in the code without initialization",
+      "B": "Functions that take much longer time to complete than expected",
+      "C": "Crashes of the application",
+      "D": "A sub-system that does not perform the intended functionality"
+    },
+    "question": "Which of the following types of bug are more likely to be found by static testing then by dynamic testing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "174",
+    "imageUrl": "",
+    "options": {
+      "A": "Testing without defined time-boxes",
+      "B": "Usually conducted when there is sufficient time for testing",
+      "C": "Test cases are written once the specifications become available",
+      "D": "Effectiveness depends on the individual testers’ skills"
+    },
+    "question": "Which ONE of the following is a characteristic of exploratory testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "175",
+    "imageUrl": "",
+    "options": {
+      "A": "ii and iv",
+      "B": "iii and iv",
+      "C": "i and iii",
+      "D": "i and iv"
+    },
+    "question": "Given some statements about independence of testing"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "176",
+    "imageUrl": "",
+    "options": {
+      "A": "The tester writes acceptance criteria",
+      "B": "The tester assesses the testability of the user stories",
+      "C": "The tester breaks down user stories into smaller testing tasks",
+      "D": "The tester estimates the testing effort for individual iterations"
+    },
+    "question": "Which of the following statements is CORRECT about the value added by a tester to release planning?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "177",
+    "imageUrl": "",
+    "options": {
+      "A": "Test coverage is increased",
+      "B": "The time spent on repetitive tasks is reduced",
+      "C": "The number of found bugs is reduced",
+      "D": "The total cost of the test project always decreases"
+    },
+    "question": "For a given set of test-cases, which of the following is a benefit of running these tests with a test automation tool?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "178",
+    "imageUrl": "",
+    "options": {
+      "A": "A test manager decides to create a one-page test plan for an agile project for communicating the broad activities and explaining why detailed test cases will not be written as mandated by the test policy.",
+      "B": "A test plan is a good document to have for the agile projects because it helps the test manager assign tasks to different people.",
+      "C": "A test lead decides to write a detailed test plan so that in future, in case of project failure responsibilities could be assigned to the right person.",
+      "D": "A test manager should always create a very simple test plan because the purpose of test plan is to ensure that there is documentation for the purpose of audits."
+    },
+    "question": "Which ONE of the following is a CORRECT example of the purpose of a test plan?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "179",
+    "imageUrl": "",
+    "options": {
+      "A": "1-А, 2-С, 3-В, 4-D",
+      "B": "1-С, 2-А, 3-D, 4-В",
+      "C": "1-В, 2-D, 3-А, 4-С",
+      "D": "1-А, 2-D, 3-С, 4-В"
+    },
+    "question": "Match the Work Product with the category it belongs to:"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "180",
+    "imageUrl": "",
+    "options": {
+      "A": "DevOps helps shift focus of operations people to functional testing",
+      "B": "DevOps helps shift focus of testing people to perform operations testing",
+      "C": "DevOps helps eliminate manual testing by having focus on continuous automated testing",
+      "D": "DevOps helps bring focus on testing of non-functional characteristics"
+    },
+    "question": "Which of the following statements about impact of DevOps on testing is CORRECT?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "181",
+    "imageUrl": "",
+    "options": {
+      "A": "A is active and В is inactive A goes down. В becomes active then В goes down. A is made active",
+      "B": "A comes up when В is active and A was down Now A becomes active and В becomes inactive",
+      "C": "A is active and В is inactive then A goes down В becomes active",
+      "D": "A and В are both down then A and В both come back up at the same time A should become the active system and В should be inactive"
+    },
+    "question": "Which sequence of state transitions is INCORRECT in accordance with the following description?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "182",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775085966156-yj5d0vv5.png",
+    "options": {
+      "A": "D-С-В-A",
+      "B": "C-B-A-D",
+      "C": "D-A-B-C",
+      "D": "D-B-A-C"
+    },
+    "question": "You are a tester working on a critical project. Based on the risk analysis you need to decide on the order of test execution. Which of the following lists the correct sequence of test execution? Priority 1 is the highest and Priority 3 is the lowest priority."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "183",
+    "imageUrl": "",
+    "options": {
+      "A": "Static testing can benefit from using code-related white-box test techniques during code reviews.",
+      "B": "White-box testing allows suggesting test cases for increasing coverage levels which are based on objective measures.",
+      "C": "Achieving full code coverage for a component or a system ensures that it has been fully tested.",
+      "D": "Black-box testing can benefit from using code-related white-box test techniques to increase confidence in the code."
+    },
+    "question": "Which of the following statements about white-box testing is FALSE?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "184",
+    "imageUrl": "",
+    "options": {
+      "A": "[II] and [IV] are product risks; [I] and [III] are project risks.",
+      "B": "[II] and [III] are product risks; [I] and [IV] are project risks.",
+      "C": "[I], and [IV] are product risks; [II] and [III] are project risks.",
+      "D": "[I], [II] and [III] are product risks; [IV] is a project risk."
+    },
+    "question": "Consider the following examples of risks identified in different software development projects:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "185",
+    "imageUrl": "",
+    "options": {
+      "A": "1-Q3, 2-Q2, 3-Q1, 4-Q4",
+      "B": "1-Q4, 2-Q2, 3-Q1, 4-Q3",
+      "C": "1-Q1, 2-Q2, 3-Q3, 4-Q4",
+      "D": "1-Q4, 2-Q1, 3-Q2, 4-Q3"
+    },
+    "question": "Consider the following test-related items (1, 2, 3, 4) and four testing quadrants (Q1, Q2, Q3, Q4):"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "186",
+    "imageUrl": "",
+    "options": {
+      "A": "Static testing is better suited than dynamic testing for highlighting issues that could indicate inappropriate code modularization.",
+      "B": "Dynamic testing can only be applied to executable work products, while static testing can only be applied to non-executable work products.",
+      "C": "Both dynamic testing and static testing cause failures, but failures caused by static testing are usually easier and cheaper to analyze.",
+      "D": "Security vulnerabilities can only be detected when the software is being executed, and thus they can only be detected through dynamic testing, not through static testing."
+    },
+    "question": "Which of the following statements about static testing and dynamic testing is TRUE?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "187",
+    "imageUrl": "",
+    "options": {
+      "A": "The higher the number of the testing quadrant, the more important the tests associated with this quadrant are.",
+      "B": "Automated acceptance tests produced during BDD and ATDD are classified in quadrant Q2.",
+      "C": "Exploratory tests are classified in quadrant Q3, and they are usually included in a continuous integration process.",
+      "D": "Automated unit tests produced during TDD are classified in quadrant Q4 as they are technology facing."
+    },
+    "question": "Which of the following statements about the testing quadrants is TRUE?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "188",
+    "imageUrl": "",
+    "options": {
+      "A": "The need to temporarily have additional test personnel available for specific test phases and/or test activities.",
+      "B": "The conditions that must be met in order for the test execution activities to be considered completed.",
+      "C": "The list of the product risks which have not been fully mitigated at the end of test execution.",
+      "D": "The conditions that must be met for part of all the planned activities to be suspended and resumed."
+    },
+    "question": "Which of the following about typical information found within a test plan is FALSE?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "189",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775086687765-zlaltd1t.png",
+    "options": {
+      "A": "“Inactive”, [Press Button], “Active”, [Sensor Activated], “Alert Mode”, [Timeout expired], “Alarm bell rings”",
+      "B": "“Inactive”, [Enter PIN], “Active”, [Sensor Activated], “Alert Mode”, [Timeout expired], “Alarm bell rings”",
+      "C": "“Inactive”, [Press Button], “Active”, [Press Button], “Active”, [Sensor Activated], “Alert Mode”, [Timeout expired], “Alarm bell rings”",
+      "D": "“Inactive”, [Press Button], “Active”, [Sensor Activated], “Alert Mode”, [Press Button], “Alert Mode”, [Timeout expired], “Alarm bell rings”"
+    },
+    "question": "An anti-intrusion system is battery powered and is activated by pressing the only available button. To deactivate the system, the operator must enter a PIN code. The system will stay in alert mode within a configurable timeout and an alarm bell will ring if the system is not deactivated before the timeout expires. The following state transition diagram describes the behavior of the system:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "190",
+    "imageUrl": "",
+    "options": {
+      "A": "Containerization tool.",
+      "B": "Fault seeding tool.",
+      "C": "Static analysis tool.",
+      "D": "Test data preparation tool."
+    },
+    "question": "Which of the following types of tools is BEST suited for determining source code compliance with the guidelines provided by a coding standard?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "191",
+    "imageUrl": "",
+    "options": {
+      "A": "All participants in the review are aware they will be evaluated based on the defects they will find.",
+      "B": "The author of the work product to be reviewed leads the review meeting.",
+      "C": "All participants in the review are trained to deal with the review type and its objectives.",
+      "D": "Review metrics must be collected to improve the review process."
+    },
+    "question": "Which of the following is a factor that contributes to a successful review?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "192",
+    "imageUrl": "",
+    "options": {
+      "A": "Only developers and testers should be involved in retrospectives, as involving people in other roles is very likely to prevent developers and testers from having open and constructive discussions that really help identify process improvements.",
+      "B": "Retrospectives can be very effective in identifying process improvements and can also be very efficient and cost-effective especially since, unlike reviews, they do not require any follow-up activities.",
+      "C": "On Agile projects, well-conducted retrospectives at the end of each iteration can help the team reduce and sometimes even eliminate the need for daily stand-up meetings.",
+      "D": "During retrospectives, in addition to identifying relevant process improvements, participants should also consider how to implement these improvements and retain them based on the context of the project, such as the software development lifecycle."
+    },
+    "question": "Which of the following statements about retrospectives is TRUE?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "193",
+    "imageUrl": "",
+    "options": {
+      "A": "Each layer of the test pyramid groups tests related to a single non-functional quality characteristic.",
+      "B": "The higher the layer of the test pyramid, the more production code a single automated test within the layer tends to cover.",
+      "C": "The higher the layer of the test pyramid, the more maintainable a single automated test within the layer tends to be.",
+      "D": "The higher the layer of the test pyramid, the more isolated a single automated test within the layer tends to be."
+    },
+    "question": "Which of the following statements about the test pyramid is TRUE?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "194",
+    "imageUrl": "",
+    "options": {
+      "A": "Achieving 90% statement coverage ensures that 90% branch coverage is achieved.",
+      "B": "Achieving 100% statement coverage ensures that no variable within the code has been used without being initialized.",
+      "C": "Achieving 100% statement coverage ensures that 100% branch coverage is achieved.",
+      "D": "Achieving 80% statement coverage ensures that 80% of all executable statements within the code have been exercised."
+    },
+    "question": "Which of the following statements about statement coverage is TRUE?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "195",
+    "imageUrl": "",
+    "options": {
+      "A": "Test design.",
+      "B": "Test analysis.",
+      "C": "Test implementation.",
+      "D": "Test monitoring and control."
+    },
+    "question": "A document describes the test procedures that have been derived for the identified test sets. Among other things, the order in which the test cases in the corresponding test set are to be executed according to the dependencies described by preconditions and postconditions is specified. This document is a typical work product produced as part of:"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "196",
+    "imageUrl": "",
+    "options": {
+      "A": "Unlike functional testing, non-functional testing can only be applied to conventional systems, not artificial intelligence-based system.",
+      "B": "Functional testing focuses on what the system is supposed to do, while white-box testing focuses on how well the system does what it is supposed to do.",
+      "C": "Functional testing can be applied to all test levels, while non-functional testing can be applied only to system and acceptance test levels.",
+      "D": "Black-box test techniques and experience-based test techniques may be applicable to both functional testing and non-functional testing."
+    },
+    "question": "Which of the following statements is TRUE?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "197",
+    "imageUrl": "",
+    "options": {
+      "A": "Take on the role of developer to meet challenging project deadlines.",
+      "B": "Assume leadership aimed at imposing decisions on the rest of the team.",
+      "C": "Use tools to make the execution of repetitive testing tasks more efficient.",
+      "D": "Determine the corrective actions to get a test project on track in case of deviations from the test plan."
+    },
+    "question": "A typical generic skill required for the role of tester is the ability to:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "198",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775086704606-yz5g0oxr.png",
+    "options": {
+      "A": "Column 7 represents an impossible situation and thus can be deleted.",
+      "B": "Columns 1 and 3 can be merged into a single column.",
+      "C": "Columns 2, 4, 6 and 8 can be merged into a single column.",
+      "D": "Columns 5 and 7 can be merged into a single column."
+    },
+    "question": "The following decision table is used to assist a doctor in determining the drug therapy to prescribe for a patient (aged 6 to 65 years) diagnosed with acute sinusitis. The table consists of three Boolean conditions and six actions:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "200",
+    "imageUrl": "",
+    "options": {
+      "A": "User acceptance tests are usually automated and aim to verify the acceptance criteria for user stories.",
+      "B": "Acceptance criteria for user stories can include details on data definitions, for example by describing the format, allowed values, and default values for a data item.",
+      "C": "Acceptance criteria for user stories should focus on positive scenarios, while negative scenarios should be excluded.",
+      "D": "Tests derived from acceptance criteria for user stories are not included in any of the four testing quadrants."
+    },
+    "question": "Which of the following statements is TRUE?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "201",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1775086707010-wq4gori4.png",
+    "options": {
+      "A": "TC4, TC3, TC2, TC1, TC5.",
+      "B": "TC1, TC5, TC4, TC3, TC2.",
+      "C": "TC4, TC3, TC2, TC5, TC1.",
+      "D": "TC4, TC1, TC5, TC2, TC3."
+    },
+    "question": "For each test case to be executed, the following table specifies its dependencies and the required configuration of the test environment for running such test case:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "202",
+    "imageUrl": "",
+    "options": {
+      "A": "Allows the expected results to be compared with the actual results.",
+      "B": "Allows the tracking of all changes to versions of the testware.",
+      "C": "Includes all activities that direct and control an organization with regard to quality.",
+      "D": "Focuses on configuring static analysis tools to choose the most suitable breadth and depth of analysis."
+    },
+    "question": "From a testing perspective, configuration management:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "203",
+    "imageUrl": "",
+    "options": {
+      "A": "The support offered by a test data preparation tool is often leveraged by testers to run automated regression test suites.",
+      "B": "The support offered by a performance testing tool is often leveraged by testers to run load tests.",
+      "C": "The support offered by a bug prediction tool is often used by testers to track the bugs they found.",
+      "D": "The support offered by a continuous integration tool is often leveraged by testers to automatically generate test cases from a model."
+    },
+    "question": "Which of the following statements about how different types of test tools support testers is true?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "204",
+    "imageUrl": "",
+    "options": {
+      "A": "The final estimate is between 22 person hours and 38 person hours.",
+      "B": "The final estimate is exactly 30 person hours because the technique uses the initial most likely estimate as the final estimate.",
+      "C": "The final estimate is between 6 person hours and 54 person hours.",
+      "D": "The final estimate is exactly 30 person hours because the technique uses the arithmetic mean of the three initial estimates as the final estimate."
+    },
+    "question": "Following a risk-based testing approach you have designed 10 tests to cover a product risk with a high-risk level. You want to estimate, adopting the three-point test estimation technique, the test effort required to reduce the risk level to zero by executing those 10 tests. You made the following three initial estimates:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "205",
+    "imageUrl": "",
+    "options": {
+      "A": "promotes the idea that all team members should have a thorough understanding of test techniques.",
+      "B": "is a consensus-based approach that involves the whole team in estimating user stories.",
+      "C": "promotes the idea that all team members should be responsible for the quality of the product.",
+      "D": "is mostly adopted in projects aimed at developing safety-critical systems, as it ensures the highest level of test independence"
+    },
+    "question": "The whole-team approach:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "206",
+    "imageUrl": "",
+    "options": {
+      "A": "A defect does not always produce a failure, while a bug always produces a failure.",
+      "B": "A defect may cause a failure which, when occurring, always causes an error.",
+      "C": "Failures can be caused by defects, but also by environmental conditions.",
+      "D": "Bugs are defects found during component testing, while failures are defects found during higher test levels."
+    },
+    "question": "Which of the following statements is true?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "207",
+    "imageUrl": "",
+    "options": {
+      "A": "is a false myth.",
+      "B": "is expressed by the testing principle referred to as ‘Tests wear out’.",
+      "C": "is expressed by the testing principle referred to as ‘Defects cluster together’.",
+      "D": "is expressed by the testing principle referred to as ‘Bug prediction’."
+    },
+    "question": "The fact that defects are usually not evenly distributed among the various modules that make up a software application, but rather their distribution tends to reflect the Pareto principle:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "208",
+    "imageUrl": "",
+    "options": {
+      "A": "Make sure the planned test environment is ready to be delivered.",
+      "B": "Find, analyse, and remove the causes of the failures highlighted by the tests.",
+      "C": "Archive the testware for use in future test projects.",
+      "D": "Gather the metrics that are used to guide the test project."
+    },
+    "question": "Which of the following is a test task that usually occurs during test implementation?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "209",
+    "imageUrl": "",
+    "options": {
+      "A": "Test monitoring and control.",
+      "B": "Test implementation.",
+      "C": "Test design.",
+      "D": "Test analysis."
+    },
+    "question": "A virtual service emulating a real third-party service and the automated test scripts (aimed at testing the system under test) that interact with that service, are test work products that are typically created during:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "210",
+    "imageUrl": "",
+    "options": {
+      "A": "Traceability can be useful for assessing the impact of a change to a test basis item on the corresponding tests.",
+      "B": "Traceability can be useful for determining how many test basis items are covered by the corresponding tests.",
+      "C": "Traceability can be useful for determining the most suitable test techniques to be used in a testing project.",
+      "D": "Traceability can be useful to support the needs required by the auditing of testing."
+    },
+    "question": "Which of the following statements about the value of maintaining traceability between the test basis and test work products is false?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "211",
+    "imageUrl": "",
+    "options": {
+      "A": "Be able to apply test-driven development.",
+      "B": "Be able to use test management tools and defect tracking tools.",
+      "C": "Be able to communicate defects and failures to developers as objectively as possible.",
+      "D": "Possess the necessary social skills that support effective teamwork."
+    },
+    "question": "Which of the following is not an example of a typical generic skill required for testing?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "212",
+    "imageUrl": "",
+    "options": {
+      "A": "Tests should be written in executable format before the code is written and should act as executable specifications that drive coding.",
+      "B": "Test levels should be defined such that the exit criteria of one level are part of the entry criteria for the next level.",
+      "C": "Test objectives should be the same for all test levels, although the number of tests designed at various levels can vary significantly.",
+      "D": "Involvement of testers in work product reviews should occur as early as possible to take advantage of the early testing principle."
+    },
+    "question": "Which of the following statements refers to a good testing practice that applies to all software development lifecycles?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "213",
+    "imageUrl": "",
+    "options": {
+      "A": "Test-Driven Development (TDD).",
+      "B": "Acceptance Test-Driven Development (ATDD).",
+      "C": "Behaviour-Driven Development (BDD).",
+      "D": "Domain-Driven Design (DDD)."
+    },
+    "question": "Which of the following is a test-first approach to development, where tests that express a shared understanding from stakeholders of how the application is expected to work, are first written in business-readable language (following the Given/When/Then format), and then made executable to drive development?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "214",
+    "imageUrl": "",
+    "options": {
+      "A": "Functional testing focuses on what the system should do while non-functional testing focuses on the internal structure of the system.",
+      "B": "Non-functional testing includes testing of both technical and non-technical quality characteristics.",
+      "C": "Testers who perform functional tests are generally expected to have more technical skills than testers who perform non-functional tests.",
+      "D": "The test techniques that can be used to design white-box tests are described in the ISO/IEC 25010 standard."
+    },
+    "question": "Which of the following statements is true?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "215",
+    "imageUrl": "",
+    "options": {
+      "A": "a defect is fixed and after other tests do not find any side-effect introduced in the software as a result of such fix",
+      "B": "a failed test, and aims to run that test again to confirm that the same behaviour still occurs and thus appears to be reproducible.",
+      "C": "the execution of an automated regression test suite to confirm the absence of false positives in the test results.",
+      "D": "a defect is fixed, and if such testing is successful then the regression tests that are relevant for such fix can be executed."
+    },
+    "question": "Confirmation testing is performed after:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "216",
+    "imageUrl": "",
+    "options": {
+      "A": "In Agile software development, work product documentation tends to be lightweight and manual tests tend to be often unscripted as they are often produced using experience-based test techniques.",
+      "B": "Sequential development models impose the use of systematic test techniques and do not allow the use of experience-based test techniques.",
+      "C": "In Agile software development, the first iterations are exclusively dedicated to testing activities, as testing will be used to drive development, which will be performed in the subsequent iterations.",
+      "D": "Both in Agile software development and in sequential development models, such as the V-model, test levels tend to overlap since they do not usually have defined entry and exit criteria."
+    },
+    "question": "Which of the following statements is true?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "217",
+    "imageUrl": "",
+    "options": {
+      "A": "Shift-left in testing can be implemented only in Agile/DevOps frameworks, as it relies completely on automated testing activities performed within a continuous integration process.",
+      "B": "Performance testing performed at the component test level is a form of shift-left in testing that avoids planning and executing costly end-to-end testing at the system test level in a production-like environment.",
+      "C": "Shift-left in testing can be implemented in several ways to find functional defects early in the lifecycle, but it cannot be relied upon to find defects associated with non-functional characteristics.",
+      "D": "Continuous integration supports shift-left in testing as it can reduce the time between the introduction of a defect and its detection, thereby reducing the cost to fix it."
+    },
+    "question": "Which of the following statements about the shift-left approach is true?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "218",
+    "imageUrl": "",
+    "options": {
+      "A": "Test plans.",
+      "B": "Source code.",
+      "C": "Compiled code.",
+      "D": "Formal models."
+    },
+    "question": "Which of the following work products cannot be examined by static analysis?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "219",
+    "imageUrl": "",
+    "options": {
+      "A": "Determining the people who will be involved in the review.",
+      "B": "Recording the anomalies found during the review meeting.",
+      "C": "Identifying potential anomalies in the work product under review.",
+      "D": "Fixing the anomalies found in the work product under review."
+    },
+    "question": "Which of the following is a task the author is responsible for, as part of a typical formal review?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "220",
+    "imageUrl": "",
+    "options": {
+      "A": "Unlike dynamic testing, which can be also performed manually, static testing cannot be performed without specialised tools.",
+      "B": "Static testing is usually much less cost-effective than dynamic testing.",
+      "C": "Unlike dynamic testing, which focuses on detecting potential defects, static testing focuses on detecting failures which may be due to actual defects.",
+      "D": "Both static testing and dynamic testing can be used to highlight issues associated with non-functional characteristics."
+    },
+    "question": "Which of the following statements about static testing and dynamic testing is true?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "221",
+    "imageUrl": "",
+    "options": {
+      "A": "Inspection.",
+      "B": "Audit.",
+      "C": "Walkthrough.",
+      "D": "Informal review."
+    },
+    "question": "Consider a review for a high-level architectural document written by a software architect. The architect does most of the review preparation work, including distributing the document to reviewers before the review meeting However, reviewers are not required to analyse the document in advance, and during the review meeting the software architect explains the document step by step. The only goal of this review is to establish a common understanding of the software architecture that will be used in a software development project."
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "222",
+    "imageUrl": "",
+    "options": {
+      "A": "Experience-based test techniques rely on the experience of testers to identify the root causes of defects found by black-box test techniques.",
+      "B": "Some of the most common test basis used by white-box test techniques include user stories, use cases and business processes.",
+      "C": "Experience-based test techniques are often useful to detect hidden defects that have not been targeted by black-box test techniques.",
+      "D": "The primary goal of experience-based test techniques is to design test cases that can be easily automated using a GUI-based test automation tool."
+    },
+    "question": "Which of the following statements is true?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "223",
+    "imageUrl": "",
+    "options": {
+      "A": "The minimum number of test cases needed to achieve full branch coverage, is usually lower than that needed to achieve full statement coverage.",
+      "B": "If full branch coverage has been achieved, then all unconditional branches within the code have surely been exercised.",
+      "C": "If full branch coverage has been achieved, then all combinations of conditions in a decision table have surely been exercised.",
+      "D": "Exercising at least one of the decision outcomes for all decisions within the code, ensures achieving full branch coverage."
+    },
+    "question": "Which of the following statements about branch coverage is true?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "224",
+    "imageUrl": "",
+    "options": {
+      "A": "Achieving full statement coverage and full branch coverage for a software product means that such software product has been fully tested and there are no remaining bugs within the code.",
+      "B": "Code-related white-box test techniques are not required to measure the actual code coverage achieved by black-box testing, as code coverage can be measured using the coverage criteria associated with black-box test techniques.",
+      "C": "Branch coverage is the most thorough code-related white-box test technique, and therefore applicable standards prescribe achieving full branch coverage at the highest safety levels for safety-critical systems.",
+      "D": "Code-related white-box test techniques provide an objective measure of coverage and can be used to complement black-box test techniques to increase confidence in the code."
+    },
+    "question": "Which of the following statements about white-box test techniques is true?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "225",
+    "imageUrl": "",
+    "options": {
+      "A": "Error guessing is a system that adopts artificial intelligence to predict whether software components are likely to contain defects or not.",
+      "B": "Experienced testers, when applying error guessing, rely on the use of a high-level list of what needs to be tested as a guide to find defects.",
+      "C": "Error guessing refers to the ability of a system or component to continue normal operation despite the presence of erroneous inputs.",
+      "D": "Experienced testers, when applying error guessing technique, can anticipate where errors, defects and failures have occurred and target their tests at those issues."
+    },
+    "question": "Which of the following statements about error guessing is true?"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "226",
+    "imageUrl": "",
+    "options": {
+      "A": "Exploratory testing is an experience-based test technique in which testers explore the requirements specification to detect non testable requirements.",
+      "B": "When exploratory testing is conducted following a session-based approach, the issues detected by the testers can be documented in session sheets.",
+      "C": "Exploratory testing is an experience-based test technique used by testers during informal code reviews to find defects by exploring the source code.",
+      "D": "In exploratory testing, testers usually produce scripted tests and establish bidirectional traceability between these tests and the items of the test basis."
+    },
+    "question": "Which of the following statements about exploratory testing is true?"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "227",
+    "imageUrl": "",
+    "options": {
+      "A": "are often written in a rule-oriented format using the template referred to as “Given/When/Then”.",
+      "B": "are often documented following in rule-oriented format using the following template: “As a [role], I want [feature], so that I can [benefit]”.",
+      "C": "can be written in different formats and represent an aspect of a user story referred to as ‘confirmation’ of the so called “3 C’s”.",
+      "D": "must be written in one of the two following formats: scenario-oriented or rule-oriented."
+    },
+    "question": "The acceptance criteria associated with a user story:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "228",
+    "imageUrl": "",
+    "options": {
+      "A": "TC1 = 81k€; TC2= 97k€; TC3=111k€; TC4=118k€",
+      "B": "TC1 = 40k€; TC2= 46k€; TC3=51k€; TC4=53k€",
+      "C": "TC1 = 79k€; TC2= 80k€; TC3=81k€; TC4=82k€",
+      "D": "TC1 = 90k€; TC2= 110k€; TC3=125k€; TC4=140k€"
+    },
+    "question": "The following rules determine the annual bonus to be paid to a salesman of a company based on the total annual amount of the sales made (referred to as TAS)."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "229",
+    "imageUrl": "",
+    "options": {
+      "A": "1xA; aB11; Pq1ZZab; 7iDD0a1x",
+      "B": "aB11; 99rSp; 5NnN10; 7iDD0a1x",
+      "C": "1xB; aB11; 99rSp; 5NnN10; 4NnN10T; 44ghWn19",
+      "D": "1RhT; rSp53; 3N3e10; 8sBc1by"
+    },
+    "question": "An alphanumeric password must be between 4 and 7 characters long and must contain at least one numeric character, one capital (uppercase) letter and one lowercase letter of the alphabet."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "230",
+    "imageUrl": "",
+    "options": {},
+    "question": "A company wants to reward each of its salespeople with an annual bonus that represents the sum of all the bonuses accumulated for every single sale made by that salesperson. The bonus for a single sale can take on the following four values: 3%, 5%, 7% and 10% (the percentage refers to the amount of the single sale). These values are determined on the basis of the type of customer (classified as “Basic” or “Premium”) to which such sale was made, and on the amount of such sale classified into the following three groups G1, G2 and G3:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "231",
+    "imageUrl": "",
+    "options": {
+      "A": "The logged-in user enters a wrong current password and views the dedicated error message.",
+      "B": "The logged-in user enters the correct current password, enters a valid new password (different from the last 5 passwords), presses the ‘Change Password’ button, and finally receives the e-mail confirming that the password has been successfully changed.",
+      "C": "The logged-in user enters the correct current password, enters an invalid password, and finally views the dedicated error.",
+      "D": "The logged-in user submits a purchase order containing ten items, selects to pay with a Visa credit card, enters credit card information of a valid card, presses the ‘Confirm’ button, and finally views the dedicated message confirming that the purchase has been successful."
+    },
+    "question": "Consider the following user story about the authentication functionality of an e-commerce website:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "232",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1776232452363-jeusnurn.png",
+    "options": {},
+    "question": "The following simplified version of a state transition diagram specifies the behaviour of a video poker game:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "233",
+    "imageUrl": "",
+    "options": {
+      "A": "generally run faster than the tests at the top layer of the pyramid.",
+      "B": "cover larger pieces of functionalities than the tests at the top layer of the pyramid.",
+      "C": "are defined as ‘UI tests’ or ‘end-to-end tests’ in the different models of the pyramid.",
+      "D": "are unscripted tests produced by experience-based test techniques."
+    },
+    "question": "The tests at the bottom layer of the test pyramid:"
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "234",
+    "imageUrl": "",
+    "options": {
+      "A": "not usually included in a test plan, and therefore in the given test plan it should not be specified neither within the three sections mentioned, nor within the others.",
+      "B": "usually included in a test plan and, in the given test plan, it is more likely to be specified within “Test Scope” rather than in the other two sections mentioned.",
+      "C": "usually included in a test plan and, in the given test plan, it is more likely to be specified within “Testing Communication” rather than in the other two sections mentioned.",
+      "D": "usually included in a test plan and, in the given test plan, it is more likely to be specified within “Stakeholders” rather than in the other two sections mentioned."
+    },
+    "question": "Consider a given test plan which, among others, contains the following three sections: “Test Scope”, “Testing Communication”, and “Stakeholders”. The features of the test object to be tested and those excluded from the testing represent information that is:"
+  },
+  {
+    "answer": [
+      "C"
+    ],
+    "id": "235",
+    "imageUrl": "",
+    "options": {
+      "A": "Q1.",
+      "B": "Q2.",
+      "C": "Q3.",
+      "D": "Q4."
+    },
+    "question": "In a two-hour uninterrupted test session, performed as part of an iteration on an Agile project, a heuristic checklist was used to help the tester focus on some specific usability issues of a web application."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "236",
+    "imageUrl": "",
+    "options": {
+      "A": "[I] and [III] are product risks; [II] and [IV] are project risks.",
+      "B": "[I] and [IV] are product risks, [II] and [III] are project risks.",
+      "C": "[II], [III] and [IV] are product risks; [I] is a project risk.",
+      "D": "[IV] is a product risk; [I], [II] and [III] are project risks."
+    },
+    "question": "Consider the following examples of risks identified in different software development projects:"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "237",
+    "imageUrl": "",
+    "options": {
+      "A": "The additional effort spent on test execution compared to what was planned.",
+      "B": "The unexpected test environment downtime that resulted in slower test execution.",
+      "C": "The residual risk level if a risk-based test approach was adopted.",
+      "D": "The test procedures of all test cases that have been executed."
+    },
+    "question": "Which of the following is not an example of a typical content of a test completion report for a test project?"
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "238",
+    "imageUrl": "",
+    "options": {
+      "A": "Configuration management helps reduce testing effort by identifying a manageable number of test environment configurations in which to test the software, out of all possible configurations of the environment in which the software will be released.",
+      "B": "Configuration management is an administrative discipline that includes change control, which is the process of controlling the changes to identified items referred to as ‘Configuration Items’.",
+      "C": "Configuration management is an approach to interoperability testing where tests are executed in the cloud, as the cloud can provide cost-effective access to multiple configurations of the test environments.",
+      "D": "Configuration management helps ensure that all relevant project documentation and software items are uniquely identified in all their versions and therefore can be unambiguously referenced in test documentation."
+    },
+    "question": "Which of the following statements best describes how configuration management supports testing?"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "239",
+    "imageUrl": "",
+    "options": {
+      "A": "You should open a defect report providing detailed information on which devices and by running which tests you observed the issue.",
+      "B": "The issue is related to performance efficiency, not functionality. Thus, as a functional tester, you should not open any defect report as all the functional tests passed.",
+      "C": "You should not open any defect report as the problem is most likely due to poor hardware equipment on the devices where you observed the issue.",
+      "D": "You should not open any defect report and inform the test manager that the devices on which you observed the issue should no longer be supported so that they will be removed from the requirements specification."
+    },
+    "question": "A new web app aims at offering a rich user experience. As a functional tester, you have run some functional tests to verify that, before releasing the app, such app works correctly on several mobile devices, all of which are listed as supported devices within the requirements specification. These tests were performed on stable and isolated test environments where you were the only user interacting with the application. All tests passed, but in some of those tests you observed the following issue: on some mobile devices only, the response time for two web pages containing images was extremely slow."
+  },
+  {
+    "answer": [
+      "B"
+    ],
+    "id": "240",
+    "imageUrl": "",
+    "options": {
+      "A": "demonstrate the absence of defects.",
+      "B": "produce tests that are less subject to human errors.",
+      "C": "avoid performing exploratory testing.",
+      "D": "increase test process efficiency by facilitating management of defects."
+    },
+    "question": "Test automation allows you to:"
+  },
+  {
+    "answer": [
+      "A"
+    ],
+    "id": "241",
+    "imageUrl": "https://cdn.examcademy.com/images/questions/1776232466079-g5vsklyr.png",
+    "options": {
+      "A": "TC4, TCЗ, TC2, TC6, TC5, TC1.",
+      "B": "TC4, TC6, TCЗ, TC2, TC5, TC1.",
+      "C": "TCЗ, TC5, TC6, TC1, TC4, TCЗ.",
+      "D": "TC4, TCЗ, TC2, TC6, TC1, TC5."
+    },
+    "question": "For each of the test cases to be executed, the following table specifies the priority order and dependencies on other test cases."
+  },
+  {
+    "answer": [
+      "D"
+    ],
+    "id": "242",
+    "imageUrl": "",
+    "options": {
+      "A": "testing is used to drive the development of a software.",
+      "B": "a test object is tested using a combination of test techniques.",
+      "C": "there are no defects in a test object that is about to be released.",
+      "D": "a test object is covered as required."
+    },
+    "question": "A typical test objective is to ensure that:"
+  }
+]
