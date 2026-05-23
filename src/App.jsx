@@ -46,7 +46,11 @@ function App() {
     { id: 'gcp-pca', name: 'Google Cloud Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud' },
     { id: 'gcp-pcd', name: 'Google Cloud Professional Cloud Developer (PCD)', file: 'quiz/Google/GCP_PCD.json', category: 'Google Cloud' },
     { id: 'gcp-pcde', name: 'Google Cloud Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud' },
-    { id: 'gcp-gal', name: 'Google Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud' }
+    { id: 'gcp-gal', name: 'Google Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud' },
+    // ISTQB
+    { id: 'istqb-ctfl-v4-0', name: 'ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB' },
+    { id: 'istqb-ct-ai', name: 'ISTQB Certified Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB' },
+    { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB' }
   ];
   
   // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
