@@ -1,6 +1,6 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin } from 'antd';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag } from 'antd';
 import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
@@ -34,23 +34,23 @@ function App() {
   // Available demo quizzes organized by folder
   const availableQuizzes = [
     // AWS
-    { id: 'aws-ace', name: 'AWS Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS' },
-    { id: 'aws-saa', name: 'AWS Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS' },
-    { id: 'aws-dva', name: 'AWS Developer Associate (DVA)', file: 'quiz/AWS/AWS_DVA.json', category: 'AWS' },
-    { id: 'aws-dea', name: 'AWS Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS' },
+    { id: 'aws-ace', name: 'Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS', difficulty: 'Practitioner', totalQuestions: 302 },
+    { id: 'aws-saa', name: 'Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 529 },
+    { id: 'aws-dva', name: 'Developer Associate (DVA)', file: 'quiz/AWS/AWS_DVA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 557 },
+    { id: 'aws-dea', name: 'Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 227 },
     // Azure
-    { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Azure' },
-    { id: 'gh-300', name: 'Github Copilot (GH-300)', file: 'quiz/Azure/GH-300.json', category: 'Azure' },
+    { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Microsoft', difficulty: 'Fundamentals', totalQuestions: 472 },
+    { id: 'gh-300', name: 'Github Copilot (GH-300)', file: 'quiz/Azure/GH-300.json', category: 'Microsoft', difficulty: 'Associate', totalQuestions: 115 },
     // Google Cloud
-    { id: 'gcp-ace', name: 'Google Cloud Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud' },
-    { id: 'gcp-pca', name: 'Google Cloud Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud' },
-    { id: 'gcp-pcd', name: 'Google Cloud Professional Cloud Developer (PCD)', file: 'quiz/Google/GCP_PCD.json', category: 'Google Cloud' },
-    { id: 'gcp-pcde', name: 'Google Cloud Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud' },
-    { id: 'gcp-gal', name: 'Google Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud' },
+    { id: 'gcp-ace', name: 'Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud', difficulty: 'Associate', totalQuestions: 302 },
+    { id: 'gcp-pca', name: 'Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 279 },
+    { id: 'gcp-pcd', name: 'Professional Cloud Developer (PCD)', file: 'quiz/Google/GCP_PCD.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 359 },
+    { id: 'gcp-pcde', name: 'Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 139 },
+    { id: 'gcp-gal', name: 'Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud', difficulty: 'Foundations', totalQuestions: 56 },
     // ISTQB
-    { id: 'istqb-ctfl-v4-0', name: 'ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB' },
-    { id: 'istqb-ct-ai', name: 'ISTQB Certified Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB' },
-    { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB' }
+    { id: 'istqb-ctfl-v4-0', name: 'Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB', difficulty: 'Foundation', totalQuestions: 240 },
+    { id: 'istqb-ct-ai', name: 'Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB', difficulty: 'Specialist', totalQuestions: 118 },
+    { id: 'istqb-ctal-ta-v4-0', name: 'Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 42 },
   ];
   
   // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
@@ -477,10 +477,36 @@ function App() {
                     label: category,
                     options: availableQuizzes
                       .filter(q => q.category === category)
-                      .map(quiz => ({
-                        label: quiz.name,
-                        value: quiz.id
-                      }))
+                       .map(quiz => ({
+                         label: (
+                           <div style={{ 
+                             display: 'flex', 
+                             justifyContent: 'space-between', 
+                             alignItems: 'center', 
+                             gap: '8px', 
+                             flexWrap: 'wrap' 
+                           }}>
+                             <span style={{ 
+                               flex: '1 1 auto', 
+                               minWidth: 0, 
+                               wordBreak: 'break-word',
+                               marginRight: '4px'
+                             }}>
+                               {quiz.name}
+                             </span>
+                             <div style={{ 
+                               display: 'flex', 
+                               gap: '4px', 
+                               flexShrink: 0, 
+                               alignItems: 'center' 
+                             }}>
+                               <Tag color="blue" style={{ margin: 0, fontSize: '11px' }}>{quiz.difficulty}</Tag>
+                               <Tag color="green" style={{ margin: 0, fontSize: '11px' }}>{quiz.totalQuestions} Qs</Tag>
+                             </div>
+                           </div>
+                         ),
+                         value: quiz.id
+                       }))
                   }));
                 })()}
               />
