@@ -1,12 +1,12 @@
 # Quiz App - Ứng dụng trắc nghiệm chứng chỉ Cloud
 
-Ứng dụng trắc nghiệm được xây dựng bằng React và Ant Design, tập trung vào các chứng chỉ Cloud (AWS, Azure, Google Cloud), hỗ trợ nhiều chế độ học tập, tích hợp AI Gemini để giải thích câu trả lời, và xác thực người dùng với Firebase.
+Ứng dụng trắc nghiệm được xây dựng bằng React và Ant Design, hỗ trợ các chứng chỉ Cloud, AI và kiểm thử phần mềm (AWS, Azure, Google Cloud, Anthropic, ISTQB), nhiều chế độ học tập, tích hợp AI Gemini để giải thích câu trả lời, và xác thực người dùng với Firebase.
 
 🔗 **Live Demo**: [https://tuanvipandpro.github.io/quiz-app](https://tuanvipandpro.github.io/quiz-app)
 
 ## 🌟 Tính năng chính
 
-### 📚 Bộ câu hỏi có sẵn (7 bộ quiz)
+### 📚 Bộ câu hỏi có sẵn (15 bộ quiz)
 
 #### ☁️ AWS - Amazon Web Services (4 bộ)
 - **AWS Certified Cloud Practitioner (CLF-C02)** - ACE
@@ -14,12 +14,24 @@
 - **AWS Certified Developer Associate (DVA-C02)** - DVA
 - **AWS Certified Data Engineer Associate (DEA-C01)** - DEA
 
-#### ⚡ Azure - Microsoft Azure (1 bộ)
+#### ⚡ Azure & GitHub (2 bộ)
 - **Microsoft Azure Fundamentals (AZ-900)**
+- **GitHub Copilot (GH-300)**
 
-#### 🔷 Google Cloud Platform (2 bộ)
+#### 🔷 Google Cloud Platform (5 bộ)
 - **Google Cloud Associate Cloud Engineer (ACE)**
 - **Google Cloud Professional Cloud Architect (PCA)**
+- **Google Cloud Professional Cloud Developer (PCD)**
+- **Google Cloud Professional Cloud Data Engineer (PCDE)**
+- **Google Generative AI Leader (GAL)**
+
+#### 🧪 ISTQB (3 bộ)
+- **ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)**
+- **ISTQB Certified Tester AI Testing (CT-AI)**
+- **ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)**
+
+#### 🤖 Anthropic (1 bộ)
+- **Claude Certified Architect Foundations (CCA-F)**
 
 ### 🎓 Chế độ học tập đa dạng
 
@@ -64,7 +76,7 @@
 
 ### 📁 Quản lý câu hỏi linh hoạt
 - **Upload JSON**: Tải lên file JSON câu hỏi tùy chỉnh
-- **Demo Quiz**: 7 bộ quiz chứng chỉ Cloud có sẵn
+- **Demo Quiz**: 15 bộ quiz chứng chỉ Cloud, AI và kiểm thử phần mềm có sẵn
 - **Validation**: Kiểm tra định dạng dữ liệu tự động
 - **Support**: Hỗ trợ câu hỏi đơn đáp án và đa đáp án
 
@@ -81,8 +93,8 @@
 Truy cập: [https://tuanvipandpro.github.io/quiz-app](https://tuanvipandpro.github.io/quiz-app)
 
 ### 2️⃣ Chọn Quiz
-- Nhấn **"Browse Available Quizzes"** để xem danh sách 7 bộ quiz
-- Chọn quiz theo chứng chỉ mong muốn (AWS/Azure/Google Cloud)
+- Nhấn **"Browse Available Quizzes"** để xem danh sách 15 bộ quiz
+- Chọn quiz theo chứng chỉ mong muốn (AWS/Azure/GitHub/Google Cloud/ISTQB/Anthropic)
 - Hoặc nhấn **"Upload Custom Quiz"** để tải lên file JSON riêng
 
 ### 3️⃣ Chọn chế độ học tập
@@ -254,10 +266,20 @@ quiz-app/
 │       │   ├── AWS_DVA.json   # Developer Associate
 │       │   └── AWS_DEA.json   # Data Engineer
 │       ├── Azure/
-│       │   └── AZ-900.json    # Azure Fundamentals
-│       └── Google/
-│           ├── GCP-ACE.json   # Associate Cloud Engineer
-│           └── GCP-PCA.json   # Professional Cloud Architect
+│       │   ├── AZ-900.json    # Azure Fundamentals
+│       │   └── GH-300.json    # GitHub Copilot
+│       ├── Google/
+│       │   ├── GCP-ACE.json   # Associate Cloud Engineer
+│       │   ├── GCP-PCA.json   # Professional Cloud Architect
+│       │   ├── GCP_PCD.json   # Professional Cloud Developer
+│       │   ├── GCP-PCDE.json  # Professional Cloud Data Engineer
+│       │   └── GCP-GAL.json   # Generative AI Leader
+│       ├── ISTQB/
+│       │   ├── CTFL_V4_0.json # Certified Tester Foundation Level
+│       │   ├── CT_AI.json     # Certified Tester AI Testing
+│       │   └── CTAL_TAV4_0.json # Advanced Level Test Analyst
+│       └── Anthropic/
+│           └── CCA_F.json     # Claude Certified Architect Foundations
 │
 ├── src/
 │   ├── components/             # React components
@@ -364,7 +386,7 @@ yarn build
 ## 📊 Thống kê Repository
 
 - **React 19**: Latest React with concurrent rendering
-- **7 Quiz Sets**: AWS (4) + Azure (1) + GCP (2)
+- **15 Quiz Sets**: AWS (4) + Azure/GitHub (2) + GCP (5) + ISTQB (3) + Anthropic (1)
 - **2 Modes**: Practice + Exam
 - **AI-Powered**: Gemini 1.5 Flash integration
 - **Firebase Auth**: Google Sign-In ready
@@ -383,7 +405,7 @@ Contributions are welcome! 🎉
 6. **Tạo Pull Request** với mô tả chi tiết
 
 ### Ý tưởng đóng góp
-- ➕ Thêm bộ quiz mới (AWS, Azure, GCP certifications)
+- ➕ Thêm bộ quiz mới (Cloud, AI, software testing certifications)
 - 🎨 Cải thiện UI/UX
 - 🐛 Fix bugs
 - 📝 Cải thiện documentation
