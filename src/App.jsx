@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled } from '@ant-design/icons';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag, ConfigProvider, theme as antdTheme } from 'antd';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 import './markdown.css';
@@ -14,8 +14,20 @@ import userService from './services/userService';
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { Dragger } = Upload;
+const THEME_STORAGE_KEY = 'quiz-app-theme';
+
+const getInitialDarkMode = () => {
+  if (typeof window === 'undefined') return false;
+
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === 'dark') return true;
+  if (savedTheme === 'light') return false;
+
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+};
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
   const [questions, setQuestions] = useState([]);
   const [mode, setMode] = useState(null); // 'practice' or 'exam'
   const [examTime, setExamTime] = useState(60); // Default 1 hour in minutes
@@ -30,6 +42,11 @@ function App() {
   const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
   const [quizSelectionProgress, setQuizSelectionProgress] = useState(null); // Saved progress found during quiz selection
   const [quizSelectionLoading, setQuizSelectionLoading] = useState(false); // Loading state while checking Firestore
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light';
+    window.localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
@@ -48,11 +65,11 @@ function App() {
     { id: 'gcp-pcde', name: 'Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 139 },
     { id: 'gcp-gal', name: 'Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud', difficulty: 'Foundations', totalQuestions: 56 },
     // ISTQB
-    { id: 'istqb-ctfl-v4-0', name: 'ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB' },
-    { id: 'istqb-ct-ai', name: 'ISTQB Certified Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB' },
-    { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB' },
+    { id: 'istqb-ctfl-v4-0', name: 'ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB', difficulty: 'Foundation', totalQuestions: 240 },
+    { id: 'istqb-ct-ai', name: 'ISTQB Certified Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 118 },
+    { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 42 },
     // Anthropic
-    { id: 'anthropic-cca-f', name: 'Claude Certified Architect Foundations (CCA-F)', file: 'quiz/Anthropic/CCA_F.json', category: 'Anthropic' }
+    { id: 'anthropic-cca-f', name: 'Claude Certified Architect Foundations (CCA-F)', file: 'quiz/Anthropic/CCA_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 175 }
   ];
   
   // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
@@ -276,7 +293,7 @@ function App() {
       label: (
         <div>
           <div style={{ fontWeight: 'bold' }}>{user?.displayName}</div>
-          <div style={{ fontSize: '12px', color: '#888' }}>{user?.email}</div>
+          <div className="user-email">{user?.email}</div>
         </div>
       ),
       disabled: true
@@ -300,39 +317,50 @@ function App() {
 
   // Simplified header without the back button
   const renderHeader = () => (
-    <Header className="ant-layout-header">
+    <Header className="app-header">
       <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
         <Title 
           level={3} 
-          style={{ color: 'white', margin: 0, cursor: 'pointer' }}
+          className="app-header-title"
           onClick={handleReturnHome}
         >
           Quiz Application
         </Title>
-        
-        {authLoading ? (
-          <Spin />
-        ) : user ? (
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '8px' }}>
-              <Avatar 
-                src={user.photoURL} 
-                icon={<UserOutlined />}
-                style={{ marginRight: '8px' }}
-              />
-              <span style={{ color: 'white' }}>{user.displayName}</span>
-            </div>
-          </Dropdown>
-        ) : (
-          <Button 
-            type="primary"
-            icon={<LoginOutlined />}
-            onClick={() => setLoginModalVisible(true)}
-            style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
-          >
-            Login
-          </Button>
-        )}
+
+        <div className="header-actions">
+          <Button
+            type="text"
+            className="theme-toggle"
+            icon={isDarkMode ? <SunOutlined /> : <MoonOutlined />}
+            onClick={() => setIsDarkMode((current) => !current)}
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={isDarkMode}
+            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          />
+
+          {authLoading ? (
+            <Spin />
+          ) : user ? (
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <div className="header-user-menu">
+                <Avatar
+                  src={user.photoURL}
+                  icon={<UserOutlined />}
+                />
+                <span className="app-header-user-name">{user.displayName}</span>
+              </div>
+            </Dropdown>
+          ) : (
+            <Button
+              type="primary"
+              icon={<LoginOutlined />}
+              onClick={() => setLoginModalVisible(true)}
+              className="header-login-button"
+            >
+              Login
+            </Button>
+          )}
+        </div>
       </div>
     </Header>
   );
@@ -356,10 +384,19 @@ function App() {
   };
 
   return (
-    <Layout className="layout" style={{ minHeight: '100vh' }}>
-      {renderHeader()}
-      
-      <Content className="ant-layout-content">
+    <ConfigProvider
+      theme={{
+        algorithm: isDarkMode ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#1677ff',
+          borderRadius: 8,
+        },
+      }}
+    >
+      <Layout className="layout" style={{ minHeight: '100vh' }}>
+        {renderHeader()}
+
+        <Content className="ant-layout-content">
         {startScreen && !showQuizSelection ? (
           // Initial start screen with options
           <div style={{ textAlign: 'center' }}>
@@ -422,12 +459,11 @@ function App() {
                 <Text type="secondary">
                   Example format:
                   <pre style={{ 
-                    backgroundColor: '#f5f5f5', 
                     padding: '10px', 
                     borderRadius: '5px',
                     textAlign: 'left',
                     overflow: 'auto'
-                  }}>
+                  }} className="quiz-example-code">
 {`[
   {
     "id": "1",
@@ -480,38 +516,27 @@ function App() {
                     options: availableQuizzes
                       .filter(q => q.category === category)
                        .map(quiz => ({
-                         label: (
-                           <div style={{ 
-                             display: 'flex', 
-                             justifyContent: 'space-between', 
-                             alignItems: 'center', 
-                             gap: '8px', 
-                             flexWrap: 'wrap' 
-                           }}>
-                             <span style={{ 
-                               flex: '1 1 auto', 
-                               minWidth: 0, 
-                               wordBreak: 'break-word',
-                               marginRight: '4px'
-                             }}>
-                               {quiz.name}
-                             </span>
-                             <div style={{ 
-                               display: 'flex', 
-                               gap: '4px', 
-                               flexShrink: 0, 
-                               alignItems: 'center' 
-                             }}>
-                               <Tag color="blue" style={{ margin: 0, fontSize: '11px' }}>{quiz.difficulty}</Tag>
-                               <Tag color="green" style={{ margin: 0, fontSize: '11px' }}>{quiz.totalQuestions} Qs</Tag>
-                             </div>
-                           </div>
-                         ),
-                         value: quiz.id
+                         label: quiz.name,
+                         value: quiz.id,
+                         difficulty: quiz.difficulty,
+                         totalQuestions: quiz.totalQuestions
                        }))
-                  }));
-                })()}
-              />
+                   }));
+                 })()}
+                optionRender={(option) => (
+                  <div className="quiz-option">
+                    <span className="quiz-option-name">{option.data.label}</span>
+                    <span className="quiz-option-meta">
+                      {option.data.difficulty && (
+                        <Tag color="blue" style={{ margin: 0, fontSize: '11px' }}>{option.data.difficulty}</Tag>
+                      )}
+                      {option.data.totalQuestions && (
+                        <Tag color="green" style={{ margin: 0, fontSize: '11px' }}>{option.data.totalQuestions} Qs</Tag>
+                      )}
+                    </span>
+                  </div>
+                )}
+               />
               
               {/* Firestore progress check result */}
               {quizSelectionLoading && (
@@ -524,21 +549,19 @@ function App() {
                 <div className="quiz-progress-notice" style={{
                   marginTop: '14px',
                   padding: '14px 16px',
-                  backgroundColor: '#fff7e6',
-                  border: '1px solid #ffd591',
                   borderRadius: '8px',
                 }}>                  
                   <div className="quiz-progress-notice-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                     <BookFilled style={{ color: '#fa8c16', fontSize: '16px' }} />
-                    <Text strong style={{ color: '#d46b08' }}>Saved progress found!</Text>
+                    <Text strong className="quiz-progress-notice-title">Saved progress found!</Text>
                   </div>
                   <Text className="quiz-progress-notice-text">You left off at <Text strong>Question {quizSelectionProgress.questionIndex + 1}</Text>. Do you want to continue from there?</Text>
                   <div className="quiz-progress-notice-actions" style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
                     <Button
-                      className="quiz-progress-action-button"
+                      className="quiz-progress-action-button quiz-progress-resume-button"
                       type="primary"
                       icon={<PlayCircleOutlined />}
-                      style={{ flex: 1, backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
+                      style={{ flex: 1 }}
                       onClick={() => {
                         const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
                         if (quiz) loadAndResumePractice(quiz.file, quiz.name, quiz.id, quizSelectionProgress.questionIndex);
@@ -632,9 +655,25 @@ function App() {
             style={{ marginTop: '50px' }}
           />
         )}
-      </Content>      
-      {/* Login Modal */}
-      <Modal
+        </Content>
+
+        <Footer className="app-footer">
+          <div className="app-footer-content">
+            <span className="app-footer-brand">Quiz Application</span>
+            <span>© {new Date().getFullYear()} Tuanvipandpro</span>
+            <a
+              href="https://github.com/tuanvipandpro/quiz-app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <GithubOutlined />
+              <span>View on GitHub</span>
+            </a>
+          </div>
+        </Footer>
+
+        {/* Login Modal */}
+        <Modal
         title="Choose Login Method"
         open={loginModalVisible}
         onCancel={() => setLoginModalVisible(false)}
@@ -669,14 +708,15 @@ function App() {
             </Button>
           </Space>
         </div>
-      </Modal>
-      
-      {/* Settings Modal */}
-      <SettingsModal
-        visible={settingsModalVisible}
-        onClose={() => setSettingsModalVisible(false)}
-      />
-    </Layout>
+        </Modal>
+
+        {/* Settings Modal */}
+        <SettingsModal
+          visible={settingsModalVisible}
+          onClose={() => setSettingsModalVisible(false)}
+        />
+      </Layout>
+    </ConfigProvider>
   );
 }
 

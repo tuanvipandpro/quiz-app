@@ -227,7 +227,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
           Save <strong>Question {currentIndex + 1}</strong> as your checkpoint?
           Next time you load this quiz, you can resume from here.
           {markedIndex !== null && (
-            <div style={{ marginTop: 8, color: '#888', fontSize: 12 }}>
+            <div className="saved-progress-override" style={{ marginTop: 8, fontSize: 12 }}>
               This will override your current checkpoint at Question {markedIndex + 1}.
             </div>
           )}
@@ -260,9 +260,9 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
           <Text strong>Question {currentIndex + 1} of {questions.length}</Text>
           {markedIndex !== null && (
             <Tooltip title={`Saved at question ${markedIndex + 1} — click Save to update`}>
-              <span style={{ color: '#fa8c16', fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '2px', cursor: 'default' }}>
+              <span className="saved-question-indicator" style={{ fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '2px', cursor: 'default' }}>
                 <BookFilled />
-                <Text style={{ color: '#fa8c16', fontSize: '12px' }}>Q{markedIndex + 1} saved</Text>
+                <Text className="saved-question-indicator" style={{ fontSize: '12px' }}>Q{markedIndex + 1} saved</Text>
               </span>
             </Tooltip>
           )}
@@ -417,8 +417,8 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
                 components={{
                   // Customize styling for specific markdown elements
-                  h1: ({node, ...props}) => <h1 style={{fontSize: '1.8em', borderBottom: '1px solid #eee'}} {...props} />,
-                  h2: ({node, ...props}) => <h2 style={{fontSize: '1.5em', borderBottom: '1px solid #eee'}} {...props} />,
+                  h1: ({node, ...props}) => <h1 style={{fontSize: '1.8em', borderBottom: '1px solid var(--app-border)'}} {...props} />,
+                  h2: ({node, ...props}) => <h2 style={{fontSize: '1.5em', borderBottom: '1px solid var(--app-border)'}} {...props} />,
                   h3: ({node, ...props}) => <h3 style={{fontSize: '1.3em'}} {...props} />,
                   h4: ({node, ...props}) => <h4 style={{fontSize: '1.2em'}} {...props} />,
                   p: ({node, ...props}) => <p style={{marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
@@ -427,19 +427,19 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
                   li: ({node, ...props}) => <li style={{marginBottom: '0.5em'}} {...props} />,
                   code: ({node, inline, ...props}) => (
                     inline 
-                      ? <code style={{backgroundColor: '#f0f0f0', padding: '0.2em 0.4em', borderRadius: '3px'}} {...props} />
-                      : <code style={{display: 'block', backgroundColor: '#f5f5f5', padding: '1em', borderRadius: '5px', overflowX: 'auto'}} {...props} />
+                      ? <code style={{backgroundColor: 'var(--app-code-inline-bg)', color: 'var(--app-text)', padding: '0.2em 0.4em', borderRadius: '3px'}} {...props} />
+                      : <code style={{display: 'block', backgroundColor: 'var(--app-code-bg)', color: 'var(--app-text)', padding: '1em', borderRadius: '5px', overflowX: 'auto'}} {...props} />
                   ),
                   blockquote: ({node, ...props}) => (
-                    <blockquote style={{borderLeft: '4px solid #ddd', paddingLeft: '1em', color: '#666'}} {...props} />
+                    <blockquote style={{borderLeft: '4px solid var(--app-border)', paddingLeft: '1em', color: 'var(--app-muted)'}} {...props} />
                   ),
                   table: ({node, ...props}) => (
                     <div style={{overflowX: 'auto'}}>
                       <table style={{borderCollapse: 'collapse', width: '100%'}} {...props} />
                     </div>
                   ),
-                  th: ({node, ...props}) => <th style={{border: '1px solid #ddd', padding: '0.5em', backgroundColor: '#f5f5f5'}} {...props} />,
-                  td: ({node, ...props}) => <td style={{border: '1px solid #ddd', padding: '0.5em'}} {...props} />
+                  th: ({node, ...props}) => <th style={{border: '1px solid var(--app-border)', padding: '0.5em', backgroundColor: 'var(--app-code-bg)'}} {...props} />,
+                  td: ({node, ...props}) => <td style={{border: '1px solid var(--app-border)', padding: '0.5em'}} {...props} />
                 }}
               >
                 {explanation}
@@ -464,12 +464,13 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         <Paragraph type="secondary" style={{ fontSize: '12px' }}>
           Get your free API key at: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>
         </Paragraph>
-        <Input.TextArea
+        <Input.Password
           placeholder="Enter your Gemini API key here..."
           value={apiKeyInput}
           onChange={(e) => setApiKeyInput(e.target.value)}
-          rows={3}
           style={{ marginTop: '10px' }}
+          autoComplete="off"
+          aria-label="Gemini API key"
         />
         <Paragraph type="warning" style={{ fontSize: '12px', marginTop: '10px' }}>
           Your API key will be stored locally in your browser.
