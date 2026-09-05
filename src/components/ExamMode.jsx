@@ -339,29 +339,29 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
 
     if (isCurrent) {
       return {
-        backgroundColor: '#1890ff',
-        borderColor: '#1890ff',
+        backgroundColor: 'var(--app-primary-bg)',
+        borderColor: 'var(--app-primary-bg)',
         borderWidth: '2px'
       };
     }
 
     if (!answered) {
       return {
-        backgroundColor: '#fff',
-        borderColor: '#d9d9d9'
+        backgroundColor: 'var(--app-surface)',
+        borderColor: 'var(--app-card-border)'
       };
     }
 
     if (correct) {
       return {
-        backgroundColor: '#f6ffed',
-        borderColor: '#b7eb8f'
+        backgroundColor: 'var(--app-success-bg)',
+        borderColor: 'var(--app-success-border)'
       };
     }
 
     return {
-      backgroundColor: '#fff2f0',
-      borderColor: '#ffccc7'
+      backgroundColor: 'var(--app-danger-bg)',
+      borderColor: 'var(--app-danger-border)'
     };
   };
   
@@ -604,7 +604,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
             sortOptions={false}
           />
 
-          <div style={{ marginTop: '16px', padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
+          <div className="selected-answer-panel" style={{ marginTop: '16px', padding: '16px', borderRadius: '8px' }}>
             <Title level={5} style={{ marginTop: 0 }}>Selected Answer{selectedAnswers.length > 1 ? 's' : ''}</Title>
             {selectedAnswers.length > 0 ? (
               selectedAnswers.map((optionKey) => (
@@ -664,7 +664,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
                       ...cardStyle
                     }}
                   >
-                    <Text strong style={{ color: isCurrent ? '#fff' : '#000' }}>
+                    <Text strong style={{ color: isCurrent ? '#fff' : 'var(--app-text)' }}>
                       {index + 1}
                     </Text>
                   </Card>
@@ -823,8 +823,8 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
                 components={{
                   // Customize styling for specific markdown elements
-                  h1: ({node, ...props}) => <h1 style={{fontSize: '1.8em', borderBottom: '1px solid #eee'}} {...props} />,
-                  h2: ({node, ...props}) => <h2 style={{fontSize: '1.5em', borderBottom: '1px solid #eee'}} {...props} />,
+                  h1: ({node, ...props}) => <h1 style={{fontSize: '1.8em', borderBottom: '1px solid var(--app-border)'}} {...props} />,
+                  h2: ({node, ...props}) => <h2 style={{fontSize: '1.5em', borderBottom: '1px solid var(--app-border)'}} {...props} />,
                   h3: ({node, ...props}) => <h3 style={{fontSize: '1.3em'}} {...props} />,
                   h4: ({node, ...props}) => <h4 style={{fontSize: '1.2em'}} {...props} />,
                   p: ({node, ...props}) => <p style={{marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
@@ -833,19 +833,19 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
                   li: ({node, ...props}) => <li style={{marginBottom: '0.5em'}} {...props} />,
                   code: ({node, inline, ...props}) => (
                     inline 
-                      ? <code style={{backgroundColor: '#f0f0f0', padding: '0.2em 0.4em', borderRadius: '3px'}} {...props} />
-                      : <code style={{display: 'block', backgroundColor: '#f5f5f5', padding: '1em', borderRadius: '5px', overflowX: 'auto'}} {...props} />
+                      ? <code style={{backgroundColor: 'var(--app-code-inline-bg)', color: 'var(--app-text)', padding: '0.2em 0.4em', borderRadius: '3px'}} {...props} />
+                      : <code style={{display: 'block', backgroundColor: 'var(--app-code-bg)', color: 'var(--app-text)', padding: '1em', borderRadius: '5px', overflowX: 'auto'}} {...props} />
                   ),
                   blockquote: ({node, ...props}) => (
-                    <blockquote style={{borderLeft: '4px solid #ddd', paddingLeft: '1em', color: '#666'}} {...props} />
+                    <blockquote style={{borderLeft: '4px solid var(--app-border)', paddingLeft: '1em', color: 'var(--app-muted)'}} {...props} />
                   ),
                   table: ({node, ...props}) => (
                     <div style={{overflowX: 'auto'}}>
                       <table style={{borderCollapse: 'collapse', width: '100%'}} {...props} />
                     </div>
                   ),
-                  th: ({node, ...props}) => <th style={{border: '1px solid #ddd', padding: '0.5em', backgroundColor: '#f5f5f5'}} {...props} />,
-                  td: ({node, ...props}) => <td style={{border: '1px solid #ddd', padding: '0.5em'}} {...props} />
+                  th: ({node, ...props}) => <th style={{border: '1px solid var(--app-border)', padding: '0.5em', backgroundColor: 'var(--app-code-bg)'}} {...props} />,
+                  td: ({node, ...props}) => <td style={{border: '1px solid var(--app-border)', padding: '0.5em'}} {...props} />
                 }}
               >
                 {explanation}
@@ -933,13 +933,13 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
                       onClick={() => goToQuestion(index)}
                       style={{
                         textAlign: 'center',
-                        backgroundColor: isCurrent ? '#1890ff' : (isAnswered ? '#f6ffed' : '#fff'),
-                        borderColor: isCurrent ? '#1890ff' : (isAnswered ? '#b7eb8f' : '#d9d9d9'),
+                        backgroundColor: isCurrent ? 'var(--app-primary-bg)' : (isAnswered ? 'var(--app-success-bg)' : 'var(--app-surface)'),
+                        borderColor: isCurrent ? 'var(--app-primary-bg)' : (isAnswered ? 'var(--app-success-border)' : 'var(--app-card-border)'),
                         borderWidth: isCurrent ? '2px' : '1px',
                         cursor: 'pointer'
                       }}
                     >
-                      <Text strong style={{ color: isCurrent ? '#fff' : '#000' }}>
+                      <Text strong style={{ color: isCurrent ? '#fff' : 'var(--app-text)' }}>
                         {index + 1}
                       </Text>
                       {isAnswered && !isCurrent && (
@@ -978,12 +978,13 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
         <Paragraph type="secondary" style={{ fontSize: '12px' }}>
           Get your free API key at: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>
         </Paragraph>
-        <Input.TextArea
+        <Input.Password
           placeholder="Enter your Gemini API key here..."
           value={apiKeyInput}
           onChange={(e) => setApiKeyInput(e.target.value)}
-          rows={3}
           style={{ marginTop: '10px' }}
+          autoComplete="off"
+          aria-label="Gemini API key"
         />
         <Paragraph type="warning" style={{ fontSize: '12px', marginTop: '10px' }}>
           Your API key will be stored locally in your browser.

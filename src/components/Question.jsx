@@ -161,7 +161,7 @@ function Question({
       )}
       
       {showFeedback && hasEnoughSelections() && (
-        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px' }}>
+        <div className="question-feedback" style={{ marginTop: '15px', padding: '10px', borderRadius: '5px' }}>
           {isCorrect ? (
             <Text type="success" strong>Correct answer!</Text>
           ) : (
@@ -174,7 +174,7 @@ function Question({
                   .sort((a, b) => a.localeCompare(b)) // Sort correct answers by ABCD order
                   .map((opt) => (
                     <div key={opt} style={{ marginBottom: '5px' , display: 'inline-block'}}>
-                      <Text strong style={{ color: '#52c41a' }}>
+                      <Text strong type="success">
                         {showOptionKey ? `${opt}. ${options[opt]}` : options[opt]}
                       </Text>
                     </div>
@@ -187,7 +187,7 @@ function Question({
       
       {/* Show message for multiple choice questions when not enough options are selected */}
       {showFeedback && isMultipleChoice && !hasEnoughSelections() && (
-        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0f8ff', borderRadius: '5px', border: '1px solid #1890ff' }}>
+        <div className="question-info-notice" style={{ marginTop: '15px', padding: '10px', borderRadius: '5px' }}>
           <Text type="info">
             Please select {correctOptions.length} answer{correctOptions.length > 1 ? 's' : ''} to see the result.
           </Text>

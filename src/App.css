@@ -1,104 +1,328 @@
+:root {
+  color-scheme: light;
+  --app-bg: #f5f7fa;
+  --app-surface: #ffffff;
+  --app-text: #1f1f1f;
+  --app-muted: #666666;
+  --app-border: #e5e7eb;
+  --app-header-bg: #001529;
+  --app-header-border: rgba(255, 255, 255, 0.12);
+  --app-code-bg: #f5f5f5;
+  --app-code-inline-bg: #f0f0f0;
+  --app-success-bg: #f6ffed;
+  --app-success-border: #b7eb8f;
+  --app-danger-bg: #fff2f0;
+  --app-danger-border: #ffccc7;
+  --app-info-bg: #f0f8ff;
+  --app-info-border: #91d5ff;
+  --app-progress-bg: #fff7e6;
+  --app-progress-border: #ffd591;
+  --app-progress-text: #d46b08;
+  --app-card-border: #d9d9d9;
+  --app-primary-bg: #1890ff;
+  --app-settings-info-bg: #e6f7ff;
+  --app-settings-info-border: #91d5ff;
+  --app-settings-auth-bg: #f6ffed;
+  --app-settings-auth-border: #b7eb8f;
+  --app-settings-local-bg: #f0f5ff;
+  --app-settings-local-border: #d6e4ff;
+  --app-placeholder-bg: #fafafa;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --app-bg: #141414;
+  --app-surface: #1f1f1f;
+  --app-text: #f0f0f0;
+  --app-muted: #a6a6a6;
+  --app-border: #424242;
+  --app-header-bg: #080808;
+  --app-header-border: rgba(255, 255, 255, 0.14);
+  --app-code-bg: #262626;
+  --app-code-inline-bg: #303030;
+  --app-success-bg: #162312;
+  --app-success-border: #274916;
+  --app-danger-bg: #2a1215;
+  --app-danger-border: #58181c;
+  --app-info-bg: #111d2c;
+  --app-info-border: #15395b;
+  --app-progress-bg: #2b2111;
+  --app-progress-border: #594214;
+  --app-progress-text: #ffc069;
+  --app-card-border: #424242;
+  --app-primary-bg: #1668dc;
+  --app-settings-info-bg: #111d2c;
+  --app-settings-info-border: #15395b;
+  --app-settings-auth-bg: #162312;
+  --app-settings-auth-border: #274916;
+  --app-settings-local-bg: #111d2c;
+  --app-settings-local-border: #15395b;
+  --app-placeholder-bg: #262626;
+}
+
 * {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
   width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
-#root {
+#app {
   width: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
 }
 
-.layout {
+.layout,
+.ant-layout {
   min-height: 100vh;
   width: 100%;
   margin: 0;
   padding: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
-.ant-layout-header {
+.ant-layout-content {
+  width: 100%;
+  flex: 1 0 auto;
+  margin: 0 auto;
+  padding: 24px;
+  max-width: 1200px;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
   display: flex;
   align-items: center;
   width: 100%;
   height: 64px;
   padding: 0 24px;
-  background: #001529;
+  background: var(--app-header-bg) !important;
+  border-bottom: 1px solid var(--app-header-border);
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
-.ant-layout-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-  box-sizing: border-box;
+.app-header-title {
+  color: #ffffff !important;
+  margin: 0 !important;
+  cursor: pointer;
 }
 
-.ant-layout {
-  width: 100%;
+.header-actions,
+.header-user-menu {
+  display: flex;
+  align-items: center;
 }
 
-/* Responsive adjustments */
+.header-actions {
+  gap: 8px;
+}
+
+.header-user-menu {
+  cursor: pointer;
+  padding: 8px;
+  gap: 8px;
+}
+
+.app-header-user-name {
+  color: #ffffff;
+}
+
+.theme-toggle {
+  color: #ffffff !important;
+  width: 40px;
+  height: 40px;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+.header-login-button {
+  background: #52c41a !important;
+  border-color: #52c41a !important;
+}
+
+.user-email {
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
+.app-footer {
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 16px 24px !important;
+  background: var(--app-surface) !important;
+  color: var(--app-muted);
+  border-top: 1px solid var(--app-border);
+  text-align: center;
+}
+
+.app-footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 13px;
+}
+
+.app-footer-brand {
+  color: var(--app-text);
+  font-weight: 600;
+}
+
+.app-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #1677ff;
+}
+
+html[data-theme='dark'] .app-footer a {
+  color: #69b1ff;
+}
+
+.quiz-example-code {
+  background: var(--app-code-bg);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+}
+
+.quiz-progress-notice {
+  background: var(--app-progress-bg);
+  border: 1px solid var(--app-progress-border);
+}
+
+.quiz-progress-notice-title {
+  color: var(--app-progress-text) !important;
+}
+
+.quiz-progress-resume-button {
+  background: #fa8c16 !important;
+  border-color: #fa8c16 !important;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.quiz-option-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quiz-option-meta {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.saved-progress-override {
+  color: var(--app-muted);
+}
+
+.saved-question-indicator {
+  color: #fa8c16 !important;
+}
+
+.selected-answer-panel {
+  background: var(--app-code-bg);
+  border: 1px solid var(--app-border);
+}
+
+.question-feedback {
+  background: var(--app-code-bg);
+}
+
+.question-info-notice {
+  background: var(--app-info-bg);
+  border: 1px solid var(--app-info-border);
+}
+
+.settings-api-sync-notice {
+  background: var(--app-settings-info-bg);
+  border: 1px solid var(--app-settings-info-border);
+}
+
+.settings-api-key-notice-authenticated {
+  background: var(--app-settings-auth-bg);
+  border: 1px solid var(--app-settings-auth-border);
+}
+
+.settings-api-key-notice-local {
+  background: var(--app-settings-local-bg);
+  border: 1px solid var(--app-settings-local-border);
+}
+
+.settings-future-placeholder {
+  background: var(--app-placeholder-bg);
+}
+
+.markdown-container {
+  color: var(--app-text);
+}
+
 @media (max-width: 768px) {
-  .ant-layout-header {
+  .app-header {
     padding: 0 16px;
   }
-  
+
   .ant-layout-content {
     padding: 16px;
     max-width: 100%;
   }
-  
+
   .ant-typography h3 {
     font-size: 18px !important;
   }
 }
 
-/* Ensure proper spacing for mobile */
 @media (max-width: 480px) {
-  .ant-layout-header {
+  .app-header {
     padding: 0 12px;
   }
-  
+
   .ant-layout-content {
     padding: 12px;
-    max-width: 100%;
   }
-  
-  /* Fix mobile spacing issues */
-  .ant-layout {
-    margin: 0;
-    padding: 0;
-  }
-  
-  .layout {
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Additional mobile fixes */
-  body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-  }
-  
-  html {
-    overflow-x: hidden;
-  }
-}
 
-.quiz-progress-notice {
-  width: 100%;
+  .app-header-user-name {
+    display: none;
+  }
+
+  .quiz-option {
+    align-items: flex-start;
+  }
 }
 
 .quiz-progress-notice-actions {

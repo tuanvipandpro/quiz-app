@@ -124,12 +124,7 @@ function SettingsModal({ visible, onClose }) {
                 <div>
                   <Text strong>Name:</Text> <Text>{user?.displayName || 'N/A'}</Text>
                 </div>
-                <div style={{ 
-                  backgroundColor: '#e6f7ff', 
-                  padding: '8px', 
-                  borderRadius: '4px',
-                  border: '1px solid #91d5ff'
-                }}>
+                <div className="settings-api-sync-notice" style={{ padding: '8px', borderRadius: '4px' }}>
                   <Text style={{ fontSize: '11px' }}>
                     ✓ Your API key is synced to your account and available on any device
                   </Text>
@@ -156,13 +151,14 @@ function SettingsModal({ visible, onClose }) {
                 </Text>
               </div>
               
-              <Input.TextArea
+              <Input.Password
                 placeholder="Enter your Gemini API key here..."
                 value={apiKeyInput}
                 onChange={(e) => setApiKeyInput(e.target.value)}
-                rows={3}
                 style={{ fontFamily: 'monospace', fontSize: '12px' }}
                 disabled={loading}
+                autoComplete="off"
+                aria-label="Gemini API key"
               />
               
               <div>
@@ -191,12 +187,12 @@ function SettingsModal({ visible, onClose }) {
                 </Button>
               )}
               
-              <div style={{ 
-                backgroundColor: isAuthenticated ? '#f6ffed' : '#f0f5ff', 
-                padding: '12px', 
-                borderRadius: '4px',
-                border: isAuthenticated ? '1px solid #b7eb8f' : '1px solid #d6e4ff'
-              }}>
+              <div
+                className={isAuthenticated
+                  ? 'settings-api-key-notice settings-api-key-notice-authenticated'
+                  : 'settings-api-key-notice settings-api-key-notice-local'}
+                style={{ padding: '12px', borderRadius: '4px' }}
+              >
                 <Text style={{ fontSize: '12px' }}>
                   <strong>Note:</strong> {isAuthenticated 
                     ? 'Your API key is securely stored in your Firestore profile and synced across all your devices.'
@@ -208,12 +204,7 @@ function SettingsModal({ visible, onClose }) {
           </Card>
         
           {/* Future Settings Placeholder */}
-          <div style={{ 
-            marginTop: '10px', 
-            padding: '10px', 
-            backgroundColor: '#fafafa', 
-            borderRadius: '4px' 
-          }}>
+          <div className="settings-future-placeholder" style={{ marginTop: '10px', padding: '10px', borderRadius: '4px' }}>
             <Text type="secondary" style={{ fontSize: '12px' }}>
               More settings coming soon...
             </Text>
