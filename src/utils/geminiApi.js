@@ -77,11 +77,14 @@ export async function hasApiKey(uid = null) {
 
 // Available models with fallback order
 const MODELS = [
-  'gemini-2.5-flash-lite',
+  'gemini-3.8-flash',
+  'gemini-3.7-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
   'gemini-3.1-flash-lite',
-  'gemini-2.5-flash',
-  'gemini-3-flash',
-  'gemma-3-27b'
+  'gemma-4-31b-it',
+  'gemma-4-26b-a4b-it'
 ];
 
 // Helper function to call a specific model

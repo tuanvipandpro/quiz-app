@@ -50,26 +50,26 @@ function App() {
   
   // Available demo quizzes organized by folder
   const availableQuizzes = [
-    // AWS
-    { id: 'aws-ace', name: 'Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS', difficulty: 'Practitioner', totalQuestions: 302 },
-    { id: 'aws-saa', name: 'Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 529 },
-    { id: 'aws-dva', name: 'Developer Associate (DVA)', file: 'quiz/AWS/AWS_DVA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 557 },
-    { id: 'aws-dea', name: 'Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 227 },
-    // Azure
-    { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Microsoft', difficulty: 'Fundamentals', totalQuestions: 472 },
-    { id: 'gh-300', name: 'Github Copilot (GH-300)', file: 'quiz/Azure/GH-300.json', category: 'Microsoft', difficulty: 'Associate', totalQuestions: 115 },
+    // Anthropic
+    { id: 'anthropic-cca-f', name: 'Claude Certified Architect Foundations (CCA-F)', file: 'quiz/Anthropic/CCA_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 175 },
     // Google Cloud
     { id: 'gcp-ace', name: 'Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud', difficulty: 'Associate', totalQuestions: 302 },
     { id: 'gcp-pca', name: 'Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 279 },
     { id: 'gcp-pcd', name: 'Professional Cloud Developer (PCD)', file: 'quiz/Google/GCP_PCD.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 359 },
     { id: 'gcp-pcde', name: 'Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 139 },
     { id: 'gcp-gal', name: 'Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud', difficulty: 'Foundations', totalQuestions: 56 },
+    // Microsoft
+    { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Microsoft', difficulty: 'Fundamentals', totalQuestions: 472 },
+    { id: 'gh-300', name: 'Github Copilot (GH-300)', file: 'quiz/Azure/GH-300.json', category: 'Microsoft', difficulty: 'Associate', totalQuestions: 115 },
+    // AWS
+    { id: 'aws-ace', name: 'Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS', difficulty: 'Practitioner', totalQuestions: 302 },
+    { id: 'aws-saa', name: 'Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 529 },
+    { id: 'aws-dva', name: 'Developer Associate (DVA)', file: 'quiz/AWS/AWS_DVA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 557 },
+    { id: 'aws-dea', name: 'Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 227 },
     // ISTQB
     { id: 'istqb-ctfl-v4-0', name: 'ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB', difficulty: 'Foundation', totalQuestions: 240 },
     { id: 'istqb-ct-ai', name: 'ISTQB Certified Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 118 },
-    { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 42 },
-    // Anthropic
-    { id: 'anthropic-cca-f', name: 'Claude Certified Architect Foundations (CCA-F)', file: 'quiz/Anthropic/CCA_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 175 }
+    { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 42 }
   ];
   
   // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
