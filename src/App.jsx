@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag, ConfigProvider, theme as antdTheme } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled, MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag, ConfigProvider, Tooltip, theme as antdTheme } from 'antd';
+import { UploadOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled, MoonOutlined, SunOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 import './markdown.css';
@@ -10,11 +10,14 @@ import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
 import SettingsModal from './components/SettingsModal';
 import userService from './services/userService';
+import { exportQuestionsAsPdf } from './utils/pdfExport';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { Dragger } = Upload;
 const THEME_STORAGE_KEY = 'quiz-app-theme';
+
+const getAssetUrl = (assetPath) => `${import.meta.env.BASE_URL}${assetPath.replace(/^\/+/, '')}`;
 
 const getInitialDarkMode = () => {
   if (typeof window === 'undefined') return false;
@@ -42,6 +45,7 @@ function App() {
   const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
   const [quizSelectionProgress, setQuizSelectionProgress] = useState(null); // Saved progress found during quiz selection
   const [quizSelectionLoading, setQuizSelectionLoading] = useState(false); // Loading state while checking Firestore
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light';
@@ -75,7 +79,7 @@ function App() {
   // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
   const loadDemoQuiz = async (quizFile, quizName, quizId) => {
     try {
-      const response = await fetch(`/quiz-app/${quizFile}`);
+      const response = await fetch(getAssetUrl(quizFile));
       if (!response.ok) {
         throw new Error(`Failed to load quiz: ${response.status}`);
       }
@@ -95,7 +99,7 @@ function App() {
   // Load quiz and jump directly to Practice mode at a specific question
   const loadAndResumePractice = async (quizFile, quizName, quizId, questionIndex) => {
     try {
-      const response = await fetch(`/quiz-app/${quizFile}`);
+      const response = await fetch(getAssetUrl(quizFile));
       if (!response.ok) throw new Error(`Failed to load quiz: ${response.status}`);
       const data = await response.json();
       setQuestions(data);
@@ -275,6 +279,43 @@ function App() {
     setSettingsModalVisible(true);
   };
 
+  const performExportQuestions = async () => {
+    if (!user) {
+      message.warning('Please login to export questions as PDF');
+      return;
+    }
+
+    if (exportingPdf) return;
+
+    setExportingPdf(true);
+    try {
+      const { fileName: exportedFileName, failedImages } = await exportQuestionsAsPdf(questions, fileName);
+      if (failedImages.length > 0) {
+        message.warning(`${exportedFileName} downloaded, but ${failedImages.length} image${failedImages.length > 1 ? 's were' : ' was'} not included`);
+      } else {
+        message.success(`${exportedFileName} downloaded successfully`);
+      }
+    } catch (error) {
+      console.error('Error exporting questions:', error);
+      message.error('Failed to export questions as PDF');
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
+  const handleExportQuestions = () => {
+    if (!user) return;
+
+    Modal.confirm({
+      title: 'Download questions as PDF?',
+      icon: <FilePdfOutlined />,
+      content: `This will download ${questions.length} questions${fileName ? ` from ${fileName}` : ''} as a PDF file.`,
+      okText: 'Download PDF',
+      cancelText: 'Cancel',
+      onOk: performExportQuestions,
+    });
+  };
+
   // Handle return to home page
   const handleReturnHome = () => {
     setStartScreen(true);
@@ -449,7 +490,7 @@ function App() {
               <Title level={5}>Need a sample file?</Title>
               <Button 
                 type="link" 
-                href="/quiz-app/sample-quiz.json" 
+                href={getAssetUrl('sample-quiz.json')}
                 download="sample-quiz.json"
               >
                 Download Sample Quiz File
@@ -618,18 +659,30 @@ function App() {
         ) : !mode ? (
           // Quiz mode selection after file is loaded
           <>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '20px'
-            }}>
+            <div className="loaded-quiz-header">
               <Title level={2}>Quiz Questions Loaded!</Title>
-              <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />}>Change File</Button>
-              </Upload>
+              <Space wrap>
+                <Tooltip title={user ? 'Export all questions as PDF' : 'Login to export questions as PDF'}>
+                  <span>
+                    <Button
+                      icon={<FilePdfOutlined />}
+                      onClick={handleExportQuestions}
+                      loading={exportingPdf}
+                      disabled={!user || questions.length === 0 || exportingPdf}
+                    >
+                      Export PDF
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Space>
             </div>
-            <Text>Loaded {questions.length} questions from {fileName}</Text>
+            <div className="loaded-quiz-summary" role="status">
+              <Text type="secondary">Selected quiz</Text>
+              <Text strong className="loaded-quiz-name" ellipsis={{ tooltip: fileName }}>
+                {fileName}
+              </Text>
+              <Tag color="blue">{questions.length} questions</Tag>
+            </div>
             <QuizMode onSelectMode={handleModeSelect} totalQuestions={questions.length} />
             
             {/* Back button rendered at the bottom */}
