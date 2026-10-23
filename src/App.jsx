@@ -52,6 +52,7 @@ function App() {
   const availableQuizzes = [
     // Anthropic
     { id: 'anthropic-cca-f', name: 'Claude Certified Architect Foundations (CCA-F)', file: 'quiz/Anthropic/CCA_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 175 },
+    { id: 'anthropic-ccar-p', name: 'Claude Certified Architect Professional (CCAR-P)', file: 'quiz/Anthropic/CCAR_P.json', category: 'Anthropic', difficulty: 'Professional', totalQuestions: 63 },
     // Google Cloud
     { id: 'gcp-ace', name: 'Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud', difficulty: 'Associate', totalQuestions: 302 },
     { id: 'gcp-pca', name: 'Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 279 },
@@ -61,6 +62,8 @@ function App() {
     // Microsoft
     { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Microsoft', difficulty: 'Fundamentals', totalQuestions: 472 },
     { id: 'gh-300', name: 'Github Copilot (GH-300)', file: 'quiz/Azure/GH-300.json', category: 'Microsoft', difficulty: 'Associate', totalQuestions: 115 },
+    { id: 'ab-100', name: 'Microsoft Agentic AI Business Solutions Architect Expert (AB-100)', file: 'quiz/Azure/AB-100.json', category: 'Microsoft', difficulty: 'Expert', totalQuestions: 111 },
+    { id: 'ai-103', name: 'Microsoft Azure AI Apps and Agents Developer Associate (AI-103)', file: 'quiz/Azure/AI-103.json', category: 'Microsoft', difficulty: 'Associate', totalQuestions: 117 },
     // AWS
     { id: 'aws-ace', name: 'Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS', difficulty: 'Practitioner', totalQuestions: 302 },
     { id: 'aws-saa', name: 'Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 529 },

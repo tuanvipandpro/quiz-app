@@ -6,15 +6,15 @@ Quiz App is a React-based certification quiz platform for Cloud, AI, and softwar
 
 Live demo: [https://tuanvipandpro.github.io/quiz-app](https://tuanvipandpro.github.io/quiz-app)
 
-The repository currently includes 15 demo quiz sets:
+The repository currently includes 18 demo quiz sets:
 
 | Category | Quiz sets |
 | --- | --- |
 | AWS | Certified Cloud Practitioner (302), Solutions Architect Associate (529), Developer Associate (557), Data Engineer Associate (227) |
-| Microsoft | Azure Fundamentals AZ-900 (472), GitHub Copilot GH-300 (115) |
+| Microsoft | Azure Fundamentals AZ-900 (472), GitHub Copilot GH-300 (115), Agentic AI Business Solutions Architect Expert (AB-100, 111), Azure AI Apps and Agents Developer Associate (AI-103, 117) |
 | Google Cloud | Associate Cloud Engineer (302), Professional Cloud Architect (279), Professional Cloud Developer (359), Professional Cloud Data Engineer (139), Generative AI Leader (56) |
 | ISTQB | CTFL v4.0 (240), AI Testing (118), Advanced Test Analyst v4.0 (42) |
-| Anthropic | Claude Certified Architect Foundations (CCA-F, 175) |
+| Anthropic | Claude Certified Architect Foundations (CCA-F, 175), Claude Certified Architect Professional (CCAR-P, 63) |
 
 ## Features
 
