@@ -1,7 +1,7 @@
 // components/PracticeMode.jsx
 import React, { useState } from 'react';
 import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, message, Badge } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined, CopyOutlined } from '@ant-design/icons';
 import Question from './Question';
 import { useExplanation } from '../hooks/useExplanation';
 import ExplanationDialogs from './ExplanationDialogs';
@@ -16,6 +16,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [jumpToQuestion, setJumpToQuestion] = useState(null);
+  const [isCopying, setIsCopying] = useState(false);
 
 
   // Marked question state (tracks the saved checkpoint index)
@@ -115,6 +116,27 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
       return;
     }
     return ai.explain();
+  };
+
+  const handleCopyQuestion = async () => {
+    const parts = [currentQuestion.question];
+    if (currentQuestion.imageUrl?.trim()) {
+      parts.push(`Image: ${currentQuestion.imageUrl.trim()}`);
+    }
+    parts.push(Object.entries(currentQuestion.options)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, value]) => `${key}. ${value}`)
+      .join('\n'));
+
+    setIsCopying(true);
+    try {
+      await navigator.clipboard.writeText(parts.join('\n\n'));
+      message.success('Question copied!');
+    } catch {
+      message.error('Could not copy. Please select and copy the question manually.');
+    } finally {
+      setIsCopying(false);
+    }
   };
 
   // Initialize the selected answer type based on question type
@@ -253,9 +275,9 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         />
       </Card>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* Left side: Navigation and Explain buttons */}
-        <Space>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        {/* Left side: Navigation and question actions */}
+        <Space wrap>
           <Button 
             type="primary"
             icon={<ArrowLeftOutlined />}
@@ -281,6 +303,12 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
               style={isAuthenticated ? { backgroundColor: '#722ed1', borderColor: '#722ed1' } : {}}
             >
               Explain
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Copy question and answer choices">
+            <Button icon={<CopyOutlined />} onClick={handleCopyQuestion} loading={isCopying}>
+              Copy
             </Button>
           </Tooltip>
 
