@@ -52,8 +52,10 @@ The repository currently includes 18 demo quiz sets:
 
 - Sign in with Google using Firebase Authentication.
 - Store user profiles and practice progress in Firestore.
-- Store a user-provided Gemini API key locally, with optional Firestore synchronization for signed-in users.
-- Render Gemini explanations with Markdown support and sanitized HTML.
+- Manage personal Gemini and Groq API keys in AI Settings, with Save, Clear key, and Test connection actions.
+- Store signed-in users' keys in their own Firestore profiles; guest keys stay in the browser. Signing out clears local credentials without deleting saved profile keys.
+- Route explanations through Gemini Flash-Lite, Groq GPT-OSS, Gemini Flash, and finally Gemma, using only providers with a configured key.
+- Render AI explanations with Markdown support and sanitized HTML, including the provider and model used.
 - Keep the core quiz experience usable when the AI service is unavailable.
 
 ## Tech Stack
@@ -62,7 +64,7 @@ The repository currently includes 18 demo quiz sets:
 - **Vite 6** - Development server and production build tooling.
 - **Ant Design 5** - UI components and responsive layouts.
 - **Firebase 12** - Google Authentication and Firestore persistence.
-- **Google Generative AI SDK** - Gemini-powered explanations.
+- **Gemini and Groq REST APIs** - AI explanations with model fallback, timeouts, and rate-limit cooldowns.
 - **React Markdown** - Markdown rendering for explanations.
 - **rehype-raw** and **rehype-sanitize** - Controlled Markdown/HTML rendering.
 - **GitHub Pages** - Production hosting.
@@ -143,6 +145,27 @@ yarn preview
 ```
 
 The production output is generated in `dist/`.
+
+### AI router and validation
+
+Run `yarn test` for isolated credential, Firestore-boundary, adapter, and router tests, then `yarn build`.
+
+AI Settings accepts personal keys for Google Gemini and Groq. `Test connection` sends a small generation request with the entered key and uses provider quota; it does not save the key. Explanations use this priority:
+
+1. Gemini 3.5 Flash-Lite and 3.1 Flash-Lite.
+2. Groq GPT-OSS 120B and 20B.
+3. Gemini 3.8 Flash and 3.6 Flash.
+4. Gemma 4 31B and 26B A4B as the last resort.
+
+The router has a 20-second timeout per request and a 60-second total generation budget. Rate-limit responses put the affected model on cooldown using `Retry-After` or Gemini RetryInfo (60 seconds if neither is available). Authentication failures skip that provider until the key changes, the session resets, or a connection test succeeds. Invalid requests and content blocks stop fallback. Closing the explanation, changing question/account, or leaving the quiz cancels the request.
+
+Successful explanations are cached in memory for 30 minutes, up to 100 entries per browser tab. Cache identity includes the user and full question, choices, and marked answers; shuffled option order can reuse the same explanation across Practice and Exam. Errors are never cached. Changing provider keys or signing in/out invalidates the relevant cache; reloading the page clears it. Simultaneous requests for the same explanation share one API call, which is cancelled when all callers leave. The model footer identifies saved explanations. Use **Regenerate** to bypass the saved answer and request a fresh one; this consumes provider quota.
+
+Prompts request concise Vietnamese explanations (about 200–350 words) and explicitly ask the model to point out incorrect marked answers or missing context rather than justify them.
+
+Keys are stored under `users/{uid}.llmProviders.{gemini|groq}.apiKey`. Existing `geminiApiKey` fields remain readable and are migrated atomically when the Gemini key is saved or cleared. Logged-in keys are cached only in memory, scoped to the user. Guest keys use `quiz_llm_guest_keys` in localStorage and are cleared on sign-in/sign-out.
+
+Firestore security rules must restrict each user document to its owner and allow the `llmProviders` field. Rules are managed outside this repository; these changes do not deploy or verify live rules. Provider keys are sent directly from the browser to the chosen provider, not embedded in the production bundle. No proxy or shared provider key is required.
 
 The Vite base path defaults to `/quiz-app/` for GitHub Pages. Set `VITE_BASE` when deploying under a different path, for example:
 

@@ -1,215 +1,93 @@
-// components/SettingsModal.jsx
-import React, { useState, useEffect } from 'react';
-import { Modal, Card, Space, Input, Button, Typography, message, Spin } from 'antd';
-import { SettingOutlined, KeyOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { getApiKey, saveApiKey, hasApiKey, clearApiKey } from '../utils/geminiApi';
+import React, { useEffect, useRef, useState } from 'react';
+import { Modal, Card, Space, Input, Button, Typography, Alert, Spin } from 'antd';
 import { useAuth } from '../hooks/useAuth';
+import { credentials, testConnection } from '../services/llm';
+import { PROVIDERS } from '../services/llm/modelRegistry';
 
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
 
-/**
- * Settings Modal Component
- * Manages application settings including Gemini API key
- */
 function SettingsModal({ visible, onClose }) {
-  const { user, userProfile, isAuthenticated, refreshUserProfile } = useAuth();
-  const [apiKeyInput, setApiKeyInput] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const [keys, setKeys] = useState({ gemini: '', groq: '' });
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(null);
+  const [notice, setNotice] = useState(null);
+  const [statuses, setStatuses] = useState({});
+  const operation = useRef(0);
+  const testRequest = useRef(null);
+  const uid = user?.uid || null;
 
-  // Load existing API key when modal opens
   useEffect(() => {
-    const loadApiKey = async () => {
-      if (visible) {
-        setLoading(true);
-        try {
-          // Get API key from Firestore if user is logged in
-          const existingKey = await getApiKey(user?.uid);
-          setApiKeyInput(existingKey || '');
-        } catch (error) {
-          console.error('Error loading API key:', error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    
-    loadApiKey();
-  }, [visible, user]);
-
-  // Handle save API key
-  const handleSaveApiKey = async () => {
-    if (apiKeyInput.trim()) {
+    const id = ++operation.current;
+    testRequest.current?.abort();
+    setKeys({ gemini: '', groq: '' });
+    setNotice(null);
+    setStatuses({});
+    setBusy(null);
+    if (visible) {
       setLoading(true);
-      try {
-        // Save to Firestore if user is logged in
-        await saveApiKey(apiKeyInput.trim(), user?.uid);
-        
-        // Refresh user profile to get updated data
-        if (isAuthenticated && refreshUserProfile) {
-          await refreshUserProfile();
-        }
-        
-        message.success(
-          isAuthenticated 
-            ? 'API key saved to your profile!' 
-            : 'API key saved locally!'
-        );
-        onClose();
-      } catch (error) {
-        console.error('Error saving API key:', error);
-        message.error('Failed to save API key');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      message.warning('Please enter an API key');
+      credentials.getKeys(uid).then(value => {
+        if (operation.current === id) setKeys(value);
+      }).catch(() => {
+        if (operation.current === id) setNotice({ type: 'error', text: 'Could not load AI keys. Close settings and retry.' });
+      }).finally(() => { if (operation.current === id) setLoading(false); });
     }
-  };
+    return () => { operation.current++; testRequest.current?.abort(); };
+  }, [visible, uid]);
 
-  // Handle clear API key
-  const handleClearApiKey = async () => {
-    setLoading(true);
+  const run = async (provider, action) => {
+    const id = operation.current;
+    setBusy(`${provider}:${action}`);
+    setNotice(null);
     try {
-      await clearApiKey(user?.uid);
-      setApiKeyInput('');
-      
-      // Refresh user profile
-      if (isAuthenticated && refreshUserProfile) {
-        await refreshUserProfile();
+      if (action === 'test') {
+        testRequest.current = new AbortController();
+        const result = await testConnection(provider, keys[provider], testRequest.current.signal);
+        if (operation.current === id) setStatuses(value => ({ ...value, [provider]: { type: 'success', text: `Connected: ${result.model}` } }));
+      } else {
+        const value = action === 'clear' ? '' : keys[provider].trim();
+        await credentials.saveKey(provider, value, uid);
+        if (operation.current !== id) return;
+        setKeys(current => ({ ...current, [provider]: value }));
+        setStatuses(current => ({ ...current, [provider]: null }));
+        setNotice({ type: 'success', text: action === 'clear' ? 'API key removed.' : uid ? 'API key saved to your profile.' : 'API key saved in this browser.' });
       }
-      
-      message.info('API key cleared');
     } catch (error) {
-      console.error('Error clearing API key:', error);
-      message.error('Failed to clear API key');
+      if (operation.current === id && error.code !== 'CANCELLED') setNotice({ type: 'error', text: error.message });
     } finally {
-      setLoading(false);
+      if (operation.current === id) setBusy(null);
     }
   };
 
   return (
-    <Modal
-      title={
-        <Space>
-          <SettingOutlined />
-          <span>Settings</span>
-        </Space>
-      }
-      open={visible}
-      onCancel={onClose}
-      onOk={handleSaveApiKey}
-      okText="Save"
-      cancelText="Cancel"
-      width={600}
-      confirmLoading={loading}
-    >
+    <Modal title="AI Settings" open={visible} onCancel={onClose} width={620}
+      footer={<Button onClick={onClose}>Done</Button>}>
       <Spin spinning={loading}>
-        <div style={{ padding: '20px 0' }}>
-          {/* User Info Section */}
-          {isAuthenticated && (
-            <Card 
-              title={
-                <Space>
-                  <UserOutlined />
-                  <span>User Profile</span>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          {isAuthenticated && <Text>Profile: {user.displayName || user.email}</Text>}
+          <Paragraph type="secondary" style={{ margin: 0 }}>
+            Add a key for either provider. Flash-Lite is preferred, followed by Groq and Gemini Flash. Gemma is the last resort.
+            {uid ? ' Keys are saved in your Firebase profile. Signing out keeps your saved keys.' : ' Guest keys are stored in this browser and cleared when your sign-in session changes.'}
+          </Paragraph>
+          {notice && <Alert showIcon type={notice.type} message={notice.text} />}
+          {PROVIDERS.map(provider => (
+            <Card key={provider.id} title={provider.name} size="small">
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Input.Password aria-label={`${provider.name} API key`} placeholder={`Enter your ${provider.name} API key`}
+                  value={keys[provider.id]} disabled={loading || !!busy} autoComplete="off"
+                  onChange={event => { setKeys(value => ({ ...value, [provider.id]: event.target.value })); setStatuses(value => ({ ...value, [provider.id]: null })); }} />
+                <Space wrap>
+                  <Button type="primary" disabled={loading || !!busy || !keys[provider.id].trim()} loading={busy === `${provider.id}:save`} onClick={() => run(provider.id, 'save')}>Save</Button>
+                  <Button disabled={loading || !!busy || !keys[provider.id].trim()} loading={busy === `${provider.id}:test`} onClick={() => run(provider.id, 'test')}>Test connection</Button>
+                  <Button danger disabled={loading || !!busy} loading={busy === `${provider.id}:clear`} onClick={() => run(provider.id, 'clear')}>Clear key</Button>
+                  <a href={provider.keyUrl} target="_blank" rel="noopener noreferrer">Get API key</a>
                 </Space>
-              }
-              size="small"
-              style={{ marginBottom: '20px' }}
-            >
-              <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                <div>
-                  <Text strong>Email:</Text> <Text>{user?.email}</Text>
-                </div>
-                <div>
-                  <Text strong>Name:</Text> <Text>{user?.displayName || 'N/A'}</Text>
-                </div>
-                <div className="settings-api-sync-notice" style={{ padding: '8px', borderRadius: '4px' }}>
-                  <Text style={{ fontSize: '11px' }}>
-                    ✓ Your API key is synced to your account and available on any device
-                  </Text>
-                </div>
+                <Text type="secondary">Test connection sends a small request using this key and uses your provider quota. Save to use it for explanations.</Text>
+                {statuses[provider.id] && <Alert type={statuses[provider.id].type} message={statuses[provider.id].text} showIcon />}
               </Space>
             </Card>
-          )}
-          
-          {/* Gemini API Key Section */}
-          <Card 
-            title={
-              <Space>
-                <KeyOutlined />
-                <span>Gemini API Key</span>
-              </Space>
-            }
-            size="small"
-            style={{ marginBottom: '20px' }}
-          >
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <div>
-                <Text type="secondary" style={{ fontSize: '12px' }}>
-                  Enter your Google Gemini API key to enable AI-powered explanations for quiz questions.
-                </Text>
-              </div>
-              
-              <Input.Password
-                placeholder="Enter your Gemini API key here..."
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
-                style={{ fontFamily: 'monospace', fontSize: '12px' }}
-                disabled={loading}
-                autoComplete="off"
-                aria-label="Gemini API key"
-              />
-              
-              <div>
-                <Text type="secondary" style={{ fontSize: '11px' }}>
-                  Get your free API key at:{' '}
-                  <a 
-                    href="https://aistudio.google.com/app/apikey" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    style={{ fontSize: '11px' }}
-                  >
-                    Google AI Studio
-                  </a>
-                </Text>
-              </div>
-              
-              {apiKeyInput && (
-                <Button 
-                  danger 
-                  size="small" 
-                  onClick={handleClearApiKey}
-                  icon={<LogoutOutlined />}
-                  disabled={loading}
-                >
-                  Clear API Key
-                </Button>
-              )}
-              
-              <div
-                className={isAuthenticated
-                  ? 'settings-api-key-notice settings-api-key-notice-authenticated'
-                  : 'settings-api-key-notice settings-api-key-notice-local'}
-                style={{ padding: '12px', borderRadius: '4px' }}
-              >
-                <Text style={{ fontSize: '12px' }}>
-                  <strong>Note:</strong> {isAuthenticated 
-                    ? 'Your API key is securely stored in your Firestore profile and synced across all your devices.'
-                    : 'Your API key is stored locally in your browser. Sign in to sync it across devices.'
-                  }
-                </Text>
-              </div>
-            </Space>
-          </Card>
-        
-          {/* Future Settings Placeholder */}
-          <div className="settings-future-placeholder" style={{ marginTop: '10px', padding: '10px', borderRadius: '4px' }}>
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              More settings coming soon...
-            </Text>
-          </div>
-        </div>
+          ))}
+        </Space>
       </Spin>
     </Modal>
   );

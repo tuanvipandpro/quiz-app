@@ -59,7 +59,7 @@ class UserService {
         displayName,
         photoURL,
         emailVerified,
-        geminiApiKey: null,
+        llmProviders: { gemini: { apiKey: null }, groq: { apiKey: null } },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         lastLoginAt: serverTimestamp()
@@ -140,12 +140,20 @@ class UserService {
    * @returns {Promise<Object>}
    */
   async saveGeminiApiKey(uid, apiKey) {
+    return this.saveLlmApiKey(uid, 'gemini', apiKey);
+  }
+
+  async saveLlmApiKey(uid, provider, apiKey) {
     try {
+      if (!['gemini', 'groq'].includes(provider)) throw new Error('Unknown AI provider');
       const userDocRef = this.getUserDocRef(uid);
-      await updateDoc(userDocRef, {
-        geminiApiKey: apiKey,
+      const fields = {
+        [`llmProviders.${provider}.apiKey`]: apiKey,
         updatedAt: serverTimestamp()
-      });
+      };
+      // Migrate/delete the legacy key atomically; never revive it after Clear.
+      if (provider === 'gemini') fields.geminiApiKey = deleteField();
+      await updateDoc(userDocRef, fields);
       
       console.log('API key saved to Firestore for user:', uid);
       return { success: true };
@@ -167,7 +175,8 @@ class UserService {
     try {
       const result = await this.getUserProfile(uid);
       if (result.success && result.user) {
-        return result.user.geminiApiKey || null;
+        const gemini = result.user.llmProviders?.gemini;
+        return gemini && Object.hasOwn(gemini, 'apiKey') ? gemini.apiKey : result.user.geminiApiKey || null;
       }
       return null;
     } catch (error) {
@@ -182,21 +191,7 @@ class UserService {
    * @returns {Promise<Object>}
    */
   async clearGeminiApiKey(uid) {
-    try {
-      const userDocRef = this.getUserDocRef(uid);
-      await updateDoc(userDocRef, {
-        geminiApiKey: null,
-        updatedAt: serverTimestamp()
-      });
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Error clearing API key:', error);
-      return {
-        success: false,
-        error: error.message
-      };
-    }
+    return this.saveLlmApiKey(uid, 'gemini', null);
   }
 
   /**

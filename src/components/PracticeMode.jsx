@@ -1,12 +1,10 @@
 // components/PracticeMode.jsx
 import React, { useState } from 'react';
-import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, Input, message, Badge } from 'antd';
+import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, message, Badge } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined } from '@ant-design/icons';
 import Question from './Question';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import { getExplanation, saveApiKey, hasApiKey } from '../utils/geminiApi';
+import { useExplanation } from '../hooks/useExplanation';
+import ExplanationDialogs from './ExplanationDialogs';
 import { useAuth } from '../hooks/useAuth';
 import userService from '../services/userService';
 
@@ -18,15 +16,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [jumpToQuestion, setJumpToQuestion] = useState(null);
-  
-  // Explanation state
-  const [explanation, setExplanation] = useState('');
-  const [explanationModalVisible, setExplanationModalVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // API Key state
-  const [apiKeyModalVisible, setApiKeyModalVisible] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState('');
+
 
   // Marked question state (tracks the saved checkpoint index)
   const [markedIndex, setMarkedIndex] = useState(
@@ -35,6 +25,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   const [isMarking, setIsMarking] = useState(false);
   
   const currentQuestion = questions[currentIndex];
+  const ai = useExplanation(currentQuestion, user?.uid);
   
   // Calculate progress with 2 decimal places
   const progressValue = ((currentIndex + 1) / questions.length) * 100;
@@ -118,59 +109,12 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
     }
   };
 
-  // Get explanation from Gemini API
-  const handleExplainClick = async () => {
-    // Check if user is authenticated
+  const handleExplainClick = () => {
     if (!isAuthenticated) {
       message.warning('Please login to use the Explain feature');
       return;
     }
-    
-    // Check if API key exists
-    const apiKeyExists = await hasApiKey(user?.uid);
-    if (!apiKeyExists) {
-      setApiKeyModalVisible(true);
-      return;
-    }
-    
-    setExplanationModalVisible(true); // Ensure the dialog is opened immediately
-    setIsLoading(true);
-    
-    try {
-      const explanationText = await getExplanation(
-        currentQuestion.question, 
-        currentQuestion.options, 
-        currentQuestion.answer,
-        user?.uid
-      );
-      setExplanation(explanationText);
-    } catch (error) {
-      if (error.code === 'NO_API_KEY') {
-        setExplanationModalVisible(false);
-        setApiKeyModalVisible(true);
-      } else {
-        setExplanation("Sorry, we encountered an error getting the explanation.");
-      }
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Handle saving API key
-  const handleSaveApiKey = () => {
-    if (apiKeyInput.trim()) {
-      saveApiKey(apiKeyInput.trim());
-      setApiKeyModalVisible(false);
-      setApiKeyInput('');
-      // Retry getting explanation
-      handleExplainClick();
-    }
-  };
-
-  // Close the explanation modal
-  const handleCloseModal = () => {
-    setExplanationModalVisible(false);
+    return ai.explain();
   };
 
   // Initialize the selected answer type based on question type
@@ -376,106 +320,8 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         </Button>
       </div>
       
-      {/* Explanation Modal */}
-      <Modal
-        title="Question Explanation"
-        open={explanationModalVisible}
-        onCancel={handleCloseModal}
-        footer={[
-          <Button key="close" type="primary" onClick={handleCloseModal}>
-            Close
-          </Button>
-        ]}
-        width={700}
-      >
-        {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '30px' }}>
-            <Spin size="large" />
-            <Paragraph style={{ marginTop: '20px' }}>
-              Generating explanation...
-            </Paragraph>
-          </div>
-        ) : (
-          <div className="markdown-explanation">
-            <Title level={5}>Question:</Title>
-            <Paragraph>{currentQuestion.question}</Paragraph>
-            
-            <Title level={5}>Correct Answer:</Title>
-            <div style={{ marginBottom: '15px' }}>
-              {correctAnswers
-                .sort((a, b) => a.localeCompare(b)) // Sort correct answers by ABCD order
-                .map((opt) => (
-                  <div key={opt} style={{ marginBottom: '5px' }}>
-                    <Text strong>{opt}. {currentQuestion.options[opt]}</Text>
-                  </div>
-                ))}
-            </div>
-            
-            <Title level={5}>Explanation:</Title>
-            <div className="markdown-container">
-              <ReactMarkdown
-                rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                components={{
-                  // Customize styling for specific markdown elements
-                  h1: ({node, ...props}) => <h1 style={{fontSize: '1.8em', borderBottom: '1px solid var(--app-border)'}} {...props} />,
-                  h2: ({node, ...props}) => <h2 style={{fontSize: '1.5em', borderBottom: '1px solid var(--app-border)'}} {...props} />,
-                  h3: ({node, ...props}) => <h3 style={{fontSize: '1.3em'}} {...props} />,
-                  h4: ({node, ...props}) => <h4 style={{fontSize: '1.2em'}} {...props} />,
-                  p: ({node, ...props}) => <p style={{marginBottom: '1em', lineHeight: '1.6'}} {...props} />,
-                  ul: ({node, ...props}) => <ul style={{paddingLeft: '2em', marginBottom: '1em'}} {...props} />,
-                  ol: ({node, ...props}) => <ol style={{paddingLeft: '2em', marginBottom: '1em'}} {...props} />,
-                  li: ({node, ...props}) => <li style={{marginBottom: '0.5em'}} {...props} />,
-                  code: ({node, inline, ...props}) => (
-                    inline 
-                      ? <code style={{backgroundColor: 'var(--app-code-inline-bg)', color: 'var(--app-text)', padding: '0.2em 0.4em', borderRadius: '3px'}} {...props} />
-                      : <code style={{display: 'block', backgroundColor: 'var(--app-code-bg)', color: 'var(--app-text)', padding: '1em', borderRadius: '5px', overflowX: 'auto'}} {...props} />
-                  ),
-                  blockquote: ({node, ...props}) => (
-                    <blockquote style={{borderLeft: '4px solid var(--app-border)', paddingLeft: '1em', color: 'var(--app-muted)'}} {...props} />
-                  ),
-                  table: ({node, ...props}) => (
-                    <div style={{overflowX: 'auto'}}>
-                      <table style={{borderCollapse: 'collapse', width: '100%'}} {...props} />
-                    </div>
-                  ),
-                  th: ({node, ...props}) => <th style={{border: '1px solid var(--app-border)', padding: '0.5em', backgroundColor: 'var(--app-code-bg)'}} {...props} />,
-                  td: ({node, ...props}) => <td style={{border: '1px solid var(--app-border)', padding: '0.5em'}} {...props} />
-                }}
-              >
-                {explanation}
-              </ReactMarkdown>
-            </div>
-          </div>
-        )}
-      </Modal>
-      
-      {/* API Key Input Modal */}
-      <Modal
-        title="Enter Gemini API Key"
-        open={apiKeyModalVisible}
-        onOk={handleSaveApiKey}
-        onCancel={() => setApiKeyModalVisible(false)}
-        okText="Save & Continue"
-        cancelText="Cancel"
-      >
-        <Paragraph>
-          To use the AI explanation feature, please enter your Google Gemini API key.
-        </Paragraph>
-        <Paragraph type="secondary" style={{ fontSize: '12px' }}>
-          Get your free API key at: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>
-        </Paragraph>
-        <Input.Password
-          placeholder="Enter your Gemini API key here..."
-          value={apiKeyInput}
-          onChange={(e) => setApiKeyInput(e.target.value)}
-          style={{ marginTop: '10px' }}
-          autoComplete="off"
-          aria-label="Gemini API key"
-        />
-        <Paragraph type="warning" style={{ fontSize: '12px', marginTop: '10px' }}>
-          Your API key will be stored locally in your browser.
-        </Paragraph>
-      </Modal>
+      <ExplanationDialogs question={currentQuestion} state={ai} />
+
     </div>
   );
 }

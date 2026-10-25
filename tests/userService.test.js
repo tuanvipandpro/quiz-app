@@ -1,0 +1,75 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { keysFromProfile } from '../src/services/llm/credentials.js';
+
+// Exercise the actual service against an in-memory Firestore boundary, never a live profile.
+const documents = new Map();
+const deleted = Symbol('deleteField');
+const writes = [];
+let denyWrites = false;
+globalThis.__quizFirestore = {
+  getFirestore: () => ({}),
+  doc: (_, collection, uid) => `${collection}/${uid}`,
+  getDoc: async path => ({ exists: () => documents.has(path), data: () => documents.get(path) }),
+  setDoc: async (path, data) => documents.set(path, data),
+  updateDoc: async (path, fields) => {
+    if (denyWrites) throw new Error('Permission denied');
+    writes.push({ path, fields });
+    const data = structuredClone(documents.get(path));
+    for (const [field, value] of Object.entries(fields)) {
+      const parts = field.split('.');
+      let target = data;
+      for (const part of parts.slice(0, -1)) target = target[part] ||= {};
+      if (value === deleted) delete target[parts.at(-1)];
+      else target[parts.at(-1)] = value;
+    }
+    documents.set(path, data);
+  },
+  deleteField: () => deleted,
+  serverTimestamp: () => 'server-time'
+};
+const original = await readFile(new URL('../src/services/userService.js', import.meta.url), 'utf8');
+const source = original.replace(/import\s*\{([\s\S]*?)\}\s*from 'firebase\/firestore';/, 'const {$1} = globalThis.__quizFirestore;')
+  .replace("import app from '../config/firebase';", 'const app = {};');
+const service = (await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`)).default;
+delete globalThis.__quizFirestore;
+
+test('new profiles use the multi-provider schema', async () => {
+  const result = await service.createUser({ uid: 'new', email: 'test@example.test' });
+  assert.equal(result.success, true);
+  assert.deepEqual(keysFromProfile(result.user), { gemini: '', groq: '' });
+  assert.deepEqual(result.user.llmProviders, { gemini: { apiKey: null }, groq: { apiKey: null } });
+  assert.equal(result.user.geminiApiKey, undefined);
+});
+
+test('saving a legacy Gemini key migrates atomically and preserves Groq and quiz progress', async () => {
+  documents.set('users/a', { geminiApiKey: 'old', llmProviders: { groq: { apiKey: 'q' } }, quizProgress: { sample: 7 } });
+  assert.equal((await service.saveLlmApiKey('a', 'gemini', 'new')).success, true);
+  const profile = documents.get('users/a');
+  assert.equal(profile.geminiApiKey, undefined);
+  assert.deepEqual(keysFromProfile(profile), { gemini: 'new', groq: 'q' });
+  assert.deepEqual(profile.quizProgress, { sample: 7 });
+  assert.equal(writes.length, 1);
+});
+test('clearing a Gemini key stays cleared after the next profile read', async () => {
+  documents.set('users/b', { geminiApiKey: 'old' });
+  assert.equal((await service.clearGeminiApiKey('b')).success, true);
+  assert.equal(await service.getGeminiApiKey('b'), null);
+  assert.equal(keysFromProfile(documents.get('users/b')).gemini, '');
+});
+test('saving Groq keeps existing legacy Gemini available until migration', async () => {
+  documents.set('users/c', { geminiApiKey: 'old' });
+  await service.saveLlmApiKey('c', 'groq', 'q');
+  assert.deepEqual(keysFromProfile(documents.get('users/c')), { gemini: 'old', groq: 'q' });
+});
+test('profile permission errors are returned to the credential store', async () => {
+  documents.set('users/d', { geminiApiKey: 'old' });
+  denyWrites = true;
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    assert.equal((await service.saveLlmApiKey('d', 'gemini', 'new')).success, false);
+    assert.equal(await service.getGeminiApiKey('d'), 'old');
+  } finally { denyWrites = false; console.error = originalError; }
+});
