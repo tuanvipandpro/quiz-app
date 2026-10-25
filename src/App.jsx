@@ -374,24 +374,6 @@ function App() {
     </Header>
   );
 
-  // Back button component for the bottom of the screen
-  const renderBackButton = () => {
-    if (!startScreen && !mode) {
-      return (
-        <div style={{ textAlign: 'center', marginTop: '30px', paddingBottom: '20px' }}>
-          <QuizActionButton label="Back to Start Screen"
-            icon={<ArrowLeftOutlined />} 
-            size="large"
-            onClick={goToStartScreen}
-          >
-            Back to Start Screen
-          </QuizActionButton>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <ConfigProvider
       theme={{
@@ -628,19 +610,21 @@ function App() {
           </div>
         ) : !mode ? (
           // Quiz mode selection after file is loaded
-          <>
-            <div className="quiz-loaded-header">
-              <Title level={2}>Quiz Questions Loaded!</Title>
-              <Upload {...uploadProps}>
-                <QuizActionButton label="Change File" icon={<UploadOutlined />}>Change File</QuizActionButton>
-              </Upload>
+          <div className="quiz-setup">
+            <div className="quiz-overview-header">
+              <div className="quiz-overview-identity">
+                <Title level={2}>{fileName}</Title>
+                <Text type="secondary">{questions.length} questions</Text>
+              </div>
+              <div className="quiz-overview-actions">
+                <QuizActionButton label="Back to Start Screen" icon={<ArrowLeftOutlined />} onClick={goToStartScreen}>Back</QuizActionButton>
+                <Upload {...uploadProps}>
+                  <QuizActionButton label="Change File" icon={<UploadOutlined />} />
+                </Upload>
+              </div>
             </div>
-            <Text>Loaded {questions.length} questions from {fileName}</Text>
             <QuizMode onSelectMode={handleModeSelect} totalQuestions={questions.length} />
-            
-            {/* Back button rendered at the bottom */}
-            {renderBackButton()}
-          </>
+          </div>
         ) : mode === 'practice' && questions.length > 0 ? (
           <PracticeMode 
             questions={questions} 

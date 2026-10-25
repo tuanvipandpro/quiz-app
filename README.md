@@ -25,6 +25,7 @@ The repository currently includes 18 demo quiz sets:
 - Display difficulty and question-count metadata where available.
 - Load a custom quiz from a JSON file.
 - Validate uploaded quiz data before starting.
+- Open a compact quiz overview with Practice/Exam mode choices. Exam count and time settings appear only when Exam is selected; quizzes with fewer than 50 questions offer their full question count.
 
 ### Practice mode
 
@@ -66,7 +67,7 @@ Practice progress is stored under `users/{uid}.quizProgress.{quizId}` as `quizId
 
 - Use icon buttons with accessible names and tooltips on phone screens; desktop keeps text labels.
 - Keep Practice and Exam actions in a compact bottom toolbar on phones, with question content above it.
-- Show a disabled Study Summary section beside the mode choices for future exam-topic summaries, memory tips, and test-taking strategies. It does not load content or call AI.
+- Show a disabled Study Summary option alongside Practice and Exam for future exam-topic summaries, memory tips, and test-taking strategies. It does not load content or call AI.
 
 ## Tech Stack
 
