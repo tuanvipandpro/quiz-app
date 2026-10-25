@@ -1,8 +1,9 @@
 // components/PracticeMode.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, message, Badge, Alert } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Progress, Typography, Card, Modal, Spin, InputNumber, Tooltip, message, Alert } from 'antd';
+import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined, CopyOutlined, ReloadOutlined } from '@ant-design/icons';
 import Question from './Question';
+import QuizActionButton from './QuizActionButton';
 import { useExplanation } from '../hooks/useExplanation';
 import ExplanationDialogs from './ExplanationDialogs';
 import { useAuth } from '../hooks/useAuth';
@@ -156,11 +157,11 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
     }
   }, [currentIndex, hasMultipleAnswers, selectedAnswer]);
 
-  const handleProgressAction = (remove = false) => {
+  const handleSaveProgress = () => {
     if (!isAuthenticated || !quizId || isMarking || progressState.loading || progressState.error) return;
-    if (!remove && markedIndex === currentIndex) return;
+    if (markedIndex === currentIndex) return;
     setProgressActionError(null);
-    setProgressAction({ remove, index: currentIndex, questionId: currentQuestion.id, revision: progressRevision.current });
+    setProgressAction({ index: currentIndex, questionId: currentQuestion.id, revision: progressRevision.current });
   };
 
   const handleConfirmProgress = async () => {
@@ -168,11 +169,10 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
     if (!action || isMarking || progressRevision.current !== action.revision) return;
     setProgressActionError(null);
     try {
-      if (action.remove) await progressState.remove(quizId);
-      else await progressState.save(quizId, action.index, action.questionId);
+      await progressState.save(quizId, action.index, action.questionId);
       if (progressRevision.current === action.revision) {
         setProgressAction(null);
-        messageApi.success(action.remove ? 'Saved progress removed' : 'Question ' + (action.index + 1) + ' saved!');
+        messageApi.success('Question ' + (action.index + 1) + ' saved!');
       }
     } catch (error) {
       if (progressRevision.current === action.revision && error.code !== 'SESSION_CHANGED') {
@@ -182,50 +182,37 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   };
 
   return (
-    <div>
+    <div className="quiz-mode quiz-practice-mode">
       {messageContextHolder}
-      <Title level={2}>Practice Mode</Title>
+      <div className="quiz-mode-header">
+        <Title level={2}>Practice Mode</Title>
+        <QuizActionButton label="Exit to Menu" icon={<HomeOutlined />} onClick={onExit} />
+      </div>
       {quizId && isAuthenticated && progressState.loading && <Paragraph><Spin size="small" /> Checking saved progress...</Paragraph>}
       {quizId && isAuthenticated && progressState.error && <Alert type="error" showIcon style={{ marginBottom: 16 }}
-        message={progressState.error} action={<Button size="small" onClick={progressState.reload}>Retry</Button>} />}
+        message={progressState.error} action={<QuizActionButton label="Retry saved progress" icon={<ReloadOutlined />} size="small" onClick={progressState.reload}>Retry</QuizActionButton>} />}
       {quizId && isAuthenticated && checkpointNeedsUpdate && <Alert type="warning" showIcon style={{ marginBottom: 16 }}
         message="Your saved question is no longer available. Save progress to set a new checkpoint." />}
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-        {/* Question navigation */}
-        <Space>
+      <div className="practice-position-row">
+        <div className="practice-position">
           <Text strong>Question {currentIndex + 1} of {questions.length}</Text>
-          {markedIndex !== null && (
-            <Tooltip title={`Saved at question ${markedIndex + 1} — click Save to update`}>
-              <span className="saved-question-indicator" style={{ fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '2px', cursor: 'default' }}>
-                <BookFilled />
-                <Text className="saved-question-indicator" style={{ fontSize: '12px' }}>Q{markedIndex + 1} saved</Text>
-              </span>
-            </Tooltip>
-          )}
-        </Space>
-        
-        {/* Jump to question input */}
-        <Space>
-          <Text>Go to question:</Text>
-          <InputNumber 
-            min={1} 
-            max={questions.length} 
-            value={jumpToQuestion}
-            onChange={value => setJumpToQuestion(value)}
-            style={{ width: '70px' }}
-            onPressEnter={handleJumpToQuestion}
-          />
+          {markedIndex !== null && <Tooltip title={'Progress saved at question ' + (markedIndex + 1)}>
+            <span className="saved-question-indicator"><BookFilled /> Q{markedIndex + 1} saved</span>
+          </Tooltip>}
+        </div>
+        <div className="practice-jump">
+          <Text className="practice-jump-label">Go to question:</Text>
+          <InputNumber aria-label="Question number" placeholder="Q#" min={1} max={questions.length}
+            value={jumpToQuestion} onChange={setJumpToQuestion} style={{ width: '70px' }}
+            onPressEnter={handleJumpToQuestion} />
           <Tooltip title="Jump to question">
-            <Button 
-              icon={<EnterOutlined />} 
-              onClick={handleJumpToQuestion}
-              disabled={!jumpToQuestion || jumpToQuestion < 1 || jumpToQuestion > questions.length}
-            />
+            <Button className="quiz-action-button" aria-label="Jump to question" icon={<EnterOutlined />}
+              onClick={handleJumpToQuestion} disabled={!jumpToQuestion || jumpToQuestion < 1 || jumpToQuestion > questions.length} />
           </Tooltip>
-        </Space>
+        </div>
       </div>
-      
+
       {/* Display progress with format prop to show decimal places */}
       <Progress 
         percent={progress} 
@@ -233,7 +220,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         format={percent => `${percent.toFixed(2)}%`}
       />
       
-      <Card style={{ marginTop: '20px', marginBottom: '20px' }}>
+      <Card className="quiz-question-shell">
         <Question 
           question={currentQuestion.question}
           imageUrl={currentQuestion.imageUrl}
@@ -246,95 +233,37 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         />
       </Card>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        {/* Left side: Navigation and question actions */}
-        <Space wrap>
-          <Button 
-            type="primary"
-            icon={<ArrowLeftOutlined />}
-            onClick={goToPreviousQuestion}
-            disabled={currentIndex === 0}
-          >
-            Previous
-          </Button>
-          
-          <Button 
-            type="primary"
-            onClick={goToNextQuestion}
-            disabled={currentIndex === questions.length - 1}
-          >
-            Next <ArrowRightOutlined />
-          </Button>
-          
-          <Tooltip title={!isAuthenticated ? 'Please login to use this feature' : ''}>            <Button 
-              type="primary"
-              icon={<QuestionCircleOutlined />}
-              onClick={handleExplainClick}
-              disabled={!isAuthenticated}
-              style={isAuthenticated ? { backgroundColor: '#722ed1', borderColor: '#722ed1' } : {}}
-            >
-              Explain
-            </Button>
-          </Tooltip>
-
-          <Tooltip title="Copy question and answer choices">
-            <Button icon={<CopyOutlined />} onClick={handleCopyQuestion} loading={isCopying}>
-              Copy
-            </Button>
-          </Tooltip>
-
-          <Tooltip title={
-            !isAuthenticated
-              ? 'Please login to save your progress'
-              : !quizId
-              ? 'Save is only available for demo quizzes'
-              : markedIndex === currentIndex
-              ? 'Progress is saved at this question'
-              : markedIndex !== null
-              ? `Click to move checkpoint from Q${markedIndex + 1} to here`
-              : 'Save this question as your resume checkpoint'
-          }>
-            <Button
-              icon={markedIndex === currentIndex ? <BookFilled /> : <BookOutlined />}
-              onClick={() => handleProgressAction()}
-              loading={isMarking}
-              disabled={!isAuthenticated || !quizId || isMarking || progressState.loading || !!progressState.error || markedIndex === currentIndex}
-              style={
-                markedIndex === currentIndex
-                  ? { backgroundColor: '#fa8c16', borderColor: '#fa8c16', color: '#fff' }
-                  : {}
-              }
-            >
-              {markedIndex === currentIndex ? 'Saved' : 'Save progress'}
-            </Button>
-          </Tooltip>
-          {savedCheckpoint && isAuthenticated && quizId && (
-            <Tooltip title="Remove the checkpoint for this quiz">
-              <Button danger icon={<DeleteOutlined />} onClick={() => handleProgressAction(true)}
-                disabled={isMarking || progressState.loading || !!progressState.error}>
-                Remove saved progress
-              </Button>
-            </Tooltip>
-          )}
-        </Space>
-        
-        {/* Right side: Exit button */}
-        <Button 
-          icon={<HomeOutlined />}
-          onClick={onExit}
-        >
-          Exit to Menu
-        </Button>
+      <div className="quiz-action-bar" role="group" aria-label="Practice actions">
+        <div className="quiz-action-group">
+          <QuizActionButton label="Previous question" type="primary" icon={<ArrowLeftOutlined />}
+            onClick={goToPreviousQuestion} disabled={currentIndex === 0}>Previous</QuizActionButton>
+          <QuizActionButton label="Next question" type="primary" icon={<ArrowRightOutlined />}
+            onClick={goToNextQuestion} disabled={currentIndex === questions.length - 1}>Next</QuizActionButton>
+        </div>
+        <div className="quiz-action-group">
+          <QuizActionButton label="Explain" icon={<QuestionCircleOutlined />} type="primary"
+            tooltip={isAuthenticated ? 'Explain this question' : 'Please login to use this feature'}
+            onClick={handleExplainClick} disabled={!isAuthenticated}
+            style={isAuthenticated ? { backgroundColor: '#722ed1', borderColor: '#722ed1' } : {}} />
+          <QuizActionButton label="Copy" tooltip="Copy question and answer choices" icon={<CopyOutlined />}
+            onClick={handleCopyQuestion} loading={isCopying} />
+          <QuizActionButton label={markedIndex === currentIndex ? 'Saved progress' : 'Save progress'}
+            tooltip={!isAuthenticated ? 'Please login to save your progress' : !quizId ? 'Save is only available for demo quizzes'
+              : markedIndex === currentIndex ? 'Progress is saved at this question' : 'Save this question as your resume checkpoint'}
+            icon={markedIndex === currentIndex ? <BookFilled /> : <BookOutlined />} onClick={handleSaveProgress}
+            loading={isMarking} disabled={!isAuthenticated || !quizId || isMarking || progressState.loading || !!progressState.error || markedIndex === currentIndex}
+            style={markedIndex === currentIndex ? { backgroundColor: '#fa8c16', borderColor: '#fa8c16', color: '#fff' } : {}}>
+            {markedIndex === currentIndex ? 'Saved' : 'Save progress'}
+          </QuizActionButton>
+        </div>
       </div>
-      
-      <Modal title={progressAction?.remove ? 'Remove saved progress?' : 'Save progress?'}
+
+      <Modal title="Save progress?"
         open={!!progressAction} onOk={handleConfirmProgress} confirmLoading={isMarking}
-        okText={progressAction?.remove ? 'Remove' : 'Save'} okButtonProps={{ danger: !!progressAction?.remove }}
+        okText="Save"
         cancelButtonProps={{ disabled: isMarking }} closable={!isMarking} maskClosable={!isMarking}
         onCancel={() => { if (!isMarking) setProgressAction(null); }}>
-        <Paragraph>{progressAction?.remove
-          ? 'Remove the saved checkpoint for this quiz? Other quizzes will keep their progress.'
-          : 'Save Question ' + ((progressAction?.index ?? 0) + 1) + ' as the checkpoint for this quiz? Your other quiz checkpoints will be kept.'}</Paragraph>
+        <Paragraph>{'Save Question ' + ((progressAction?.index ?? 0) + 1) + ' as the checkpoint for this quiz? Your other quiz checkpoints will be kept.'}</Paragraph>
         {progressActionError && <Alert type="error" showIcon message={progressActionError} />}
       </Modal>
       <ExplanationDialogs question={currentQuestion} state={ai} />

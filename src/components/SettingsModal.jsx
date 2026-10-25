@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, Card, Space, Input, Button, Typography, Alert, Spin } from 'antd';
+import { Modal, Card, Space, Input, Typography, Alert, Spin } from 'antd';
+import { CheckOutlined, SaveOutlined, ApiOutlined, DeleteOutlined } from '@ant-design/icons';
+import QuizActionButton from './QuizActionButton';
 import { useAuth } from '../hooks/useAuth';
 import { credentials, testConnection } from '../services/llm';
 import { PROVIDERS } from '../services/llm/modelRegistry';
@@ -61,7 +63,7 @@ function SettingsModal({ visible, onClose }) {
 
   return (
     <Modal title="AI Settings" open={visible} onCancel={onClose} width={620}
-      footer={<Button onClick={onClose}>Done</Button>}>
+      footer={<QuizActionButton label="Done" icon={<CheckOutlined />} onClick={onClose} />}>
       <Spin spinning={loading}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {isAuthenticated && <Text>Profile: {user.displayName || user.email}</Text>}
@@ -71,16 +73,16 @@ function SettingsModal({ visible, onClose }) {
           </Paragraph>
           {notice && <Alert showIcon type={notice.type} message={notice.text} />}
           {PROVIDERS.map(provider => (
-            <Card key={provider.id} title={provider.name} size="small">
+            <Card key={provider.id} className="ai-provider-card" title={provider.name} size="small"
+              extra={<a href={provider.keyUrl} target="_blank" rel="noopener noreferrer">Get API key</a>}>
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Input.Password aria-label={`${provider.name} API key`} placeholder={`Enter your ${provider.name} API key`}
                   value={keys[provider.id]} disabled={loading || !!busy} autoComplete="off"
                   onChange={event => { setKeys(value => ({ ...value, [provider.id]: event.target.value })); setStatuses(value => ({ ...value, [provider.id]: null })); }} />
                 <Space wrap>
-                  <Button type="primary" disabled={loading || !!busy || !keys[provider.id].trim()} loading={busy === `${provider.id}:save`} onClick={() => run(provider.id, 'save')}>Save</Button>
-                  <Button disabled={loading || !!busy || !keys[provider.id].trim()} loading={busy === `${provider.id}:test`} onClick={() => run(provider.id, 'test')}>Test connection</Button>
-                  <Button danger disabled={loading || !!busy} loading={busy === `${provider.id}:clear`} onClick={() => run(provider.id, 'clear')}>Clear key</Button>
-                  <a href={provider.keyUrl} target="_blank" rel="noopener noreferrer">Get API key</a>
+                  <QuizActionButton label={`Save ${provider.name} key`} icon={<SaveOutlined />} type="primary" disabled={loading || !!busy || !keys[provider.id].trim()} loading={busy === `${provider.id}:save`} onClick={() => run(provider.id, 'save')}>Save</QuizActionButton>
+                  <QuizActionButton label={`Test ${provider.name} connection`} icon={<ApiOutlined />} disabled={loading || !!busy || !keys[provider.id].trim()} loading={busy === `${provider.id}:test`} onClick={() => run(provider.id, 'test')}>Test connection</QuizActionButton>
+                  <QuizActionButton label={`Clear ${provider.name} key`} icon={<DeleteOutlined />} danger disabled={loading || !!busy} loading={busy === `${provider.id}:clear`} onClick={() => run(provider.id, 'clear')}>Clear key</QuizActionButton>
                 </Space>
                 <Text type="secondary">Test connection sends a small request using this key and uses your provider quota. Save to use it for explanations.</Text>
                 {statuses[provider.id] && <Alert type={statuses[provider.id].type} message={statuses[provider.id].text} showIcon />}

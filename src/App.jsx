@@ -1,11 +1,12 @@
 // App.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag, ConfigProvider, Alert, theme as antdTheme } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled, MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled, MoonOutlined, SunOutlined, ReloadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
 import './markdown.css';
 import QuizMode from './components/QuizMode';
+import QuizActionButton from './components/QuizActionButton';
 import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
 import SettingsModal from './components/SettingsModal';
@@ -359,14 +360,14 @@ function App() {
               </div>
             </Dropdown>
           ) : (
-            <Button
+            <QuizActionButton label="Login"
               type="primary"
               icon={<LoginOutlined />}
               onClick={() => setLoginModalVisible(true)}
               className="header-login-button"
             >
               Login
-            </Button>
+            </QuizActionButton>
           )}
         </div>
       </div>
@@ -378,13 +379,13 @@ function App() {
     if (!startScreen && !mode) {
       return (
         <div style={{ textAlign: 'center', marginTop: '30px', paddingBottom: '20px' }}>
-          <Button 
+          <QuizActionButton label="Back to Start Screen"
             icon={<ArrowLeftOutlined />} 
             size="large"
             onClick={goToStartScreen}
           >
             Back to Start Screen
-          </Button>
+          </QuizActionButton>
         </div>
       );
     }
@@ -412,7 +413,7 @@ function App() {
             <Title level={2}>Welcome to Quiz Application</Title>
             <Paragraph>Please choose an option to get started:</Paragraph>
             
-            <Row gutter={16} style={{ marginTop: '30px' }}>
+            <Row gutter={[16, 16]} style={{ marginTop: '30px' }}>
               <Col xs={24} sm={12}>
                 <Card 
                   hoverable 
@@ -425,13 +426,13 @@ function App() {
                   <Paragraph>
                     Choose from our pre-loaded set of questions to try out the application.
                   </Paragraph>
-                  <Button type="primary" size="large" icon={<PlayCircleOutlined />} style={{ marginTop: '10px' }}>
+                  <QuizActionButton label="Select Quiz" type="primary" size="large" icon={<PlayCircleOutlined />} style={{ marginTop: '10px' }}>
                     Select Quiz
-                  </Button>
+                  </QuizActionButton>
                 </Card>
               </Col>
               
-              <Col xs={24} sm={12} style={{ marginTop: { xs: '20px', sm: '0' } }}>
+              <Col xs={24} sm={12}>
                 <Card 
                   hoverable 
                   style={{ height: '100%' }}
@@ -445,9 +446,9 @@ function App() {
                     </Paragraph>
                     
                     <Upload {...uploadProps}>
-                      <Button type="primary" size="large" icon={<UploadOutlined />} style={{ marginTop: '10px' }}>
+                      <QuizActionButton label="Upload Quiz File" type="primary" size="large" icon={<UploadOutlined />} style={{ marginTop: '10px' }}>
                         Upload Quiz File
-                      </Button>
+                      </QuizActionButton>
                     </Upload>
                   </div>
                 </Card>
@@ -456,13 +457,13 @@ function App() {
             
             <div style={{ marginTop: '30px' }}>
               <Title level={5}>Need a sample file?</Title>
-              <Button 
+              <QuizActionButton label="Download Sample Quiz File" icon={<DownloadOutlined />}
                 type="link" 
-                href="/quiz-app/sample-quiz.json" 
+                href={import.meta.env.BASE_URL + 'sample-quiz.json'}
                 download="sample-quiz.json"
               >
                 Download Sample Quiz File
-              </Button>
+              </QuizActionButton>
               
               <div style={{ marginTop: '20px', textAlign: 'left' }}>
                 <Text type="secondary">
@@ -493,13 +494,13 @@ function App() {
           </div>
         ) : showQuizSelection ? (
           // Quiz selection screen
-          <div style={{ maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}>
+          <div className="quiz-selection-screen" style={{ maxWidth: '600px', margin: '0 auto' }}>
             <Title level={2} style={{ textAlign: 'center' }}>Select a Quiz</Title>
             <Paragraph style={{ textAlign: 'center', marginBottom: '30px' }}>
               Choose from our available quizzes:
             </Paragraph>
             
-            <Card style={{ marginBottom: '20px' }}>
+            <Card className="quiz-selection-card" style={{ marginBottom: '20px' }}>
               <Select
                 size="large"
                 style={{ width: '100%' }}
@@ -507,6 +508,7 @@ function App() {
                 value={selectedQuiz}
                 onChange={value => setSelectedQuiz(value)}
                 disabled={isQuizLoading}
+                virtual={false}
                 showSearch
                 optionFilterProp="label"
                 options={(() => {
@@ -543,7 +545,7 @@ function App() {
               
               {progressState.error && (
                 <Alert style={{ marginTop: 14 }} type="error" showIcon message={progressState.error}
-                  action={<Button size="small" onClick={progressState.reload}>Retry</Button>} />
+                  action={<QuizActionButton label="Retry saved progress" icon={<ReloadOutlined />} size="small" onClick={progressState.reload}>Retry</QuizActionButton>} />
               )}
               {/* Firestore progress check result */}
               {quizSelectionLoading && (
@@ -564,7 +566,7 @@ function App() {
                   </div>
                   <Text className="quiz-progress-notice-text"><Text strong>{checkpointLabel(quizSelectionProgress)}</Text>. Do you want to continue from there?</Text>
                   <div className="quiz-progress-notice-actions" style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-                    <Button
+                    <QuizActionButton label="Resume saved progress"
                       className="quiz-progress-action-button quiz-progress-resume-button"
                       type="primary"
                       icon={<PlayCircleOutlined />}
@@ -577,8 +579,8 @@ function App() {
                       }}
                     >
                       Resume saved progress
-                    </Button>
-                    <Button
+                    </QuizActionButton>
+                    <QuizActionButton label="Start from beginning" icon={<ReloadOutlined />}
                       className="quiz-progress-action-button"
                       style={{ flex: 1 }}
                       disabled={isQuizLoading}
@@ -588,13 +590,13 @@ function App() {
                       }}
                     >
                       Start from beginning
-                    </Button>
+                    </QuizActionButton>
                   </div>
                 </div>
               )}
 
               {!quizSelectionLoading && (progressState.error || !quizSelectionProgress) && (
-                <Button
+                <QuizActionButton label={progressState.error ? 'Load quiz without resuming' : 'Load Selected Quiz'}
                   type="primary"
                   size="large"
                   block
@@ -610,32 +612,27 @@ function App() {
                   }}
                 >
                   {progressState.error ? 'Load quiz without resuming' : 'Load Selected Quiz'}
-                </Button>
+                </QuizActionButton>
               )}
             </Card>
             
             <div style={{ textAlign: 'center' }}>
-              <Button 
+              <QuizActionButton label="Back"
                 icon={<ArrowLeftOutlined />} 
                 size="large"
                 onClick={backFromQuizSelection}
               >
                 Back
-              </Button>
+              </QuizActionButton>
             </div>
           </div>
         ) : !mode ? (
           // Quiz mode selection after file is loaded
           <>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '20px'
-            }}>
+            <div className="quiz-loaded-header">
               <Title level={2}>Quiz Questions Loaded!</Title>
               <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />}>Change File</Button>
+                <QuizActionButton label="Change File" icon={<UploadOutlined />}>Change File</QuizActionButton>
               </Upload>
             </div>
             <Text>Loaded {questions.length} questions from {fileName}</Text>

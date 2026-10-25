@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Space, Typography, Radio, Divider } from 'antd';
+import { Card, Space, Typography, Radio, Divider, Tag } from 'antd';
+import { PlayCircleOutlined, FormOutlined, ReadOutlined } from '@ant-design/icons';
+import QuizActionButton from './QuizActionButton';
 
 const { Title, Paragraph } = Typography;
 
@@ -18,20 +20,20 @@ function QuizMode({ onSelectMode, totalQuestions }) {
   };
 
   return (
-    <Card>
+    <Card className="quiz-mode-picker">
       <Title level={2}>Choose Quiz Mode</Title>
       
       <Space direction="vertical" style={{ width: '100%' }}>
-        <Card type="inner" title="Practice Mode">
+        <Card className="quiz-choice-card" type="inner" title="Practice Mode">
           <Paragraph>
             Answer questions one by one in sequence. See instant feedback after each answer.
           </Paragraph>
-          <Button type="primary" size="large" onClick={() => onSelectMode('practice')}>
+          <QuizActionButton label="Start Practice" icon={<PlayCircleOutlined />} type="primary" size="large" onClick={() => onSelectMode('practice')}>
             Start Practice
-          </Button>
+          </QuizActionButton>
         </Card>
         
-        <Card type="inner" title="Exam Mode">
+        <Card className="quiz-choice-card" type="inner" title="Exam Mode">
           <Paragraph>
             Take a test with your selected number of random questions. Your score will be displayed after completing all questions.
           </Paragraph>
@@ -66,9 +68,20 @@ function QuizMode({ onSelectMode, totalQuestions }) {
 
           <Divider orientation="left"></Divider>
           
-          <Button type="primary" size="large" onClick={handleStartExam}>
+          <QuizActionButton label="Start Exam" icon={<FormOutlined />} type="primary" size="large" onClick={handleStartExam}>
             Start Exam
-          </Button>
+          </QuizActionButton>
+        </Card>
+
+        <Card className="quiz-choice-card study-summary-placeholder" type="inner"
+          title={<Space wrap><ReadOutlined /><span>Study Summary</span><Tag>Coming soon</Tag></Space>}
+          aria-disabled="true">
+          <Paragraph>
+            Review essential exam topics, concise knowledge summaries, memory tips, and test-taking strategies.
+          </Paragraph>
+          <QuizActionButton label="Open study summary" tooltip="Coming soon" icon={<ReadOutlined />} disabled size="large">
+            Coming soon
+          </QuizActionButton>
         </Card>
       </Space>
     </Card>
