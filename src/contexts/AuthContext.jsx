@@ -1,8 +1,8 @@
 // contexts/AuthContext.jsx
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import authService from '../services/authService';
 import userService from '../services/userService';
-import { saveApiKey, clearApiKey } from '../utils/geminiApi';
+import { credentials, clearLlmSession } from '../services/llm';
 
 // Create Auth Context
 const AuthContext = createContext({
@@ -23,11 +23,13 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const activeUid = useRef(null);
+  const authRevision = useRef(0);
 
   /**
    * Initialize user in Firestore
    */
-  const initializeUserInFirestore = async (firebaseUser) => {
+  const initializeUserInFirestore = async (firebaseUser, revision) => {
     try {
       const userData = {
         uid: firebaseUser.uid,
@@ -40,14 +42,9 @@ export function AuthProvider({ children }) {
       // Initialize or update user in Firestore
       const result = await userService.initializeUser(userData);
       
-      if (result.success) {
+      if (result.success && activeUid.current === userData.uid && authRevision.current === revision) {
         setUserProfile(result.user);
-        
-        // Sync API key from Firestore to localStorage
-        if (result.user.geminiApiKey) {
-          await saveApiKey(result.user.geminiApiKey, userData.uid);
-          console.log('API key synced from Firestore to localStorage');
-        }
+        credentials.prime(userData.uid, result.user);
       }
     } catch (error) {
       console.error('Error initializing user in Firestore:', error);
@@ -57,6 +54,11 @@ export function AuthProvider({ children }) {
   // Subscribe to auth state changes
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (firebaseUser) => {
+      const revision = ++authRevision.current;
+      const nextUid = firebaseUser?.uid || null;
+      clearLlmSession({ clearGuest: !!nextUid || !!activeUid.current });
+      activeUid.current = nextUid;
+      setUserProfile(null);
       if (firebaseUser) {
         // User is signed in
         const userData = {
@@ -70,18 +72,18 @@ export function AuthProvider({ children }) {
         setUser(userData);
         
         // Initialize user in Firestore and get profile
-        await initializeUserInFirestore(firebaseUser);
+        await initializeUserInFirestore(firebaseUser, revision);
       } else {
         // User is signed out
         setUser(null);
         setUserProfile(null);
       }
       
-      setLoading(false);
+      if (authRevision.current === revision) setLoading(false);
     });
 
     // Cleanup subscription on unmount
-    return () => unsubscribe();
+    return () => { authRevision.current++; activeUid.current = null; unsubscribe(); clearLlmSession(); };
   }, []);
 
   /**
@@ -89,9 +91,11 @@ export function AuthProvider({ children }) {
    */
   const refreshUserProfile = async () => {
     if (user && user.uid) {
+      const revision = authRevision.current;
       const result = await userService.getUserProfile(user.uid);
-      if (result.success) {
+      if (result.success && activeUid.current === user.uid && authRevision.current === revision) {
         setUserProfile(result.user);
+        credentials.prime(user.uid, result.user);
       }
     }
   };
@@ -110,9 +114,10 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     const result = await authService.signOut();
     if (result.success) {
-      // Clear API key from localStorage when logging out
-      await clearApiKey(user?.uid);
-      console.log('API key cleared from localStorage on logout');
+      // Logging out must not delete credentials saved in the user's profile.
+      authRevision.current++;
+      activeUid.current = null;
+      clearLlmSession({ clearGuest: true });
       
       setUser(null);
       setUserProfile(null);
