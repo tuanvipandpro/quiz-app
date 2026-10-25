@@ -33,8 +33,12 @@ The repository currently includes 18 demo quiz sets:
 - Navigate to previous or next questions.
 - Jump directly to a question number.
 - Track progress with a progress bar.
-- Save a practice checkpoint and resume later for demo quizzes when signed in.
+- Save a separate manual checkpoint for each demo quiz when signed in, with confirmed save/remove feedback.
+- Resume by saved question ID when questions move; legacy index-only checkpoints still work, and out-of-range positions fall back safely.
+- Start from the beginning without deleting the saved checkpoint; use Remove saved progress to clear only that quiz.
 - Request an AI explanation for the current question.
+
+Practice progress is stored under `users/{uid}.quizProgress.{quizId}` as `quizId`, `questionIndex` (zero-based), `questionId`, and `savedAt`. Saving one quiz preserves every other quiz checkpoint and profile field. The quiz picker shows saved positions and offers Resume or Start from beginning. Only the current position is saved; selected answers are not persisted and progress is not auto-saved. Read failures show Retry rather than claiming there is no checkpoint. Uploaded JSON files have no library quiz ID, so they cannot overwrite a demo quiz's progress.
 
 ### Exam mode
 

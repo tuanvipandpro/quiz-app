@@ -1,6 +1,6 @@
 // App.jsx
-import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag, ConfigProvider, theme as antdTheme } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag, ConfigProvider, Alert, theme as antdTheme } from 'antd';
 import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
@@ -9,7 +9,8 @@ import QuizMode from './components/QuizMode';
 import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
 import SettingsModal from './components/SettingsModal';
-import userService from './services/userService';
+import { useQuizProgress } from './hooks/useQuizProgress';
+import { checkpointLabel, latestSavedQuiz, resolveCheckpoint } from './utils/quizProgress';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -27,6 +28,15 @@ const getInitialDarkMode = () => {
 };
 
 function App() {
+  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+  const [messageApi, messageContextHolder] = message.useMessage();
+  const uid = user?.uid || null;
+  const progressState = useQuizProgress(uid);
+  const quizLoadRequest = useRef(0);
+  const activeUid = useRef(uid);
+  activeUid.current = uid;
+  const [isQuizLoading, setIsQuizLoading] = useState(false);
+  const [loadedQuizId, setLoadedQuizId] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
   const [questions, setQuestions] = useState([]);
   const [mode, setMode] = useState(null); // 'practice' or 'exam'
@@ -40,8 +50,14 @@ function App() {
   const [loginModalVisible, setLoginModalVisible] = useState(false); // Login modal state
   const [settingsModalVisible, setSettingsModalVisible] = useState(false); // Settings modal state
   const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
-  const [quizSelectionProgress, setQuizSelectionProgress] = useState(null); // Saved progress found during quiz selection
-  const [quizSelectionLoading, setQuizSelectionLoading] = useState(false); // Loading state while checking Firestore
+  const quizSelectionProgress = progressState.progress[selectedQuiz] || null;
+  const quizSelectionLoading = progressState.loading;
+
+  useEffect(() => {
+    quizLoadRequest.current++;
+    setIsQuizLoading(false);
+    setSelectedQuiz(null);
+  }, [uid]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light';
@@ -75,92 +91,64 @@ function App() {
     { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 42 }
   ];
   
-  // Load demo quiz (no longer checks Firestore — progress is handled inline at selection)
-  const loadDemoQuiz = async (quizFile, quizName, quizId) => {
+  const mostRecentQuiz = latestSavedQuiz(progressState.progress, availableQuizzes.map(quiz => quiz.id));
+  useEffect(() => {
+    if (showQuizSelection && !quizSelectionLoading && !progressState.error && !selectedQuiz && mostRecentQuiz) {
+      setSelectedQuiz(mostRecentQuiz);
+    }
+  }, [showQuizSelection, quizSelectionLoading, progressState.error, selectedQuiz, mostRecentQuiz]);
+
+  const loadQuiz = async (quizFile, quizName, quizId, checkpoint = null) => {
+    const request = ++quizLoadRequest.current;
+    const account = uid;
+    setIsQuizLoading(true);
     try {
-      const response = await fetch(`/quiz-app/${quizFile}`);
-      if (!response.ok) {
-        throw new Error(`Failed to load quiz: ${response.status}`);
-      }
+      const response = await fetch(import.meta.env.BASE_URL + quizFile);
+      if (!response.ok) throw new Error('Could not load quiz');
       const data = await response.json();
+      if (!Array.isArray(data) || !data.length) throw new Error('Quiz contains no questions');
+      if (quizLoadRequest.current !== request || activeUid.current !== account) return;
+      const position = resolveCheckpoint(data, checkpoint);
       setQuestions(data);
+      setLoadedQuizId(quizId);
       setFileUploaded(true);
       setFileName(quizName);
+      setInitialQuestionIndex(position?.index ?? 0);
+      setMode(position ? 'practice' : null);
       setStartScreen(false);
       setShowQuizSelection(false);
-      message.success(`${quizName} loaded successfully!`);
-    } catch (error) {
-      console.error('Error loading quiz:', error);
-      message.error('Failed to load quiz. Please try again or upload your own file.');
-    }
-  };
-
-  // Load quiz and jump directly to Practice mode at a specific question
-  const loadAndResumePractice = async (quizFile, quizName, quizId, questionIndex) => {
-    try {
-      const response = await fetch(`/quiz-app/${quizFile}`);
-      if (!response.ok) throw new Error(`Failed to load quiz: ${response.status}`);
-      const data = await response.json();
-      setQuestions(data);
-      setFileUploaded(true);
-      setFileName(quizName);
-      setInitialQuestionIndex(questionIndex);
-      setMode('practice');
-      setStartScreen(false);
-      setShowQuizSelection(false);
-      setQuizSelectionProgress(null);
-      message.success(`Resuming ${quizName} from question ${questionIndex + 1}`);
-    } catch (error) {
-      console.error('Error loading quiz:', error);
-      message.error('Failed to load quiz. Please try again.');
-    }
-  };
-  
-  // Show quiz selection screen — auto-selects the most recently saved quiz if any
-  const showQuizSelectionScreen = async () => {
-    setShowQuizSelection(true);
-    setQuizSelectionProgress(null);
-    setSelectedQuiz(null);
-
-    if (!user) {
-      setQuizSelectionLoading(false);
-      return;
-    }
-
-    setQuizSelectionLoading(true);
-    try {
-      const allProgress = await userService.getAllQuizProgress(user.uid);
-      // Find the most recently saved quiz that exists in availableQuizzes
-      const availableIds = availableQuizzes.map(q => q.id);
-      const candidates = Object.entries(allProgress)
-        .filter(([id]) => availableIds.includes(id))
-        .sort((a, b) => {
-          // Sort by savedAt descending (most recent first)
-          const timeA = a[1].savedAt?.toMillis?.() ?? 0;
-          const timeB = b[1].savedAt?.toMillis?.() ?? 0;
-          return timeB - timeA;
-        });
-
-      if (candidates.length > 0) {
-        const [quizId, progress] = candidates[0];
-        setSelectedQuiz(quizId);
-        setQuizSelectionProgress(progress);
+      if (position?.adjusted) {
+        messageApi.info(position.reason === 'moved'
+          ? 'Quiz order changed. Your saved question is now Question ' + (position.index + 1) + '.'
+          : 'The quiz has changed. Continuing near your saved position at Question ' + (position.index + 1) + '.');
+      } else {
+        messageApi.success(position ? 'Resuming ' + quizName + ' from question ' + (position.index + 1) : quizName + ' loaded successfully!');
       }
-    } catch (err) {
-      console.error('Error pre-loading quiz progress:', err);
+    } catch {
+      if (quizLoadRequest.current === request && activeUid.current === account) messageApi.error('Failed to load quiz. Please try again.');
     } finally {
-      setQuizSelectionLoading(false);
+      if (quizLoadRequest.current === request) setIsQuizLoading(false);
     }
   };
-  
-  // Go back from quiz selection
+
+  const loadDemoQuiz = (file, name, id) => loadQuiz(file, name, id);
+  const loadAndResumePractice = (file, name, id, checkpoint) => loadQuiz(file, name, id, checkpoint);
+
+  const showQuizSelectionScreen = () => {
+    quizLoadRequest.current++;
+    setIsQuizLoading(false);
+    setShowQuizSelection(true);
+    setSelectedQuiz(null);
+    if (!progressState.loading) progressState.reload();
+  };
+
   const backFromQuizSelection = () => {
+    quizLoadRequest.current++;
+    setIsQuizLoading(false);
     setShowQuizSelection(false);
     setSelectedQuiz(null);
-    setQuizSelectionProgress(null);
-    setQuizSelectionLoading(false);
   };
-  
+
   // File upload props
   const uploadProps = {
     name: 'file',
@@ -171,19 +159,22 @@ function App() {
     beforeUpload: (file) => {
       // Check file type
       if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-        message.error('You can only upload JSON files!');
+        messageApi.error('You can only upload JSON files!');
         return Upload.LIST_IGNORE;
       }
       
       // Parse the file
+      const request = ++quizLoadRequest.current;
+      setIsQuizLoading(false);
       const reader = new FileReader();
       reader.onload = (e) => {
+        if (request !== quizLoadRequest.current) return;
         try {
           const data = JSON.parse(e.target.result);
           
           // Validate the JSON structure
-          if (!Array.isArray(data)) {
-            message.error('The JSON file must contain an array of questions!');
+          if (!Array.isArray(data) || !data.length) {
+            messageApi.error('The JSON file must contain an array of questions!');
             return;
           }
           
@@ -193,19 +184,23 @@ function App() {
           );
           
           if (!isValid) {
-            message.error('Some questions are missing required fields (id, question, options, answer)');
+            messageApi.error('Some questions are missing required fields (id, question, options, answer)');
             return;
           }
           
+          setSelectedQuiz(null);
+          setLoadedQuizId(null);
+          setInitialQuestionIndex(0);
+          setMode(null);
           // Set the questions and mark file as uploaded
           setQuestions(data);
           setFileUploaded(true);
           setFileName(file.name);
           setStartScreen(false);
-          message.success(`${file.name} uploaded successfully!`);
+          messageApi.success(`${file.name} uploaded successfully!`);
         } catch (error) {
           console.error('Error parsing JSON:', error);
-          message.error('Error parsing JSON file. Please check the file format.');
+          messageApi.error('Error parsing JSON file. Please check the file format.');
         }
       };
       reader.readAsText(file);
@@ -214,6 +209,10 @@ function App() {
       return false;
     },
     onRemove: () => {
+      quizLoadRequest.current++;
+      setLoadedQuizId(null);
+      setSelectedQuiz(null);
+      setInitialQuestionIndex(0);
       setQuestions([]);
       setFileUploaded(false);
       setFileName('');
@@ -238,6 +237,10 @@ function App() {
   };
   
   const goToStartScreen = () => {
+    quizLoadRequest.current++;
+    setIsQuizLoading(false);
+    setLoadedQuizId(null);
+    setSelectedQuiz(null);
     setFileUploaded(false);
     setQuestions([]);
     setFileName('');
@@ -247,8 +250,6 @@ function App() {
     setExamQuestionCount(50);
   };
 
-  // Get auth context
-  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
 
   // Handle Google login
   const handleGoogleLogin = async () => {
@@ -256,9 +257,9 @@ function App() {
     const result = await signInWithGoogle();
     
     if (result.success) {
-      message.success(`Welcome, ${result.user.displayName}!`);
+      messageApi.success(`Welcome, ${result.user.displayName}!`);
     } else {
-      message.error(result.error || 'Failed to sign in with Google');
+      messageApi.error(result.error || 'Failed to sign in with Google');
     }
   };
 
@@ -267,9 +268,9 @@ function App() {
     const result = await signOut();
     
     if (result.success) {
-      message.success('Signed out successfully');
+      messageApi.success('Signed out successfully');
     } else {
-      message.error('Failed to sign out');
+      messageApi.error('Failed to sign out');
     }
   };
 
@@ -280,6 +281,10 @@ function App() {
 
   // Handle return to home page
   const handleReturnHome = () => {
+    quizLoadRequest.current++;
+    setIsQuizLoading(false);
+    setLoadedQuizId(null);
+    setSelectedQuiz(null);
     setStartScreen(true);
     setShowQuizSelection(false);
     setMode(null);
@@ -396,6 +401,7 @@ function App() {
         },
       }}
     >
+      {messageContextHolder}
       <Layout className="layout" style={{ minHeight: '100vh' }}>
         {renderHeader()}
 
@@ -499,16 +505,8 @@ function App() {
                 style={{ width: '100%' }}
                 placeholder="Select a quiz to load"
                 value={selectedQuiz}
-                onChange={async (value) => {
-                  setSelectedQuiz(value);
-                  setQuizSelectionProgress(null);
-                  if (user && value) {
-                    setQuizSelectionLoading(true);
-                    const progress = await userService.getQuizProgress(user.uid, value);
-                    setQuizSelectionProgress(progress ?? null);
-                    setQuizSelectionLoading(false);
-                  }
-                }}
+                onChange={value => setSelectedQuiz(value)}
+                disabled={isQuizLoading}
                 showSearch
                 optionFilterProp="label"
                 options={(() => {
@@ -522,7 +520,8 @@ function App() {
                          label: quiz.name,
                          value: quiz.id,
                          difficulty: quiz.difficulty,
-                         totalQuestions: quiz.totalQuestions
+                         totalQuestions: quiz.totalQuestions,
+                         savedProgress: progressState.progress[quiz.id]
                        }))
                    }));
                  })()}
@@ -533,6 +532,7 @@ function App() {
                       {option.data.difficulty && (
                         <Tag color="blue" style={{ margin: 0, fontSize: '11px' }}>{option.data.difficulty}</Tag>
                       )}
+                      {option.data.savedProgress && <Tag color="orange" style={{ margin: 0, fontSize: '11px' }}>{checkpointLabel(option.data.savedProgress)}</Tag>}
                       {option.data.totalQuestions && (
                         <Tag color="green" style={{ margin: 0, fontSize: '11px' }}>{option.data.totalQuestions} Qs</Tag>
                       )}
@@ -541,6 +541,10 @@ function App() {
                 )}
                />
               
+              {progressState.error && (
+                <Alert style={{ marginTop: 14 }} type="error" showIcon message={progressState.error}
+                  action={<Button size="small" onClick={progressState.reload}>Retry</Button>} />
+              )}
               {/* Firestore progress check result */}
               {quizSelectionLoading && (
                 <div style={{ marginTop: '14px', textAlign: 'center', padding: '10px' }}>
@@ -548,7 +552,7 @@ function App() {
                 </div>
               )}
 
-              {!quizSelectionLoading && quizSelectionProgress && (
+              {!quizSelectionLoading && !progressState.error && quizSelectionProgress && (
                 <div className="quiz-progress-notice" style={{
                   marginTop: '14px',
                   padding: '14px 16px',
@@ -558,43 +562,45 @@ function App() {
                     <BookFilled style={{ color: '#fa8c16', fontSize: '16px' }} />
                     <Text strong className="quiz-progress-notice-title">Saved progress found!</Text>
                   </div>
-                  <Text className="quiz-progress-notice-text">You left off at <Text strong>Question {quizSelectionProgress.questionIndex + 1}</Text>. Do you want to continue from there?</Text>
+                  <Text className="quiz-progress-notice-text"><Text strong>{checkpointLabel(quizSelectionProgress)}</Text>. Do you want to continue from there?</Text>
                   <div className="quiz-progress-notice-actions" style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
                     <Button
                       className="quiz-progress-action-button quiz-progress-resume-button"
                       type="primary"
                       icon={<PlayCircleOutlined />}
                       style={{ flex: 1 }}
+                      loading={isQuizLoading}
+                      disabled={isQuizLoading}
                       onClick={() => {
                         const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
-                        if (quiz) loadAndResumePractice(quiz.file, quiz.name, quiz.id, quizSelectionProgress.questionIndex);
+                        if (quiz) loadAndResumePractice(quiz.file, quiz.name, quiz.id, quizSelectionProgress);
                       }}
                     >
-                      Yes, resume from Q{quizSelectionProgress.questionIndex + 1}
+                      Resume saved progress
                     </Button>
                     <Button
                       className="quiz-progress-action-button"
                       style={{ flex: 1 }}
-                      onClick={async () => {
-                        if (user && selectedQuiz) {
-                          await userService.clearQuizProgress(user.uid, selectedQuiz);
-                        }
-                        setQuizSelectionProgress(null);
+                      disabled={isQuizLoading}
+                      onClick={() => {
+                        const quiz = availableQuizzes.find(item => item.id === selectedQuiz);
+                        if (quiz) loadDemoQuiz(quiz.file, quiz.name, quiz.id);
                       }}
                     >
-                      No, start from beginning
+                      Start from beginning
                     </Button>
                   </div>
                 </div>
               )}
 
-              {!quizSelectionLoading && !quizSelectionProgress && (
+              {!quizSelectionLoading && (progressState.error || !quizSelectionProgress) && (
                 <Button
                   type="primary"
                   size="large"
                   block
                   style={{ marginTop: '20px' }}
-                  disabled={!selectedQuiz}
+                  disabled={!selectedQuiz || isQuizLoading}
+                  loading={isQuizLoading}
                   icon={<PlayCircleOutlined />}
                   onClick={() => {
                     const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
@@ -603,7 +609,7 @@ function App() {
                     }
                   }}
                 >
-                  Load Selected Quiz
+                  {progressState.error ? 'Load quiz without resuming' : 'Load Selected Quiz'}
                 </Button>
               )}
             </Card>
@@ -643,7 +649,9 @@ function App() {
             questions={questions} 
             onExit={resetApp} 
             initialQuestionIndex={initialQuestionIndex}
-            quizId={selectedQuiz}
+            key={(loadedQuizId || fileName) + ':' + (uid || 'guest')}
+            quizId={loadedQuizId}
+            progressState={progressState}
           />
         ) : mode === 'exam' && questions.length > 0 ? (
           <ExamMode 

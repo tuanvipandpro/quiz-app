@@ -196,22 +196,25 @@ class UserService {
 
   /**
    * Save quiz practice progress for a user.
-   * Replaces the ENTIRE quizProgress map so only one quiz is tracked at a time.
+   * Updates only this quiz's checkpoint, preserving every other quiz.
    * @param {string} uid - User ID
    * @param {string} quizId - Quiz ID
    * @param {number} questionIndex - 0-based question index
+   * @param {string|number|null} questionId - Stable source question ID, if available
    * @returns {Promise<Object>}
    */
-  async saveQuizProgress(uid, quizId, questionIndex) {
+  async saveQuizProgress(uid, quizId, questionIndex, questionId = null) {
     try {
+      if (!uid || typeof quizId !== 'string' || !quizId || quizId.includes('.') || !Number.isInteger(questionIndex) || questionIndex < 0) {
+        throw new Error('Invalid quiz checkpoint');
+      }
       const userDocRef = this.getUserDocRef(uid);
       await updateDoc(userDocRef, {
-        quizProgress: {
-          [quizId]: {
-            quizId,
-            questionIndex,
-            savedAt: serverTimestamp()
-          }
+        [`quizProgress.${quizId}`]: {
+          quizId,
+          questionIndex,
+          questionId: questionId === null ? null : String(questionId),
+          savedAt: serverTimestamp()
         },
         updatedAt: serverTimestamp()
       });
@@ -226,6 +229,7 @@ class UserService {
    * Get the entire quizProgress map for a user
    * @param {string} uid - User ID
    * @returns {Promise<Object>} map of quizId -> { questionIndex, savedAt } or {}
+   * @throws {Error} When progress cannot be read; callers must not treat this as no checkpoint
    */
   async getAllQuizProgress(uid) {
     try {
@@ -237,7 +241,7 @@ class UserService {
       return {};
     } catch (error) {
       console.error('Error getting all quiz progress:', error);
-      return {};
+      throw new Error('Could not load saved quiz progress.');
     }
   }
 
@@ -248,18 +252,8 @@ class UserService {
    * @returns {Promise<Object|null>} progress data or null
    */
   async getQuizProgress(uid, quizId) {
-    try {
-      const userDocRef = this.getUserDocRef(uid);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        return data.quizProgress?.[quizId] ?? null;
-      }
-      return null;
-    } catch (error) {
-      console.error('Error getting quiz progress:', error);
-      return null;
-    }
+    const progress = await this.getAllQuizProgress(uid);
+    return progress[quizId] ?? null;
   }
 
   /**
@@ -270,6 +264,7 @@ class UserService {
    */
   async clearQuizProgress(uid, quizId) {
     try {
+      if (!uid || typeof quizId !== 'string' || !quizId || quizId.includes('.')) throw new Error('Invalid quiz checkpoint');
       const userDocRef = this.getUserDocRef(uid);
       await updateDoc(userDocRef, {
         [`quizProgress.${quizId}`]: deleteField(),

@@ -1,16 +1,16 @@
 // components/PracticeMode.jsx
-import React, { useState } from 'react';
-import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, message, Badge } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined, CopyOutlined } from '@ant-design/icons';
+import React, { useState, useRef, useEffect } from 'react';
+import { Button, Progress, Space, Typography, Card, Modal, Spin, InputNumber, Tooltip, message, Badge, Alert } from 'antd';
+import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import Question from './Question';
 import { useExplanation } from '../hooks/useExplanation';
 import ExplanationDialogs from './ExplanationDialogs';
 import { useAuth } from '../hooks/useAuth';
-import userService from '../services/userService';
+import { resolveCheckpoint } from '../utils/quizProgress';
 
 const { Title, Text, Paragraph } = Typography;
 
-function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = null }) {
+function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = null, progressState }) {
   const { isAuthenticated, user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(initialQuestionIndex);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -19,12 +19,20 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   const [isCopying, setIsCopying] = useState(false);
 
 
-  // Marked question state (tracks the saved checkpoint index)
-  const [markedIndex, setMarkedIndex] = useState(
-    initialQuestionIndex > 0 ? initialQuestionIndex : null
-  );
-  const [isMarking, setIsMarking] = useState(false);
-  
+  const savedCheckpoint = progressState.progress[quizId];
+  const savedPosition = resolveCheckpoint(questions, savedCheckpoint);
+  const checkpointNeedsUpdate = savedPosition?.adjusted && savedPosition.reason !== 'moved';
+  const markedIndex = checkpointNeedsUpdate ? null : savedPosition?.index ?? null;
+  const isMarking = !!progressState.pendingQuiz;
+  const [progressAction, setProgressAction] = useState(null);
+  const [progressActionError, setProgressActionError] = useState(null);
+  const [messageApi, messageContextHolder] = message.useMessage();
+  const progressRevision = useRef(0);
+  useEffect(() => {
+    progressRevision.current++;
+    return () => { progressRevision.current++; };
+  }, [user?.uid, quizId]);
+
   const currentQuestion = questions[currentIndex];
   const ai = useExplanation(currentQuestion, user?.uid);
   
@@ -112,7 +120,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
 
   const handleExplainClick = () => {
     if (!isAuthenticated) {
-      message.warning('Please login to use the Explain feature');
+      messageApi.warning('Please login to use the Explain feature');
       return;
     }
     return ai.explain();
@@ -131,9 +139,9 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
     setIsCopying(true);
     try {
       await navigator.clipboard.writeText(parts.join('\n\n'));
-      message.success('Question copied!');
+      messageApi.success('Question copied!');
     } catch {
-      message.error('Could not copy. Please select and copy the question manually.');
+      messageApi.error('Could not copy. Please select and copy the question manually.');
     } finally {
       setIsCopying(false);
     }
@@ -148,77 +156,40 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
     }
   }, [currentIndex, hasMultipleAnswers, selectedAnswer]);
 
-  // Save current question as progress checkpoint in Firestore (always overrides)
-  const handleSaveQuestion = () => {
-    if (!isAuthenticated) {
-      message.warning('Please login to use the Save feature');
-      return;
-    }
-    if (!quizId) {
-      message.warning('Save is only available for demo quizzes');
-      return;
-    }
+  const handleProgressAction = (remove = false) => {
+    if (!isAuthenticated || !quizId || isMarking || progressState.loading || progressState.error) return;
+    if (!remove && markedIndex === currentIndex) return;
+    setProgressActionError(null);
+    setProgressAction({ remove, index: currentIndex, questionId: currentQuestion.id, revision: progressRevision.current });
+  };
 
-    // Already saved HERE → confirm remove
-    if (markedIndex === currentIndex) {
-      Modal.confirm({
-        title: 'Remove saved progress?',
-        icon: <BookFilled style={{ color: '#fa8c16' }} />,
-        content: `Question ${currentIndex + 1} is your current checkpoint. Do you want to remove it?`,
-        okText: 'Remove',
-        okButtonProps: { danger: true },
-        cancelText: 'Keep',
-        onOk: async () => {
-          setIsMarking(true);
-          try {
-            await userService.clearQuizProgress(user.uid, quizId);
-            setMarkedIndex(null);
-            message.success('Saved progress removed');
-          } catch (err) {
-            message.error('Failed to remove progress');
-          } finally {
-            setIsMarking(false);
-          }
-        }
-      });
-      return;
-    }
-
-    // Save (overrides any previous progress for any quiz)
-    Modal.confirm({
-      title: 'Save progress?',
-      icon: <BookFilled style={{ color: '#fa8c16' }} />,
-      content: (
-        <span>
-          Save <strong>Question {currentIndex + 1}</strong> as your checkpoint?
-          Next time you load this quiz, you can resume from here.
-          {markedIndex !== null && (
-            <div className="saved-progress-override" style={{ marginTop: 8, fontSize: 12 }}>
-              This will override your current checkpoint at Question {markedIndex + 1}.
-            </div>
-          )}
-        </span>
-      ),
-      okText: 'Save',
-      cancelText: 'Cancel',
-      onOk: async () => {
-        setIsMarking(true);
-        try {
-          await userService.saveQuizProgress(user.uid, quizId, currentIndex);
-          setMarkedIndex(currentIndex);
-          message.success(`Question ${currentIndex + 1} saved!`);
-        } catch (err) {
-          message.error('Failed to save progress');
-        } finally {
-          setIsMarking(false);
-        }
+  const handleConfirmProgress = async () => {
+    const action = progressAction;
+    if (!action || isMarking || progressRevision.current !== action.revision) return;
+    setProgressActionError(null);
+    try {
+      if (action.remove) await progressState.remove(quizId);
+      else await progressState.save(quizId, action.index, action.questionId);
+      if (progressRevision.current === action.revision) {
+        setProgressAction(null);
+        messageApi.success(action.remove ? 'Saved progress removed' : 'Question ' + (action.index + 1) + ' saved!');
       }
-    });
+    } catch (error) {
+      if (progressRevision.current === action.revision && error.code !== 'SESSION_CHANGED') {
+        setProgressActionError(error.message);
+      }
+    }
   };
 
   return (
     <div>
+      {messageContextHolder}
       <Title level={2}>Practice Mode</Title>
+      {quizId && isAuthenticated && progressState.loading && <Paragraph><Spin size="small" /> Checking saved progress...</Paragraph>}
+      {quizId && isAuthenticated && progressState.error && <Alert type="error" showIcon style={{ marginBottom: 16 }}
+        message={progressState.error} action={<Button size="small" onClick={progressState.reload}>Retry</Button>} />}
+      {quizId && isAuthenticated && checkpointNeedsUpdate && <Alert type="warning" showIcon style={{ marginBottom: 16 }}
+        message="Your saved question is no longer available. Save progress to set a new checkpoint." />}
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         {/* Question navigation */}
@@ -318,25 +289,33 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
               : !quizId
               ? 'Save is only available for demo quizzes'
               : markedIndex === currentIndex
-              ? 'Progress saved here — click to update'
+              ? 'Progress is saved at this question'
               : markedIndex !== null
               ? `Click to move checkpoint from Q${markedIndex + 1} to here`
               : 'Save this question as your resume checkpoint'
           }>
             <Button
               icon={markedIndex === currentIndex ? <BookFilled /> : <BookOutlined />}
-              onClick={handleSaveQuestion}
+              onClick={() => handleProgressAction()}
               loading={isMarking}
-              disabled={!isAuthenticated || !quizId}
+              disabled={!isAuthenticated || !quizId || isMarking || progressState.loading || !!progressState.error || markedIndex === currentIndex}
               style={
                 markedIndex === currentIndex
                   ? { backgroundColor: '#fa8c16', borderColor: '#fa8c16', color: '#fff' }
                   : {}
               }
             >
-              {markedIndex === currentIndex ? 'Saved' : 'Save'}
+              {markedIndex === currentIndex ? 'Saved' : 'Save progress'}
             </Button>
           </Tooltip>
+          {savedCheckpoint && isAuthenticated && quizId && (
+            <Tooltip title="Remove the checkpoint for this quiz">
+              <Button danger icon={<DeleteOutlined />} onClick={() => handleProgressAction(true)}
+                disabled={isMarking || progressState.loading || !!progressState.error}>
+                Remove saved progress
+              </Button>
+            </Tooltip>
+          )}
         </Space>
         
         {/* Right side: Exit button */}
@@ -348,6 +327,16 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
         </Button>
       </div>
       
+      <Modal title={progressAction?.remove ? 'Remove saved progress?' : 'Save progress?'}
+        open={!!progressAction} onOk={handleConfirmProgress} confirmLoading={isMarking}
+        okText={progressAction?.remove ? 'Remove' : 'Save'} okButtonProps={{ danger: !!progressAction?.remove }}
+        cancelButtonProps={{ disabled: isMarking }} closable={!isMarking} maskClosable={!isMarking}
+        onCancel={() => { if (!isMarking) setProgressAction(null); }}>
+        <Paragraph>{progressAction?.remove
+          ? 'Remove the saved checkpoint for this quiz? Other quizzes will keep their progress.'
+          : 'Save Question ' + ((progressAction?.index ?? 0) + 1) + ' as the checkpoint for this quiz? Your other quiz checkpoints will be kept.'}</Paragraph>
+        {progressActionError && <Alert type="error" showIcon message={progressActionError} />}
+      </Modal>
       <ExplanationDialogs question={currentQuestion} state={ai} />
 
     </div>

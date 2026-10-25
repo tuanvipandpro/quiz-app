@@ -8,10 +8,14 @@ const documents = new Map();
 const deleted = Symbol('deleteField');
 const writes = [];
 let denyWrites = false;
+let denyReads = false;
 globalThis.__quizFirestore = {
   getFirestore: () => ({}),
   doc: (_, collection, uid) => `${collection}/${uid}`,
-  getDoc: async path => ({ exists: () => documents.has(path), data: () => documents.get(path) }),
+  getDoc: async path => {
+    if (denyReads) throw new Error('Permission denied');
+    return { exists: () => documents.has(path), data: () => documents.get(path) };
+  },
   setDoc: async (path, data) => documents.set(path, data),
   updateDoc: async (path, fields) => {
     if (denyWrites) throw new Error('Permission denied');
@@ -72,4 +76,40 @@ test('profile permission errors are returned to the credential store', async () 
     assert.equal((await service.saveLlmApiKey('d', 'gemini', 'new')).success, false);
     assert.equal(await service.getGeminiApiKey('d'), 'old');
   } finally { denyWrites = false; console.error = originalError; }
+});
+
+test('saving two quizzes preserves both checkpoints, profile keys, and question zero', async () => {
+  documents.set('users/progress', { llmProviders: { groq: { apiKey: 'test-key' } } });
+  assert.equal((await service.saveQuizProgress('progress', 'quiz-a', 0, 'first')).success, true);
+  assert.equal((await service.saveQuizProgress('progress', 'quiz-b', 19, 20)).success, true);
+  const checkpoints = await service.getAllQuizProgress('progress');
+  assert.equal(checkpoints['quiz-a'].questionIndex, 0);
+  assert.equal(checkpoints['quiz-a'].questionId, 'first');
+  assert.equal(checkpoints['quiz-b'].questionId, '20');
+  assert.equal(documents.get('users/progress').llmProviders.groq.apiKey, 'test-key');
+  await service.clearQuizProgress('progress', 'quiz-a');
+  assert.equal(await service.getQuizProgress('progress', 'quiz-a'), null);
+  assert.equal((await service.getQuizProgress('progress', 'quiz-b')).questionIndex, 19);
+});
+
+test('progress write failures do not modify the saved checkpoint', async () => {
+  documents.set('users/failure', { quizProgress: { 'quiz-a': { questionIndex: 0 } } });
+  denyWrites = true;
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    assert.equal((await service.saveQuizProgress('failure', 'quiz-a', 5, 'sixth')).success, false);
+    assert.equal((await service.clearQuizProgress('failure', 'quiz-a')).success, false);
+    assert.equal((await service.getQuizProgress('failure', 'quiz-a')).questionIndex, 0);
+  } finally { denyWrites = false; console.error = originalError; }
+});
+
+test('failed progress reads reject instead of masquerading as no saved progress', async () => {
+  denyReads = true;
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    await assert.rejects(service.getAllQuizProgress('progress'), /Could not load/);
+    await assert.rejects(service.getQuizProgress('progress', 'quiz-b'), /Could not load/);
+  } finally { denyReads = false; console.error = originalError; }
 });
