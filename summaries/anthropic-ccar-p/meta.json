@@ -1,0 +1,32 @@
+{
+  "quizId": "anthropic-ccar-p",
+  "title": "CCAR-P · Ôn nhanh theo chủ đề",
+  "description": "Ôn theo 63 câu CCAR-P trong app, có đối chiếu nguồn tham khảo. Không thay thế exam guide chính thức.",
+  "language": "vi",
+  "status": "published",
+  "version": 1,
+  "updatedAt": "2026-10-25",
+  "readingMinutes": 8,
+  "sourceQuestionCount": 63,
+  "sourceQuizHash": "e8606d273bfa766427bbdce88a849fa17f2a7db735455ef0d29cbba89c57a6a3",
+  "contentFile": "vi.md",
+  "topics": [
+    { "id": "architecture", "title": "Kiến trúc & tích hợp", "questionIds": ["ccar-p-7", "ccar-p-8", "ccar-p-13", "ccar-p-16", "ccar-p-28", "ccar-p-46", "ccar-p-47"] },
+    { "id": "models-context", "title": "Model, prompt & chi phí", "questionIds": ["ccar-p-5", "ccar-p-25", "ccar-p-31", "ccar-p-35", "ccar-p-40", "ccar-p-43"] },
+    { "id": "security", "title": "Bảo mật & guardrails", "questionIds": ["ccar-p-1", "ccar-p-2", "ccar-p-3", "ccar-p-15", "ccar-p-19", "ccar-p-27", "ccar-p-29", "ccar-p-33", "ccar-p-49", "ccar-p-51", "ccar-p-54", "ccar-p-57", "ccar-p-61", "ccar-p-63"] },
+    { "id": "evaluation", "title": "Đánh giá & kiểm thử", "questionIds": ["ccar-p-10", "ccar-p-18", "ccar-p-24", "ccar-p-34", "ccar-p-45", "ccar-p-48", "ccar-p-62", "ccar-p-64"] },
+    { "id": "governance", "title": "Governance & trách nhiệm", "questionIds": ["ccar-p-11", "ccar-p-21", "ccar-p-23", "ccar-p-37", "ccar-p-44"] },
+    { "id": "stakeholders", "title": "Stakeholder, SLA & giá trị", "questionIds": ["ccar-p-12", "ccar-p-17", "ccar-p-20", "ccar-p-30", "ccar-p-36", "ccar-p-41", "ccar-p-50", "ccar-p-52", "ccar-p-55", "ccar-p-58"] },
+    { "id": "claude-code", "title": "Claude Code & vận hành nhóm", "questionIds": ["ccar-p-4", "ccar-p-6", "ccar-p-9", "ccar-p-22", "ccar-p-32", "ccar-p-39", "ccar-p-42", "ccar-p-59", "ccar-p-60"] },
+    { "id": "lifecycle", "title": "Lifecycle & checklist chọn đáp án", "questionIds": ["ccar-p-14", "ccar-p-26", "ccar-p-38", "ccar-p-53"] }
+  ],
+  "sources": [
+    { "title": "Anthropic · Building effective agents", "url": "https://www.anthropic.com/research/building-effective-agents" },
+    { "title": "Anthropic · Agent Skills", "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview" },
+    { "title": "Anthropic · Prompt caching", "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching" },
+    { "title": "Anthropic · Guardrails & prompt injection", "url": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks" },
+    { "title": "Anthropic · Evaluation criteria", "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" },
+    { "title": "Claude Code · Settings & precedence", "url": "https://code.claude.com/docs/en/settings" },
+    { "title": "HHS · Business associate contracts", "url": "https://www.hhs.gov/hipaa/for-professionals/covered-entities/sample-business-associate-agreement-provisions/index.html" }
+  ]
+}
