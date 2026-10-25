@@ -75,14 +75,16 @@ export async function hasApiKey(uid = null) {
   return !!apiKey;
 }
 
-// Available models with fallback order
+// Prefer Flash-Lite for its higher free-tier request limits.
+// Use direct model IDs so aliases do not retry the same model.
 const MODELS = [
-  'gemini-3.8-flash',
-  'gemini-3.7-flash',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
+  // First choice: Flash-Lite models with higher daily request quotas.
   'gemini-3.5-flash-lite',
   'gemini-3.1-flash-lite',
+  // Fall back to the remaining Gemini models before considering Gemma.
+  'gemini-3.8-flash',
+  'gemini-3.6-flash',
+  // Last resort only, after every Gemini model above has failed.
   'gemma-4-31b-it',
   'gemma-4-26b-a4b-it'
 ];
