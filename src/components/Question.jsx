@@ -31,17 +31,21 @@ function Question({
   
   // Determine if this question has multiple correct answers
   const isMultipleChoice = Array.isArray(correctOptions) && correctOptions.length > 1;
+  const selectedOptions = Array.isArray(selectedAnswer) ? selectedAnswer : [];
+  const selectionLimitReached = selectedOptions.length >= correctOptions.length;
 
   // For multiple choice questions, selectedAnswer should be an array
   const handleCheckboxChange = (optionKey) => {
-    const newSelection = selectedAnswer ? [...selectedAnswer] : [];
+    if (readOnly) return;
+    const newSelection = [...selectedOptions];
     
     if (newSelection.includes(optionKey)) {
       // Remove the option if already selected
       const index = newSelection.indexOf(optionKey);
       newSelection.splice(index, 1);
     } else {
-      // Add the option if not selected
+      // Keep selected options removable, but never exceed the required count.
+      if (newSelection.length >= correctOptions.length) return;
       newSelection.push(optionKey);
     }
     
@@ -148,9 +152,9 @@ function Question({
           {renderedOptions.map((option) => (
             <div key={option.key} style={getOptionStyle(option.key)}>
               <Checkbox 
-                checked={selectedAnswer ? selectedAnswer.includes(option.key) : false}
+                checked={selectedOptions.includes(option.key)}
                 onChange={() => handleCheckboxChange(option.key)}
-                disabled={readOnly}
+                disabled={readOnly || (selectionLimitReached && !selectedOptions.includes(option.key))}
                 style={{ marginBottom: '10px' }}
               >
                 {showOptionKey ? `${option.key}. ${option.value}` : option.value}
