@@ -63,11 +63,11 @@ Practice progress is stored under `users/{uid}.quizProgress.{quizId}` as `quizId
 - Render AI explanations with Markdown support and sanitized HTML, including the provider and model used.
 - Keep the core quiz experience usable when the AI service is unavailable.
 
-### Mobile controls and study summary
+### Mobile controls and Quick Summary
 
 - Use icon buttons with accessible names and tooltips on phone screens; desktop keeps text labels.
 - Keep Practice and Exam actions in a compact bottom toolbar on phones, with question content above it.
-- Show a disabled Study Summary option alongside Practice and Exam for future exam-topic summaries, memory tips, and test-taking strategies. It does not load content or call AI.
+- Show a disabled Quick Summary option before Practice and Exam. Each quiz will have its own prepared guideline covering exam knowledge, key concepts, tips and tricks, and memory aids based on its questions. These guides will be authored separately with AI assistance and supplied for display here. The placeholder does not load content or call AI.
 
 ## Tech Stack
 

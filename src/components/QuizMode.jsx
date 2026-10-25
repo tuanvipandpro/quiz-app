@@ -34,8 +34,8 @@ function QuizMode({ onSelectMode, totalQuestions }) {
         <Radio.Button value="summary" disabled className="quiz-mode-summary">
           <ReadOutlined className="quiz-mode-option-icon" />
           <span className="quiz-mode-option-copy">
-            <span className="quiz-mode-option-title">Study Summary <Tag>Coming soon</Tag></span>
-            <span className="quiz-mode-option-description">Key topics, memory tips &amp; exam strategies</span>
+            <span className="quiz-mode-option-title">Quick Summary <Tag>Coming soon</Tag></span>
+            <span className="quiz-mode-option-description">Exam guide, key concepts &amp; memory tips</span>
           </span>
         </Radio.Button>
         <Radio.Button value="practice">
