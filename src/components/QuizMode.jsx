@@ -31,6 +31,13 @@ function QuizMode({ onSelectMode, totalQuestions }) {
       <Title level={3} className="quiz-mode-picker-title">Choose your mode</Title>
       <Radio.Group className="quiz-mode-options" role="radiogroup" aria-label="Quiz mode"
         value={selectedMode} onChange={event => setSelectedMode(event.target.value)}>
+        <Radio.Button value="summary" disabled className="quiz-mode-summary">
+          <ReadOutlined className="quiz-mode-option-icon" />
+          <span className="quiz-mode-option-copy">
+            <span className="quiz-mode-option-title">Study Summary <Tag>Coming soon</Tag></span>
+            <span className="quiz-mode-option-description">Key topics, memory tips &amp; exam strategies</span>
+          </span>
+        </Radio.Button>
         <Radio.Button value="practice">
           <PlayCircleOutlined className="quiz-mode-option-icon" />
           <span className="quiz-mode-option-copy">
@@ -43,13 +50,6 @@ function QuizMode({ onSelectMode, totalQuestions }) {
           <span className="quiz-mode-option-copy">
             <span className="quiz-mode-option-title">Exam</span>
             <span className="quiz-mode-option-description">Take a timed mock test</span>
-          </span>
-        </Radio.Button>
-        <Radio.Button value="summary" disabled className="quiz-mode-summary">
-          <ReadOutlined className="quiz-mode-option-icon" />
-          <span className="quiz-mode-option-copy">
-            <span className="quiz-mode-option-title">Study Summary <Tag>Coming soon</Tag></span>
-            <span className="quiz-mode-option-description">Key topics, memory tips &amp; exam strategies</span>
           </span>
         </Radio.Button>
       </Radio.Group>

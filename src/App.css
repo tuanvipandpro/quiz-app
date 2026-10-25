@@ -402,7 +402,7 @@ html[data-theme='dark'] .app-footer a {
 .quiz-overview-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .quiz-mode-picker > .ant-card-body { padding: 24px; }
 .quiz-mode-picker h3.quiz-mode-picker-title { margin: 0 0 16px; font-size: 20px; }
-.quiz-mode-options { display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 12px; width: 100%; }
+.quiz-mode-options { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 12px; width: 100%; }
 .quiz-mode-options .ant-radio-button-wrapper {
   display: flex;
   align-items: center;
