@@ -1,6 +1,6 @@
 // components/ExamMode.jsx
 import React, { useState, useEffect } from 'react';
-import { Button, Progress, Space, Typography, Card, Result, Badge, Statistic, Modal, Row, Col } from 'antd';
+import { Progress, Space, Typography, Card, Result, Badge, Statistic, Modal, Row, Col } from 'antd';
 import { 
   ArrowLeftOutlined, 
   ArrowRightOutlined, 
@@ -16,6 +16,7 @@ import {
   EyeOutlined
 } from '@ant-design/icons';
 import Question from './Question';
+import QuizActionButton from './QuizActionButton';
 import { useExplanation } from '../hooks/useExplanation';
 import ExplanationDialogs from './ExplanationDialogs';
 import { useAuth } from '../hooks/useAuth';
@@ -475,24 +476,19 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
     const isPassed = scorePercentage > 80;
 
     return (
-      <div>
+      <div className="quiz-mode quiz-exam-review">
         <Result
           status={isPassed ? 'success' : 'error'}
           title={timeExpired ? "Time's Up!" : "Exam Completed!"}
           subTitle={`Your score: ${score}/${examQuestions.length} (${scorePercentage.toFixed(2)}%). Passing requires more than 80%.`}
-          extra={[
-            <Button type="primary" key="back" onClick={onExit}>
-              Return to Menu
-            </Button>
-          ]}
         />
 
         <Paragraph strong type={isPassed ? 'success' : 'danger'} style={{ textAlign: 'center', marginTop: '-12px', marginBottom: '20px' }}>
           {isPassed ? 'Result: PASS' : 'Result: FAIL'}
         </Paragraph>
 
-        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-          <Col xs={24} sm={8}>
+        <Row className="exam-result-stats" gutter={[12, 12]} style={{ marginBottom: '24px' }}>
+          <Col xs={8} sm={8}>
             <Card size="small">
               <Statistic
                 title="Correct"
@@ -502,7 +498,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
               />
             </Card>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={8} sm={8}>
             <Card size="small">
               <Statistic
                 title="Incorrect"
@@ -512,7 +508,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
               />
             </Card>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={8} sm={8}>
             <Card size="small">
               <Statistic
                 title="Answered"
@@ -525,6 +521,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
         </Row>
 
         <Card
+          className="quiz-question-shell quiz-review-question"
           title={`Review Question ${currentIndex + 1} of ${examQuestions.length}`}
           extra={
             <Text strong type={questionCorrect ? 'success' : 'danger'}>
@@ -563,33 +560,23 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
           </div>
         </Card>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
-          <Space>
-            <Button
-              type="primary"
-              icon={<ArrowLeftOutlined />}
-              onClick={goToPreviousQuestion}
-              disabled={currentIndex === 0}
-            >
-              Previous
-            </Button>
-            <Button
-              type="primary"
-              onClick={goToNextQuestion}
-              disabled={currentIndex === examQuestions.length - 1}
-            >
-              Next <ArrowRightOutlined />
-            </Button>
-          </Space>
-
-          <Space>
-            <Badge color="#52c41a" text="Correct" />
-            <Badge color="#ff4d4f" text="Incorrect" />
-            <Badge color="#d9d9d9" text="Unanswered" />
-          </Space>
+        <div className="quiz-review-legend">
+          <Badge color="#52c41a" text="Correct" />
+          <Badge color="#ff4d4f" text="Incorrect" />
+          <Badge color="#d9d9d9" text="Unanswered" />
         </div>
-
-        <Button icon={<QuestionCircleOutlined />} onClick={handleExplainClick} style={{ marginBottom: 16 }}>Explain with AI</Button>
+        <div className="quiz-action-bar quiz-action-bar-review" role="group" aria-label="Exam review actions">
+          <div className="quiz-action-group">
+            <QuizActionButton label="Previous question" type="primary" icon={<ArrowLeftOutlined />}
+              onClick={goToPreviousQuestion} disabled={currentIndex === 0}>Previous</QuizActionButton>
+            <QuizActionButton label="Next question" type="primary" icon={<ArrowRightOutlined />}
+              onClick={goToNextQuestion} disabled={currentIndex === examQuestions.length - 1}>Next</QuizActionButton>
+          </div>
+          <div className="quiz-action-group">
+            <QuizActionButton label="Explain with AI" icon={<QuestionCircleOutlined />} onClick={handleExplainClick} />
+            <QuizActionButton label="Return to Menu" icon={<HomeOutlined />} onClick={onExit} />
+          </div>
+        </div>
         <ExplanationDialogs question={currentQuestion} state={ai} />
 
         <Card title="Jump To Question">
@@ -624,13 +611,13 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="quiz-mode quiz-exam-mode">
+      <div className="quiz-mode-header">
         <Title level={2}>Exam Mode</Title>
         
         {/* Timer display */}
         <Badge.Ribbon text="Time Remaining" color="blue">
-          <Card style={{ width: 180 }}>
+          <Card className="exam-timer-card">
             <Space>
               <ClockCircleOutlined />
               <Countdown 
@@ -655,7 +642,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
         format={percent => `${percent.toFixed(2)}%`}
       />
       
-      <Card style={{ marginTop: '20px', marginBottom: '20px' }}>
+      <Card className="quiz-question-shell">
         <Question 
           question={currentQuestion.question}
           imageUrl={currentQuestion.imageUrl}
@@ -669,58 +656,27 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
         />
       </Card>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-        <Space wrap>
-          <Button 
-            type="primary"
-            icon={<ArrowLeftOutlined />}
-            onClick={goToPreviousQuestion}
-            disabled={currentIndex === 0}
-          >
-            Previous
-          </Button>
-          
-          <Button 
-            type="primary"
-            onClick={goToNextQuestion}
-            disabled={currentIndex === examQuestions.length - 1}
-          >
-            Next <ArrowRightOutlined />
-          </Button>
-          
-          <Button 
-            type="default"
+      <div className="quiz-action-bar" role="group" aria-label="Exam actions">
+        <div className="quiz-action-group">
+          <QuizActionButton label="Previous question" type="primary" icon={<ArrowLeftOutlined />}
+            onClick={goToPreviousQuestion} disabled={currentIndex === 0}>Previous</QuizActionButton>
+          <QuizActionButton label="Next question" type="primary" icon={<ArrowRightOutlined />}
+            onClick={goToNextQuestion} disabled={currentIndex === examQuestions.length - 1}>Next</QuizActionButton>
+          <QuizActionButton label={flaggedQuestions.includes(currentIndex) ? 'Unflag question' : 'Flag question'}
+            aria-pressed={flaggedQuestions.includes(currentIndex)}
             icon={flaggedQuestions.includes(currentIndex) ? <FlagFilled /> : <FlagOutlined />}
             onClick={() => toggleFlag(currentIndex)}
-            style={{ 
-              color: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined,
-              borderColor: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined
-            }}
-          >
+            style={{ color: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined,
+              borderColor: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined }}>
             {flaggedQuestions.includes(currentIndex) ? 'Unflag' : 'Flag'}
-          </Button>
-        </Space>
-        
-        <Space wrap style={{ marginLeft: 'auto' }}>
-          <Button 
-            type="default"
-            icon={<EyeOutlined />}
-            onClick={() => setReviewModalVisible(true)}
-          >
-            Review
-          </Button>
-          
-          <Button 
-            type="primary"
-            danger
-            icon={<CheckOutlined />}
-            onClick={handleSubmit}
-          >
-            Finish Exam
-          </Button>
-        </Space>
+          </QuizActionButton>
+        </div>
+        <div className="quiz-action-group">
+          <QuizActionButton label="Review questions" icon={<EyeOutlined />} onClick={() => setReviewModalVisible(true)}>Review</QuizActionButton>
+          <QuizActionButton label="Finish Exam" type="primary" danger icon={<CheckOutlined />} onClick={handleSubmit} />
+        </div>
       </div>
-      
+
       {/* Display question completion stats */}
       <div style={{ marginTop: '20px' }}>
         <Text>
@@ -732,19 +688,18 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
       
       {/* Review Modal */}
       <Modal
+        className="exam-review-dialog"
         title="Review Questions"
         open={reviewModalVisible}
         onCancel={() => setReviewModalVisible(false)}
         footer={[
-          <Button key="close" onClick={() => setReviewModalVisible(false)}>
-            Close
-          </Button>
+          <QuizActionButton key="close" label="Close review" icon={<CloseCircleOutlined />} onClick={() => setReviewModalVisible(false)}>Close</QuizActionButton>
         ]}
         width={800}
       >
         <div style={{ marginBottom: '20px' }}>
           <Row gutter={[16, 16]}>
-            <Col span={6}>
+            <Col xs={12} sm={6}>
               <Card size="small">
                 <Statistic
                   title="Total"
@@ -753,7 +708,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
                 />
               </Card>
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={6}>
               <Card size="small">
                 <Statistic
                   title="Answered"
@@ -763,7 +718,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
                 />
               </Card>
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={6}>
               <Card size="small">
                 <Statistic
                   title="Unanswered"
@@ -773,7 +728,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
                 />
               </Card>
             </Col>
-            <Col span={6}>
+            <Col xs={12} sm={6}>
               <Card size="small">
                 <Statistic
                   title="Flagged"
@@ -796,7 +751,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
               const isCurrent = index === currentIndex;
               
               return (
-                <Col span={4} key={index}>
+                <Col xs={6} sm={4} key={index}>
                   <Badge.Ribbon 
                     text={isFlagged ? <FlagFilled /> : null} 
                     color="red"
@@ -829,7 +784,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
         </div>
         
         <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #f0f0f0' }}>
-          <Space>
+          <Space wrap>
             <Badge color="#1890ff" text="Current Question" />
             <Badge color="#52c41a" text="Answered" />
             <Badge color="#d9d9d9" text="Unanswered" />

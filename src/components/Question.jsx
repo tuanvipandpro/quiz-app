@@ -106,7 +106,7 @@ function Question({
   };
 
   return (
-    <Card>
+    <Card className="quiz-question-card">
       {/* Question title without the Explain button */}
       <Title level={4} style={{ marginBottom: '20px' }}>{question}</Title>
       

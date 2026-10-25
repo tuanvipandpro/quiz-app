@@ -1,76 +1,89 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Space, Typography, Radio, Divider } from 'antd';
+import { Card, Typography, Radio, Select, Tag } from 'antd';
+import { PlayCircleOutlined, FormOutlined, ReadOutlined } from '@ant-design/icons';
+import QuizActionButton from './QuizActionButton';
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 function QuizMode({ onSelectMode, totalQuestions }) {
   const availableQuestionCount = Math.max(1, totalQuestions || 1);
   const examQuestionOptions = [50, 60, 70, 80];
-  const [examTime, setExamTime] = useState(60); // Default to 60 minutes (1 hour)
+  const [selectedMode, setSelectedMode] = useState('practice');
+  const [examTime, setExamTime] = useState(60);
   const [examQuestionCount, setExamQuestionCount] = useState(Math.min(50, availableQuestionCount));
 
   useEffect(() => {
-    setExamQuestionCount(availableQuestionCount >= 50 ? 50 : availableQuestionCount);
+    setExamQuestionCount(Math.min(50, availableQuestionCount));
   }, [availableQuestionCount]);
 
-  const handleStartExam = () => {
-    onSelectMode('exam', examTime, examQuestionCount);
+  const questionCounts = availableQuestionCount < 50
+    ? [availableQuestionCount, ...examQuestionOptions]
+    : examQuestionOptions;
+  const isExam = selectedMode === 'exam';
+
+  const handleStart = () => {
+    if (isExam) onSelectMode('exam', examTime, examQuestionCount);
+    else onSelectMode('practice');
   };
 
   return (
-    <Card>
-      <Title level={2}>Choose Quiz Mode</Title>
-      
-      <Space direction="vertical" style={{ width: '100%' }}>
-        <Card type="inner" title="Practice Mode">
-          <Paragraph>
-            Answer questions one by one in sequence. See instant feedback after each answer.
-          </Paragraph>
-          <Button type="primary" size="large" onClick={() => onSelectMode('practice')}>
-            Start Practice
-          </Button>
-        </Card>
-        
-        <Card type="inner" title="Exam Mode">
-          <Paragraph>
-            Take a test with your selected number of random questions. Your score will be displayed after completing all questions.
-          </Paragraph>
+    <Card className="quiz-mode-picker">
+      <Title level={3} className="quiz-mode-picker-title">Choose your mode</Title>
+      <Radio.Group className="quiz-mode-options" role="radiogroup" aria-label="Quiz mode"
+        value={selectedMode} onChange={event => setSelectedMode(event.target.value)}>
+        <Radio.Button value="summary" disabled className="quiz-mode-summary">
+          <ReadOutlined className="quiz-mode-option-icon" />
+          <span className="quiz-mode-option-copy">
+            <span className="quiz-mode-option-title">Quick Summary <Tag>Coming soon</Tag></span>
+            <span className="quiz-mode-option-description">Exam guide, key concepts &amp; memory tips</span>
+          </span>
+        </Radio.Button>
+        <Radio.Button value="practice">
+          <PlayCircleOutlined className="quiz-mode-option-icon" />
+          <span className="quiz-mode-option-copy">
+            <span className="quiz-mode-option-title">Practice</span>
+            <span className="quiz-mode-option-description">Learn at your own pace</span>
+          </span>
+        </Radio.Button>
+        <Radio.Button value="exam">
+          <FormOutlined className="quiz-mode-option-icon" />
+          <span className="quiz-mode-option-copy">
+            <span className="quiz-mode-option-title">Exam</span>
+            <span className="quiz-mode-option-description">Take a timed mock test</span>
+          </span>
+        </Radio.Button>
+      </Radio.Group>
 
-          <Divider orientation="left">Question Count</Divider>
-
-          <Space direction="vertical" style={{ width: '100%' }}>
-            <Radio.Group
-              onChange={(e) => setExamQuestionCount(e.target.value)}
-              value={examQuestionCount}
-            >
-              {examQuestionOptions.map((count) => (
-                <Radio key={count} value={count} disabled={count > availableQuestionCount}>
-                  {count} Questions
-                </Radio>
-              ))}
-            </Radio.Group>
-            <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-              Select one option. Choices above {availableQuestionCount} are unavailable for this quiz.
-            </Paragraph>
-          </Space>
-          
-          <Divider orientation="left">Exam Time</Divider>
-          
-          <Radio.Group 
-            onChange={(e) => setExamTime(e.target.value)} 
-            value={examTime}
-          >
-            <Radio value={60}>1 Hour</Radio>
-            <Radio value={120}>2 Hours</Radio>
-          </Radio.Group>
-
-          <Divider orientation="left"></Divider>
-          
-          <Button type="primary" size="large" onClick={handleStartExam}>
-            Start Exam
-          </Button>
-        </Card>
-      </Space>
+      <div className="quiz-mode-details">
+        <Paragraph className="quiz-mode-description">
+          {isExam ? 'Answer random questions and see your score at the end.'
+            : 'Answer questions in sequence with instant feedback after each answer.'}
+        </Paragraph>
+        {isExam && <div className="quiz-exam-fields">
+          <div className="quiz-exam-field">
+            <label htmlFor="exam-question-count">Questions</label>
+            <Select id="exam-question-count" value={examQuestionCount} onChange={setExamQuestionCount}
+              options={questionCounts.map(count => ({
+                value: count, label: `${count} questions`, disabled: count > availableQuestionCount,
+              }))} />
+          </div>
+          <div className="quiz-exam-field">
+            <label htmlFor="exam-time">Time limit</label>
+            <Select id="exam-time" value={examTime} onChange={setExamTime}
+              options={[{ value: 60, label: '1 hour' }, { value: 120, label: '2 hours' }]} />
+          </div>
+          {availableQuestionCount < 80 && <Text type="secondary" className="quiz-exam-limit">
+            Up to {availableQuestionCount} questions available.
+          </Text>}
+        </div>}
+        <div className="quiz-mode-start">
+          <Text type="secondary">{isExam
+            ? `${examQuestionCount} questions · ${examTime === 60 ? '1 hour' : '2 hours'}`
+            : `${availableQuestionCount} questions · No time limit`}</Text>
+          <QuizActionButton label={isExam ? 'Start Exam' : 'Start Practice'}
+            icon={isExam ? <FormOutlined /> : <PlayCircleOutlined />} type="primary" size="large" onClick={handleStart} />
+        </div>
+      </div>
     </Card>
   );
 }

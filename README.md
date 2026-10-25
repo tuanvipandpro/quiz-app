@@ -25,6 +25,7 @@ The repository currently includes 18 demo quiz sets:
 - Display difficulty and question-count metadata where available.
 - Load a custom quiz from a JSON file.
 - Validate uploaded quiz data before starting.
+- Open a compact quiz overview with Practice/Exam mode choices. Exam count and time settings appear only when Exam is selected; quizzes with fewer than 50 questions offer their full question count.
 
 ### Practice mode
 
@@ -33,8 +34,12 @@ The repository currently includes 18 demo quiz sets:
 - Navigate to previous or next questions.
 - Jump directly to a question number.
 - Track progress with a progress bar.
-- Save a practice checkpoint and resume later for demo quizzes when signed in.
+- Save a separate manual checkpoint for each demo quiz when signed in, with confirmed save feedback.
+- Resume by saved question ID when questions move; legacy index-only checkpoints still work, and out-of-range positions fall back safely.
+- Start from the beginning without deleting the saved checkpoint.
 - Request an AI explanation for the current question.
+
+Practice progress is stored under `users/{uid}.quizProgress.{quizId}` as `quizId`, `questionIndex` (zero-based), `questionId`, and `savedAt`. Saving one quiz preserves every other quiz checkpoint and profile field. The quiz picker shows saved positions and offers Resume or Start from beginning. Only the current position is saved; selected answers are not persisted and progress is not auto-saved. Read failures show Retry rather than claiming there is no checkpoint. Uploaded JSON files have no library quiz ID, so they cannot overwrite a demo quiz's progress.
 
 ### Exam mode
 
@@ -57,6 +62,12 @@ The repository currently includes 18 demo quiz sets:
 - Route explanations through Gemini Flash-Lite, Groq GPT-OSS, Gemini Flash, and finally Gemma, using only providers with a configured key.
 - Render AI explanations with Markdown support and sanitized HTML, including the provider and model used.
 - Keep the core quiz experience usable when the AI service is unavailable.
+
+### Mobile controls and Quick Summary
+
+- Use icon buttons with accessible names and tooltips on phone screens; desktop keeps text labels.
+- Keep Practice and Exam actions in a compact bottom toolbar on phones, with question content above it.
+- Show a disabled Quick Summary option before Practice and Exam. Each quiz will have its own prepared guideline covering exam knowledge, key concepts, tips and tricks, and memory aids based on its questions. These guides will be authored separately with AI assistance and supplied for display here. The placeholder does not load content or call AI.
 
 ## Tech Stack
 
