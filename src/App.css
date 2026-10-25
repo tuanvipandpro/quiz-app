@@ -425,7 +425,7 @@ html[data-theme='dark'] .app-footer a {
 .quiz-mode-option-title { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 15px; font-weight: 600; }
 .quiz-mode-option-title .ant-tag { margin: 0; font-size: 10px; line-height: 18px; }
 .quiz-mode-option-description { color: var(--app-muted); font-size: 12px; }
-.quiz-mode-options .quiz-mode-summary { border-style: dashed; color: var(--app-muted); }
+.quiz-mode-options .quiz-mode-summary.ant-radio-button-wrapper-disabled { border-style: dashed; color: var(--app-muted); }
 .quiz-mode-details { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--app-border); }
 .quiz-mode-description.ant-typography { margin-bottom: 0; }
 .quiz-exam-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; max-width: 520px; margin-top: 16px; }

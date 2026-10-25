@@ -9,6 +9,9 @@ import QuizMode from './components/QuizMode';
 import QuizActionButton from './components/QuizActionButton';
 import PracticeMode from './components/PracticeMode';
 import ExamMode from './components/ExamMode';
+import QuickSummaryMode from './components/QuickSummaryMode';
+import { getQuickSummary } from './data/quickSummaries';
+import { scrollToTop } from './utils/scroll';
 import SettingsModal from './components/SettingsModal';
 import { useQuizProgress } from './hooks/useQuizProgress';
 import { checkpointLabel, latestSavedQuiz, resolveCheckpoint } from './utils/quizProgress';
@@ -40,7 +43,7 @@ function App() {
   const [loadedQuizId, setLoadedQuizId] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
   const [questions, setQuestions] = useState([]);
-  const [mode, setMode] = useState(null); // 'practice' or 'exam'
+  const [mode, setMode] = useState(null); // 'summary', 'practice', or 'exam'
   const [examTime, setExamTime] = useState(60); // Default 1 hour in minutes
   const [examQuestionCount, setExamQuestionCount] = useState(50); // Default exam question count
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -53,6 +56,7 @@ function App() {
   const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
   const quizSelectionProgress = progressState.progress[selectedQuiz] || null;
   const quizSelectionLoading = progressState.loading;
+  const quickSummary = getQuickSummary(loadedQuizId);
 
   useEffect(() => {
     quizLoadRequest.current++;
@@ -222,13 +226,26 @@ function App() {
   };
 
   const handleModeSelect = (selectedMode, time, questionCount) => {
+    if (selectedMode === 'summary' && !quickSummary) return;
     setMode(selectedMode);
+    if (selectedMode === 'summary') scrollToTop();
     if (time) {
       setExamTime(time);
     }
     if (questionCount) {
       setExamQuestionCount(questionCount);
     }
+  };
+
+  const practiceSummaryQuestion = questionId => {
+    const index = questions.findIndex(question => String(question.id) === questionId);
+    if (index < 0) {
+      messageApi.warning('This question is no longer available in the quiz.');
+      return;
+    }
+    setInitialQuestionIndex(index);
+    setMode('practice');
+    scrollToTop();
   };
 
   const resetApp = () => {
@@ -623,8 +640,11 @@ function App() {
                 </Upload>
               </div>
             </div>
-            <QuizMode onSelectMode={handleModeSelect} totalQuestions={questions.length} />
+            <QuizMode onSelectMode={handleModeSelect} totalQuestions={questions.length} quickSummary={quickSummary} />
           </div>
+        ) : mode === 'summary' && quickSummary ? (
+          <QuickSummaryMode key={loadedQuizId} quizId={loadedQuizId} quizName={fileName} questions={questions}
+            onExit={() => { setMode(null); scrollToTop(); }} onPracticeQuestion={practiceSummaryQuestion} />
         ) : mode === 'practice' && questions.length > 0 ? (
           <PracticeMode 
             questions={questions} 
