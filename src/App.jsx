@@ -15,6 +15,7 @@ import { scrollToTop } from './utils/scroll';
 import SettingsModal from './components/SettingsModal';
 import { useQuizProgress } from './hooks/useQuizProgress';
 import { checkpointLabel, latestSavedQuiz, resolveCheckpoint } from './utils/quizProgress';
+import { validateQuizQuestions } from './utils/questionModel';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -73,7 +74,9 @@ function App() {
   const availableQuizzes = [
     // Anthropic
     { id: 'anthropic-cca-f', name: 'Claude Certified Architect Foundations (CCA-F)', file: 'quiz/Anthropic/CCA_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 175 },
-    { id: 'anthropic-ccar-p', name: 'Claude Certified Architect Professional (CCAR-P)', file: 'quiz/Anthropic/CCAR_P.json', category: 'Anthropic', difficulty: 'Professional', totalQuestions: 63 },
+    { id: 'anthropic-ccar-p', name: 'Claude Certified Architect Professional (CCAR-P)', file: 'quiz/Anthropic/CCAR_P.json', category: 'Anthropic', difficulty: 'Professional', totalQuestions: 126 },
+    { id: 'anthropic-ccao-f', name: 'Claude Certified Associate Foundations (CCAO-F)', file: 'quiz/Anthropic/CCAO_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 119 },
+    { id: 'anthropic-ccdv-f', name: 'Claude Certified Developer Foundations (CCDV-F)', file: 'quiz/Anthropic/CCDV_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 53 },
     // Google Cloud
     { id: 'gcp-ace', name: 'Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud', difficulty: 'Associate', totalQuestions: 302 },
     { id: 'gcp-pca', name: 'Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 279 },
@@ -111,7 +114,7 @@ function App() {
       const response = await fetch(import.meta.env.BASE_URL + quizFile);
       if (!response.ok) throw new Error('Could not load quiz');
       const data = await response.json();
-      if (!Array.isArray(data) || !data.length) throw new Error('Quiz contains no questions');
+      validateQuizQuestions(data, { allowLegacyIncomplete: true });
       if (quizLoadRequest.current !== request || activeUid.current !== account) return;
       const position = resolveCheckpoint(data, checkpoint);
       setQuestions(data);
@@ -184,14 +187,7 @@ function App() {
           }
           
           // Check if questions have the required fields
-          const isValid = data.every(q => 
-            q.id && q.question && q.options && q.answer && Array.isArray(q.answer)
-          );
-          
-          if (!isValid) {
-            messageApi.error('Some questions are missing required fields (id, question, options, answer)');
-            return;
-          }
+          validateQuizQuestions(data);
           
           setSelectedQuiz(null);
           setLoadedQuizId(null);
@@ -205,7 +201,7 @@ function App() {
           messageApi.success(`${file.name} uploaded successfully!`);
         } catch (error) {
           console.error('Error parsing JSON:', error);
-          messageApi.error('Error parsing JSON file. Please check the file format.');
+          messageApi.error('Invalid quiz file: ' + error.message);
         }
       };
       reader.readAsText(file);

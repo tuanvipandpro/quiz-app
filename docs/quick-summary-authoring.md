@@ -8,9 +8,11 @@ Each quiz has a directory under `public/summaries/<quizId>/` containing `meta.js
 
 Metadata contains `quizId`, `title`, `description` (scope of coverage), `language`, `status`, positive integer `version`, ISO `updatedAt`, `readingMinutes`, `sourceQuestionCount`, `sourceQuizHash`, `contentFile`, `topics`, and `sources`. `contentFile` must be a local filename ending in `.md`; topic IDs must be unique lowercase letters/numbers/hyphens. Every source has a title and HTTPS URL.
 
-Use the CCAR-P files as the first template. Its eight topic mappings reference all 63 bank questions by ID. IDs are not array positions: the current bank skips ID 56 and ends at ID 64. The reader resolves current positions and excludes references to removed questions.
+Use the CCAR-P files as the first template. Its eight topic mappings reference the original 63 questions by ID. IDs are not array positions: that reviewed revision skips ID 56 and ends at ID 64. The current 126-question bank preserves those records and appends new questions; the guide remains marked for review until its content is revised. Asset checks verify the declared 63-question source snapshot, not a forged fingerprint of the expanded bank. The reader resolves current positions and excludes references to removed questions.
 
 CCA-F has its own eight-topic guide and mappings for all 175 bank questions. Shared asset checks cover both published guides, including their distinct metadata/content paths. When adding a guide, extend the asset list in `tests/quickSummary.test.js`; keep the service/error tests reusable. Names or flags in a bank may reflect an older API/SDK version, so qualify version-sensitive advice and link primary documentation.
+
+CCAO-F (119 questions) and CCDV-F (53 questions) also have separate eight-topic Vietnamese guides. Asset/base-path tests cover all four published guides, and metadata from a different quiz is rejected before any Markdown request. Keep provider policies distinct from organization-specific approval rules; qualify privacy/Memory behavior and version-dependent API/SDK syntax rather than copying a bank answer as a universal guarantee.
 
 ## Content contract
 

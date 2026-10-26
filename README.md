@@ -6,7 +6,7 @@ Quiz App is a React-based certification quiz platform for Cloud, AI, and softwar
 
 Live demo: [https://tuanvipandpro.github.io/quiz-app](https://tuanvipandpro.github.io/quiz-app)
 
-The repository currently includes 18 demo quiz sets:
+The repository currently includes 20 demo quiz sets:
 
 | Category | Quiz sets |
 | --- | --- |
@@ -14,7 +14,7 @@ The repository currently includes 18 demo quiz sets:
 | Microsoft | Azure Fundamentals AZ-900 (472), GitHub Copilot GH-300 (115), Agentic AI Business Solutions Architect Expert (AB-100, 111), Azure AI Apps and Agents Developer Associate (AI-103, 117) |
 | Google Cloud | Associate Cloud Engineer (302), Professional Cloud Architect (279), Professional Cloud Developer (359), Professional Cloud Data Engineer (139), Generative AI Leader (56) |
 | ISTQB | CTFL v4.0 (240), AI Testing (118), Advanced Test Analyst v4.0 (42) |
-| Anthropic | Claude Certified Architect Foundations (CCA-F, 175), Claude Certified Architect Professional (CCAR-P, 63) |
+| Anthropic | Claude Certified Architect Foundations (CCA-F, 175), Claude Certified Architect Professional (CCAR-P, 126), Claude Certified Associate Foundations (CCAO-F, 119), Claude Certified Developer Foundations (CCDV-F, 53) |
 
 ## Features
 
@@ -31,6 +31,8 @@ The repository currently includes 18 demo quiz sets:
 
 - Answer questions sequentially with immediate feedback.
 - Support both single-answer and multiple-answer questions.
+- Support dropdown blanks/rows and yes/no statements. Complete every part to reveal Practice feedback; a question scores as correct only when every required answer is correct.
+- Copy includes the complete question, row labels and available choices. AI explanations and Exam review understand each part's marked answer.
 - Navigate to previous or next questions.
 - Jump directly to a question number.
 - Track progress with a progress bar.
@@ -67,10 +69,18 @@ Practice progress is stored under `users/{uid}.quizProgress.{quizId}` as `quizId
 
 - Use icon buttons with accessible names and tooltips on phone screens; desktop keeps text labels.
 - Keep Practice and Exam actions in a compact bottom toolbar on phones, with question content above it.
-- Quick Summary is available for CCA-F (175 questions) and CCAR-P (63 questions): each has a short Vietnamese guide across eight topics with key concepts, answer-selection tips, common traps, memory aids, and source links. Guides are based on the app's question banks, not a guarantee of complete official exam coverage.
+- Quick Summary is available for CCA-F, CCAR-P, CCAO-F and CCDV-F: each has a short Vietnamese guide across eight topics with key concepts, answer-selection tips, common traps, memory aids, and source links. CCAO-F covers its 119-question bank and CCDV-F its 53-question bank. The CCAR-P guide was reviewed against the original 63 questions; its expanded 126-question bank triggers a review warning rather than falsely marking the old guide as current.
 - Desktop has a topic sidebar; phone/tablet has a collapsible contents menu. Topic question links open the current question in Practice by stable ID without changing a saved checkpoint.
 - Guides are authored separately and served as static Markdown plus JSON metadata; reading needs neither login nor an AI key and makes no model call. Other quizzes and custom uploads keep Quick Summary disabled.
 - A question-bank fingerprint warns when a guide needs review after content changes. Loading failures offer Retry and Back. See [Quick Summary authoring](docs/quick-summary-authoring.md) to add or revise a guide.
+
+### Question formats and quiz imports
+
+See [question format examples](docs/question-formats.md) for multiple choice, dropdown and yes/no schemas. Built-in historical incomplete questions retain compatibility; new uploaded questions and imported banks undergo strict validation.
+
+The October 26 Anthropic import preserves every original CCAR-P question/ID, skips 63 reviewed equivalents and adds 63 questions, including five dropdown and five yes/no items. CCAO-F and CCDV-F are new banks. [Import audit](docs/imports/anthropic-2026-10-26.json) records added IDs, skipped equivalents and differing marked-answer text without overwriting originals.
+
+The reviewed import can be replayed with `node scripts/import-anthropic-quizzes.mjs <source-directory>`; append `--check` to verify that reimporting those files adds nothing. CCAR-P equivalences are bound to the reviewed source-file hash; a different revision requires a new review.
 
 ## Tech Stack
 

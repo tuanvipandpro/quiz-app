@@ -995,5 +995,1407 @@
     ],
     "explanation": "Final Answer: A and C\nA = Determine the MDE and required sample size for adequate statistical power.\nC = Define the hypothesis and primary success metric before random assignment.",
     "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-1-import-1",
+    "type": "multiple_choice",
+    "question": "You are evaluating a customer-support agent’s configuration. Each prospective tool belongs to one of four categories: (1) required to carry out defined tasks, (2) frequently used and reduces hand-offs, (3) occasionally helpful for unrelated work, (4) speculative future utility.\n\nWhich categories should generally stay in the agent configuration?",
+    "options": {
+      "A": "Only category 3, because occasionally useful tools for unrelated work provide broader coverage and should take priority over tools required for the agent’s defined tasks.",
+      "B": "Only category 4, because speculative future-utility tools provide the most flexibility and should be configured even when no defined task currently requires them.",
+      "C": "Categories 1 and 2 only, because they map to defined tasks and the agent’s regular hand-offs.",
+      "D": "All four categories, because broader tool access is categorically better for agent performance regardless of whether the tools map to defined tasks or regular hand-offs."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Agent tools should be limited to capabilities that support defined tasks and regular operational workflows. Required tools enable the agent’s intended work, and frequently used tools that reduce hand-offs improve its routine execution. Occasionally useful unrelated tools and speculative future tools do not justify current access and unnecessarily broaden the available tool set. OpenAI’s API supports constraining a model to a predefined set of allowed tools.\n\nLearn more\n- OpenAI API Reference — Responses tool configuration",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-3-import-1",
+    "type": "multiple_choice",
+    "question": "You are adding human review to a high-volume classification pipeline in which reviewing every output is impractical.\n\nWhich sampling strategy best balances throughput and quality oversight?",
+    "options": {
+      "A": "No sampling, relying entirely on user complaints to reveal quality and safety problems after they affect users.",
+      "B": "Risk-stratified sampling that reviews all low-confidence and high-impact outputs and a smaller random sample of high-confidence routine outputs.",
+      "C": "Inverse sampling that reviews only high-confidence routine outputs and skips low-confidence and high-impact outputs.",
+      "D": "Universal review of every output regardless of confidence or throughput impact."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Risk-stratified sampling directs human review toward outputs with the greatest likelihood or cost of error—low-confidence and high-impact cases—while random sampling of routine high-confidence outputs provides an ongoing check for hidden quality issues. This preserves scalable throughput without abandoning oversight.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-4-import-1",
+    "type": "multiple_choice",
+    "question": "You operate an interactive assistant where per-turn latency is the primary performance constraint. Quality on routine turns is already acceptable.\n\nWhich configuration change most directly improves latency without disproportionately harming quality?",
+    "options": {
+      "A": "Disable prompt caching entirely to ensure fresh context processing on every request, preventing stale prefix content from affecting latency-sensitive interactions.",
+      "B": "Reduce retrieval depth to the top-k passages that historically cover the answer, and cache stable system-prompt content.",
+      "C": "Increase retrieval depth to the corpus maximum to improve recall regardless of latency.",
+      "D": "Switch every turn to the heaviest available model to maximize output quality, accepting that the increased model latency will worsen the per-turn SLO rather than improve it."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Retrieving only the top-k passages that historically supply the needed information reduces retrieval work and the prompt context processed on each turn, while preserving routine-answer quality. Caching stable system-prompt content avoids reprocessing an unchanged prefix. Retrieval adds compute and round trips, and preserving cached context improves cache utilization.\n\nLearn more\n- Retrieval augmented generation (RAG) and indexes in Microsoft Foundry\n- OpenAI API Reference — Realtime server events",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-5-import-1",
+    "type": "multiple_choice",
+    "question": "You are evaluating patterns for a batch document-classification job with fixed stages: extract metadata, classify, summarize, and persist.\n\nWhich pattern is the best fit, and why?",
+    "options": {
+      "A": "A workflow pattern, because agentic patterns do not support tool invocations and therefore cannot execute the persist step that writes results to the downstream store.",
+      "B": "An agentic pattern, because the open-ended planning capability of agents produces more consistent structured outputs than a fixed workflow graph on classification tasks.",
+      "C": "An agentic pattern, because agents are categorically more accurate than workflows and therefore always preferable regardless of step predictability.",
+      "D": "A workflow pattern, because the steps are well-defined and predictable per-request token cost is preferred over flexibility."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A workflow pattern fits a deterministic batch process whose stages are known in advance. It provides repeatable orchestration and predictable per-request token costs, whereas agentic flexibility and open-ended planning are unnecessary for this fixed sequence.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-6-import-1",
+    "type": "multiple_choice",
+    "question": "A pilot AI assistant for procurement specialists has an 89 percent first-response acceptance rate, but follow-up surveys show that specialists often override the assistant’s vendor recommendations after considering criteria the assistant did not assess. The pilot owner wants to launch the assistant unchanged because of the strong acceptance rate.\n\nWhich two Discernment-competency observations should you raise BEFORE approving the launch? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "The acceptance rate alone proves readiness for general production use.",
+      "B": "The survey response rate may not be statistically representative of all specialists.",
+      "C": "The unconsidered criteria represent a scope gap in the assistant’s input space.",
+      "D": "Acceptance does not establish whether recommendations remain correct after specialist review.",
+      "E": "The pilot duration was probably too short to demonstrate reliability across the full year."
+    },
+    "answer": [
+      "C",
+      "D"
+    ],
+    "explanation": "Specialists’ overrides after considering omitted vendor-selection criteria reveal that the assistant’s evaluated input space is incomplete. A high initial acceptance rate measures early user uptake, not whether recommendations remain correct after the fuller specialist review needed for a procurement decision.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-9-import-1",
+    "type": "multiple_choice",
+    "question": "An engineering organization is rolling out Claude Code across 200 developers. A team lead proposes that AI-generated pull requests bypass the standard code-review process for changes under 50 lines, because small changes are viewed as low risk and review capacity is limited.\n\nWhich two Diligence-competency objections should you raise? Each correct answer presents part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Removing review eliminates the verification mechanism required for AI-generated output across the workflow.",
+      "B": "Code-review capacity should be expanded to handle every code change submitted across the team.",
+      "C": "The threshold should be increased to 200 lines to capture more changes.",
+      "D": "AI-generated pull requests should be rejected by default across the organization.",
+      "E": "Line count is a poor proxy for the actual risk introduced by a code change."
+    },
+    "answer": [
+      "A",
+      "E"
+    ],
+    "explanation": "AI-generated changes still require verification before integration; Anthropic’s security guidance assigns users responsibility for reviewing proposed code and advises reviewing all suggested changes before approval. Line count does not represent the security, correctness, authorization, configuration, dependency, or operational impact of a change, so it cannot safely determine whether review may be bypassed. Automated review can supplement, but does not replace, existing manual code-review and security practices.\n\nLearn more\n- Claude Code Security\n- Automated Security Reviews in Claude Code",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-10-import-1",
+    "type": "multiple_choice",
+    "question": "You are choosing a model for a new production workload and must complete the upstream steps before empirically testing candidate models.\n\nWhich two steps must be completed BEFORE testing a representative sample on a candidate model? Each correct answer is part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Select the lightest model that consistently meets the quality bar across the sample.",
+      "B": "Retest the model choice when a new model version becomes available.",
+      "C": "Choose a candidate model based on the requirements profile and known capabilities.",
+      "D": "Define the quality bar, latency tolerance, and expected volume for the workload.",
+      "E": "Sign off the production rollout plan with the platform and security teams."
+    },
+    "answer": [
+      "C",
+      "D"
+    ],
+    "explanation": "A candidate model should be selected using the workload’s defined requirements—required output quality, latency tolerance, and expected volume—together with known model capabilities. A representative evaluation is performed after those criteria and an initial candidate are established. Selecting the lightest model that passes the evaluation, retesting new versions, and obtaining rollout approval are subsequent activities.\n\nLearn more\n- Model selection | OpenAI API\n- API deployment checklist | OpenAI API",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-12-import-1",
+    "type": "yes_no",
+    "question": "You are evaluating model-selection claims used by a peer team.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+    "options": {
+      "A": "Yes",
+      "B": "No"
+    },
+    "answer": {
+      "statement-1": "A",
+      "statement-2": "A",
+      "statement-3": "B",
+      "statement-4": "A",
+      "statement-5": "B"
+    },
+    "explanation": "Higher reasoning effort trades increased latency and token use for deeper reasoning, so it can consume more rate-limit capacity. Model selection should be confirmed through evaluations that represent the production workload and its quality, latency, and cost requirements. The most capable model is not invariably appropriate: smaller models can be better for cost-sensitive or latency-sensitive routine work. Tiered routing appropriately directs simple requests to a lighter model and reserves a stronger model for complex requests. Announcement recency does not establish production suitability; measured performance on the target workload does.\n\nLearn more\n- Model guidance\n- Models",
+    "imageUrl": "",
+    "statements": [
+      {
+        "id": "statement-1",
+        "text": "Heavier-reasoning models typically consume more of the rate limit and run more slowly than lighter models on the same input."
+      },
+      {
+        "id": "statement-2",
+        "text": "A representative-sample evaluation on the target workload is the right basis for confirming a model selection."
+      },
+      {
+        "id": "statement-3",
+        "text": "The most capable model is always the right choice regardless of the workload profile."
+      },
+      {
+        "id": "statement-4",
+        "text": "Tiered routing can serve routine traffic with a lighter model while reserving a heavier model for traffic that needs its capability."
+      },
+      {
+        "id": "statement-5",
+        "text": "Selecting a model based on which version was most recently announced is the right basis for production decisions."
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-13-import-1",
+    "type": "multiple_choice",
+    "question": "You are assessing instrumentation in a multi-agent system.\n\nWhich two findings represent valid observability gaps in the instrumentation? Each correct answer provides a complete solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Trace spans for each agent step are exported to the shared distributed-tracing backend.",
+      "B": "Latency and token usage on every span are emitted to the central metrics pipeline.",
+      "C": "Tool-call payloads and outcomes are recorded with redaction applied to known sensitive fields.",
+      "D": "Model identity and version on each turn are not recorded with the turn artifacts.",
+      "E": "Request-scoped correlation identifiers do not propagate across agent and tool calls."
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "Model identity and version must be captured with each turn so behavior, latency, token usage, failures, and regressions can be attributed to the specific model configuration. Request-scoped correlation identifiers must propagate across agent and tool calls so their spans and telemetry remain connected within one distributed trace. OpenTelemetry defines GenAI model attributes and explains that context propagation enables correlation across distributed service boundaries.\n\nLearn more\n- OpenTelemetry GenAI attributes\n- OpenTelemetry context propagation",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-14-import-1",
+    "type": "multiple_choice",
+    "question": "An engineer accidentally commits an API key to the repository by placing it in .claude/settings.json.\n\nWhich configuration design principle was breached?",
+    "options": {
+      "A": "Project-scope configuration should always override user-scope configuration.",
+      "B": "Managed configuration must be applied before project-scope configuration is read.",
+      "C": "Credentials must be resolved at runtime from a secret store and never stored in version-controlled files.",
+      "D": "MCP server definitions must reside in environment variables to prevent scope conflicts."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "API keys are credentials and must not be committed to version-controlled configuration files, where repository access and history can expose them. They should be supplied securely at runtime, such as through a secret store or protected environment-based mechanism. Anthropic documents using a key helper that retrieves a key from a Vault secret for dynamic credentials.\n\nLearn more\n- LLM gateway configuration — Anthropic",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-17-import-1",
+    "type": "dropdown",
+    "question": "You are classifying chunking strategies by the corpus type to which each is best suited.\n\nFor each chunking strategy, select the applicable corpus type: “Long Structured Documents,” “Heterogeneous Short Records,” or “Code or Hierarchical Specs.”\n\nSelect",
+    "options": {
+      "slot-1": {
+        "A": "Long Structured Documents",
+        "B": "Heterogeneous Short Records",
+        "C": "Code or Hierarchical Specs"
+      },
+      "slot-2": {
+        "A": "Long Structured Documents",
+        "B": "Heterogeneous Short Records",
+        "C": "Code or Hierarchical Specs"
+      },
+      "slot-3": {
+        "A": "Long Structured Documents",
+        "B": "Heterogeneous Short Records",
+        "C": "Code or Hierarchical Specs"
+      },
+      "slot-4": {
+        "A": "Long Structured Documents",
+        "B": "Heterogeneous Short Records",
+        "C": "Code or Hierarchical Specs"
+      },
+      "slot-5": {
+        "A": "Long Structured Documents",
+        "B": "Heterogeneous Short Records",
+        "C": "Code or Hierarchical Specs"
+      },
+      "slot-6": {
+        "A": "Long Structured Documents",
+        "B": "Heterogeneous Short Records",
+        "C": "Code or Hierarchical Specs"
+      }
+    },
+    "answer": {
+      "slot-1": "C",
+      "slot-2": "C",
+      "slot-3": "B",
+      "slot-4": "A",
+      "slot-5": "B",
+      "slot-6": "A"
+    },
+    "explanation": "Function-level and tree-aware boundaries preserve the logical hierarchy of source code and specifications. Per-record and fixed-size overlapping chunks suit short, independently meaningful records. Semantic paragraph/clause boundaries and document-section hierarchies preserve the context and structure of long documents.",
+    "imageUrl": "",
+    "layout": "rows",
+    "instruction": "",
+    "template": null,
+    "slots": [
+      {
+        "id": "slot-1",
+        "label": "function-level or section-level chunking for code modules"
+      },
+      {
+        "id": "slot-2",
+        "label": "tree-aware chunking that follows code or specification hierarchy"
+      },
+      {
+        "id": "slot-3",
+        "label": "per-record chunking where each record is one chunk"
+      },
+      {
+        "id": "slot-4",
+        "label": "semantic chunking along clause or paragraph boundaries"
+      },
+      {
+        "id": "slot-5",
+        "label": "fixed-size chunking with overlap for short records of similar length"
+      },
+      {
+        "id": "slot-6",
+        "label": "hierarchical chunking that mirrors document section structure"
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-18-import-1",
+    "type": "multiple_choice",
+    "question": "You are choosing a pattern for a compliance Q&A assistant that must respond to policy questions with citations from the authoritative internal source set. Latency, cost, and audit predictability are priorities.\n\nWhich pattern is the best fit?",
+    "options": {
+      "A": "Augmented LLM with retrieval-augmented generation over the indexed authoritative corpus and citation rendering on each answer.",
+      "B": "Multi-agent orchestration with a planner, researcher, and writer agent for every query.",
+      "C": "A pure agent loop with open web-browsing tools to surface the most current policy information, without constraining retrieval to the authoritative internal corpus.",
+      "D": "A static prompt with the entire policy corpus concatenated into every request."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Retrieval-augmented generation retrieves relevant material from the indexed authoritative policy corpus for each response, enabling source-grounded citations and predictable auditability. It is typically more efficient and controlled than multi-agent orchestration, unrestricted web retrieval, or including the entire corpus in every prompt.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-20-import-1",
+    "type": "yes_no",
+    "question": "For each statement, select Yes if it reflects a sound architectural practice. Otherwise, select No.",
+    "options": {
+      "A": "Yes",
+      "B": "No"
+    },
+    "answer": {
+      "statement-1": "A",
+      "statement-2": "A",
+      "statement-3": "B",
+      "statement-4": "B"
+    },
+    "explanation": "Authorization before retrieval enables identity-based access filtering. Queues smooth burst traffic and decouple request intake from asynchronous model processing. Tax calculations require deterministic, testable application logic rather than prompt behavior. Government identifiers are sensitive PII, so logs should redact or mask them and restrict their use.\n\nLearn more\n- AWS Well-Architected Framework — Fail fast and limit queues\n- Amazon Bedrock — Remove PII from conversations by using sensitive information filters",
+    "imageUrl": "",
+    "statements": [
+      {
+        "id": "statement-1",
+        "text": "Authentication and authorization run before retrieval so retrieval can filter by identity."
+      },
+      {
+        "id": "statement-2",
+        "text": "An asynchronous queue absorbs bursty traffic between intake and the model invocation layer."
+      },
+      {
+        "id": "statement-3",
+        "text": "Tax computation is encoded directly in the system prompt rather than in code."
+      },
+      {
+        "id": "statement-4",
+        "text": "Conversation logs include unredacted government identifiers to maximize signal for tuning."
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-21-import-1",
+    "type": "multiple_choice",
+    "question": "You are building an evaluation pipeline for a Claude-based deployment and must finish the specification steps before running the deployment against the dataset.\n\nWhich two steps must be completed BEFORE running the deployment against the evaluation dataset? Each correct answer represents part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Publish the aggregated metrics to a dashboard and gate releases on threshold checks.",
+      "B": "Curate and label the evaluation dataset to match the defined slices.",
+      "C": "Review failure cases with subject matter experts to refine the scoring rubric.",
+      "D": "Define the metrics and slices the framework will report across representative, edge, and adversarial cases.",
+      "E": "Score the deployment outputs against the reference labels and aggregate the metrics."
+    },
+    "answer": [
+      "B",
+      "D"
+    ],
+    "explanation": "Evaluation requires predefined, measurable success criteria and an evaluation set that reflects the intended task distribution, including edge cases. Metrics and slices establish what will be measured, while curated reference labels enable the resulting outputs to be scored. Aggregating scores, reviewing failures, and publishing dashboard results occur after the deployment has been run on that dataset.\n\nLearn more\n- Define success criteria and build evaluations — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-23-import-1",
+    "type": "multiple_choice",
+    "question": "An architect is assessing a Claude-based candidate-screening tool before deployment. A stakeholder claims that no bias evaluation is needed because the model was not trained on company data.\n\nWhich two responses most accurately dispute this claim? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Transparency obligations are satisfied by disclosing that an AI system is in use, without further evaluation.",
+      "B": "Fairness testing is required only when the training dataset is known to contain protected-class labels.",
+      "C": "The model may carry demographic biases from pretraining that manifest in screening outcomes regardless of fine-tuning.",
+      "D": "The system should be evaluated on outcome-disparity metrics across protected groups before deployment.",
+      "E": "Bias evaluation is unnecessary when the model provider has published a responsible-use policy."
+    },
+    "answer": [
+      "C",
+      "D"
+    ],
+    "explanation": "A model can retain demographic biases from its broad pretraining even when it has not been trained on an organization’s data. For an employment-screening use case, fairness evaluation should measure whether outcomes differ across protected groups before deployment. NIST guidance calls for evaluating fairness and bias and using context-specific metrics to assess performance and harms across groups.\n\nLearn more\n- NIST AI RMF Core — Measure\n- NIST AI RMF Playbook — Measure",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-24-import-1",
+    "type": "dropdown",
+    "question": "You are ordering decomposed components in an invoice-processing pipeline.\n\nFor every decomposed component, choose the execution layer to which it belongs: “Pre-Processing”, “Model Stage”, or “Post-Processing”.\n\nSelect",
+    "options": {
+      "slot-1": {
+        "A": "Pre-Processing",
+        "B": "Model Stage",
+        "C": "Post-Processing"
+      },
+      "slot-2": {
+        "A": "Pre-Processing",
+        "B": "Model Stage",
+        "C": "Post-Processing"
+      },
+      "slot-3": {
+        "A": "Pre-Processing",
+        "B": "Model Stage",
+        "C": "Post-Processing"
+      },
+      "slot-4": {
+        "A": "Pre-Processing",
+        "B": "Model Stage",
+        "C": "Post-Processing"
+      },
+      "slot-5": {
+        "A": "Pre-Processing",
+        "B": "Model Stage",
+        "C": "Post-Processing"
+      },
+      "slot-6": {
+        "A": "Pre-Processing",
+        "B": "Model Stage",
+        "C": "Post-Processing"
+      }
+    },
+    "answer": {
+      "slot-1": "B",
+      "slot-2": "C",
+      "slot-3": "C",
+      "slot-4": "B",
+      "slot-5": "A",
+      "slot-6": "A"
+    },
+    "explanation": "Pre-processing prepares invoice inputs for inference, including OCR and redacting sensitive text before model invocation. The model stage performs the Claude classification and structured-data extraction. Post-processing validates extracted output against its schema and persists only validated records to the system of record.",
+    "imageUrl": "",
+    "layout": "rows",
+    "instruction": "",
+    "template": null,
+    "slots": [
+      {
+        "id": "slot-1",
+        "label": "Claude-based classification of invoice type"
+      },
+      {
+        "id": "slot-2",
+        "label": "persistence of validated records to the system of record"
+      },
+      {
+        "id": "slot-3",
+        "label": "schema validation of the extracted fields"
+      },
+      {
+        "id": "slot-4",
+        "label": "Claude-based extraction of structured invoice fields"
+      },
+      {
+        "id": "slot-5",
+        "label": "PII redaction on extracted text prior to model invocation"
+      },
+      {
+        "id": "slot-6",
+        "label": "optical character recognition on scanned invoice images"
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-25-import-1",
+    "type": "multiple_choice",
+    "question": "You are creating a prompt for a ticket-triage classifier with thirty clearly defined categories and clear descriptions of each category in the prompt.\n\nWhich technique is the most appropriate starting point?",
+    "options": {
+      "A": "A chain-of-thought prompt for a routing decision that does not require multi-step reasoning.",
+      "B": "A zero-shot prompt that specifies the categories with their descriptions and the required output format.",
+      "C": "A prompt that demands the model invent new categories when the supplied ones do not fit.",
+      "D": "A prompt with no category descriptions, expecting the model to infer the category set."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "For classification against a fixed taxonomy, a zero-shot prompt should state the allowed categories, define them clearly, and specify the required response format. This grounds the model in the intended label set and produces consistent, machine-readable routing decisions.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-29-import-1",
+    "type": "multiple_choice",
+    "question": "A platform team runs a self-hosted, multi-agent system on Kubernetes that coordinates seven specialized agents for invoice processing. The team uses approximately 40 percent of its engineering capacity for infrastructure maintenance, message-bus reliability, and agent-state recovery. The CFO has asked for an evaluation of a move to managed agent infrastructure to recover engineering capacity. The security officer requires all customer financial data to stay within an approved network boundary.\n\nWhich factor should carry the greatest weight in your recommendation?",
+    "options": {
+      "A": "Whether the current seven agents map cleanly to the patterns supported by managed agents.",
+      "B": "Whether managed agents reduce per-invoice token costs across the existing processing volume.",
+      "C": "Whether managed agents support the current bus topology used by the platform team.",
+      "D": "Whether managed agent data handling satisfies the network boundary required by security."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Compliance with the approved network boundary for customer financial data is a mandatory security constraint. Operational benefits such as reduced maintenance effort, lower token costs, or architectural compatibility cannot justify adopting a managed service that fails to meet that data-handling requirement.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-30-import-1",
+    "type": "multiple_choice",
+    "question": "You are determining where human review must remain in a proposed automated pipeline.\n\nWhich placement represents sound human-in-the-loop design?",
+    "options": {
+      "A": "Place a human reviewer only after the irreversible action has already executed, making the review a post-hoc audit rather than a meaningful pre-action check or approval gate.",
+      "B": "Place a human reviewer between the model’s output and any high-impact, irreversible action, with explicit criteria for what the reviewer must check before approval.",
+      "C": "Place a human reviewer in the loop for a randomly selected sample of requests, without defining criteria for what the reviewer should check or which output categories require mandatory review.",
+      "D": "Remove all human review steps from the pipeline to maximize throughput, accepting that high-impact and irreversible actions will be taken without any human approval or oversight."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Human review should occur after the model produces its output but before any high-impact, irreversible action, and reviewers need explicit approval criteria. This preserves meaningful oversight and enables intervention before harm or irreversible consequences occur.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-32-import-1",
+    "type": "multiple_choice",
+    "question": "A Claude-based research assistant starts generating responses that confidently contradict its retrieved source documents, even though the retrieval pipeline has not changed.\n\nWhich two diagnostic actions most directly identify the root cause of this behavior? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Increase the context-window size to allow more retrieved chunks per query.",
+      "B": "Switch the retrieval index to a denser embedding model to improve chunk-relevance scores.",
+      "C": "Determine whether the failure reproduces on the previous model version to test for a model mismatch.",
+      "D": "Reduce the temperature setting to lower response variance across all query types.",
+      "E": "Inspect the system-prompt grounding instructions to determine whether citation constraints remain intact."
+    },
+    "answer": [
+      "C",
+      "E"
+    ],
+    "explanation": "Reproducing the behavior with the previous model version can isolate a model-version or model-routing mismatch when retrieval has remained unchanged. Reviewing the system prompt verifies that the instructions requiring answers to be grounded in retrieved content and constrained by citations have not been removed or weakened. Claude model updates can change instruction-following behavior, so Anthropic recommends testing applications when changing models.\n\nLearn more\n- Prompting best practices — Claude Platform Docs\n- Model deprecations — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-33-import-1",
+    "type": "yes_no",
+    "question": "You are assessing prompting claims in a peer’s design document.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+    "options": {
+      "A": "Yes",
+      "B": "No"
+    },
+    "answer": {
+      "statement-1": "A",
+      "statement-2": "A",
+      "statement-3": "B",
+      "statement-4": "A",
+      "statement-5": "B"
+    },
+    "explanation": "Zero-shot classification works when labels and their definitions are clearly specified. Few-shot examples with exact schema fields reinforce the desired extraction format. Chain-of-thought should be applied only when useful for the task, not as a blanket default. Neutral comparisons with explicit criteria counter leading framing. Model behavior can vary by version, so prompts require validation after version changes.",
+    "imageUrl": "",
+    "statements": [
+      {
+        "id": "statement-1",
+        "text": "Zero-shot is appropriate as a starting point for closed-set classification when categories and descriptions are provided in the prompt."
+      },
+      {
+        "id": "statement-2",
+        "text": "Adding a few-shot example set with exact field names anchors output formatting on extraction tasks."
+      },
+      {
+        "id": "statement-3",
+        "text": "Chain-of-thought should be the default on every task regardless of complexity."
+      },
+      {
+        "id": "statement-4",
+        "text": "Leading-question framing is best mitigated by asking for an even-handed comparison with stated criteria."
+      },
+      {
+        "id": "statement-5",
+        "text": "Behavioral differences across model versions can be ignored once a prompt has been validated on one version."
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-36-import-1",
+    "type": "yes_no",
+    "question": "You are assessing retrieval-strategy claims used by a peer team.\n\nFor each claim, select Yes when it is generally accurate; otherwise, select No.",
+    "options": {
+      "A": "Yes",
+      "B": "No"
+    },
+    "answer": {
+      "statement-1": "A",
+      "statement-2": "A",
+      "statement-3": "A",
+      "statement-4": "B",
+      "statement-5": "B"
+    },
+    "explanation": "Dense vector search captures semantic similarity, which supports paraphrase retrieval. Sparse lexical retrieval is strongest for exact strings, identifiers, and rare terms. Relational queries and indexes support deterministic filtering and aggregation. Hybrid retrieval combines sparse and dense approaches, giving it different retrieval and recall behavior from dense-only search. Random sampling provides no relevance guarantee, so it is not suitable for production question-answering retrieval.",
+    "imageUrl": "",
+    "statements": [
+      {
+        "id": "statement-1",
+        "text": "Dense vector retrieval is well suited to recovering paraphrased intent against unstructured text."
+      },
+      {
+        "id": "statement-2",
+        "text": "Sparse term-matching retrieval recovers exact terms (such as identifiers and rare tokens) more reliably than dense alone."
+      },
+      {
+        "id": "statement-3",
+        "text": "Structured query retrieval is the right fit for filter-and-aggregate workloads against a relational store with schema and indexes."
+      },
+      {
+        "id": "statement-4",
+        "text": "Hybrid retrieval is identical to dense-only retrieval and shares the same recall characteristics."
+      },
+      {
+        "id": "statement-5",
+        "text": "Random sampling of a data store is a sound retrieval strategy for production Q&A."
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-38-import-1",
+    "type": "dropdown",
+    "question": "You are a solution architect evaluating candidate use cases for a Claude-based program.\n\nFor each scenario, select Yes if Claude is appropriate as the primary solution at the architectural level. Otherwise, select No.\n\nSelect",
+    "options": {
+      "slot-1": {
+        "A": "Yes",
+        "B": "No"
+      },
+      "slot-2": {
+        "A": "Yes",
+        "B": "No"
+      },
+      "slot-3": {
+        "A": "Yes",
+        "B": "No"
+      },
+      "slot-4": {
+        "A": "Yes",
+        "B": "No"
+      },
+      "slot-5": {
+        "A": "Yes",
+        "B": "No"
+      }
+    },
+    "answer": {
+      "slot-1": "A",
+      "slot-2": "B",
+      "slot-3": "A",
+      "slot-4": "B",
+      "slot-5": "A"
+    },
+    "explanation": "Claude is well suited to drafting reports from semi-structured text, reviewing long documents, extracting structured clauses, identifying deviations, classifying support tickets, and explaining classifications. A sub-50-ms streaming fraud decision needs predictable, low-latency specialized scoring rather than an LLM as its primary solution. Semantic retrieval across millions of documents requires a vector index or comparable retrieval system; Claude can use retrieved results but does not replace that index.\n\nLearn more\n- Anthropic: Prompting best practices\n- Anthropic: Introduction to Claude",
+    "imageUrl": "",
+    "layout": "rows",
+    "instruction": "",
+    "template": null,
+    "slots": [
+      {
+        "id": "slot-1",
+        "label": "drafting first-pass investigative reports from semi-structured incident logs for analyst review"
+      },
+      {
+        "id": "slot-2",
+        "label": "computing real-time fraud scores at sub-50-millisecond latency on a streaming pipeline"
+      },
+      {
+        "id": "slot-3",
+        "label": "long-context contract review with structured clause extraction and deviation flagging"
+      },
+      {
+        "id": "slot-4",
+        "label": "replacing a vector index for semantic retrieval over a multi-million-document corpus"
+      },
+      {
+        "id": "slot-5",
+        "label": "routing inbound support tickets into 30 categories with reasoning for the chosen routing"
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-39-import-1",
+    "type": "multiple_choice",
+    "question": "You are assembling factors that should guide the selection among Model Context Protocol (MCP), direct API integration, and agent-to-agent handoff.\n\nWhich two factors should be included on the list? Each correct answer provides a complete solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Whether the vendor publishes detailed reference documentation for each candidate protocol.",
+      "B": "Whether the team has prior implementation experience with any of the candidate protocols.",
+      "C": "Whether the underlying transport supports encryption in transit between the integrated services.",
+      "D": "Whether the integration must be portable across multiple AI clients in the ecosystem.",
+      "E": "Whether the interaction is stateless and latency-sensitive or stateful and longer-running."
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "Portability across multiple AI clients favors MCP because it provides a standardized client-server protocol that compatible hosts can use. Interaction lifecycle also determines the integration approach: direct APIs suit simple, low-latency request-response operations, while agent handoffs transfer control and preserve context for longer-running, stateful work between specialized agents.\n\nLearn more\n- MCP TypeScript SDK\n- Running agents",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-40-import-1",
+    "type": "multiple_choice",
+    "question": "You are choosing a protocol for one low-latency, stateless tool call from a Claude-based assistant to an internal pricing service that already offers a stable HTTP API.\n\nWhich integration mechanism is most appropriate?",
+    "options": {
+      "A": "A direct API call to the existing endpoint with the appropriate scoped credentials.",
+      "B": "A long-lived stateful session protocol for a stateless single-call interaction.",
+      "C": "A bespoke streaming protocol layered over an unrelated asynchronous message bus.",
+      "D": "An agent-to-agent handoff that introduces another Claude-based agent in front of the pricing service."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A direct call to the existing HTTP endpoint is the simplest and lowest-latency integration for a single stateless operation. Scoped credentials enforce least-privilege access, while a persistent session protocol, custom streaming layer, or intervening agent adds complexity and latency without serving a stated requirement. Claude supports client-side tool use, in which the application executes the tool call and returns its result.\n\nLearn more\n- Anthropic: Tool use overview",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-41-import-1",
+    "type": "multiple_choice",
+    "question": "You are assessing an integration specification for security weaknesses.\n\nWhich two findings represent valid security gaps in the specification? Each correct answer provides a complete solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Tool calls execute server-side under a least-privilege service principal scoped to the requested action.",
+      "B": "Service credentials are placed in the prompt context, where they can leak into logs and traces.",
+      "C": "Role-based access control is enforced only at the response-rendering layer after the model accesses restricted data.",
+      "D": "Per-user OAuth tokens are exchanged with scope-restricted permissions and refreshed within the active session.",
+      "E": "Tool inputs and outputs are encrypted in transit using transport-layer security between services."
+    },
+    "answer": [
+      "B",
+      "C"
+    ],
+    "explanation": "Service credentials must not be included in prompt context because they can be exposed through logging and tracing. Authorization must be enforced before a model or tool accesses restricted data; response-layer-only RBAC allows unauthorized access to occur before rendering is blocked.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-42-import-1",
+    "type": "multiple_choice",
+    "question": "The platform team at Trenova Systems, Inc. must lower per-query cost and p95 latency for a high-volume Claude pipeline without reducing output quality for the core use case.\n\nWhich two optimizations directly address both cost and latency at the same time? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Enable prompt caching on the static system-prompt prefix to reduce billable input tokens on repeated calls.",
+      "B": "Route straightforward query types to a smaller, faster Claude model and reserve the full model for complex cases.",
+      "C": "Increase max_tokens to reduce the frequency of truncated responses requiring follow-up calls.",
+      "D": "Add a retrieval step that fetches the full source corpus into the context window before generation.",
+      "E": "Expand the system prompt to include additional few-shot examples on every request."
+    },
+    "answer": [
+      "A",
+      "B"
+    ],
+    "explanation": "Prompt caching lets repeated calls reuse a static system-prompt prefix, so cached input is billed at a lower rate and avoids reprocessing that prefix. Routing straightforward requests to a smaller, faster model lowers inference cost and response time, while reserving the larger model for complex requests preserves quality where it matters. Increasing output limits, retrieving an entire corpus, or expanding every prompt adds processing or tokens rather than directly reducing both metrics.\n\nLearn more\n- Anthropic Claude API pricing",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-45-import-1",
+    "type": "multiple_choice",
+    "question": "A healthcare organization is assessing two Claude-powered AI architectures for a clinical-documentation assistant. Architecture X delivers higher output-quality scores, but costs $0.18 per documentation session and averages 4.2 seconds per response. Architecture Y scores slightly lower on quality metrics, but costs $0.09 per session and averages 2.1 seconds per response. The stated SLA requires responses in under 3 seconds, and the projected annual volume is 2 million documentation sessions.\n\nWhich evaluation approach properly applies business-value pillar analysis to this decision?",
+    "options": {
+      "A": "Select Architecture Y based solely on the 50% cost reduction, since solution cost is the most important value pillar in healthcare budget-constrained environments.",
+      "B": "Select Architecture X because the higher quality scores justify the cost premium, and any SLA gap can be addressed through infrastructure optimization after deployment.",
+      "C": "Eliminate Architecture X on SLA grounds, then evaluate Architecture Y against the efficiency and solution cost pillars by calculating annual cost difference and assessing whether the quality delta materially impacts clinical workflow productivity.",
+      "D": "Recommend a hybrid approach using Architecture X for complex cases and Architecture Y for routine cases, without additional analysis, since this preserves quality where it matters most."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A mandatory latency SLA is a feasibility constraint: Architecture X's 4.2-second average does not meet the under-3-second requirement, whereas Architecture Y's 2.1-second average does. At 2 million sessions, the annual spend is $360,000 for X and $180,000 for Y, yielding a $180,000 annual difference. The remaining decision is whether Y's quality reduction materially reduces clinical-workflow productivity enough to outweigh its compliant performance and lower cost. AWS guidance similarly calls for discarding options that do not meet workload requirements, then selecting and testing the options that satisfy latency, throughput, and response-quality requirements while evaluating their cost-performance trade-offs.\n\nLearn more\n- AWS Generative AI Lens: Balance cost and performance when selecting inference paradigms\n- AWS Generative AI Lens: Model selection and cost optimization",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-46-import-1",
+    "type": "multiple_choice",
+    "question": "You are troubleshooting a Claude Code session in which its subagent uses 50,000 context tokens before the engineer types even a single message.\n\nWhich root cause is most likely?",
+    "options": {
+      "A": "The developer's keyboard layout or input-method configuration is the cause of the elevated context consumption, introducing extra tokens before the engineer types any message.",
+      "B": "Many MCP servers are configured, each contributing tool definitions to the context budget; Tool Search is not enabled, so all definitions load upfront.",
+      "C": "The model has internal personal preferences or default behaviors that silently consume large portions of context budget before any user message is processed, independent of tool configuration.",
+      "D": "The font rendering or display-scaling settings of the IDE are converting visual output into additional context tokens, causing the high pre-session context consumption."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "When Tool Search is disabled, Claude Code loads all configured MCP tool definitions into the context window at startup. A large collection of MCP servers can therefore consume tens of thousands of tokens before any engineer message is entered.\n\nLearn more\n- Connect Claude Code to tools via MCP\n- Tool search tool",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-47-import-1",
+    "type": "multiple_choice",
+    "question": "You are assisting an engineer whose newly added MCP server is not appearing in their Claude Code session.\n\nWhich diagnostic step should be attempted first?",
+    "options": {
+      "A": "Disable every MCP server in the configuration to isolate the issue, removing all tool access rather than confirming whether the new server is registered.",
+      "B": "Switch the team to a different Claude product family unrelated to the existing workflow, abandoning the current configuration rather than diagnosing the registration issue.",
+      "C": "Verify the MCP server is registered using the listing command, then reconnect the session if needed, since configuration changes typically require a restart to take effect.",
+      "D": "Reinstall the developer’s operating system from scratch, discarding all local configuration and tool state before attempting any targeted diagnostic steps."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "claude mcp list confirms whether an MCP server is configured and reports its health status, such as connected, authentication required, or failed to connect. This establishes whether the issue is registration or session connectivity before taking disruptive action; reconnecting the session can refresh the active MCP state when necessary.\n\nLearn more\n- Connect Claude Code to tools via MCP",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-48-import-1",
+    "type": "multiple_choice",
+    "question": "You are identifying characteristics of strong architectural-decision communication.\n\nWhich two characteristics should be included on the list? Each correct answer represents a complete solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Ownership and review cadence for revisiting the decision when conditions or assumptions change.",
+      "B": "Distribution to a standing review forum with mandatory attendance from senior engineering leaders.",
+      "C": "Omission of rejected alternatives to keep the decision document focused and concise for readers.",
+      "D": "Alternatives considered along with the criteria that were used to evaluate each alternative.",
+      "E": "Use of a consistent template across the team to standardize the visual presentation of decisions."
+    },
+    "answer": [
+      "A",
+      "D"
+    ],
+    "explanation": "Strong architectural decision records communicate both accountability and rationale. Ownership with a review cadence keeps a decision maintainable as its assumptions or conditions change, while documenting considered alternatives and their evaluation criteria makes the trade-offs and justification understandable to current and future stakeholders. Official ADR guidance calls for ownership and for recording the context, including possible solutions considered and the decision’s consequences.\n\nLearn more\n- Architectural decision record process - AWS Prescriptive Guidance\n- FAQ about architectural decision records - AWS Prescriptive Guidance",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-50-import-1",
+    "type": "multiple_choice",
+    "question": "An architect reviews a set of architecture-documentation packages before transferring a Claude-based pipeline to an implementation team.\n\nWhich two characteristics show that a documentation package is sufficient to enable implementation without continued involvement from the architect? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "The document specifies integration contracts, configuration schemas, and expected input/output shapes for each component.",
+      "B": "The document includes a decision log that records the rationale for key architectural choices and the alternatives rejected.",
+      "C": "The document provides a high-level narrative description of the business problem without component-level detail.",
+      "D": "The document includes the architect’s contact information for questions arising during implementation.",
+      "E": "The document lists all Claude models that were evaluated but does not specify which was selected or why."
+    },
+    "answer": [
+      "A",
+      "B"
+    ],
+    "explanation": "Implementation teams need explicit integration contracts, configuration schemas, and expected input/output shapes to build and connect components correctly. A decision log also preserves the rationale for key architectural choices and rejected alternatives, allowing the team to apply the intended trade-offs without relying on the architect.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-51-import-1",
+    "type": "multiple_choice",
+    "question": "The engineering lead at Trenova Systems, Inc. is assessing two proposals to improve developer workflows with Claude-assisted tooling. Proposal A integrates Claude Code into the IDE for inline code generation and review. Proposal B sends all code-generation requests through a shared Slack bot with no IDE integration.\n\nWhich two observations most accurately assess these proposals against workflow-improvement objectives? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Proposal B is superior because centralizing requests in Slack creates an auditable log of all code-generation activity.",
+      "B": "Proposal B introduces workflow friction by requiring developers to leave the IDE, undermining the productivity objective.",
+      "C": "Proposal A reduces context switching by providing AI assistance at the point of development without requiring a separate tool.",
+      "D": "Proposal B improves workflow velocity because Slack notifications create an asynchronous review queue.",
+      "E": "Both proposals are equivalent because the model capabilities are identical regardless of the integration point."
+    },
+    "answer": [
+      "B",
+      "C"
+    ],
+    "explanation": "AI assistance integrated directly into the IDE reduces context switching and supports code generation and review at the point where development work occurs. Requiring developers to submit requests through Slack takes them out of that environment and adds workflow friction, which undermines the productivity objective.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-52-import-1",
+    "type": "multiple_choice",
+    "question": "You are reviewing a peer’s draft architecture decision record (ADR). The ADR records the decision and technical details but omits the alternatives considered and the trade-offs accepted.\n\nWhich response is most appropriate?",
+    "options": {
+      "A": "Delete the ADR entirely and rely on the engineering team’s collective memory to reconstruct the decision context, alternatives, and trade-offs during future audits or onboarding.",
+      "B": "Ask the author to add the alternatives considered and the trade-offs accepted before publishing the ADR.",
+      "C": "Approve the ADR as written on the grounds that the decision itself is documented, accepting that reviewers and future maintainers will lack the context to evaluate or revisit it.",
+      "D": "Replace the ADR with a different decision unrelated to the one drafted."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "An ADR should document not only the decision, but also the alternatives evaluated and the consequences or trade-offs accepted. This preserves the rationale needed for future review, maintenance, audits, and onboarding.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-53-import-1",
+    "type": "multiple_choice",
+    "question": "A Claude architect is setting up a shared Claude Code environment for a 12-person development team.\n\nWhich two configuration choices most directly create a consistent, secure team environment? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Commit shared MCP server definitions and tool permissions in project-scope configuration files alongside the repository.",
+      "B": "Apply managed configuration to enforce non-overridable security and compliance policies across all team members.",
+      "C": "Set editor theme and display preferences at the project scope so they are uniform across workstations.",
+      "D": "Instruct each engineer to configure their preferred Claude model in personal user-scope settings.",
+      "E": "Store the team’s shared API key in the project-scope settings.json so all engineers use the same credential."
+    },
+    "answer": [
+      "A",
+      "B"
+    ],
+    "explanation": "Project-scoped configuration can be committed with the repository so all contributors receive the same MCP server definitions and tool-permission baseline. Managed configuration takes precedence over user and project settings and cannot be overridden, enabling organization-wide enforcement of security and compliance policies. Credentials should be kept out of committed project settings and supplied through secure credential mechanisms or environment variables.\n\nLearn more\n- Connect Claude Code to tools via MCP\n- Identity and access management for Claude Code",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-56",
+    "type": "multiple_choice",
+    "question": "A team manager needs every engineer working in the same repository to use identical MCP server definitions, without manually keeping them in sync.\n\nWhich configuration approach meets this requirement?",
+    "options": {
+      "A": "managed configuration pushed to all endpoints by the administrator",
+      "B": "environment variables set at the operating-system level on each workstation",
+      "C": "project-scope .claude/settings.json and .mcp.json files committed to the repository",
+      "D": "each engineer maintains a personal ~/.claude/settings.json with the shared definitions"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Project-scope MCP servers are stored in the repository’s .mcp.json and are designed to be committed to version control, allowing all project contributors to share the same MCP server definitions. A committed project settings file can accompany that shared repository configuration.\n\nLearn more\n- Anthropic Claude Code: Connect to tools through MCP",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-57-import-1",
+    "type": "multiple_choice",
+    "question": "An architect at Trenova Systems, Inc. is evaluating two draft communication packages for the same architectural decision. Package 1 includes a threat model, residual-risk register, and control-mapping table. Package 2 includes a list of delivered capabilities and feature-level roadmap dependencies.\n\nWhich two audiences are correctly matched to these packages? (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Package 1 engineering implementation team",
+      "B": "Package 2 executive sponsor",
+      "C": "Package 1 security and compliance reviewer",
+      "D": "Package 2 product manager owning the roadmap",
+      "E": "Package 2 security and compliance reviewer"
+    },
+    "answer": [
+      "C",
+      "D"
+    ],
+    "explanation": "A threat model, residual-risk register, and control-mapping table support security assurance, risk acceptance, and compliance evaluation, so Package 1 is suited to a security and compliance reviewer. Delivered capabilities and feature-level roadmap dependencies support product planning and prioritization, so Package 2 is suited to the product manager who owns the roadmap.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-61-import-1",
+    "type": "multiple_choice",
+    "question": "You are establishing a feedback-and-alignment routine for a deployment with multiple stakeholders.\n\nWhich two practices should be included in the routine? Each correct answer provides a complete solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Record each session and distribute the recording to stakeholders who could not attend live.",
+      "B": "Escalate any disagreement among stakeholders to the executive sponsor for binding resolution.",
+      "C": "Rotate facilitation among the participating stakeholder groups to share ownership of the routine.",
+      "D": "Set a regular cadence for revisiting expectations and assumptions as conditions evolve over time.",
+      "E": "Reconcile divergent stakeholder positions explicitly rather than papering over them in the moment."
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "A regular cadence for reassessing expectations and assumptions keeps stakeholder alignment current as deployment conditions change. Explicitly reconciling differing stakeholder positions resolves substantive conflicts instead of leaving them hidden, creating durable alignment.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-64-import-1",
+    "type": "multiple_choice",
+    "question": "You are establishing transparency practices for a customer-facing assistant whose responses are materially influenced by AI.\n\nWhich transparency practice most directly promotes responsible deployment?",
+    "options": {
+      "A": "Misrepresent the AI’s role in producing responses in order to make the assistant feel more trustworthy or more human, undermining informed user consent and organizational transparency.",
+      "B": "Refuse to answer any user question about how the responses were produced or whether AI was involved, treating the AI’s role as confidential operational information.",
+      "C": "Disclose AI involvement to end users in line with the organization’s transparency policy and provide a documented path to reach a human when needed.",
+      "D": "Disclose AI involvement only to internal staff and operators while withholding that information from the end users whose interactions are materially shaped by the AI system."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Responsible deployment requires clear disclosure of AI involvement to the people affected by the system, enabling them to understand the nature of the interaction and calibrate their reliance appropriately. A documented, accessible path to human assistance also supports oversight and escalation when the assistant cannot appropriately resolve a need. Microsoft guidance calls for clear AI disclosure for external-facing agents and visible human handoff or interaction options.\n\nLearn more\n- Apply responsible AI\n- Responsible AI in Azure Workloads",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-65",
+    "type": "yes_no",
+    "question": "You are auditing a procurement-assistant agent whose defined responsibility is drafting purchase requests for review. For each currently configured tool, select Yes if it should remain after a least-privilege audit. Otherwise, select No if it should be removed.\n\nFor each of the following statements, select Yes if the statement is true. Otherwise, select No.",
+    "options": {
+      "A": "Yes",
+      "B": "No"
+    },
+    "answer": {
+      "statement-1": "A",
+      "statement-2": "B",
+      "statement-3": "A",
+      "statement-4": "B",
+      "statement-5": "A"
+    },
+    "explanation": "Least privilege permits the read-only catalog and policy lookups needed to prepare compliant purchase-request drafts, plus the draft-write capability required to place drafts in the review queue. Direct vendor email sending exceeds the review-only responsibility, and unrelated production-database administration is unnecessary and overly privileged.",
+    "imageUrl": "",
+    "statements": [
+      {
+        "id": "statement-1",
+        "text": "a read-only catalog lookup tool that returns vendor and SKU information"
+      },
+      {
+        "id": "statement-2",
+        "text": "an inbox-send tool that emails purchase requests to vendors directly"
+      },
+      {
+        "id": "statement-3",
+        "text": "a draft-write tool that creates purchase-request drafts in the review queue"
+      },
+      {
+        "id": "statement-4",
+        "text": "a production-database admin tool unrelated to procurement"
+      },
+      {
+        "id": "statement-5",
+        "text": "A read-only policy-document tool that returns the relevant procurement policies"
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-66",
+    "type": "multiple_choice",
+    "question": "You are establishing escalation criteria for ambiguous cases in an automated workflow.\n\nWhich set of criteria best enables consistent escalation?",
+    "options": {
+      "A": "No escalation criteria; the model decides independently on every turn whether to escalate, without explicit confidence thresholds, impact categories, or classifier-based ambiguity flags.",
+      "B": "Escalation only after an affected customer has contacted support to complain, after the automated workflow has already completed without human review.",
+      "C": "Escalation at the discretion of whoever is available when the team’s on-call engineer has spare capacity, without a defined threshold, category, or ambiguity criterion.",
+      "D": "A confidence score below a defined threshold, presence of high-impact decision categories, ambiguity flags raised by content classifiers, and the user’s explicit request for review."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Consistent escalation depends on explicit, repeatable triggers: a defined confidence threshold, designated high-impact decision categories, classifier-based ambiguity signals, and a user request for review. These criteria enable the workflow to identify cases requiring human oversight before a potentially consequential automated decision is finalized.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-71",
+    "type": "multiple_choice",
+    "question": "You are deploying a standardized Claude Code configuration to an engineering team and need to complete the planning activities before piloting the configuration.\n\nWhich two steps must be completed BEFORE piloting the configuration with a small group of engineers? Each correct answer represents part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Define the project-scope baseline covering Model Context Protocol (MCP) servers, permission rules, and subagents.",
+      "B": "Onboard every engineer in the organization to the new configuration through mandatory training sessions.",
+      "C": "Roll out the stabilized configuration to additional teams with documentation and a defined support channel.",
+      "D": "Identify the team workflows, security boundaries, and which decisions belong to managed configuration versus project scope.",
+      "E": "Iterate the configuration based on the pilot findings and stabilize the baseline before broader rollout."
+    },
+    "answer": [
+      "A",
+      "D"
+    ],
+    "explanation": "A controlled pilot requires defining the applicable team workflows and security boundaries, including which controls must be centrally managed and which belong to a project. That decision enables a project-scope baseline for shared MCP servers, permission rules, and subagents. Claude Code distinguishes centrally managed settings from shared project settings, and project-scoped MCP servers are intended for team-shared configuration. Organization-wide training, broader rollout, and post-pilot refinement follow rather than precede the pilot.\n\nLearn more\n- Claude Code on Console to Enterprise migration\n- Connect Claude Code to tools through MCP",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-81",
+    "type": "multiple_choice",
+    "question": "You are supporting an EU-based deployment subject to GDPR obligations.\n\nWhich combination of measures best supports the deployment’s GDPR posture?",
+    "options": {
+      "A": "enterprise-tier deployment with a signed Data Processing Addendum, defined data-retention configuration, redaction of personal data not needed for the task, and documented data-subject-rights handling",
+      "B": "disabling all data-retention configuration, redaction controls, and data-subject-rights handling to simplify day-to-day operations, accepting the resulting GDPR compliance exposure",
+      "C": "using a personal Claude account tier for processing EU personal data at scale, with no signed Data Processing Addendum and no documented data-subject-rights handling procedure",
+      "D": "pasting full EU personal data into every prompt to “give Claude complete context” without considering purpose limitation, data minimization, or the organization’s Data Processing Addendum obligations"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "GDPR requires personal data to be limited to what is necessary, retained no longer than necessary, and processed by a service provider under an appropriate binding processor arrangement. Redacting unnecessary personal data, defining retention, maintaining a Data Processing Addendum, and documenting procedures for data-subject rights support these obligations. Claude Enterprise also provides configurable data-retention controls.\n\nLearn more\n- Regulation (EU) 2016/679 (GDPR)\n- Custom Data Retention Controls for Claude Enterprise",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-82",
+    "type": "multiple_choice",
+    "question": "You support a team whose Claude Code sessions routinely load 60 or more MCP tools from numerous servers, exhausting the context budget before a session starts.\n\nWhich change most directly resolves this problem without removing capability?",
+    "options": {
+      "A": "Enable Tool Search so tool definitions are deferred and discovered on demand rather than loaded into context upfront.",
+      "B": "Disable every MCP server in the configuration to free up context budget, accepting that the team loses all tool access and cannot perform any MCP-dependent task in the session.",
+      "C": "Increase the prompt’s verbosity with additional instructions and context, which consumes more of the context budget rather than reducing the tool-definition overhead causing the issue.",
+      "D": "Add additional MCP servers to give the team more capability, which increases rather than reduces the number of tool definitions loaded into the session’s context budget."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Tool Search supports deferred loading, which prevents deferred MCP tool descriptions from entering the model’s initial context. The tools remain available and their definitions load on demand when discovered through search, reducing initial context overhead without removing MCP capability.\n\nLearn more\n- Tool search tool — Claude Platform Docs\n- MCP connector — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-84",
+    "type": "multiple_choice",
+    "question": "You are selecting the appropriate level of detail for an implementation guide. The audience is a delivery team that will build the deployment.\n\nWhich guidance composition best supports them?",
+    "options": {
+      "A": "Component responsibilities, contracts between components, sequence diagrams of the dominant flows, configuration parameters with defaults, and operational runbooks.",
+      "B": "Component responsibilities and interface contracts only, without sequence diagrams of the dominant flows, configuration parameters with defaults, or runbooks to guide operational tasks.",
+      "C": "An architecture overview and sequence diagrams for the dominant flows, without interface contracts, configuration-parameter tables, or operational runbooks for the delivery team to follow.",
+      "D": "An architecture overview and a list of known limitations, without component-level diagrams, interface contracts, configuration parameters, or operational runbooks to support implementation."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A delivery team needs implementation-level guidance covering component responsibilities, contracts between components, dominant-flow sequences, configuration parameters and defaults, and operational procedures. Together, these artifacts support building, integrating, configuring, and operating the deployment.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-85",
+    "type": "multiple_choice",
+    "question": "You are incorporating Claude Code into a team workflow and must complete the design and configuration steps before piloting the integrated workflow with a small group.\n\nWhich two steps must be completed BEFORE piloting the integrated workflow? Each correct answer represents part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Document the integrated workflow with handoff criteria, permission boundaries, and on-call runbooks.",
+      "B": "Identify the workflow steps where AI-assisted tooling adds value and where human authority must remain.",
+      "C": "Negotiate the workflow change with affected teams and obtain formal sign-off from each manager.",
+      "D": "Iterate the integrated workflow based on pilot findings before broader rollout to the team.",
+      "E": "Configure the project-scope MCP servers, permissions, subagents, and persistent project context."
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "explanation": "A Claude Code pilot needs an explicit division between workflow activities where AI assistance adds value and activities that remain under human authority. It also needs the project’s operational configuration in place: MCP integrations, permission controls, specialized subagents, and persistent project instructions/context. Claude Code documents project-scoped MCP setup, permissions, subagents, and project memory as distinct configuration mechanisms that establish those capabilities and boundaries.\n\nLearn more\n- Claude Code Commands\n- Connect Claude Code to tools via MCP",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-86",
+    "type": "multiple_choice",
+    "question": "You are documenting an architectural decision to enable future audit and onboarding.\n\nWhich artifact is the best fit?",
+    "options": {
+      "A": "A slide deck in a presentation folder with no accompanying written rationale.",
+      "B": "A code comment in a single file that contains an opinion of one engineer.",
+      "C": "An Architecture Decision Record that states the context, the decision, the alternatives considered, the consequences, and the date and authors.",
+      "D": "A short verbal note shared during a hallway conversation with no written record."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "An Architecture Decision Record preserves the context and rationale for an architectural choice, including alternatives, decision outcome, and consequences. Its written, attributable record supports later audits and helps new team members understand why the architecture took its current form.\n\nLearn more\n- Maintain an architecture decision record (ADR)",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-89",
+    "type": "multiple_choice",
+    "question": "A business sponsor has asked for an AI solution to “improve customer experience.” The sponsor cannot specify which customer journey is failing, which metric demonstrates that failure, or which decisions the AI should support. The sponsor is asking you to start design work next week.\n\nWhich delegation-competency action should you take first?",
+    "options": {
+      "A": "Recommend that the sponsor revise the request and resubmit it later for evaluation.",
+      "B": "Begin prototyping a generic assistant against the broad request before the next deadline.",
+      "C": "Propose a fixed scope that you commit to by default based on your own assumptions.",
+      "D": "Facilitate a structured discovery to define the failing decision and the target metric."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A structured discovery session establishes the specific failing decision, the affected customer journey, and a measurable target outcome before solution design begins. These definitions provide the problem scope and success criteria needed to determine whether AI is appropriate and what it should support.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-91",
+    "type": "multiple_choice",
+    "question": "A Claude architect must ensure that, once it is set, a security-hardening flag cannot be disabled by any individual engineer.\n\nWhich configuration scope correctly enforces this requirement?",
+    "options": {
+      "A": "User scope (~/.claude/settings.json) on each engineer’s machine",
+      "B": "Environment variable defined in the CI/CD pipeline only",
+      "C": "Managed configuration applied centrally and marked as non-overridable",
+      "D": "Project scope (.claude/settings.json) committed to the repository"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude Code applies centrally deployed managed settings above user, project, local, and command-line configuration, preventing an engineer from overriding an enforced security policy. A managed policy is therefore the appropriate scope for an organization-wide non-overridable hardening flag.\n\nLearn more\n- Deploy managed settings - Claude Code Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-92",
+    "type": "multiple_choice",
+    "question": "You are setting up a HIPAA-eligible deployment for a healthcare customer.\n\nWhich configuration enables HIPAA compliance when using Anthropic-provided tools?",
+    "options": {
+      "A": "Claude Free with no contractual addendum, since consumer products meet HIPAA requirements out of the box.",
+      "B": "Claude Enterprise with a signed Business Associate Agreement, Zero Data Retention enabled, and audit logging configured for compliance tracking.",
+      "C": "Disabling all audit logging so that no PHI is recorded in any log store, on the assumption that the absence of logs satisfies HIPAA requirements without a signed BAA.",
+      "D": "An ad-hoc personal Claude account used by individual clinicians for PHI-related tasks, with no Business Associate Agreement, no Zero Data Retention, and no audit logging configured."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A HIPAA-eligible Anthropic deployment must be covered by an appropriate Business Associate Agreement for an approved service. Zero Data Retention and audit logging support the required handling and accountability controls, whereas consumer and personal accounts without a BAA do not provide that contractual HIPAA coverage. The deployment must also follow Anthropic’s HIPAA-specific configuration and feature limitations.\n\nLearn more\n- Business Associate Agreements (BAA) for Commercial Customers\n- Anthropic Trust Center",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-102",
+    "type": "multiple_choice",
+    "question": "A senior architect is developing briefing materials for a new retrieval architecture. The executive sponsor has asked for a summary of the architectural decision.\n\nWhich framing is most suitable for that audience?",
+    "options": {
+      "A": "Technical alternatives evaluated, implementation implications, and component-level consequences.",
+      "B": "Business outcomes achieved, trade-offs accepted, and high-level risks acknowledged.",
+      "C": "Capabilities delivered, scope implications, and feature-level dependencies on the roadmap.",
+      "D": "Threat model, control mappings, residual-risk acceptance, and audit traceability."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Executive-level architectural communication should focus on the business outcomes enabled by the decision, the significant trade-offs involved, and the high-level risks that require awareness or sponsorship.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-103",
+    "type": "dropdown",
+    "question": "You are setting up Claude Code for a team that requires every engineer to use the same MCP server set, permission rules, and project context throughout the engineering monorepo.\n\nWhich configuration scope best meets this requirement?\n\nSelect",
+    "options": {
+      "slot-1": {
+        "A": "User scope",
+        "B": "Project scope",
+        "C": "Local scope"
+      }
+    },
+    "answer": {
+      "slot-1": "B"
+    },
+    "explanation": "Project scope stores repository-level configuration that can be version-controlled and shared with all collaborators. User and local scopes are personal or machine-specific, so they cannot reliably enforce a common MCP server set, permissions, and project context across a team.",
+    "imageUrl": "",
+    "layout": "inline",
+    "instruction": "Select the answer that correctly completes the sentence.",
+    "template": "{{slot-1}}",
+    "slots": [
+      {
+        "id": "slot-1",
+        "label": null
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-104",
+    "type": "multiple_choice",
+    "question": "You are conducting a discovery session with a business sponsor who requests “an AI system to fix our customer escalations.”\n\nWhich approach is most likely to produce actionable requirements?",
+    "options": {
+      "A": "Accept the sponsor’s original phrasing as a complete and final requirement and proceed directly to design without asking targeted questions to surface actors, triggers, or constraints.",
+      "B": "Decompose the request by asking targeted questions about who escalates, what triggers escalation, what good resolution looks like, and which constraints—latency, cost, audit, and data sensitivity—apply.",
+      "C": "Defer the discovery session indefinitely on the grounds that the sponsor must fully specify the system before the architect can ask any clarifying or scoping questions.",
+      "D": "Assume the requirement matches the architect’s previous engagement in a different industry and proceed with that context, without validating actors, triggers, or constraints for this sponsor."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Actionable requirements require clarifying the people involved, the events that initiate escalation, the desired definition of successful resolution, and applicable nonfunctional constraints such as latency, cost, auditability, and data sensitivity. These details turn a vague solution request into scoping and design requirements.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-108",
+    "type": "multiple_choice",
+    "question": "You are reviewing a peer's draft system prompt containing conflicting instructions: one section says never to speculate beyond the supplied source, while another instructs the model to confidently fill in any gaps.\n\nWhich response is most appropriate?",
+    "options": {
+      "A": "Add a priority instruction directing the model to evaluate all instructions and apply whichever appears most contextually appropriate on each request.",
+      "B": "Remove or rewrite the gap-filling instruction so the prompt consistently constrains the model to source-supported content.",
+      "C": "Increase temperature so output randomness masks the contradiction.",
+      "D": "Keep both instructions and rely on the model to decide which one to follow on each request."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "System prompts should give consistent, unambiguous instructions. Removing or rewriting the instruction to fill gaps ensures the model does not invent unsupported information and remains constrained to content supported by the supplied source.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-111",
+    "type": "multiple_choice",
+    "question": "You are assessing a Claude-based deployment for compliance with a particular regulation.\n\nWhich two steps must be performed before mapping the deployment’s data flows to individual regulatory clauses? Each correct answer represents part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Compare the in-place controls against the regulatory requirements to identify any compliance gaps.",
+      "B": "Identify the applicability of the regulation based on data types, jurisdiction, and audience.",
+      "C": "Schedule the remediation work with the engineering team based on the prioritized gap findings.",
+      "D": "Document the identified gaps along with recommended remediations and residual risk for sign-off.",
+      "E": "Inventory the vendor-provided compliance tooling and confirm which compliance affordances are in place."
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "explanation": "Regulatory applicability must be established from the data types, jurisdiction, and audience before clause-level analysis can be scoped. The vendor’s available compliance tooling and enabled compliance affordances must also be identified so the actual controls and data-handling capabilities can be mapped to the applicable clauses. Gap analysis, remediation planning, and sign-off follow that mapping.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-113",
+    "type": "multiple_choice",
+    "question": "You are conducting a discovery engagement for a new Claude-based capability and must complete the requirements-gathering activities before validating the captured requirements with stakeholders.\n\nWhich two steps must be completed BEFORE validating the captured requirements with stakeholders? Each correct answer presents part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Produce architecture decision records that capture the rationale for major design choices.",
+      "B": "Capture the business goals, success criteria, and the in-scope user population for the engagement.",
+      "C": "Document the consolidated requirements with traceability to the source stakeholder for each item.",
+      "D": "Schedule the rollout milestones and dependencies with engineering and product partners.",
+      "E": "Identify the non-functional constraints covering latency, cost, audit, data sensitivity, and regulatory needs."
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "explanation": "Business goals, measurable success criteria, scope, and the intended user population define the outcome the capability must serve. Non-functional constraints such as latency, cost, auditability, data sensitivity, and regulatory obligations bound which solutions are acceptable. These inputs must be elicited before stakeholders can meaningfully validate the requirements.\n\nLearn more\n- Define success criteria and build evaluations\n- Claude prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-118",
+    "type": "multiple_choice",
+    "question": "You are creating a human-in-the-loop validation workflow for a new Claude-based deployment and must finish the design steps before running a pilot of the workflow.\n\nWhich two steps must be completed BEFORE piloting the workflow using a representative subset of traffic? Each correct answer represents part of the solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Define the sampling strategy and the escalation criteria at each oversight point in the pipeline.",
+      "B": "Iterate the workflow design based on observed pilot findings before broader rollout to production.",
+      "C": "Onboard the reviewer pool with role-specific training on the check criteria and escalation procedures.",
+      "D": "Document the workflow with check criteria, escalation paths, and service-level agreements (SLAs) for each step.",
+      "E": "Identify the decision points in the pipeline that require human oversight by impact and reversibility."
+    },
+    "answer": [
+      "A",
+      "E"
+    ],
+    "explanation": "A human-in-the-loop validation design must identify the pipeline decisions that warrant human oversight according to their impact and reversibility, and define the sampling and escalation criteria for each oversight point. Those controls establish the scope and behavior to be tested in the pilot; revisions based on pilot findings occur afterward.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-119",
+    "type": "multiple_choice",
+    "question": "Engineering leadership plans to deploy Claude Skills to 280 developers across 14 teams. The Skills will capture internal coding standards, code-review checklists, and incident-postmortem templates. Leadership has asked how Skill authorship should be governed so that Skills stay trustworthy without creating a bottleneck around one central team.\n\nWhich governance model should you recommend?",
+    "options": {
+      "A": "Per-developer authorship across the 280 engineers with no team-level coordination required.",
+      "B": "Centralized authorship by a single platform team responsible for every Skill produced.",
+      "C": "Fully decentralized authorship across the 14 teams with no review before publication.",
+      "D": "Federated authorship across the 14 teams with a central review and publication gate."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Federated authorship enables each team to create and maintain Skills for its own domain, distributing the authoring workload. A central review and publication gate ensures that shared Skills meet organization-wide quality, security, consistency, and trust requirements before they become broadly available.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-120",
+    "type": "multiple_choice",
+    "question": "You are assembling continuity practices that extend across the deployment lifecycle.\n\nWhich two practices should be included on the list? Each correct answer provides a complete solution. (Select two.)\n\nChoose two",
+    "options": {
+      "A": "Maintain a stakeholder register and notify the listed parties at every phase transition event.",
+      "B": "Carry the evaluation framework and reference set forward across iterations rather than rebuilding each time.",
+      "C": "Archive every phase deliverable in long-term storage to preserve a record of what was produced.",
+      "D": "Capture lessons learned at the end of each phase and surface them as inputs to the next phase.",
+      "E": "Lock decisions made in early phases to prevent revisiting them as later phases begin."
+    },
+    "answer": [
+      "B",
+      "D"
+    ],
+    "explanation": "A continuous deployment lifecycle uses a persistent evaluation framework and reference set so results remain comparable across iterations and regressions can be detected. It also incorporates lessons learned from each phase into the next phase, enabling systematic improvement. Microsoft guidance describes continuously operationalized evaluation and recommends postmortems to capture deployment lessons.\n\nLearn more\n- Build an iterative evaluation framework in four stages\n- Architecture strategies for safe deployment practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-122",
+    "type": "multiple_choice",
+    "question": "You are choosing the documentation set that should accompany a Claude-based deployment at handoff.\n\nWhich set is the most complete?",
+    "options": {
+      "A": "Architecture overview, ADRs, component-level diagrams, runbooks for common operations, an on-call playbook, and a list of known limitations.",
+      "B": "Code comments scattered across individual source files with no integrating architecture overview, no ADRs, no runbooks, and no on-call playbook to orient operators or new team members.",
+      "C": "A single one-page architecture diagram with no ADRs, no runbooks, no on-call playbook, and no list of known limitations to support operators or future maintainers.",
+      "D": "A verbal handover walkthrough conducted on the day of transition, with no written architecture overview, ADRs, runbooks, playbook, or known limitations captured for future reference."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A complete deployment handoff package documents the overall architecture and component design, records architectural decisions, provides runbooks for routine operations and an on-call playbook for support, and identifies known limitations for operators and future maintainers.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-124",
+    "type": "dropdown",
+    "question": "You are categorizing token-management tactics by the request-lifecycle stage at which each applies.\n\nFor each tactic, select its applicable request-lifecycle stage.\n\nSelect",
+    "options": {
+      "slot-1": {
+        "A": "Input Preparation",
+        "B": "Prompt Construction",
+        "C": "Output Handling"
+      },
+      "slot-2": {
+        "A": "Input Preparation",
+        "B": "Prompt Construction",
+        "C": "Output Handling"
+      },
+      "slot-3": {
+        "A": "Input Preparation",
+        "B": "Prompt Construction",
+        "C": "Output Handling"
+      },
+      "slot-4": {
+        "A": "Input Preparation",
+        "B": "Prompt Construction",
+        "C": "Output Handling"
+      },
+      "slot-5": {
+        "A": "Input Preparation",
+        "B": "Prompt Construction",
+        "C": "Output Handling"
+      },
+      "slot-6": {
+        "A": "Input Preparation",
+        "B": "Prompt Construction",
+        "C": "Output Handling"
+      }
+    },
+    "answer": {
+      "slot-1": "C",
+      "slot-2": "B",
+      "slot-3": "A",
+      "slot-4": "C",
+      "slot-5": "B",
+      "slot-6": "A"
+    },
+    "explanation": "Input preparation reduces or condenses conversation and retrieved context before it is assembled. Prompt construction determines the ordering and stable cacheable prefix of the prompt. Output handling validates generated structured data and persists validated results for downstream use and auditing.\n\nLearn more\n- Prompt caching\n- Structured Outputs",
+    "imageUrl": "",
+    "layout": "rows",
+    "instruction": "",
+    "template": null,
+    "slots": [
+      {
+        "id": "slot-1",
+        "label": "Persist the validated output for downstream consumption and audit."
+      },
+      {
+        "id": "slot-2",
+        "label": "Order the prompt sections so cacheable content sits before per-request content."
+      },
+      {
+        "id": "slot-3",
+        "label": "Summarize prior conversation history when full history is no longer needed."
+      },
+      {
+        "id": "slot-4",
+        "label": "Validate the model's structured output against the expected schema."
+      },
+      {
+        "id": "slot-5",
+        "label": "Move stable repeated content into a cacheable prefix at the head of the prompt."
+      },
+      {
+        "id": "slot-6",
+        "label": "Trim retrieved passages to spans relevant to the user's question."
+      }
+    ]
+  },
+  {
+    "id": "ccar-p-126",
+    "type": "multiple_choice",
+    "question": "When the support agent invokes escalate_to_human, human agents report they must re-read the entire raw conversation to understand each case, and average handle time for escalated tickets has risen. What should the agent do at the moment of escalation to fix this?",
+    "options": {
+      "A": "Attach the full untrimmed transcript of the conversation so the human has complete information.",
+      "B": "Enable extended thinking on the escalation turn so the model reasons longer before handing off.",
+      "C": "Escalate earlier in ambiguous cases so humans receive tickets before much conversation has accumulated.",
+      "D": "Produce a structured handoff summary — the customer's issue, verified identifiers, tool results and account state gathered, actions already attempted, and the specific recommended next step."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Why D is correct. Effective human handoff requires a structured summary that front-loads exactly what the human needs: the problem, confirmed identifiers, what was tried, and a recommendation. That is what removes the re-reading burden and shortens handle time. Dumping the full transcript (A) is the current failure mode — it forces the human to reconstruct the case themselves. Extended thinking (B) improves the model's own reasoning but produces no artifact for the human. Escalating earlier (C) changes when tickets arrive, not the missing information problem, and would likely lower first-contact resolution.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccar-p-127",
+    "type": "multiple_choice",
+    "question": "You are evaluating two configurations for an internal compliance Q&A assistant. Configuration X decreases top-k retrieval and uses a lighter model, reducing p95 latency by 38 percent but resulting in a measured 2 percent decrease in the accuracy benchmark. Configuration Y keeps the current top-k retrieval setting and heavier model, with no change to p95 latency and no measurable accuracy change. The deployment’s declared priorities are accuracy first and latency second.\n\nWhich configuration is the better recommendation?",
+    "options": {
+      "A": "Configuration X, because the 2 percent accuracy reduction falls within normal benchmark variance and is not a meaningful regression.",
+      "B": "Configuration Y, because the deployment’s stated priority is accuracy first, and Configuration X produces a measured reduction in accuracy.",
+      "C": "Configuration X, because lower latency generally matters more than accuracy, regardless of the deployment’s stated priorities.",
+      "D": "Configuration X, because a 38 percent latency improvement outweighs a 2 percent accuracy reduction as a general rule across compliance deployments."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "When accuracy is the primary deployment priority, the configuration that maintains measured accuracy is preferable. Configuration Y preserves accuracy, while Configuration X introduces a measured accuracy regression; its latency improvement is secondary to that stated priority.",
+    "imageUrl": ""
   }
 ]

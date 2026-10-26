@@ -8,13 +8,15 @@ import { useExplanation } from '../hooks/useExplanation';
 import ExplanationDialogs from './ExplanationDialogs';
 import { useAuth } from '../hooks/useAuth';
 import { resolveCheckpoint } from '../utils/quizProgress';
+import { emptyAnswer, isAnswerComplete, isAnswerCorrect, formatQuestionText } from '../utils/questionModel';
+import { scrollToTop } from '../utils/scroll';
 
 const { Title, Text, Paragraph } = Typography;
 
 function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = null, progressState }) {
   const { isAuthenticated, user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(initialQuestionIndex);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(() => emptyAnswer(questions[initialQuestionIndex]));
   const [answered, setAnswered] = useState(false);
   const [jumpToQuestion, setJumpToQuestion] = useState(null);
   const [isCopying, setIsCopying] = useState(false);
@@ -43,55 +45,28 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   
   const correctAnswers = currentQuestion.answer;
   
-  // Determine if current question has multiple correct answers
-  const hasMultipleAnswers = correctAnswers.length > 1;
-  
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
-    
-    // For multiple choice questions, only show feedback when enough options are selected
-    if (hasMultipleAnswers) {
-      if (Array.isArray(answer) && answer.length === correctAnswers.length) {
-        setAnswered(true);
-      } else {
-        setAnswered(false);
-      }
-    } else {
-      // For single choice questions, show feedback immediately
-      setAnswered(true);
-    }
+    setAnswered(isAnswerComplete(currentQuestion, answer));
   };
   
   // Check if the selected answers are correct
   const checkIfCorrect = () => {
-    if (!selectedAnswer) return false;
-    
-    if (hasMultipleAnswers) {
-      // For multiple answers, check if selections match exactly with correct answers
-      if (!Array.isArray(selectedAnswer)) return false;
-      if (selectedAnswer.length !== correctAnswers.length) return false;
-      
-      // Check if all selected answers are in the correct answers list
-      return selectedAnswer.every(ans => correctAnswers.includes(ans)) &&
-             correctAnswers.every(ans => selectedAnswer.includes(ans));
-    } else {
-      // For single answer
-      return selectedAnswer === correctAnswers[0];
-    }
+    return isAnswerCorrect(currentQuestion, selectedAnswer);
   };
 
   // Check if enough options are selected for multiple choice questions
   const hasEnoughSelections = () => {
-    if (!hasMultipleAnswers) return true;
-    return selectedAnswer && Array.isArray(selectedAnswer) && selectedAnswer.length === correctAnswers.length;
+    return isAnswerComplete(currentQuestion, selectedAnswer);
   };
   
   const goToNextQuestion = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
+      scrollToTop();
       // Initialize the answer for the next question
       const nextQuestion = questions[currentIndex + 1];
-      setSelectedAnswer(nextQuestion.answer.length > 1 ? [] : null);
+      setSelectedAnswer(emptyAnswer(nextQuestion));
       setAnswered(false);
     }
   };
@@ -99,9 +74,10 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   const goToPreviousQuestion = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
+      scrollToTop();
       // Initialize the answer for the previous question
       const prevQuestion = questions[currentIndex - 1];
-      setSelectedAnswer(prevQuestion.answer.length > 1 ? [] : null);
+      setSelectedAnswer(emptyAnswer(prevQuestion));
       setAnswered(false);
     }
   };
@@ -112,8 +88,9 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
       // Convert from 1-based (user-facing) to 0-based (internal) indexing
       const newIndex = jumpToQuestion - 1;
       setCurrentIndex(newIndex);
+      scrollToTop();
       const targetQuestion = questions[newIndex];
-      setSelectedAnswer(targetQuestion.answer.length > 1 ? [] : null);
+      setSelectedAnswer(emptyAnswer(targetQuestion));
       setAnswered(false);
       setJumpToQuestion(null); // Clear the input after jumping
     }
@@ -128,18 +105,9 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
   };
 
   const handleCopyQuestion = async () => {
-    const parts = [currentQuestion.question];
-    if (currentQuestion.imageUrl?.trim()) {
-      parts.push(`Image: ${currentQuestion.imageUrl.trim()}`);
-    }
-    parts.push(Object.entries(currentQuestion.options)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, value]) => `${key}. ${value}`)
-      .join('\n'));
-
     setIsCopying(true);
     try {
-      await navigator.clipboard.writeText(parts.join('\n\n'));
+      await navigator.clipboard.writeText(formatQuestionText(currentQuestion));
       messageApi.success('Question copied!');
     } catch {
       messageApi.error('Could not copy. Please select and copy the question manually.');
@@ -147,15 +115,6 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
       setIsCopying(false);
     }
   };
-
-  // Initialize the selected answer type based on question type
-  React.useEffect(() => {
-    if (hasMultipleAnswers && !Array.isArray(selectedAnswer)) {
-      setSelectedAnswer([]);
-    } else if (!hasMultipleAnswers && Array.isArray(selectedAnswer)) {
-      setSelectedAnswer(null);
-    }
-  }, [currentIndex, hasMultipleAnswers, selectedAnswer]);
 
   const handleSaveProgress = () => {
     if (!isAuthenticated || !quizId || isMarking || progressState.loading || progressState.error) return;
@@ -222,6 +181,7 @@ function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = nu
       
       <Card className="quiz-question-shell">
         <Question 
+          data={currentQuestion}
           question={currentQuestion.question}
           imageUrl={currentQuestion.imageUrl}
           options={currentQuestion.options}

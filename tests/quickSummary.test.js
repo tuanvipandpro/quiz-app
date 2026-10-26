@@ -7,13 +7,17 @@ import { fingerprintQuestions, validateSummaryMetadata, parseSummaryMarkdown, lo
 const assets = [
   { quizId: 'anthropic-ccar-p', bank: 'CCAR_P.json', label: 'CCAR-P' },
   { quizId: 'anthropic-cca-f', bank: 'CCA_F.json', label: 'CCA-F' },
+  { quizId: 'anthropic-ccao-f', bank: 'CCAO_F.json', label: 'CCAO-F' },
+  { quizId: 'anthropic-ccdv-f', bank: 'CCDV_F.json', label: 'CCDV-F' },
 ].map(asset => ({
   ...asset,
   questions: JSON.parse(fs.readFileSync(new URL('../public/quiz/Anthropic/' + asset.bank, import.meta.url), 'utf8')),
   meta: JSON.parse(fs.readFileSync(new URL('../public/summaries/' + asset.quizId + '/meta.json', import.meta.url), 'utf8')),
   markdown: fs.readFileSync(new URL('../public/summaries/' + asset.quizId + '/vi.md', import.meta.url), 'utf8'),
 }));
-const { quizId, questions, meta, markdown } = assets[0];
+const { quizId, meta, markdown } = assets[0];
+const reviewedIds = new Set(meta.topics.flatMap(topic => topic.questionIds));
+const questions = assets[0].questions.filter(question => reviewedIds.has(String(question.id)));
 
 function fetchFixture(asset = assets[0]) {
   const calls = [];
@@ -25,15 +29,15 @@ function fetchFixture(asset = assets[0]) {
 }
 
 for (const { quizId, questions, meta, markdown, label } of assets) {
-  test(`published ${label} guide covers the bank with valid topic references and current content fingerprint`, async () => {
+  test(`published ${label} guide preserves its reviewed source snapshot and valid question references`, async () => {
     assert.equal(validateSummaryMetadata(meta, quizId), meta);
-    assert.equal(meta.sourceQuestionCount, questions.length);
-    assert.equal(meta.sourceQuizHash, await fingerprintQuestions(questions));
     const document = parseSummaryMarkdown(markdown, meta.topics);
     assert.equal(document.sections.length, 8);
     const ids = new Set(questions.map(question => question.id));
     const references = new Set(document.sections.flatMap(section => section.questionIds));
-    assert.deepEqual([...references].sort(), [...ids].sort());
+    assert.ok([...references].every(id => ids.has(id)));
+    assert.equal(references.size, meta.sourceQuestionCount);
+    assert.equal(meta.sourceQuizHash, await fingerprintQuestions(questions.filter(question => references.has(String(question.id)))));
     assert.ok(markdown.split(/\s+/).length < 1600, 'Keep the quick guide within a short reading session');
   });
 }
@@ -84,16 +88,18 @@ test('guide requests honor deployment base paths and pass cancellation to both f
       assert.equal(calls[0].url, prefix + 'summaries/' + asset.quizId + '/meta.json');
       assert.equal(calls[1].url, prefix + 'summaries/' + asset.quizId + '/vi.md');
       assert.ok(calls.every(call => call.options.signal === controller.signal));
-      assert.equal(guide.sourceChanged, false);
+      assert.equal(guide.sourceChanged, (await fingerprintQuestions(asset.questions)) !== asset.meta.sourceQuizHash);
       assert.equal(guide.meta.quizId, asset.quizId);
     }
   }
 });
 
-test('CCA-F cannot display the published CCAR-P document after a wrong metadata response', async () => {
-  const { calls, fetchImpl } = fetchFixture(assets[0]);
-  await assert.rejects(loadQuickSummary({ quizId: assets[1].quizId, questions: assets[1].questions, fetchImpl }), /metadata/);
-  assert.equal(calls.length, 1, 'Reject a different quiz before requesting its Markdown');
+test('published guides reject another quiz’s metadata before requesting its Markdown', async () => {
+  for (const target of assets) for (const wrong of assets.filter(asset => asset.quizId !== target.quizId)) {
+    const { calls, fetchImpl } = fetchFixture(wrong);
+    await assert.rejects(loadQuickSummary({ quizId: target.quizId, questions: target.questions, fetchImpl }), /metadata/);
+    assert.equal(calls.length, 1, 'Reject a different quiz before requesting its Markdown');
+  }
 });
 
 test('failed metadata/content loads reject and a later retry can recover', async () => {
