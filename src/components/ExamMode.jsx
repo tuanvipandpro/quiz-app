@@ -20,6 +20,8 @@ import QuizActionButton from './QuizActionButton';
 import { useExplanation } from '../hooks/useExplanation';
 import ExplanationDialogs from './ExplanationDialogs';
 import { useAuth } from '../hooks/useAuth';
+import { emptyAnswer, isAnswerComplete, isAnswerCorrect as checkAnswer, isStructuredQuestion, formatAnswerLines, shuffleQuestionOptions } from '../utils/questionModel';
+import { scrollToTop } from '../utils/scroll';
 import 'antd/dist/reset.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -51,15 +53,6 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
     return copied;
   };
 
-  const shuffleQuestionOptions = (question) => {
-    const optionEntries = Object.entries(question.options || {});
-    const shuffledOptions = Object.fromEntries(shuffleArray(optionEntries));
-    return {
-      ...question,
-      options: shuffledOptions
-    };
-  };
-  
   // Initialize exam with selected random questions and set up timer
   useEffect(() => {
     const shuffled = shuffleArray(questions);
@@ -67,11 +60,11 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
     const examSize = Math.min(Math.max(1, requestedQuestionCount), questions.length);
     const selected = shuffled
       .slice(0, examSize)
-      .map(shuffleQuestionOptions);
+      .map(question => shuffleQuestionOptions(question));
     setExamQuestions(selected);
     
     // Initialize answers array with null for single-answer questions and empty arrays for multiple-answer questions
-    const initialAnswers = selected.map(q => q.answer.length > 1 ? [] : null);
+    const initialAnswers = selected.map(emptyAnswer);
     setAnswers(initialAnswers);
     
     // Set exam end time
@@ -111,7 +104,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
   const getAnsweredQuestions = () => {
     return answers.filter((a, i) => {
       const q = examQuestions[i];
-      return q.answer.length > 1 ? (Array.isArray(a) && a.length === q.answer.length) : a !== null;
+      return isAnswerComplete(q, a);
     }).length;
   };
   
@@ -204,9 +197,6 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
   const progressValue = ((currentIndex + 1) / examQuestions.length) * 100;
   const progress = parseFloat(progressValue.toFixed(2));
   
-  // Determine if current question has multiple correct answers
-  const hasMultipleAnswers = currentQuestion.answer.length > 1;
-  
   const handleAnswer = (answer) => {
     const newAnswers = [...answers];
     newAnswers[currentIndex] = answer;
@@ -225,24 +215,27 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
   
   const goToQuestion = (questionIndex) => {
     setCurrentIndex(questionIndex);
+    scrollToTop();
     setReviewModalVisible(false);
   };
   
   const goToNextQuestion = () => {
     if (currentIndex < examQuestions.length - 1) {
       setCurrentIndex(currentIndex + 1);
+      scrollToTop();
     }
   };
   
   const goToPreviousQuestion = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
+      scrollToTop();
     }
   };
   
   const handleExplainClick = ai.explain;
 
-  const hasAnyAnswer = (questionIndex) => {
+  const isQuestionAnswered = (questionIndex) => {
     const question = examQuestions[questionIndex];
     const answer = answers[questionIndex];
 
@@ -250,11 +243,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
       return false;
     }
 
-    if (question.answer.length > 1) {
-      return Array.isArray(answer) && answer.length > 0;
-    }
-
-    return answer !== null;
+    return isAnswerComplete(question, answer);
   };
 
   const formatSelectedAnswers = (questionIndex) => {
@@ -265,19 +254,11 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
       return [];
     }
 
-    if (question.answer.length > 1) {
-      if (!Array.isArray(answer) || answer.length === 0) {
-        return [];
-      }
-
-      return [...answer].sort((left, right) => left.localeCompare(right));
-    }
-
-    return answer ? [answer] : [];
+    return formatAnswerLines(question, answer);
   };
 
   const getReviewCardStyle = (questionIndex) => {
-    const answered = hasAnyAnswer(questionIndex);
+    const answered = isQuestionAnswered(questionIndex);
     const correct = isAnswerCorrect(questionIndex);
     const isCurrent = questionIndex === currentIndex;
 
@@ -314,17 +295,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
     const question = examQuestions[questionIndex];
     const answer = answers[questionIndex];
     
-    if (question.answer.length > 1) {
-      // Multiple answer question
-      if (!Array.isArray(answer) || answer.length !== question.answer.length) return false;
-      
-      // Check if all selected answers are in the correct answers list
-      return answer.every(ans => question.answer.includes(ans)) &&
-             question.answer.every(ans => answer.includes(ans));
-    } else {
-      // Single answer question
-      return answer === question.answer[0];
-    }
+    return checkAnswer(question, answer);
   };
   
   const handleSubmit = () => {
@@ -458,13 +429,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
   // Check if all questions are answered (either with a string value or non-empty array)
   const allAnswered = answers.every((answer, index) => {
     const question = examQuestions[index];
-    if (question.answer.length > 1) {
-      // For multiple answer questions, need exactly the correct number of answers
-      return Array.isArray(answer) && answer.length === question.answer.length;
-    } else {
-      // For single answer questions, need non-null value
-      return answer !== null;
-    }
+    return isAnswerComplete(question, answer);
   });
   
   if (examSubmitted) {
@@ -512,7 +477,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
             <Card size="small">
               <Statistic
                 title="Answered"
-                value={answers.filter((_, index) => hasAnyAnswer(index)).length}
+                value={getAnsweredQuestions()}
                 prefix={<QuestionCircleOutlined />}
                 valueStyle={{ color: '#1890ff' }}
               />
@@ -531,6 +496,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
           style={{ marginBottom: '20px' }}
         >
           <Question
+            data={reviewedQuestion}
             question={reviewedQuestion.question}
             imageUrl={reviewedQuestion.imageUrl}
             options={reviewedQuestion.options}
@@ -544,20 +510,20 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
             sortOptions={false}
           />
 
-          <div className="selected-answer-panel" style={{ marginTop: '16px', padding: '16px', borderRadius: '8px' }}>
+          {!isStructuredQuestion(reviewedQuestion) && <div className="selected-answer-panel" style={{ marginTop: '16px', padding: '16px', borderRadius: '8px' }}>
             <Title level={5} style={{ marginTop: 0 }}>Selected Answer{selectedAnswers.length > 1 ? 's' : ''}</Title>
             {selectedAnswers.length > 0 ? (
-              selectedAnswers.map((optionKey) => (
-                <div key={optionKey} style={{ marginBottom: '6px' }}>
+              selectedAnswers.map((line, index) => (
+                <div key={index} style={{ marginBottom: '6px' }}>
                   <Text>
-                    {reviewedQuestion.options[optionKey]}
+                    {line}
                   </Text>
                 </div>
               ))
             ) : (
               <Text type="secondary">No answer selected.</Text>
             )}
-          </div>
+          </div>}
         </Card>
 
         <div className="quiz-review-legend">
@@ -644,6 +610,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
       
       <Card className="quiz-question-shell">
         <Question 
+          data={currentQuestion}
           question={currentQuestion.question}
           imageUrl={currentQuestion.imageUrl}
           options={currentQuestion.options}
@@ -744,9 +711,7 @@ function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }
         <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
           <Row gutter={[8, 8]}>
             {examQuestions.map((question, index) => {
-              const isAnswered = question.answer.length > 1 
-                ? (Array.isArray(answers[index]) && answers[index].length === question.answer.length)
-                : answers[index] !== null;
+              const isAnswered = isAnswerComplete(question, answers[index]);
               const isFlagged = flaggedQuestions.includes(index);
               const isCurrent = index === currentIndex;
               

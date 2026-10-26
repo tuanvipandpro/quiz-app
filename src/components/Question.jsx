@@ -1,14 +1,13 @@
 // components/Question.jsx
-import React, { useState } from 'react';
-import { Card, Radio, Checkbox, Space, Typography, Button, Modal, Spin } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+import React from 'react';
+import { Card, Radio, Checkbox, Space, Typography } from 'antd';
+import StructuredQuestion from './StructuredQuestion';
+import { isStructuredQuestion } from '../utils/questionModel';
 
 const { Title, Text, Paragraph } = Typography;
 
 function Question({ 
+  data,
   question,
   imageUrl, 
   options, 
@@ -22,6 +21,8 @@ function Question({
   sortOptions = true,
   // Remove onExplain from here - we'll handle it at the parent component
 }) {
+  if (data && isStructuredQuestion(data)) return <StructuredQuestion data={data} selectedAnswer={selectedAnswer}
+    onSelectAnswer={onSelectAnswer} showFeedback={showFeedback} isCorrect={isCorrect} readOnly={readOnly} />;
   // Convert options object to array of {key, value}; keep incoming order when sortOptions is false.
   const optionEntries = Object.entries(options)
     .map(([key, value]) => ({ key, value }));
@@ -174,7 +175,7 @@ function Question({
                 Incorrect. The correct answer{correctOptions.length > 1 ? 's are' : ' is'}:
               </Text>
               <div style={{ marginTop: '10px', paddingLeft: '15px' }}>
-                {correctOptions
+                {[...correctOptions]
                   .sort((a, b) => a.localeCompare(b)) // Sort correct answers by ABCD order
                   .map((opt) => (
                     <div key={opt} style={{ marginBottom: '5px' , display: 'inline-block'}}>
