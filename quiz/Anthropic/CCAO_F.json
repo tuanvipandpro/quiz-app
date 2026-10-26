@@ -1,0 +1,1853 @@
+[
+  {
+    "id": "ccao-f-1",
+    "question": "A strategy manager reviews a Claude-generated recommendation to merge the company’s two regional warehouses into a single location. The recommendation references three sources estimating cost savings and one source that confirms consolidation is operationally feasible. Two source documents also include estimates of one-time transition costs and a stakeholder concern about regional service levels, neither of which is included in the recommendation.\n\nWhich concern is most justified?",
+    "options": {
+      "A": "The recommendation is acceptable for an initial round, but the missing material should be added in a separate appendix rather than reprompting the original output.",
+      "B": "The recommendation reflects selective use of the source documents and should be re-prompted to address the transition costs and the service-level concern before it is used.",
+      "C": "The recommendation should be rejected because it relies on only four sources, which is insufficient for a decision of this size.",
+      "D": "The recommendation is sound because every source it cites supports the consolidation conclusion."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A decision recommendation must account for material evidence that could affect the outcome. Omitting documented transition costs and a concern about regional service levels presents only the favorable evidence for consolidation, so the recommendation should be re-prompted to address those issues before it is used.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-2",
+    "question": "You are an operations lead classifying proposed Claude use cases according to whether they are acceptable for your team to pursue.\n\nWhich two proposed use cases are acceptable for the team to pursue with Claude?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "synthesizing themes across approved customer feedback under aggregation rules",
+      "B": "summarizing performance review notes across a team to support a manager’s promotion decisions",
+      "C": "drafting a preliminary symptom summary to support a clinician’s diagnostic review",
+      "D": "drafting a legal summary that an attorney will review and edit before sharing with a client",
+      "E": "drafting an internal training summary from approved internal documentation"
+    },
+    "answer": [
+      "A",
+      "E"
+    ],
+    "explanation": "Synthesizing approved customer feedback under aggregation controls and creating internal training summaries from approved internal documentation are bounded, low-risk information-processing tasks. Promotion decisions are employment-related high-impact decisions, while diagnostic support and client-facing legal drafting involve healthcare and legal guidance, respectively; these domains require heightened safeguards and are not routine team-approved use cases merely because a human reviews the output.\n\nLearn more\n- Anthropic Usage Policy Update",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-3",
+    "question": "You are an analyst tackling a one-off, complex problem that truly requires multi-step reasoning across an extended chain of thought. Which model is most appropriate for this work?",
+    "options": {
+      "A": "A non-Anthropic model, because the Claude lineup has no option for complex reasoning.",
+      "B": "Opus, because it is positioned as the most capable for advanced reasoning on complex specialized tasks.",
+      "C": "Haiku, because lightweight models are always preferred regardless of complexity.",
+      "D": "Any model, because reasoning depth does not vary across the lineup."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Opus is Anthropic’s highest-capability model tier and is positioned for advanced reasoning and complex, specialized tasks. That makes it the appropriate choice when a one-off problem requires an extended, multi-step reasoning process.\n\nLearn more\n- Intro to Claude",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-4",
+    "question": "Before uploading a customer file for Code Execution analysis, a customer-success associate at Noventra, Ltd. is reviewing the planned task.\n\nWhich two practices most closely align with sound data handling?\n\nChoose two",
+    "options": {
+      "A": "Confirm that the planned Code Execution task aligns with the organization’s data classification policy and escalate to the appropriate contact if the data sensitivity exceeds approved use.",
+      "B": "Review the file for sensitive, confidential, or regulated fields before upload, and remove or redact any fields that are not required for the planned Code Execution analysis.",
+      "C": "Skip the upload review entirely on the basis of urgency, even though the file might contain regulated fields that organizational policy requires the user to redact before any code execution.",
+      "D": "Bypass the data classification policy because the task is internal, treating sandboxed processing as an exemption from the review the policy requires before sensitive data is uploaded.",
+      "E": "Upload the full unredacted customer file without review, on the assumption that a sandboxed execution environment removes the need to apply the organization’s data classification policy."
+    },
+    "answer": [
+      "A",
+      "B"
+    ],
+    "explanation": "Data should be handled according to the organization’s classification policy, with escalation when the planned use exceeds approved sensitivity limits. Files should also be reviewed before upload so that sensitive, confidential, or regulated fields not needed for the analysis are removed or redacted. A sandboxed execution environment does not eliminate these policy and data-minimization obligations.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-5",
+    "question": "You are assessing proposed workflow changes to determine whether they materially improve the workflow. Which two proposed changes meaningfully improve a recurring Claude workflow?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "updating the team’s shared workspace name to reflect the new workflow process",
+      "B": "labeling each workflow step with descriptive names to improve readability for new team members",
+      "C": "extracting the standard reference material into a Project to avoid repeating it",
+      "D": "reorganizing the workflow document’s section headings to improve navigation",
+      "E": "adding a quality check on outputs before they enter the downstream process"
+    },
+    "answer": [
+      "C",
+      "E"
+    ],
+    "explanation": "Claude Projects use uploaded knowledge as context across all chats in the Project, so placing standard reference material there avoids repeatedly supplying the same context in a recurring workflow. A quality check before output enters a downstream process prevents incorrect or unsuitable results from being propagated. Workspace names, step labels, and document headings improve organization or readability but do not add reusable Claude context or an output-control mechanism.\n\nLearn more\n- How can I create and manage projects?\n- Understanding Claude's personalization features",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-6",
+    "question": "You are evaluating a Claude-generated report that maintains a confident tone throughout. Which question most effectively distinguishes plausibility from verification?",
+    "options": {
+      "A": "Can each specific claim be traced to a credible source or to the supplied input material?",
+      "B": "Does the response open with a clear, well-framed statement of the main finding?",
+      "C": "Does the response cover the topic comprehensively based on its length and section count?",
+      "D": "Does the response use varied sentence structure across sections?"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Verification requires checking whether individual claims are supported by credible sources or by the supplied input material. Confidence, framing, length, coverage, and sentence variety can make content seem plausible but do not establish that its claims are substantiated.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-7",
+    "question": "You are a marketing manager determining what to put in custom instructions for a writing-focused Project.\n\nWhich two items should be included in the custom instructions?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "the brand voice and the tonal expectations the writing must follow",
+      "B": "a representative sample of past writing that reflects the team’s preferred style and structure",
+      "C": "the prompt author’s preferred response length for internal messages unrelated to external deliverables",
+      "D": "the preferred writing style of the marketing manager who will review all final deliverables",
+      "E": "the standard structure and the length expectations for typical deliverables"
+    },
+    "answer": [
+      "A",
+      "E"
+    ],
+    "explanation": "Writing-project instructions should set the reusable requirements that apply to the project’s outputs, including the brand voice and tonal requirements, as well as the standard structure and expected length of typical deliverables. Project instructions can direct how ChatGPT responds within that project, including style, concision, and formatting.\n\nLearn more\n- Projects in ChatGPT",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-8",
+    "question": "You are a knowledge worker who broke a “draft a board memo” request into fifteen small steps and noticed that the output now feels disjointed because related ideas were separated.\n\nWhich adjustment is most appropriate?",
+    "options": {
+      "A": "Combine the original request back into one unstructured sentence.",
+      "B": "Subdivide each tiny step into ten more tiny steps for additional precision.",
+      "C": "Remove all sequencing so the steps run in random order.",
+      "D": "Consolidate related steps into fewer cohesive sections that group naturally connected ideas."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Related work should be consolidated into cohesive sections so naturally connected ideas remain together, improving coherence without discarding the useful structure of the task.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-9",
+    "question": "You are a knowledge worker reviewing a Claude-generated brief that claims a “well-known industry standard” but does not identify any source. How should this claim be handled?",
+    "options": {
+      "A": "Treat the assertion as unverified, and either source it from an authoritative reference or remove it.",
+      "B": "Accept the assertion because the phrase \"well-known\" is reassuring.",
+      "C": "Republish the brief unchanged because the claim sounds authoritative.",
+      "D": "Strengthen the assertion by adding more confident wording."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Claims about an industry standard require support from an authoritative, identifiable reference. An unnamed assertion remains unverified and should be sourced or removed rather than accepted or strengthened based on its wording alone.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-10",
+    "question": "You are breaking down a “build a customer journey map” request.\n\nWhich sequence of decomposed steps is correct?\n\n1. Identify the touchpoints the customer experiences during each stage.\n2. Define the persona and the journey scope that will be mapped.\n3. Document pain points and opportunities at every touchpoint.\n4. Synthesize the findings into the finished journey-map artifact.\n5. Identify the primary stages the persona progresses through.",
+    "options": {
+      "A": "2, 5, 1, 3, 4",
+      "B": "1, 2, 5, 3, 4",
+      "C": "5, 2, 1, 3, 4",
+      "D": "2, 1, 5, 3, 4"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A customer journey map is grounded in a defined persona and journey scope. Its structure is then established by identifying the persona’s major stages, followed by the touchpoints within those stages. Pain points and opportunities are evaluated at those touchpoints before all findings are synthesized into the final journey map.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-11",
+    "question": "A knowledge worker is using the AI Fluency Framework’s Description competency to revise an underperforming prompt. Which revision most accurately reflects Description principles?",
+    "options": {
+      "A": "Remove the existing context from the prompt and submit only the bare task statement, eliminating the audience, format, and constraint information that Description principles call for in a clear specification.",
+      "B": "Replace the specific instructions with generic phrasing that broadens the task scope, undoing the specification work that Description principles require for a reliable, useful output on the next run.",
+      "C": "Specify the task scope, the required output format, the audience, and the relevant constraints with sufficient clarity that the prompt produces a useful, reliable output on the next run.",
+      "D": "Add length to the prompt by inserting filler text that does not specify task scope, output format, audience, or constraints, leaving the original specification gaps in the underperforming prompt unaddressed."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Description involves communicating goals clearly enough to prompt useful AI behaviors and outputs. Defining the task scope, required output format, intended audience, and applicable constraints provides the specification needed for a useful, reliable result.\n\nLearn more\n- AI Fluency: Framework & Foundations\n- The AI Fluency Framework",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-12",
+    "question": "You are a knowledge worker moving from a long, drifting conversation to a fresh, focused session. What is the correct sequence of transition steps?\n\n1. Start a new chat and paste the summary as its initial context.\n2. Summarize the goals, key decisions, and open questions from the lengthy conversation.\n3. Determine which references should remain available beyond the current chat.\n4. Place persistent references in a Project’s knowledge base or attach them as needed.\n5. Verify that the new chat is on-task before resuming the work.",
+    "options": {
+      "A": "1, 2, 3, 4, 5",
+      "B": "2, 3, 4, 1, 5",
+      "C": "2, 4, 3, 1, 5",
+      "D": "3, 2, 4, 1, 5"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A focused continuation requires a usable summary before a new chat can receive its starting context. References intended for reuse should be identified and added to Project sources or attached before continuing, because Projects keep related chats, files, and instructions together to preserve context and stay on-task. The new chat can then be validated for alignment before work resumes.\n\nLearn more\n- Projects in ChatGPT",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-13",
+    "question": "An operations assistant is redesigning a recurring data-processing workflow step to use Code Execution. Which two design decisions best promote reliable integration?\n\nChoose two",
+    "options": {
+      "A": "Vary the input file format from run to run to accommodate the different source systems that supply the data each week.",
+      "B": "Define a brief output verification step in which the human reviewer confirms the computed result against an expected range or sanity check before the output advances to downstream consumers.",
+      "C": "Embed the Code Execution step inside the workflow without documenting the expected output format or the fields it produces.",
+      "D": "Standardize the input file format the step expects, so each run of the Code Execution step receives consistent input and produces comparable, verifiable output across recurring weekly cycles.",
+      "E": "Eliminate the human review step that follows Code Execution, since the sandboxed environment already verifies that the code ran without errors."
+    },
+    "answer": [
+      "B",
+      "D"
+    ],
+    "explanation": "Recurring automated processing is most reliable when each execution receives a consistent input structure, allowing outputs to be compared and verified across cycles. Successful code execution only establishes that the code ran; it does not establish that the computed result is valid for the business context. A human reviewer’s expected-range or sanity check provides a control before downstream consumers receive the output.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-14",
+    "question": "You are assessing proposed evaluation criteria for a Claude-generated business brief. Which two criteria are valid for evaluating a brief produced by Claude?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "factual accuracy of the claims made against the supplied source material",
+      "B": "consistency of the writing style with the organization’s established tone guidelines",
+      "C": "total word count of the output relative to industry benchmarks for business briefs",
+      "D": "presence of an executive summary section as a structural completeness check",
+      "E": "alignment of the output with the requested format and length constraints"
+    },
+    "answer": [
+      "A",
+      "E"
+    ],
+    "explanation": "A reliable evaluation of an LLM-generated business brief measures factual grounding against the supplied material and task fidelity to the requested output requirements, including format and length. These criteria are specific, measurable, and directly relevant to the brief’s intended use.\n\nLearn more\n- Define success criteria and build evaluations\n- Reduce hallucinations",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-15",
+    "question": "You are a member of an operations team preparing input to summarize customer feedback. The feedback file combines public quotations with personal contact information.\n\nWhich preparation method is most appropriate?",
+    "options": {
+      "A": "Extract only the feedback content needed for the summary, redact or anonymize personal contact details, and submit the trimmed input.",
+      "B": "Submit the entire file unchanged so Claude has complete context.",
+      "C": "Replace the feedback content with the personal contact details and ask Claude to invent the missing feedback.",
+      "D": "Strip out the feedback content and submit only the personal contact details."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Only the feedback necessary for the summary should be provided, while personal contact details should be removed, redacted, or anonymized. This preserves the information needed for the task while minimizing unnecessary exposure of personally identifiable information.\n\nLearn more\n- Customer Support Agent — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-16",
+    "question": "You are an operations lead and observe that a Project’s outputs have been drifting away from the team’s current expectations. Which maintenance action should be attempted first?",
+    "options": {
+      "A": "Review the Project’s instructions and reference materials against current standards.",
+      "B": "Switch the Project to a different Claude model in the hope it behaves better.",
+      "C": "Continue using the Project and accept the drift as the new baseline of behavior.",
+      "D": "Retire the Project and rebuild a new one from scratch with fresh content."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Project instructions define how Claude should behave and respond across the Project’s chats, while uploaded project knowledge supplies the shared context. Reviewing those instructions and reference materials against current standards addresses the most direct, controllable cause of output drift before considering a model change or rebuilding the Project.\n\nLearn more\n- How can I create and manage projects?\n- What are projects?",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-17",
+    "question": "A manager is determining which changes to make during a memory-maintenance review for a long-running workflow. Which two actions most effectively support memory quality over time?\n\nChoose two",
+    "options": {
+      "A": "Delete all memories as the maintenance action to ensure a clean slate, then allow Claude to rebuild context organically through subsequent workflow runs.",
+      "B": "Disable Memory entirely to eliminate the risk of stale entries surfacing in future workflow runs.",
+      "C": "Identify and edit or delete entries that are stale, inaccurate, or no longer relevant, and add context Claude has not automatically captured but the workflow continues to need.",
+      "D": "Leave all memories untouched on the basis that the workflow has been running consistently and no output quality issues have been reported.",
+      "E": "Export the current memories as a backup before making changes, so prior context can be restored if a maintenance edit unintentionally removes information the workflow still depends on."
+    },
+    "answer": [
+      "C",
+      "E"
+    ],
+    "explanation": "Effective memory maintenance includes reviewing and updating stored context so it remains current, accurate, and useful; obsolete or incorrect entries should be edited or removed, while necessary missing context should be added. Backing up existing memories before changes provides a recovery path if an edit accidentally removes context the workflow still requires. Anthropic’s memory guidance recommends regularly reviewing and updating memory as projects evolve.\n\nLearn more\n- Manage Claude Code memory",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-18",
+    "question": "An HR business partner is creating a long-running workspace in which a team handbook, a leveling guide, and a policies-FAQ document will be used across many separate chats by several team members.\n\nWhich Claude feature is intended for this use case?",
+    "options": {
+      "A": "Connect the team’s Google Drive folder where the three documents live, so the connector surfaces them inside each chat at the moment the chat needs them.",
+      "B": "Generate an Artifact containing the three documents, which gives the team an editable surface for the reference content that persists across chats.",
+      "C": "Create a Project, which provides a persistent workspace with its own knowledge base and custom instructions shared across chats and members.",
+      "D": "Attach all three documents to each chat as needed, since per-chat attachments give the chat direct access to the documents without additional setup."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude Projects provide a persistent workspace with a project knowledge base whose uploaded content is used across chats within that project. Projects can also be shared with other organization members on Team and Enterprise plans, and project instructions apply to all chats in the project.\n\nLearn more\n- How can I create and manage projects?\n- What are projects?",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-19",
+    "question": "You are an analyst verifying facts in a Claude-generated report. Two cited sources provide conflicting dates for the same event. Which approach is correct?",
+    "options": {
+      "A": "Choose the more recent date on the basis that later sources typically reflect updated or corrected information.",
+      "B": "Average the two conflicting dates and use the average.",
+      "C": "Locate a primary or authoritative source for the event and use the date that source confirms.",
+      "D": "Publish both dates without resolving the conflict and let the reader choose."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A primary or authoritative source is the strongest basis for establishing an event date and resolving a conflict between cited sources. Recency alone does not establish accuracy, dates cannot be meaningfully averaged, and an unresolved conflict should not be presented as verified fact.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-20",
+    "question": "A business analyst is transforming a stakeholder’s sticky-note request into a structured prompt for Claude. What is the correct sequence of conversion steps?\n\n1. Confirm the audience and the decision that the response needs to support.\n2. Submit the structured prompt to Claude.\n3. Identify the underlying task concealed in the sticky-note language.\n4. Specify the required length, tone, and output format.\n5. Add the supporting facts and constraints that are relevant to the task.",
+    "options": {
+      "A": "3, 5, 1, 4, 2",
+      "B": "1, 3, 5, 4, 2",
+      "C": "3, 1, 5, 4, 2",
+      "D": "2, 3, 1, 5, 4"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A useful structured prompt progresses from the underlying task and intended audience or decision to the relevant context and constraints, followed by explicit output requirements such as length, tone, and format. The complete prompt is submitted only after those elements are defined. Anthropic guidance likewise recommends clear instructions, relevant context, and explicit expected output.\n\nLearn more\n- Claude 4 Prompt Engineering Best Practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-21",
+    "question": "You are a bank manager who receives a request to use Claude as the sole decision-maker for customer credit-line approvals. Which response is most appropriate?",
+    "options": {
+      "A": "Accept the sole-decision-maker design because Claude can process applications faster than a human review team.",
+      "B": "Expand the design so Claude both evaluates applications and issues final approval notices to customers directly.",
+      "C": "Implement the design on a pilot basis and notify compliance only if issues arise during production use.",
+      "D": "Decline the sole-decision-maker design and propose Claude assisting analysts who retain decision authority."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Customer credit-line approvals are consequential financial decisions that require meaningful human oversight and accountable decision authority. Claude may assist analysts with evaluating applications, but analysts should retain the final approval authority.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-22",
+    "question": "A Claude associate is determining the bottleneck in a content workflow that is taking too long to publish. The workflow includes five steps: research, drafting, internal review, legal review, and publication. Cycle-time data is available for each step from the past month.\n\nWhich signal most directly identifies the bottleneck?",
+    "options": {
+      "A": "the step where individual contributors report the highest workload based on their weekly status updates",
+      "B": "the step most recently added to the workflow, based on the assumption that process changes introduce the most friction",
+      "C": "the step with the longest queue or the largest backlog of items waiting to enter it",
+      "D": "the step with the highest average cycle time per item across the past month’s runs"
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A bottleneck is the process step whose capacity constrains the throughput of the entire workflow. In a sequential workflow measured by cycle time, the step with the highest average cycle time is the slowest stage and most directly limits the rate at which items can progress and be published. Queue size may support that finding, but it is an indirect and potentially temporary symptom.\n\nLearn more\n- Cycle Time — Lean Enterprise Institute\n- What Is the Theory of Constraints, and How Does It Compare to Lean Thinking? — Lean Enterprise Institute",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-23",
+    "question": "You are setting up a new Claude Project for a particular recurring workload. Which Project-configuration step should be completed first?",
+    "options": {
+      "A": "Define the purpose of the Project and the recurring tasks it must support.",
+      "B": "Invite collaborators to the Project and confirm the appropriate access levels.",
+      "C": "Add reference materials and instructions that the Project will rely on.",
+      "D": "Test the configured Project on a representative request from the workload."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A Project’s purpose and the recurring tasks it will support establish the context for its configuration. Reference materials, project instructions, collaborator permissions, and representative testing should be chosen and assessed against that defined workload.\n\nLearn more\n- What are projects?\n- How can I create and manage projects?",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-24",
+    "question": "You are a business analyst assessing prompt drafts prepared by teammates.\n\nWhich two components should be included in a well-structured prompt for a business task?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "a friendly, conversational tone instruction to make responses feel more approachable",
+      "B": "a comprehensive list of company products and services to provide the model with business context",
+      "C": "a short personal anecdote to make the prompt feel more conversational",
+      "D": "a clear statement of the task that the model must perform",
+      "E": "relevant context such as the audience and the goal of the task"
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "Effective business prompts specify the task the model is expected to perform and provide relevant context—such as the intended audience and the task goal—so the response can be targeted, appropriate, and useful.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-25",
+    "question": "A project lead is assessing a Claude-generated status report against the project charter. The report will be presented to a steering committee that expects an accurate status update against committed milestones.\n\nWhich group of criteria offers the strongest evaluation framework?",
+    "options": {
+      "A": "length, formatting consistency, and tone appropriateness for a steering committee audience",
+      "B": "accuracy of facts against the charter, completeness against required reporting fields, and relevance to the audience receiving the report",
+      "C": "readability, narrative flow, and whether the report tells a coherent story about the project’s progress",
+      "D": "match to the prior status report’s structure, since the steering committee expects consistent reporting from period to period"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A strong evaluation framework for a project status report verifies factual accuracy against the charter, confirms that all required reporting fields are complete, and assesses whether the content is relevant to the steering committee audience. These criteria directly support dependable reporting on committed milestones; presentation quality and structural consistency alone do not.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-26",
+    "question": "A senior manager is reviewing a colleague’s practice of never updating their team’s Project configurations because “if it works once, it works forever.” Which feedback is most appropriate?",
+    "options": {
+      "A": "Configurations should be updated on a fixed schedule regardless of whether the underlying policies and source documents have changed, since regular maintenance prevents drift.",
+      "B": "Configurations should be updated only when output quality visibly degrades, since proactive updates risk introducing regressions in working configurations.",
+      "C": "Configurations should be reviewed and updated periodically because policies, terminology, and source documents change over time, even when output quality has not visibly degraded.",
+      "D": "Configurations should be left alone if the team is satisfied with current outputs, and any required updates should be handled at the chat level rather than the Project level."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Project configurations should be reviewed and updated periodically because the policies, terminology, and source documents they rely on can change even before any decline in output quality is apparent.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-27",
+    "question": "You are organizing connected data sources for a team and must finish the planning steps before authorizing a connection. Which two planning steps must be completed BEFORE authorizing a new Connector?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Migrate every existing report off the prior data source onto the new Connector.",
+      "B": "Confirm the Connector is on the approved-vendor list maintained by IT.",
+      "C": "Confirm the data classification of the source and the team’s permission to use it.",
+      "D": "Train every team member on the new Connector through formal training sessions.",
+      "E": "Decommission any unused legacy connectors that may still be authorized."
+    },
+    "answer": [
+      "B",
+      "C"
+    ],
+    "explanation": "Authorizing a connector requires governance validation: the connector must be approved by IT, and the data source’s classification and the team’s permission to use it must be confirmed. These checks establish vendor and data-access compliance before a connection is authorized.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-28",
+    "question": "While preparing a stakeholder communication about a proposed Claude use case, a senior manager is applying the AI Fluency Framework Description competency.\n\nWhich framing most closely reflects Description principles for stakeholder communication?",
+    "options": {
+      "A": "Describe what Claude can reliably produce for the use case, the known limitations, and the human oversight that will remain in place, calibrated to the audience’s familiarity with AI.",
+      "B": "Overstate Claude’s capabilities to secure stakeholder support, even though Description principles require accurate framing of what Claude can and cannot reliably produce for the proposed use case.",
+      "C": "Omit the human oversight that will remain in place from the communication, even though Description principles require setting expectations that reflect the actual capability boundaries of the use case.",
+      "D": "Understate Claude’s capabilities to lower stakeholder expectations, even though Description principles require accuracy in both directions rather than systematic minimization of what Claude can produce."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Effective Description uses clear, purposeful communication to convey intended AI outputs and behavior. Accurate stakeholder framing should communicate what Claude can reliably produce, its known capability boundaries, and the human oversight that remains, in terms appropriate to the audience’s AI familiarity.\n\nLearn more\n- AI Fluency: Description\n- The AI Fluency Framework",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-29",
+    "question": "You are a Claude associate conducting an ethics review of a Claude-assisted deliverable before it is published. What is the correct sequence of review steps?\n\n1. Confirm that transparency requirements are satisfied for the audience that will receive the deliverable.\n2. Record the review result and any modifications made.\n3. Identify the audience and the deliverable’s potential impact on that audience.\n4. Make focused revisions, or escalate when a concern needs greater authority to resolve.\n5. Review the content for unsupported generalizations, fairness concerns, and accuracy issues.",
+    "options": {
+      "A": "5, 3, 1, 4, 2",
+      "B": "3, 1, 5, 4, 2",
+      "C": "3, 5, 1, 4, 2",
+      "D": "1, 3, 5, 4, 2"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "An ethics review should establish who may be affected and how, assess the content for fairness and accuracy problems, determine the transparency required for that audience, address or escalate identified concerns, and retain a record of the final outcome and changes.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-30",
+    "question": "You are a business analyst assessing a Claude-generated business case against the agreed acceptance criteria. What is the correct sequence of evaluation steps?\n\n1. Compare the business case against the source data and required topics.\n2. Record gaps and inaccuracies for follow-up or correction.\n3. Reconfirm the acceptance criteria for the business case.\n4. Determine whether to use the business case, iterate, or escalate.\n5. Read the business case from start to finish to form an initial impression.",
+    "options": {
+      "A": "3, 1, 5, 2, 4",
+      "B": "1, 3, 5, 2, 4",
+      "C": "5, 3, 1, 2, 4",
+      "D": "3, 5, 1, 2, 4"
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A sound evaluation establishes the acceptance criteria before review, reads the complete business case for context, validates it against source data and required content, records deficiencies, and only then decides whether it is acceptable, needs iteration, or should be escalated.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-31",
+    "question": "A project manager is turning a Claude-generated draft into a polished board memo. The board reviews the memo before the meeting and expects it to be scannable, factually verified, and consistent with the organization’s standard terminology.\n\nWhich set of refinements is most suitable?",
+    "options": {
+      "A": "Apply consistent headings, tighten wording for executive scanability, align terminology with the organization’s standards, and verify each fact against source data.",
+      "B": "Apply consistent headings, expand each section to give the board full context, and align terminology with the organization's standards.",
+      "C": "Tighten wording for executive scanability and verify each fact against source data; leave heading structure and terminology as written to preserve the draft’s voice.",
+      "D": "Apply consistent headings and align terminology with the organization’s standards; rely on Claude’s verification of facts, since the draft was generated from the source data."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A board memo should use consistent headings and concise wording for quick executive review, follow the organization’s standard terminology, and have every factual claim verified against source data. AI-generated content does not remove the need for independent fact checking.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-32",
+    "question": "You are an operations lead assessing prompting strategies proposed by teammates for different task types.\n\nWhich two strategies are suitable matches between the strategy and task type?\n\nEach correct answer provides part of the solution.\n\nChoose two",
+    "options": {
+      "A": "rigid templated prompting for early-stage creative naming and tagline ideation",
+      "B": "open exploratory prompting for legal contract redlining against a clause library",
+      "C": "open exploratory prompting for early-stage strategic brainstorming on a new market",
+      "D": "rigid templated prompting for casual customer-feedback summarization with no schema",
+      "E": "rigid templated prompting for monthly compliance reports against a fixed schema"
+    },
+    "answer": [
+      "C",
+      "E"
+    ],
+    "explanation": "Open exploratory prompting supports divergent thinking during early-stage strategic brainstorming for a new market. Rigid templated prompting supports repeatable monthly compliance reports that must conform to a fixed schema.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-33",
+    "question": "A learning specialist is setting up a Claude Project for a recurring course-design workflow.\n\nWhich configuration approach makes the best use of a Skill together with other Project elements?",
+    "options": {
+      "A": "Configure the Project with custom instructions that contradict the Skill’s documented purpose, creating ambiguity about which guidance Claude should follow within the recurring course-design workflow.",
+      "B": "Add the relevant Skill to the Project, upload the supporting knowledge sources, and write custom instructions that reference both the Skill and the knowledge.",
+      "C": "Upload the supporting knowledge sources but disable the relevant Skill, eliminating the packaged capability the workflow needs and forcing each chat to reconstruct the procedure manually.",
+      "D": "Add the Skill to the Project but omit the supporting knowledge sources and any custom instructions, so the Project lacks the reference content and persistent guidance the workflow requires."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Skills provide specialized, repeatable procedures, while a Project’s knowledge base provides persistent reference context and its project instructions provide guidance for chats in that Project. Adding the relevant Skill, supporting knowledge sources, and aligned custom instructions combines those complementary capabilities for a recurring workflow.\n\nLearn more\n- What are skills? | Anthropic Help Center\n- How can I create and manage projects? | Anthropic Help Center",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-34",
+    "question": "An operations assistant is using Claude to help optimize an existing intake workflow. The assistant can access the current process documentation and recent cycle-time data.\n\nWhich activity makes the best use of Claude to support this process-optimization task?",
+    "options": {
+      "A": "Generate an optimized version of the intake process based on industry benchmarks, then compare it to the current process to identify gaps.",
+      "B": "Apply Claude to predict the cycle-time impact of each proposed change and rank them so the team can implement improvements in priority order.",
+      "C": "Map the current intake process, identify likely bottlenecks based on the cycle-time data, and propose optimization options for human review.",
+      "D": "Use Claude to interview each team member who works on the intake process and synthesize the interview output into a redesigned workflow."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude can analyze provided documentation and cycle-time data to map the current workflow, surface likely bottlenecks, and suggest optimization alternatives. Human review remains necessary because language-model outputs should be grounded in supplied evidence and validated before operational decisions are made.\n\nLearn more\n- Intro to Claude\n- Reduce hallucinations",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-35",
+    "question": "An associate is responding to an executive who asserts that Claude will remove the need for any human review of customer-facing content. The executive approves the team’s AI-tools budget.\n\nWhich response is most appropriate?",
+    "options": {
+      "A": "Escalate the executive’s claim to a senior leader outside the team before responding directly, since the issue affects more than just the associate’s team.",
+      "B": "Pilot the executive’s proposal on a low-risk subset of customer-facing content first, and use the pilot results to make the case for retaining human review on higher-risk content.",
+      "C": "Defer to the executive’s authority and remove the human review step from customer-facing content, monitoring the results closely for the first several weeks.",
+      "D": "Acknowledge the productivity gains, then explain that human review remains essential on customer-facing content because of accuracy and brand risk, with specific examples."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Generative-model output can still contain factual errors, violate organizational policies, or fail to meet brand standards. Human review remains an important control for customer-facing material, particularly where accuracy and reputation matter; acknowledging efficiency gains while explaining those risks with concrete examples is the appropriate stakeholder response. Anthropic’s customer-support guidance recommends guardrails, fact-checking, and verification that agent responses align with company policies and known facts.\n\nLearn more\n- Anthropic Claude Platform Docs — Customer support agent",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-36",
+    "question": "A support representative is setting up a Project to draft customer-facing apology emails following service outages. The current custom instructions tell Claude to “be empathetic and casual, keep it short, and offer a goodwill credit.” The customer-service team has reported that recent drafts are too brief, offer goodwill credits when policy does not permit them, and use contractions prohibited by the brand voice guide.\n\nWhich change best aligns the configuration with the use case?",
+    "options": {
+      "A": "Replace “be empathetic and casual” with “match the brand voice guide,” remove the instruction to offer goodwill credits, and let each draft determine its own length based on the incident.",
+      "B": "Move the brand voice guide and the goodwill-credit policy into the Project knowledge base and rely on the documents alone to govern tone, length, and credit decisions, without changing the custom instructions.",
+      "C": "Specify the brand voice attributes (empathetic, formal, no contractions), set a minimum length, and instruct Claude to recommend a goodwill credit only when the attached eligibility policy permits one.",
+      "D": "Keep the existing instructions and add a sentence telling Claude to consult the brand voice guide and the goodwill-credit policy that are attached to the Project knowledge base."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Custom instructions should state the required voice attributes and operational constraints explicitly: empathetic but formal language with no contractions, a minimum draft length, and goodwill-credit recommendations only when the attached eligibility policy authorizes them. This prevents the overly brief, casual, and policy-inconsistent outputs.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-37",
+    "question": "You are an HR specialist assessing model selections made by colleagues for different tasks. Which two model choices are appropriate matches between the model and the task?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "a higher-capability model selected solely because it is the most expensive option",
+      "B": "a higher-capability model for one-line keyword extraction at high request volume",
+      "C": "a higher-capability model for complex multi-step legal reasoning under review",
+      "D": "a lighter, faster model for nuanced multi-document strategic synthesis",
+      "E": "a lighter, faster model for routine FAQ-style replies under tight latency budgets"
+    },
+    "answer": [
+      "C",
+      "E"
+    ],
+    "explanation": "Higher-capability models are appropriate for complex, multi-step reasoning tasks such as legal analysis, where stronger reasoning quality is needed and human review can validate the result. Lighter, faster models are appropriate for routine, well-defined FAQ responses when low latency is a priority. Model selection should be based on task complexity, quality needs, cost, and latency—not price alone.\n\nLearn more\n- Models | OpenAI API",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-38",
+    "question": "You are a project manager at Orinexa, Inc. You are selecting a Claude model for a new production workload and must finish the requirements steps before testing candidates.\n\nWhich two steps must be completed BEFORE testing candidate models on a representative sample?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Define the quality bar, the latency tolerance, and the expected request volume.",
+      "B": "Retest the selected model whenever a new model version is released.",
+      "C": "Choose a candidate model based on the requirements profile and known capabilities.",
+      "D": "Promote the selected model to production traffic for the workload.",
+      "E": "Sign off on the production rollout plan with the platform and security teams."
+    },
+    "answer": [
+      "A",
+      "C"
+    ],
+    "explanation": "A production model evaluation needs measurable success criteria and operational constraints—including quality, latency, and expected request volume—so results can be judged against the workload’s requirements. Candidate models must also be shortlisted according to that requirements profile and their known capabilities before they are evaluated on representative traffic. Anthropic guidance calls for defining measurable success criteria before building evaluations, and AWS guidance describes benchmarking candidate models against a workload-specific evaluation set after determining the required quality and latency characteristics.\n\nLearn more\n- Define success criteria and build evaluations — Claude Platform Docs\n- Implement task-appropriate model selection strategies — AWS Well-Architected Agentic AI Lens",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-39",
+    "question": "You are a communications specialist who is preparing to explain Claude’s role in a workflow to several stakeholder groups and must finish the preparation activities before drafting messages.\n\nWhich two preparation activities must be completed BEFORE drafting the stakeholder messages?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Archive the drafted messages in the corporate communications repository.",
+      "B": "Identify the stakeholder groups and what each group needs to understand",
+      "C": "Define the key facts about Claude’s role and the boundaries that apply.",
+      "D": "Send the drafted messages out and gather feedback for revision.",
+      "E": "Schedule a follow-up forum to handle questions raised by the messages."
+    },
+    "answer": [
+      "B",
+      "C"
+    ],
+    "explanation": "Effective stakeholder messaging requires identifying each stakeholder group and what it needs to understand, along with defining the key facts about Claude’s role and the boundaries that apply. These inputs establish the message content and audience framing before drafting begins.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-40",
+    "question": "You are an operations manager creating a quick-reference card for a team.\n\nWhich description accurately characterizes the three Claude model tiers in general terms?",
+    "options": {
+      "A": "Haiku is the most capable model for the deepest reasoning, while Opus is the lightweight model for quick replies.",
+      "B": "All three models offer the same reasoning depth and differ only in response speed and cost.",
+      "C": "Haiku is fast and lightweight, Sonnet is the balanced default for most everyday work, and Opus is the most capable for complex reasoning at higher latency and cost.",
+      "D": "Sonnet is the fastest of the three models because its architecture is optimized for speed rather than reasoning depth."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude Haiku is the lightweight, fast, lower-cost tier; Claude Sonnet balances capability, efficiency, and cost for general work; and Claude Opus is the highest-capability tier for demanding, complex reasoning, with higher cost and typically greater latency.\n\nLearn more\n- Intro to Claude\n- Anthropic pricing",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-41",
+    "question": "You are a project manager having an extended planning conversation with Claude and need to keep it productive as it expands. Which two practices help keep a long planning conversation productive?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "Open a new thread for every minor follow-up question to keep threads short.",
+      "B": "Restate constraints and goals when the focus shifts to a new subtopic.",
+      "C": "Periodically summarize decisions made so far to compress the working state.",
+      "D": "Switch context aggressively between unrelated planning topics within one thread",
+      "E": "Avoid summarizing so the model retains every original word it has produced."
+    },
+    "answer": [
+      "B",
+      "C"
+    ],
+    "explanation": "Reasserting goals and constraints when the discussion moves to a new subtopic maintains alignment with the project’s requirements. Periodically summarizing decisions preserves the important working state in a compact form, helping the model maintain coherence as the conversation approaches context-window limits.\n\nLearn more\n- Anthropic Claude Platform Docs: Glossary — Context window",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-42",
+    "question": "A finance manager is preparing to discuss a confidential pre-announcement figure with Claude. Which two settings most closely follow sound privacy practices for this discussion?\n\nChoose two",
+    "options": {
+      "A": "Skip the privacy setting decision and proceed with default behavior, since the conversation will not explicitly instruct Claude to remember the figure.",
+      "B": "Disable Memory contribution for the conversation if Incognito mode is not used, so the confidential figure is not retained as persistent context that could surface in later unrelated sessions.",
+      "C": "Treat the conversation as appropriate for default Memory settings, since the figure will only be discussed briefly and is unlikely to be retained.",
+      "D": "Enable Memory contribution for the conversation so the context carries forward to support follow-up analysis in future sessions.",
+      "E": "Open the conversation in Incognito mode, which prevents the conversation from contributing to Memory and avoids persistent retention of the confidential pre-announcement figure across sessions."
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "explanation": "Confidential financial information should not be allowed to become persistent context that could be surfaced in later, unrelated sessions. Disable the conversation’s Memory contribution when using a standard conversation, or use Incognito mode to prevent the conversation from contributing to Memory. Anthropic also advises care when sharing highly sensitive financial information and confidential business documents.\n\nLearn more\n- Anthropic Help Center: Sensitive data in Claude conversations",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-43",
+    "question": "A knowledge worker is explaining how feedback can be used to improve Claude-supported work over time.\n\nWhich description is the most accurate?",
+    "options": {
+      "A": "Capture specific feedback after each run, translate it into targeted prompt or workflow changes, and observe whether subsequent runs improve.",
+      "B": "Capture feedback only after several runs so patterns emerge from the volume of observations, then apply changes based on the patterns rather than any single run.",
+      "C": "Capture feedback as an aggregate quality score per run, since aggregate scores show whether quality is improving without requiring detail on individual issues.",
+      "D": "Capture general impressions after each run and apply them as broad prompt rewrites, since broad rewrites cover more potential issues than targeted changes."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "An effective improvement loop captures specific feedback after each run, maps it to targeted prompt or workflow adjustments, and checks later runs for measurable improvement. Specific, timely feedback makes the cause of a change and its effect on output quality easier to evaluate.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-44",
+    "question": "You are a Claude associate investigating a recurring instance of poor output.\n\nWhich diagnostic-step sequence is correct?\n\n1. Develop a hypothesis about the prompt element most likely responsible for the deficiency.\n2. Make one targeted change and observe its effect on the output.\n3. Read the output from beginning to end and identify the specific deficiency.\n4. Compare the deficient output with the prompt to find mismatches between the input and output.\n5. Record the root cause and resolution for future reference.",
+    "options": {
+      "A": "1, 3, 4, 2, 5",
+      "B": "4, 3, 1, 2, 5",
+      "C": "3, 1, 4, 2, 5",
+      "D": "3, 4, 1, 2, 5"
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Effective prompt-output troubleshooting first identifies the precise output defect and compares it with the prompt to establish the relevant mismatch. The resulting evidence supports a causal hypothesis, which should be tested by changing only one targeted element. Documenting the confirmed cause and resolution preserves the result for later reuse.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-45",
+    "question": "You have revised a Claude prompt eight times, and output quality has plateaued during the last four attempts. Which conclusion is most appropriate?",
+    "options": {
+      "A": "Iteration should stop and the current output should be accepted as-is regardless of remaining issues.",
+      "B": "Iteration should stop and the task should be abandoned without communicating to stakeholders.",
+      "C": "Iteration has reached diminishing returns and the next step is human review or a different approach.",
+      "D": "Iteration should continue indefinitely because more attempts always improve quality."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "When several successive prompt iterations no longer improve output quality, further revisions are producing diminishing returns. Human review or a different approach is the appropriate next step.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-46",
+    "question": "You are a project manager assessing workflow steps by the amount of leverage Claude integration provides. Which workflow step generally delivers the greatest Claude leverage for a knowledge-work team?",
+    "options": {
+      "A": "approving final deliverables for external publication without further review",
+      "B": "negotiating contractual terms with external parties on behalf of the company",
+      "C": "drafting and synthesizing across many sources for a downstream reviewer",
+      "D": "making final personnel decisions about hiring, promotion, or termination"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude is most useful for drafting and synthesizing information from many sources, where it can accelerate preparation of material while a downstream reviewer retains responsibility for validation and final judgment.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-47",
+    "question": "You are conducting a weekly feedback-and-adjustment cycle.\n\nWhat is the correct sequence of cycle steps?\n\n1. Turn feedback into one or two focused adjustments for the next cycle.\n2. Run the following cycle and compare its results with the previous cycle.\n3. Record the specific feedback received during the review.\n4. Document what changed, the effect it created, and any unresolved issues.\n5. Determine whether to keep iterating, change approaches, or escalate.",
+    "options": {
+      "A": "2, 3, 1, 4, 5",
+      "B": "1, 3, 2, 4, 5",
+      "C": "3, 1, 2, 4, 5",
+      "D": "3, 2, 1, 4, 5"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A closed feedback loop records the review feedback before selecting targeted adjustments. The adjusted cycle is then run and measured against the prior cycle; its changes and outcomes are documented so there is a basis for deciding whether to iterate further, change direction, or escalate.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-48",
+    "question": "You are a content creator. Claude’s initial response is accurate but uses inconsistent terminology that does not align with your organization’s glossary. Which iterative revision addresses this issue most directly?",
+    "options": {
+      "A": "Increase the requested length so the inconsistent terminology appears more often.",
+      "B": "Ask Claude to invent additional terms unrelated to the glossary.",
+      "C": "Remove the topic from the prompt to avoid the terminology issue entirely.",
+      "D": "Provide the organization's glossary and instruct Claude to use only those terms throughout the response."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Providing the organization’s glossary and requiring exclusive use of its terms gives Claude the approved vocabulary and a clear constraint to apply it consistently throughout the response.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-49",
+    "question": "You are a knowledge manager organizing source material within the context window for a lengthy Claude evaluation task.\n\nWhich two practices result in more effective use of the context window?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "Paste every available document into context regardless of relevance to the task.",
+      "B": "Mark each source clearly with delimiters so the model can attribute claims correctly.",
+      "C": "Repeat the same instruction at the start, middle, and end to reinforce it.",
+      "D": "Mix sources together in a single block so the model can synthesize them freely.",
+      "E": "Place the most reference-critical material near the beginning or end of context."
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "explanation": "Clear, descriptive delimiters such as XML tags separate documents, metadata, instructions, and inputs, reducing ambiguity and supporting correct source attribution. For long-context work, placing long-form reference material near the top and the task query near the end improves performance; therefore, reference-critical content should be positioned near a context boundary rather than buried in the middle.\n\nLearn more\n- Anthropic Claude prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-50",
+    "question": "A knowledge worker regularly switches between Claude and another AI service while working on a long-running project.\n\nWhich Claude feature most directly minimizes repetitive context-setting across sessions?",
+    "options": {
+      "A": "Enable Memory and use the import capability to bring relevant context from the other AI service into Claude as a starting point for the project’s work.",
+      "B": "Rely on a single static Artifact pasted into each chat as the only continuity mechanism, ignoring the Memory feature that is purpose-built for retaining work-relevant context across sessions.",
+      "C": "Open every Claude session in Incognito mode, which prevents the conversation from contributing to Memory and therefore eliminates the cross-session continuity the project would benefit from.",
+      "D": "Disable Memory entirely and re-paste the same context paragraphs at the start of every Claude session, even though Memory is designed to retain that context across conversations automatically."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Claude Memory retains work-related context for use in new conversations, and its built-in import flow can bring relevant memory from another AI service into Claude. This reduces the need to repeatedly provide the same project context across sessions.\n\nLearn more\n- Import and export your memory from Claude\n- Use Claude’s chat search and memory to build on previous context",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-51",
+    "question": "An HR business partner is setting up a new Project for recurring policy questions from managers. The Project will be used across many chats by several HR team members.\n\nWhich content should belong in the Project knowledge base?",
+    "options": {
+      "A": "the current employee handbook plus prior versions of the handbook going back five years, so Claude can answer questions about how policies have changed",
+      "B": "the current employee handbook, the leveling guide, the policies-FAQ, and every email the HR team has sent about policy in the past year, for additional context",
+      "C": "the current employee handbook only, with the leveling guide and the policies-FAQ attached at the start of each chat as needed for that chat’s topic",
+      "D": "the current employee handbook, the leveling guide, and the policies-FAQ document referenced across the Project’s chats"
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A Project knowledge base supplies context across all chats in that Project, so it should contain the current, broadly relevant reference documents needed repeatedly for manager policy questions: the current employee handbook, leveling guide, and policies FAQ. Superseded policies and incidental historical emails can introduce outdated or unnecessary context, while recurring reference materials should not need to be attached separately to each chat.\n\nLearn more\n- How can I create and manage projects?\n- Usage Limit Best Practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-52",
+    "question": "A knowledge worker is briefing a stakeholder group about Claude’s limitations. The stakeholders will use Claude for customer-facing work, where confident-sounding output containing errors could cause real harm.\n\nWhich limitation is most important to communicate clearly?",
+    "options": {
+      "A": "Claude’s responses vary across runs of the same prompt, so stakeholders should run each prompt several times and compare outputs before using any single response.",
+      "B": "Claude can produce confident-sounding output that contains unsupported claims, so human review remains essential for high-impact work.",
+      "C": "Claude can produce long, detailed responses that take time to read, so stakeholders should request shorter outputs when working under tight deadlines.",
+      "D": "Claude’s knowledge has a training cutoff, so stakeholders must verify any time-sensitive claims against current sources before using them."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Claude can sometimes hallucinate, producing text that is factually incorrect or inconsistent with the provided context despite sounding plausible or confident. Hallucination-mitigation measures cannot eliminate this risk, so critical information and high-impact customer-facing output require human review and verification.\n\nLearn more\n- Reduce hallucinations - Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-53",
+    "question": "You are a knowledge worker preparing material for a Claude prompt.\n\nWhich data type most clearly needs additional handling, such as redaction or anonymization, before it is included in the prompt?",
+    "options": {
+      "A": "public press releases the company has already published",
+      "B": "customer government identifiers and full payment-card numbers tied to named individuals",
+      "C": "job titles taken from the company’s public organizational chart",
+      "D": "generic product descriptions available on the company’s marketing site"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Government identifiers and full payment-card numbers associated with identifiable people are sensitive personal and financial data. Redacting or anonymizing them reduces unnecessary exposure of personally identifiable information; public company materials and generic public product information do not create the same privacy risk.\n\nLearn more\n- Customer support agent — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-54",
+    "question": "You are an operations lead who is integrating Claude into a workflow used by multiple people.\n\nWhich integration step should be completed first?",
+    "options": {
+      "A": "Identify where Claude adds value and where each handoff to a human occurs.",
+      "B": "Pilot the integrated workflow with a small group on representative work.",
+      "C": "Iterate the integrated workflow based on the findings from the pilot.",
+      "D": "Document the integrated workflow and onboard the rest of the team to it."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A human–AI workflow must first define the tasks where Claude provides value and the points at which responsibility passes to a human. Those boundaries establish the workflow that can later be piloted, refined from pilot results, documented, and rolled out. Anthropic guidance likewise emphasizes keeping humans in the loop and defining organizational gates around agentic work.\n\nLearn more\n- The AI-Native SDLC playbook",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-55",
+    "question": "A Claude associate is assessing a proposed use case in which Claude would make final hiring decisions without any human review, using the AI Fluency Framework’s Delegation competency.\n\nWhich classification most accurately reflects Delegation principles?",
+    "options": {
+      "A": "Inappropriate for full AI delegation, because hiring decisions involve human judgment, accountability, and consequences that Delegation criteria reserve for human ownership rather than autonomous AI execution.",
+      "B": "Appropriate with light human review applied only to a sample of decisions, even though Delegation criteria reserve final hiring decisions for human ownership rather than sample-based oversight after the fact.",
+      "C": "Appropriate for full AI delegation, on the basis that processing speed outweighs the human judgment, accountability, and consequence considerations that Delegation criteria require for final hiring decisions.",
+      "D": "Inappropriate only because of system reliability concerns rather than accountability, even though Delegation criteria classify final hiring decisions as requiring human ownership regardless of system performance."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Delegation involves strategically distributing work between people and AI based on the task’s nature, the system’s capabilities and limitations, and the need for human expertise and judgment. Final hiring decisions carry consequential human judgment and accountability, so they require human ownership rather than autonomous AI execution.\n\nLearn more\n- AI Fluency: Delegation",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-56",
+    "question": "You are assessing a Claude output that seems to include hallucinated content. Which response step should be taken first when a hallucination is suspected?",
+    "options": {
+      "A": "Discard the entire output and regenerate the output with a fresh prompt.",
+      "B": "Document the hallucination pattern in the team’s risk register for future reference.",
+      "C": "Notify the user community that the output contains a hallucinated claim.",
+      "D": "Pinpoint the specific claim that appears to be unsupported by available evidence."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A hallucination is an assertion that lacks factual support or conflicts with reliable evidence. Identifying the exact unsupported claim establishes what must be verified, corrected, withdrawn, or escalated; regeneration, risk documentation, and user notification are subsequent actions. Anthropic recommends verifying claims with supporting quotations and sources, and withdrawing a claim when no supporting citation can be found.\n\nLearn more\n- Reduce hallucinations - Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-57",
+    "question": "You are optimizing a recurring Claude workflow and must finish the diagnostic steps before modifying the workflow. Which two diagnostic steps must be completed BEFORE changing the recurring workflow?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Notify executive leadership of the projected savings from the optimization.",
+      "B": "Identify the steps that contribute most to time, cost, or quality issues.",
+      "C": "Deploy the updated workflow across the team and monitor for adoption issues.",
+      "D": "Measure the current workflow's quality, time, and cost across recent runs.",
+      "E": "Document the revised workflow steps and update the team’s standard operating procedures."
+    },
+    "answer": [
+      "B",
+      "D"
+    ],
+    "explanation": "Workflow optimization requires a baseline measurement of current quality, time, and cost, plus identification of the steps creating the greatest time, cost, or quality issues. Those diagnostics establish what to change and provide a basis for evaluating whether the revised workflow improves outcomes.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-58",
+    "question": "Before sharing a Claude-generated brief, an analyst applies the AI Fluency Framework’s Discernment competency to assess it. Which review most accurately reflects Discernment principles?",
+    "options": {
+      "A": "Accept the brief on the basis that it reads fluently and the subject matter aligns with the analyst’s professional knowledge of the topic.",
+      "B": "Skip the source material check during review and rely on overall tone and logical flow as proxies for factual accuracy.",
+      "C": "Review the opening paragraph and the conclusion of the brief, since these sections typically reflect the quality of the full document.",
+      "D": "Conduct a systematic check of the brief against the task requirements, source material, and professional standards before sharing it."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Discernment involves thoughtfully and critically evaluating AI outputs for quality, including accuracy, relevance, coherence, and appropriateness. Checking the complete brief against its requirements, underlying sources, and professional standards provides the evidence needed before it is shared.\n\nLearn more\n- AI Fluency: Discernment",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-59",
+    "question": "You are using Claude to redesign an employee onboarding workflow and must finish the high-level decomposition steps before defining detailed artifacts.\n\nWhich two decomposition steps must be completed before specifying the exact email content and schedule?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Pilot the onboarding workflow with a small cohort of new hires.",
+      "B": "Identify the major phases of the onboarding experience.",
+      "C": "Negotiate the onboarding budget with the finance department.",
+      "D": "Define the overall objective of the onboarding experience.",
+      "E": "Roll out the onboarding workflow to every new hire across the company."
+    },
+    "answer": [
+      "B",
+      "D"
+    ],
+    "explanation": "A sound high-level decomposition begins by defining the onboarding experience’s overall objective and identifying its major phases. Those decisions establish the structure and purpose that detailed artifacts, such as exact email copy and scheduling, must follow.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-60",
+    "question": "You are refining a prompt across several iterations. With every change, the output drifts farther from the requested template. Which step is most appropriate?",
+    "options": {
+      "A": "Discard all prior versions and start with no record of what worked.",
+      "B": "Continue making large simultaneous changes until the output happens to align.",
+      "C": "Revert to the version of the prompt that produced the closest match and adjust from that baseline.",
+      "D": "Stop iterating and accept the most off-target version."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Prompt refinement is most effective when it resumes from the version that most closely met the required template. That baseline preserves the successful elements and enables small, controlled adjustments instead of compounding drift.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-61",
+    "question": "You are assessing items proposed for inclusion in a Project that supports policy summaries.\n\nWhich two items are suitable to include in the Project?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "the summary format and the audience expectations the summaries must meet",
+      "B": "the current policy library that the summaries are drawn from",
+      "C": "presentation slides from a recent team training session on internal communication standards",
+      "D": "active client case files maintained by a separate legal team for a different workstream",
+      "E": "employee onboarding records used in a separate HR workflow managed by the same team"
+    },
+    "answer": [
+      "A",
+      "B"
+    ],
+    "explanation": "Project instructions can define how ChatGPT should respond, including required format and audience expectations. A Project can also contain reference materials that ChatGPT uses to produce informed results, so the current policy library belongs in the policy-summary workflow. Unrelated training, legal-case, and HR-onboarding materials are outside that workflow and should not be added as its context.\n\nLearn more\n- Projects in ChatGPT",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-62",
+    "question": "You are categorizing structural defects in Claude output by how much they undermine clarity. Which structural defect most seriously impairs the output’s clarity?",
+    "options": {
+      "A": "A single subheading is shorter than the other subheadings in the document.",
+      "B": "Two adjacent paragraphs present the same information using inconsistent terminology.",
+      "C": "Typographic inconsistencies appear throughout multiple sections of the document.",
+      "D": "The main conclusion contradicts the evidence presented in the body."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A main conclusion that conflicts with the evidence in the body creates a fundamental logical inconsistency. It leaves the reader unable to determine which claim is supported, undermining the clarity and reliability of the output’s central message.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-63",
+    "question": "As a communications manager, you are validating a Claude-generated newsletter that contains a specific industry-growth figure. The figure is reported in three trade-press articles, but none links to the underlying study.\n\nWhich validation step is appropriate?",
+    "options": {
+      "A": "Accept the figure because three trade-press articles repeat it.",
+      "B": "Remove the source attribution and present the figure as common knowledge.",
+      "C": "Locate the original study referenced by the trade-press articles and verify the figure in the primary source.",
+      "D": "Use the highest figure across the three articles to make the newsletter more compelling."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A figure repeated across secondary trade-press articles can originate from the same unverified claim. Validating it requires locating the underlying study and confirming the figure, its methodology, scope, and context in the primary source.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-64",
+    "question": "You are preparing a document with mixed-sensitivity content for use with Claude.\n\nWhich data-handling action should be completed first?",
+    "options": {
+      "A": "Redact sensitive fields and replace them with appropriate placeholders.",
+      "B": "Classify the content of the document and identify which fields are sensitive.",
+      "C": "Submit the redacted document to Claude for the intended task.",
+      "D": "Review the redacted document with a peer to confirm the redaction is complete."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Sensitive fields must be identified through content classification before they can be safely redacted or replaced. This also supports the least-privilege principle: Claude should not receive sensitive information that it does not need.\n\nLearn more\n- Mitigate jailbreaks — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-65",
+    "question": "A finance consultant is revising a Claude-generated narrative for a quarterly investor update. Investors have a fixed time window for the call and expect the headline result and forward outlook to be made clear early.\n\nWhich adaptation is most suitable for this audience?",
+    "options": {
+      "A": "Lead with the quarter’s operational highlights, present the financial result in the middle for context, and close with the forward outlook.",
+      "B": "Lead with the forward outlook, since investors are most interested in what comes next, and present the headline result and drivers afterward.",
+      "C": "Lead with the headline result, present the key drivers concisely, and close with the forward outlook.",
+      "D": "Lead with a chronological recap of the quarter’s events, present the headline result at the natural end of the recap, and conclude with the forward outlook."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Quarterly investor communications should prioritize the headline financial result early, followed by a concise explanation of its key drivers and the forward outlook. This structure makes the most decision-relevant information clear within a limited time window.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-66",
+    "question": "A knowledge worker is describing the purpose of an organizational AI governance framework to a colleague.\n\nWhich description is the most accurate?",
+    "options": {
+      "A": "A governance framework defines approved tools, allowed data, required reviews, and reporting paths so AI is used consistently and accountably.",
+      "B": "A governance framework lists the AI tools the organization licenses and the cost of each, so users can pick the most cost-effective tool for each task.",
+      "C": "A governance framework defines the training every employee must complete before using AI tools, with separate requirements for each tool the organization licenses.",
+      "D": "A governance framework documents the AI policies the organization is legally required to adopt, focusing on regulatory compliance rather than day-to-day use."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "An AI governance framework sets organizational policies, processes, controls, roles, and accountability for AI throughout its use. It can define permitted tools and data, review requirements, and reporting or escalation paths so AI is used consistently, responsibly, and accountably. NIST identifies governance as establishing transparent policies, procedures, and controls, with documented roles and communication lines for AI risk management.\n\nLearn more\n- NIST AI Risk Management Framework (AI RMF 1.0)",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-67",
+    "question": "A senior project coordinator has been asked to use Claude to create an end-of-year report covering finance, operations, and customer outcomes. The three areas have distinct data owners and separate source documents.\n\nWhich decomposition approach is most likely to result in a strong report?",
+    "options": {
+      "A": "Define the report goals, gather inputs per section, draft each section in its own prompt, then synthesize the executive summary from the drafted sections.",
+      "B": "Draft the executive summary first to anchor the report's narrative, then draft each section so it supports the summary already written.",
+      "C": "Draft the three sections in parallel, each using a section-specific prompt, then concatenate and lightly edit the outputs into the final report.",
+      "D": "Prompt Claude once with all source documents and request the full report, including the executive summary, in a single pass."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A strong cross-functional report is developed by defining its goals, collecting the appropriate inputs for each section, drafting those sections with focused prompts, and deriving the executive summary from the completed sections. This supports traceability to each area’s source material and ensures that the summary reflects the report’s actual findings.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-68",
+    "question": "A customer-success associate is preparing a prompt asking Claude to summarize a customer issue from a case file. The case file contains the customer’s full government identifier, home address, name, account number, and a description of the issue. The associate needs a summary focused on the issue.\n\nWhich approach is most appropriate?",
+    "options": {
+      "A": "Submit the full case file and include an instruction telling Claude not to reference the government identifier or the home address in the summary.",
+      "B": "Replace the government identifier with the customer’s name and the home address with the account number, since names and account numbers are less sensitive than identifiers and addresses.",
+      "C": "Remove or redact the government identifier and the home address before submitting the prompt, since neither is necessary for a summary of the issue.",
+      "D": "Submit only the description of the issue and add the customer’s name for context, since the description plus a name is sufficient to produce a summary."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Data minimization requires providing only the information needed for the intended task. Because the summary is about the issue, the government identifier and home address are unnecessary sensitive data and should be removed or redacted before submission.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-69",
+    "question": "You are a process consultant incorporating Claude into an existing weekly workflow. Which sequence of integration steps is correct?\n\n1. Pilot the integrated workflow with a small group and collect feedback.\n2. Document the current workflow’s steps, owners, and decision points.\n3. Update the documented workflow and deploy it to the broader team.\n4. Identify the steps where Claude can augment work and where humans must remain.\n5. Define the inputs Claude requires, the outputs Claude provides, and the hand-offs around each step.",
+    "options": {
+      "A": "2, 4, 5, 1, 3",
+      "B": "2, 5, 4, 1, 3",
+      "C": "4, 2, 5, 1, 3",
+      "D": "1, 2, 4, 5, 3"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Workflow integration should begin with documenting the current process so its ownership and decision points are understood. That enables appropriate allocation of Claude-assisted and human-controlled work, followed by a clear specification of inputs, outputs, and hand-offs. A limited pilot validates the integrated process and gathers feedback before the workflow is revised and rolled out broadly. Anthropic guidance similarly recommends breaking an interaction into tasks, defining success criteria, and evaluating it systematically before production deployment.\n\nLearn more\n- Customer Support Agent — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-70",
+    "question": "A customer-success team member reviews a Claude-generated customer health-check report against the agreed deliverable list. The report addresses all five required topics, but its renewal-risk section identifies only one risk factor, whereas the deliverable specification requires renewal risk to be evaluated across pricing, product fit, and stakeholder change.\n\nWhich conclusion is best supported?",
+    "options": {
+      "A": "The report’s completeness cannot be assessed from the deliverable specification alone; the customer should review the output and confirm whether the renewal-risk depth is sufficient.",
+      "B": "The report does not meet the deliverable specification because a section that addresses only one of three required risk dimensions counts as a missing section.",
+      "C": "The report meets the deliverable specification because all five required topics appear and the renewal-risk section is present in the output.",
+      "D": "The report meets the topic-level requirements but the renewal-risk section is under-scoped against the specification and should be expanded before delivery."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A deliverable can satisfy the presence of each required topic while still failing a topic-specific depth requirement. Renewal risk must cover pricing, product fit, and stakeholder change; addressing only one factor leaves that section under-scoped and requires expansion before delivery.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-71",
+    "question": "An analyst has been asked to calculate summary statistics from an uploaded sales-data file and create a chart for a weekly report. Which output approach is the best fit for this task?",
+    "options": {
+      "A": "Ask Claude to estimate the summary statistics from a brief preview of the file, accepting unverified figures rather than running the calculations against the full uploaded dataset.",
+      "B": "Produce a written placeholder for the chart in the chat response without generating the actual visualization, leaving the weekly report without the visual output it requires.",
+      "C": "Request a narrative description of the data in the chat response without computing values, leaving the summary statistics and the chart unproduced and the weekly report incomplete.",
+      "D": "Use Code Execution to perform the calculations and generate the chart, then verify the computed results against the source data before sharing the output."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Code Execution can calculate statistics from the full uploaded dataset, create the required chart, and support verification of the computed outputs against the underlying source data before they are shared.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-72",
+    "question": "You are preparing system-level instructions for a Project that supports recurring writing tasks.\n\nWhich action should be completed first when creating the system-level instructions?",
+    "options": {
+      "A": "Refine the drafted instructions based on observed gaps from validation runs.",
+      "B": "Validate the drafted instructions against representative requests for the Project.",
+      "C": "Define the purpose of the Project and the boundaries the instructions must respect.",
+      "D": "Distribute the finalized instructions to collaborators on the Project."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Effective system-level instructions begin by establishing the Project’s purpose and the boundaries that govern its behavior. Those requirements determine what the instructions should direct; drafting, validation, refinement, and distribution can occur only after that foundation is defined. Project instructions provide project-specific guidance for how ChatGPT should help within the Project.\n\nLearn more\n- Projects in ChatGPT",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-73",
+    "question": "A business analyst is asked to use Claude to extract requirements from a recorded stakeholder-interview transcript. The transcript is about 90 minutes long and addresses multiple topics.\n\nWhich approach is most likely to yield usable structured output?",
+    "options": {
+      "A": "Provide the transcript along with a structured prompt that requests must-haves, nice-to-haves, open questions, and conflicts as separate sections.",
+      "B": "Provide the transcript and ask Claude to produce a single ranked list of requirements, since a single list is easier for stakeholders to review than separate sections.",
+      "C": "Provide the transcript and ask Claude to summarize it; extract requirements from the summary in a second pass since two passes catch more detail.",
+      "D": "Provide the transcript and ask Claude to produce a chronological list of every statement that contains a verb, then classify each statement as a requirement or not."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Explicitly requesting separate categories for mandatory requirements, optional requirements, unresolved questions, and conflicts gives the model a clear output structure and preserves distinctions needed for requirements analysis. Clear, specific formatting instructions improve control over Claude’s response format.\n\nLearn more\n- Claude 4 prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-74",
+    "question": "You received an imprecise request to “look at our pricing.” After discovery, the objective is confirmed: create a structured competitor-pricing summary the team can act on, rather than develop new pricing ideas.\n\nWhich strategy best suits the clarified task?",
+    "options": {
+      "A": "Use a divergent brainstorming approach to generate a wide range of possible competitor-pricing observations, then narrow to the most likely ones.",
+      "B": "Use a comparative analysis strategy that contrasts the company’s pricing against a single named competitor, since pairwise comparison produces the clearest output.",
+      "C": "Use a research strategy that gathers structured information about competitor pricing, names sources, and notes confidence in each finding.",
+      "D": "Use an open conversational strategy that explores competitor pricing iteratively across several prompts, allowing the structure to emerge from the conversation."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A structured competitor-pricing summary requires research that collects comparable pricing information, identifies the sources for each finding, and records confidence or uncertainty so the team can judge how actionable the information is. This is an evidence-gathering and synthesis task, not brainstorming, a restricted single-competitor comparison, or open-ended conversation.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-75",
+    "question": "You are a customer-success manager deciding whether to escalate a Claude-generated response. Which factor most strongly increases the output’s impact and warrants escalation before it is used externally?",
+    "options": {
+      "A": "The response is an internal draft summarizing the associate’s notes from a customer call for their own reference.",
+      "B": "The response is a casual rephrasing of an internal team status update.",
+      "C": "The response is a brief internal announcement about an upcoming team all-hands meeting.",
+      "D": "The response is an unchanged draft for a paying customer that includes a service-level commitment."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "An unchanged customer-facing draft that makes a service-level commitment can create an external promise with contractual, operational, and financial consequences. Its direct effect on a paying customer makes human review and escalation appropriate before use. Anthropic advises review by a qualified professional before disseminating sensitive content or decisions to consumers.\n\nLearn more\n- Anthropic Help Center: Planning to launch a product using Claude",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-76",
+    "question": "An HR associate is getting ready to use Claude for a sensitive personnel matter. The organization’s AI policy expressly says that information concerning ongoing investigations must not be entered into AI tools.\n\nWhich response most closely follows the policy?",
+    "options": {
+      "A": "Enter the investigation-related information into Claude only after the investigation closes, since the policy applies during the investigation period.",
+      "B": "Refrain from entering investigation-related information into Claude and consult HR leadership for an approved alternative way to handle the matter.",
+      "C": "Enter the investigation-related information into Claude in an Incognito chat, since Incognito chats do not retain information and therefore fall outside the policy’s intent.",
+      "D": "Enter a paraphrased version of the investigation-related information that removes identifying details, since paraphrasing addresses the spirit of the policy."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Information connected to an ongoing investigation must not be entered into an AI tool under the organization’s explicit policy. The appropriate course is to withhold the information from Claude and consult HR leadership for an approved alternative process.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-77",
+    "question": "A knowledge worker is refining a prompt that has generated a partially acceptable response.\n\nWhich refinement practice yields the strongest learning across iterations?",
+    "options": {
+      "A": "Change one identifiable element per iteration, capture the change and its effect, and adjust another element only after the first is settled.",
+      "B": "Restart from a fresh prompt each iteration so that prior wording does not bias the next attempt, and pick the strongest response at the end.",
+      "C": "Make several related changes in one iteration when they target the same weakness, and revert the whole set if the combined change makes the output worse.",
+      "D": "Address every weakness the response showed in a single revision, then compare the revised output against the prior version."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Controlled prompt refinement changes one identifiable variable at a time and records the resulting effect. This isolates which change caused an improvement or regression, enabling reliable learning and deliberate subsequent adjustments.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-78",
+    "question": "You are assessing Connector configurations that colleagues have suggested for different tasks. Which two Connector configurations are safe and suitable uses?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "a Connector that links to the personnel-records system for team leads to support scheduling tasks",
+      "B": "a Connector that links to the team's project management workspace under approved scope",
+      "C": "a Connector that links to a personal cloud storage account where team member’s store working drafts alongside personal files",
+      "D": "a read-only Connector that links to the public knowledge base for reference content",
+      "E": "a Connector that links to the payroll system to allow team members to submit expense reports directly"
+    },
+    "answer": [
+      "B",
+      "D"
+    ],
+    "explanation": "Appropriate Connector use follows least privilege, approved role-scoped access, and read-only access where writing is unnecessary. A Connector limited to an approved team project-management workspace and a read-only Connector to public reference content meet those constraints. Personnel, personal mixed-use storage, and payroll systems expose sensitive data or high-impact capabilities beyond the stated needs.\n\nLearn more\n- Admin Controls, Security, and Compliance in Apps\n- Apps in ChatGPT",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-79",
+    "question": "A communications manager is preparing a prompt for Claude to create a quarterly newsletter for store managers across three regions. The agreed key messages, regional information, and a previous newsletter the team liked are all available.\n\nWhich prompt strategy is most likely to yield a usable first draft?",
+    "options": {
+      "A": "Attach the prior newsletter, and ask Claude to match its tone and structure while incorporating the new key messages for the three named regions.",
+      "B": "Attach the prior newsletter and the agreed key messages, and ask Claude to produce a similar newsletter for this quarter.",
+      "C": "Provide the agreed key messages and the three regions, and ask Claude to choose an appropriate length and tone for store managers.",
+      "D": "Name the audience, the three regions, the length, the tone, and the agreed key messages, and reference the prior newsletter only as a tone example."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Clear, explicit instructions about the intended audience, regional scope, output length, tone, and required key messages give Claude the constraints needed to produce a suitable draft. A prior newsletter can effectively guide the requested tone without substituting for the current content requirements. Anthropic’s prompt-engineering guidance recommends clearly specifying the desired output and using relevant examples and details.\n\nLearn more\n- Claude 4 prompt engineering best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-80",
+    "question": "You are an HR specialist categorizing potential ethical risks in a Claude-supported workflow.\n\nWhich two risks raise the greatest ethical concern in an HR-adjacent workflow?\n\nEach correct answer represents a complete solution.\n\nChoose two",
+    "options": {
+      "A": "decisions that materially affect a person’s employment without human accountability",
+      "B": "a clerical typo in a routine internal calendar invitation",
+      "C": "inconsistent tone and formatting across internal HR communications sent to employees",
+      "D": "inconsistent use of the company’s preferred dash style across documents",
+      "E": "outputs that systematically disadvantage members of a protected group"
+    },
+    "answer": [
+      "A",
+      "E"
+    ],
+    "explanation": "High-impact employment decisions require human accountability because they can materially affect a person’s livelihood. Outputs that systematically disadvantage a protected group create discriminatory harm and are therefore a critical ethical concern.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-81",
+    "question": "You are an operations assistant asking Claude to summarize 200 weekly metric records across several regions. Which output format presents the data most clearly?",
+    "options": {
+      "A": "a bulleted list of observations grouped by region without consistent metrics across entries",
+      "B": "a narrative summary organized by region, describing trends and notable records in prose",
+      "C": "a series of regional narrative briefs, each describing weekly performance in paragraph form",
+      "D": "a structured table with one record per row and one metric per column, sorted by region"
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A structured table makes a large, multi-region dataset easy to scan, compare, sort, and analyze because records and metrics occupy consistent rows and columns.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-82",
+    "question": "You are an analyst reviewing a Claude response that answers two of three required questions but omits the third. Which prompt element most likely needs to be strengthened?",
+    "options": {
+      "A": "The context provided to Claude should be expanded with additional background detail about the subject matter.",
+      "B": "The output format should be revised to allow Claude to determine the appropriate structure for each question’s answer.",
+      "C": "The role assigned to Claude should be changed to a more specialized expert persona to increase response depth.",
+      "D": "The task statement should explicitly enumerate the three required questions and require an answer to each."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Explicitly enumerating the three required questions and directing Claude to answer each one makes task-completeness requirements unambiguous and reduces the risk that a required item is skipped.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-83",
+    "question": "An HR team member is reviewing a Claude-generated set of interview questions meant to be used with every candidate for one role. The questions will be asked in the same sequence to each candidate.\n\nWhich review practice best promotes fairness?",
+    "options": {
+      "A": "Review the questions to ensure they apply equally to all candidates, avoid assumptions about candidate backgrounds, and focus on the role’s actual requirements.",
+      "B": "Review the questions for length and tone, since the questions Claude drafts are well-aligned to role requirements by default and need only stylistic adjustment.",
+      "C": "Review the questions and add follow-up questions tailored to each candidate’s resume so each interview can explore the candidate’s specific experience.",
+      "D": "Review the questions and rotate the order across candidates so no candidate is consistently asked the hardest questions first."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Fair interview questions are job-related, avoid assumptions about protected or personal backgrounds, and can be applied consistently to every candidate. The EEOC identifies asking the same questions for a job and focusing inquiries directly on the position as practices that support nondiscriminatory treatment.\n\nLearn more\n- Barrier Analysis: Questions to Guide the Process\n- Employment Tests and Selection Procedures",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-84",
+    "question": "You are a marketing manager using Claude to research a new market segment. Which research step should be completed first?",
+    "options": {
+      "A": "Generate a final research report combining every Claude output produced.",
+      "B": "Submit a series of Claude prompts to gather information across the segment.",
+      "C": "Validate the gathered information against authoritative external sources.",
+      "D": "Define the specific research questions that must be answered for the segment."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Research must begin by defining the specific questions to be answered, because they set the scope for information gathering, source validation, and the final report. Anthropic’s guidance likewise emphasizes clearly defining specific, measurable objectives before subsequent evaluation work.\n\nLearn more\n- Define success and build evaluations",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-85",
+    "question": "An HR business partner is setting up two separate Projects for two different client engagements.\n\nWhich configuration most effectively prevents context bleed between the two engagements?",
+    "options": {
+      "A": "Set up each Project with its own distinct memory context, knowledge sources, and instructions, and verify that information from one Project does not appear in the other Project’s responses.",
+      "B": "Use a single shared Project for both client engagements with combined memory, knowledge sources, and instructions, on the assumption that Claude will keep the two clients’ contexts separate without configuration.",
+      "C": "Configure both Projects to share the same memory context to reduce setup effort, even though shared memory between unrelated client engagements is precisely the configuration that produces context bleed.",
+      "D": "Skip Project configuration entirely and use general chats for both engagements, which provides no scoped memory contexts and offers no structural separation between the two clients’ work streams."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Separate Claude Projects provide self-contained workspaces with project-specific knowledge and instructions. Assigning distinct context, knowledge sources, and instructions to each client engagement preserves the boundary between their work and prevents one client’s information from being used in the other engagement.\n\nLearn more\n- What are projects? | Anthropic Help Center\n- How can I create and manage projects? | Anthropic Help Center",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-86",
+    "question": "You are an operations assistant choosing a model for a recurring meeting-summary task that needs no deep reasoning and operates at moderate volume.\n\nWhich choice best balances cost, speed, and quality?",
+    "options": {
+      "A": "Haiku, which is suitable only when the task requires the fastest possible turnaround.",
+      "B": "Opus, which prioritizes depth at higher latency and rate-limit consumption.",
+      "C": "Sonnet, which provides solid quality at moderate latency and rate-limit consumption for everyday work.",
+      "D": "A custom model, which the Associate-level user would need to build and train independently."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Sonnet is the balanced Claude model tier for routine work that needs solid output quality without the higher cost and latency associated with Opus. Haiku is optimized for simpler, high-speed and high-volume workloads, while Opus is intended for the most demanding reasoning tasks.\n\nLearn more\n- Anthropic pricing and cost optimization\n- Anthropic Intro to Claude",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-87",
+    "question": "You are a project manager assessing Claude usage methods that teammates have proposed for a project workflow.\n\nWhich two workflow steps are appropriate for Claude support?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "approving a final external press release without any human review",
+      "B": "issuing legally binding contractual commitments on behalf of the company",
+      "C": "deciding promotion outcomes for staff based solely on the model’s judgment",
+      "D": "synthesizing a literature review across many uploaded research documents",
+      "E": "drafting a structured project status update from a set of meeting notes"
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "Claude can synthesize information across uploaded research documents to support a literature review and can turn meeting notes into a structured project-status-update draft. These are assistive drafting and summarization tasks that remain subject to human review, unlike autonomous final press approval, legally binding commitments, or sole-model employment decisions.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-88",
+    "question": "You are an operations lead aligning production tasks with Claude’s model strengths to establish realistic expectations.\n\nWhich two production tasks most clearly match Claude’s strengths?\n\nEach correct answer represents a complete solution.\n\nChoose two",
+    "options": {
+      "A": "monitoring a live sensor data stream and flagging anomalies as they occur in real time",
+      "B": "issuing a binding legal determination based solely on Claude’s analysis of case documents",
+      "C": "drafting a tone-and-audience-aware customer-facing email under human review",
+      "D": "calculating the precise settlement value of a derivative contract using live market inputs",
+      "E": "synthesizing a single executive summary across many long source documents"
+    },
+    "answer": [
+      "C",
+      "E"
+    ],
+    "explanation": "Claude is designed for language and analysis tasks, including generating text and summarizing source material. It can draft a customer-facing email using specified tone and audience requirements under human review, and its large context capacity supports synthesizing an executive summary from numerous long documents. Binding legal judgments, exact financial settlement calculations using live inputs, and real-time anomaly detection require specialized controls, authoritative data, or deterministic and accountable decision processes beyond those language-model strengths.\n\nLearn more\n- Intro to Claude\n- Citations",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-89",
+    "question": "A learning specialist is setting up a Project for course-design work. The organization has an internal instructional-design standard and a preferred format for lesson outlines.\n\nWhich set of custom instructions best supports this use case?",
+    "options": {
+      "A": "Name Claude’s role as a course designer; let each chat’s prompt specify the standards and output structure for that lesson, since lessons vary widely.",
+      "B": "Name Claude’s role as a course designer and require alignment to the organization’s instructional-design standards; leave output structure to Claude based on the topic of each lesson.",
+      "C": "Specify only the preferred output structure for lesson outlines, since the structure carries the standards implicitly and naming the role adds no value.",
+      "D": "Name Claude’s role as a course designer, require alignment to the organization’s instructional-design standards, and specify the preferred output structure for lesson outlines."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Project instructions apply to all chats within a Project and are intended to establish project-specific context, workflow guidelines, task requirements, and the role or perspective Claude should adopt. Including the course-designer role, the organization’s instructional-design standards, and the required lesson-outline structure provides consistent guidance for every lesson.\n\nLearn more\n- Understanding Claude's Personalization Features\n- How can I create and manage projects?",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-90",
+    "question": "You are a project manager evaluating stakeholder messages that teammates have drafted regarding Claude’s role in a workflow. Which two messages are appropriate for stakeholder communication about Claude?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "a claim that the model never makes errors and requires no quality review",
+      "B": "a vague reassurance that “the AI is taking care of it” without further detail",
+      "C": "a claim that Claude will handle every task without any human involvement",
+      "D": "a clear statement of the limits and known failure modes of the integration",
+      "E": "an honest description of where Claude assists and where humans retain decisions"
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "Claude can generate factually incorrect or contextually inconsistent output, and mitigation techniques do not eliminate that risk; critical information still requires validation. Appropriate stakeholder communication therefore states the integration’s limitations and known failure modes, while honestly defining Claude’s assistance role and the decisions that remain with humans.\n\nLearn more\n- Reduce hallucinations — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-91",
+    "question": "You are reviewing a competitor brief generated by Claude for unsupported claims.\n\nWhat is the correct sequence of review steps?\n\n1. Cross-check each specific claim against the provided source material or reliable external references.\n2. Determine whether to correct, re-prompt, or escalate based on the findings.\n3. Record every unsupported or inconsistent claim with its location and severity.\n4. Identify the specific factual claims, statistics, and citations in the brief.\n5. Read the brief from start to finish and flag any claims that seem surprising.",
+    "options": {
+      "A": "1, 4, 5, 3, 2",
+      "B": "4, 5, 1, 3, 2",
+      "C": "5, 1, 4, 3, 2",
+      "D": "5, 4, 1, 3, 2"
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "An effective unsupported-claim review starts with a complete read-through to spot potentially questionable content, followed by identifying the exact claims, statistics, and citations requiring validation. Those items are then checked against authoritative evidence, documented when unsupported or inconsistent, and used to determine the appropriate remediation or escalation.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-92",
+    "question": "You are creating a checklist to evaluate Claude outputs and must finish the upstream steps before scoring an output. Which two steps must be completed BEFORE scoring a Claude output against the checklist?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Define the evaluation criteria that matter for the task at hand.",
+      "B": "Promote the approved output into the downstream production process.",
+      "C": "Forward unacceptable outputs to a senior reviewer for second-pass review.",
+      "D": "Specify the threshold that distinguishes acceptable from unacceptable output.",
+      "E": "Document the final score and the reviewer comments for the audit trail."
+    },
+    "answer": [
+      "A",
+      "D"
+    ],
+    "explanation": "An evaluation checklist requires task-relevant criteria to determine what quality dimensions are assessed and an acceptance threshold to determine whether the assessed output passes. Those definitions must exist before any score can be assigned; production routing, escalation, and audit recording are downstream activities.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-93",
+    "question": "You are a business analyst determining which output-formatting and context-window practices to recommend to teammates. Which two practices constitute effective use of the context window?\n\nEach correct answer provides part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Reuse the same context block across multiple requests to avoid rebuilding it each time.",
+      "B": "Concatenate all source documents end-to-end with no separators between them.",
+      "C": "Paste full email threads related to the project into context so the model has complete conversational history.",
+      "D": "Trim irrelevant material before submitting the request to keep context focused.",
+      "E": "Use clear section headers to separate different parts of the input material."
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "A context window has finite input capacity, so removing irrelevant content keeps the available tokens focused on information needed for the task. Clear section headers delineate separate input materials and make their relationships and purposes easier for the model to interpret. Oversized inputs can otherwise require truncation or fail when they exceed the model’s input limit.\n\nLearn more\n- OpenAI API Reference — Responses truncation\n- OpenAI API — Models",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-94",
+    "question": "When preparing an AI-assisted work product for external delivery, a senior manager is applying the AI Fluency Framework’s Diligence competency.\n\nWhich step most clearly reflects Diligence principles?",
+    "options": {
+      "A": "Deliver the work product without independent verification on the basis that AI assistance shifts accountability away from the human, even though Diligence holds the human fully accountable for the output.",
+      "B": "Delegate accountability for the AI-assisted work product to Claude itself rather than retaining it as a human obligation, contrary to the Diligence principle that humans remain accountable for AI-assisted outputs.",
+      "C": "Skip verification of any element on the assumption that fluent output implies accuracy, even though Diligence requires the human to verify and correct AI-assisted outputs before they are acted upon.",
+      "D": "Identify the elements of the work product that must be independently verified or corrected before delivery, and take ownership of those verifications as a professional accountability obligation."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Deployment Diligence requires the human using AI to verify and vouch for outputs that will be used or shared. Professional accountability remains with the human, so identifying what needs independent verification or correction and personally owning those checks before external delivery fulfills the requirement.\n\nLearn more\n- Anthropic AI Fluency: Diligence",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-95",
+    "question": "You are reviewing colleagues’ claims from a recent training about prompt iteration. Which two claims about prompt iteration are accurate?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "Repeated resubmission of the same prompt is the most reliable way to improve output.",
+      "B": "Output comparison against original criteria validates whether iteration helped.",
+      "C": "Iteration is most productive when each change targets a specific diagnosed weakness.",
+      "D": "Iteration should stop only after every possible alternative phrasing has been tried.",
+      "E": "More iterations always produce a better output regardless of what was changed."
+    },
+    "answer": [
+      "B",
+      "C"
+    ],
+    "explanation": "Prompt iteration should be guided by explicit evaluation criteria: comparing revised output with the original criteria shows whether the change helped. Iterations are most effective when each revision addresses a specific identified weakness, rather than making arbitrary or repeated changes.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-96",
+    "question": "A Claude associate is examining Claude-generated customer-segment descriptions for an internal marketing brief. One description makes a generalization about a demographic group’s purchasing behavior that is not true for individual customers within that segment.\n\nWhich response is most appropriate?",
+    "options": {
+      "A": "Revise the description to focus on observed behaviors rather than generalizations about people, and validate the revision against actual customer data.",
+      "B": "Remove the entire customer-segment description from the brief, since any segmentation that involves demographic characteristics is likely to introduce similar issues.",
+      "C": "Keep the description as written for the internal brief, since internal use does not carry the same risk as external publication of demographic generalizations.",
+      "D": "Add a disclaimer to the description, noting that the generalization may not apply to all individuals in the segment, and keep the underlying description unchanged."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Customer segmentation should describe demonstrable customer behaviors and be validated against actual customer data, rather than applying an unsupported demographic generalization to individuals. A disclaimer or internal-only use does not correct the inaccurate underlying characterization.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-97",
+    "question": "You are conducting an optimization pass on a recurring workflow.\n\nWhat is the correct sequence of optimization steps?\n\n1. Apply targeted optimization to the bottleneck step\n2. Roll out the optimized workflow to the wider team and document the change\n3. Identify the bottleneck step by using measured time per step and queue length\n4. Map the existing workflow steps, owners, and decision points\n5. Pilot the change with a small group and measure its effect against the previous baseline",
+    "options": {
+      "A": "4, 1, 3, 5, 2",
+      "B": "4, 3, 1, 5, 2",
+      "C": "3, 4, 1, 5, 2",
+      "D": "1, 4, 3, 5, 2"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Workflow optimization begins by mapping the current process, then using performance measurements to identify the bottleneck. A targeted improvement is applied to that constraint, tested in a limited pilot against the established baseline, and only then rolled out broadly with documentation.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-98",
+    "question": "You are a customer-success lead operating an interactive workflow in which every turn must respond quickly and the reasoning required per turn is light. Which option best matches these requirements?",
+    "options": {
+      "A": "Choose any model because latency does not vary by model.",
+      "B": "Choose Haiku to keep latency low and to handle a light reasoning load efficiently at scale.",
+      "C": "Choose Opus to maximize reasoning depth despite higher latency.",
+      "D": "Choose a model based on the alphabetical order of its name."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Haiku is the appropriate model family for simple, high-volume, latency-sensitive work. Anthropic’s guidance recommends using Haiku for simple tasks and reserving more capable models for complex reasoning, so it aligns with fast interactive turns that need only light reasoning.\n\nLearn more\n- Anthropic pricing and cost optimization guidance",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-99",
+    "question": "As part of a workflow redesign, a process analyst is applying the AI Fluency Framework’s Delegation competency. Which two criteria most directly guide Delegation decisions?\n\nChoose two",
+    "options": {
+      "A": "The reversibility of the task and the consequence of an error, which together indicate whether the step is safe to delegate to Claude or should be retained for human decision-making.",
+      "B": "The need for human creativity, empathy, or judgment in the step, which indicates whether the task is appropriate for AI delegation or requires the human capabilities Claude cannot provide.",
+      "C": "The visual complexity of the workflow diagram, since steps with more connections and dependencies are more likely to require human oversight.",
+      "D": "The seniority of the team member who currently performs the step, since more senior roles typically involve higher-stakes tasks that warrant human retention.",
+      "E": "The length of time the workflow has existed in its current form, since well-established processes have been sufficiently validated for AI delegation."
+    },
+    "answer": [
+      "A",
+      "B"
+    ],
+    "explanation": "Delegation strategically divides work between humans and AI based on the nature and stakes of each task. Error consequence and reversibility determine whether delegation is acceptably safe, while tasks requiring human expertise, creativity, empathy, or judgment should remain human-led. The AI Fluency Framework specifically identifies human expertise, creativity, and judgment as considerations when distributing work between people and AI.\n\nLearn more\n- Anthropic AI Fluency: Delegation",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-100",
+    "question": "A Claude associate is assessing whether to enable a Skill supplied by an unfamiliar third party. Which two checks best support a sound trust decision?\n\nChoose two",
+    "options": {
+      "A": "Verify the source of the Skill against the organization’s approved-Skill list before enabling it within claude.ai or any Project the team uses for its work.",
+      "B": "Treat the Skill's appearance in a public listing as sufficient validation, without confirming the source, the requested permissions, or alignment with the organization’s approved-Skill list.",
+      "C": "Skip permission review on the assumption that the Skill cannot exceed the boundaries of the workflow, even though Skills can request access that the task does not require.",
+      "D": "Review the permissions and capabilities the Skill requests and confirm that the requested access is appropriate for the task the Skill is intended to perform.",
+      "E": "Enable the Skill immediately on the basis of strong external reviews, even though the source has not been validated against the organization’s approved-Skill list and the permissions remain unverified."
+    },
+    "answer": [
+      "A",
+      "D"
+    ],
+    "explanation": "Third-party Skills should be enabled only from trusted, organization-approved sources, and their requested capabilities and access should be reviewed to ensure they are necessary and appropriate for the intended task. Public listings or favorable reviews do not substitute for validating provenance and applying least-privilege access.\n\nLearn more\n- Use skills in Claude",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-101",
+    "question": "You are a research associate assembling inputs for a lengthy task that refers to two long regulatory documents, but only particular sections are relevant.\n\nWhich approach best preserves context-window capacity?",
+    "options": {
+      "A": "Skip the documents entirely and rely on Claude to invent the missing context.",
+      "B": "Split each document into one-character pieces and feed them one at a time.",
+      "C": "Extract only the relevant sections from each document and include those, omitting unrelated chapters.",
+      "D": "Paste the full text of both documents without trimming to maximize available material."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Extracting and supplying only the relevant sections retains the necessary regulatory context while avoiding token consumption by unrelated chapters, preserving more context-window capacity for the task.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-102",
+    "question": "You are a project lead evaluating a teammate’s practice of using the same prompt template for every task, regardless of task type. Which feedback is most appropriate?",
+    "options": {
+      "A": "The prompting strategy should be adapted to each task type because one template does not produce equally strong outputs across all tasks.",
+      "B": "The habit is ideal because a single template guarantees consistent quality across all task types.",
+      "C": "The prompting strategy should not change between tasks because adapting it wastes time and adds no value.",
+      "D": "Task type has no effect on the appropriate prompting strategy."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Prompting strategy should be adapted to the task type because different tasks require different instructions, context, output formats, constraints, and evaluation criteria. A single template cannot reliably produce equally strong results across every type of task.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-103",
+    "question": "You are a knowledge worker preparing a summary of common prompt-failure patterns for the team.\n\nWhich pattern is most likely to result in vague or off-target output?",
+    "options": {
+      "A": "a prompt that names a topic but does not state the task, audience, or required output structure",
+      "B": "a prompt that adds clear constraints on length and tone",
+      "C": "a prompt that explicitly names the role, task, audience, and required output format",
+      "D": "a prompt that includes a representative example of the desired output"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A prompt that identifies only a topic leaves the intended task, audience, and response structure undefined. Those missing constraints force the model to infer essential requirements, increasing the likelihood of a generic or misaligned response.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-104",
+    "question": "You are an HR specialist assessing data items proposed for inclusion in a Claude prompt. Which two data items are suitable to include in a Claude prompt for a routine task?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "a redacted job description that the model will adapt for a posting",
+      "B": "accommodation request notes from an employee’s HR file needed to draft a role adjustment memo",
+      "C": "employee ID numbers and hire dates for the team roster included to help Claude personalize onboarding communications",
+      "D": "a compensation band summary that includes employee names and current salary figures for a specific team",
+      "E": "an anonymized summary of an HR policy that the model will rephrase"
+    },
+    "answer": [
+      "A",
+      "E"
+    ],
+    "explanation": "A redacted job description and an anonymized HR-policy summary are appropriately minimized and do not contain identifiable or sensitive employee information. Employee accommodation records, identifiers and hire dates, and named salary information are confidential HR data and are unsuitable for routine prompting.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-105",
+    "question": "You are a Claude associate evaluating a proposed Claude use case before approving it for your team. What is the correct sequence of assessment steps?\n\n1. Identify the audience, decision impact, and reversibility of the outputs.\n2. Identify the data types involved and whether sensitive data is implicated.\n3. Compare the use case with the organization’s policies and the relevant regulatory considerations.\n4. Decide whether the use case proceeds, needs modification, or is declined.\n5. Document the assessment outcome and rationale for traceability.",
+    "options": {
+      "A": "3, 1, 5, 4, 2",
+      "B": "1, 3, 5, 4, 2",
+      "C": "5, 3, 1, 4, 2",
+      "D": "3, 5, 1, 4, 2"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A sound use-case assessment must first scope what the use case actually is before it can be checked against anything else: identifying the audience, decision impact, and reversibility of the outputs (step 1) establishes the risk profile of the proposed use. Only with that risk profile in hand does it make sense to compare the use case against organizational policy and applicable regulatory considerations (step 3), since the relevant policies and regulations to check depend on who is affected and how consequential and reversible the outcome is. The assessment rationale is then written up for traceability (step 5) as the basis for the actual proceed/modify/decline determination (step 4), with the specific data types and sensitivity involved (step 2) treated as the final implementation-level check. Sequences that place the policy/regulatory comparison (step 3) or the documentation step (step 5) before the audience/impact/reversibility scoping (step 1) are incoherent, because they require checking a use case against policy or writing up its rationale before its risk profile has even been established.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-106",
+    "question": "Claude’s first output is partly useful, but it has issues with tone and detail.\n\nWhich two refinement actions are most likely to result in a meaningfully better output?\n\nEach correct answer provides a complete solution.\n\nChoose two",
+    "options": {
+      "A": "Provide an example of an output that meets the desired standard.",
+      "B": "Append the phrase “please do better” to the end of the original prompt.",
+      "C": "Add a specific tone descriptor and a concrete audience to the prompt.",
+      "D": "Increase the temperature setting and resubmit the unchanged prompt.",
+      "E": "Resubmit the same prompt several times and select the best response."
+    },
+    "answer": [
+      "A",
+      "C"
+    ],
+    "explanation": "A representative example gives Claude a concrete standard for the desired response, including its tone and level of detail. Explicitly naming the desired tone and a specific audience also supplies actionable constraints that guide style, vocabulary, and appropriate depth. Anthropic recommends clear, explicit instructions and notes that Claude pays attention to details and examples.\n\nLearn more\n- Claude 4 prompt engineering best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-107",
+    "question": "You are reviewing colleagues’ replies to feedback received on communications drafted by Claude. Which two feedback responses are productive?\n\nEach correct answer represents a complete solution.\n\nChoose two",
+    "options": {
+      "A": "declining to revise sections that were generated by Claude on the basis that the model’s output should be trusted as written",
+      "B": "incorporating all feedback received, including contradictory suggestions, into the next draft simultaneously",
+      "C": "deferring all feedback to a later revision cycle to avoid disrupting the current draft’s consistency",
+      "D": "asking clarifying questions when feedback is ambiguous before acting on it",
+      "E": "mapping each piece of feedback to the specific change made in the next draft"
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "explanation": "Ambiguous feedback should be clarified before it is applied so that revisions reflect the reviewer’s intended meaning. Linking every feedback item to its corresponding change creates an auditable revision trail and helps confirm that feedback has been addressed. Claude-generated content should still be reviewed and verified rather than treated as automatically correct.\n\nLearn more\n- Reduce hallucinations — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-108",
+    "question": "A project manager is determining how Claude can assist with requirements analysis for an upcoming engagement. The team will conduct stakeholder interviews and review existing process documentation during discovery.\n\nWhich activity fits this domain?",
+    "options": {
+      "A": "Use Claude to generate a complete requirements list from the project name and a short description, since requirements for similar engagements are largely standard.",
+      "B": "Use Claude to prioritize the requirements the team has already gathered, leaving the gathering itself to manual analyst work since prioritization is more time-consuming.",
+      "C": "Use Claude to synthesize stakeholder inputs and existing process documentation into a structured list of requirements with traceability to each source.",
+      "D": "Use Claude to conduct the stakeholder interviews directly, with the analyst reviewing the recordings afterward to confirm the requirements Claude extracted."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude can synthesize information from stakeholder interviews and process documents into a structured requirements set. Source traceability makes each requirement auditable against the underlying input, helping analysts validate the result and reduce unsupported claims. Anthropic’s documentation supports analyzing supplied documents and generating citations that point to specific source locations.\n\nLearn more\n- Citations - Anthropic Documentation\n- Intro to Claude - Anthropic Documentation",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-109",
+    "question": "An account manager used Claude to extract requirements from stakeholder notes. Three requirements seem to be in conflict: two stakeholders specified mutually exclusive workflow steps, and a third requirement presumes an outcome that the first two would prevent.\n\nWhich action is most appropriate?",
+    "options": {
+      "A": "Present all three conflicting requirements as alternative options in the requirements document, leaving the resolution to the project’s decision-making process later.",
+      "B": "Apply Claude to propose a compromise wording for each conflict and submit the compromise to stakeholders as the proposed resolution.",
+      "C": "Select the requirement that has the strongest business justification in the source notes, set the conflicting requirements aside, and proceed with the selected one.",
+      "D": "Flag the conflicts in the requirements document, document the source for each side, and route the conflicts back to the originating stakeholders for resolution."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Requirements conflicts should be explicitly documented with traceability to each originating source and returned to the relevant stakeholders for resolution. This preserves accountability and prevents an analyst or AI tool from making an unauthorized business decision.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-110",
+    "question": "A knowledge worker is describing the cost, speed, and quality trade-offs among Claude models to a colleague. Which generalization accurately characterizes this trade-off?",
+    "options": {
+      "A": "Speed and rate-limit consumption are independent of model capability; the difference between Haiku, Sonnet, and Opus is reasoning depth alone.",
+      "B": "More capable models generally consume more of the rate limit and run more slowly, while lighter models are faster and consume less of the rate limit.",
+      "C": "More capable models generally consume less of the rate limit because their reasoning is more efficient, even though they run more slowly than lighter models.",
+      "D": "Lighter models consume more of the rate limit per request than more capable models, since lighter models require multiple passes to match heavier-model quality."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Claude’s model lineup generally trades efficiency for capability: lighter models such as Haiku are intended for simpler, fast, lower-cost work, while more capable models such as Sonnet and Opus are used for more complex reasoning and have higher token pricing and resource consumption. This supports the general pattern of greater rate-limit use and slower execution for more capable models.\n\nLearn more\n- Anthropic Pricing",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-111",
+    "question": "A finance manager needs to choose a Claude feature for work requiring deterministic calculations across a multi-tab spreadsheet. Which option best meets this requirement?",
+    "options": {
+      "A": "Use an Artifact alone for the calculations, which provides a stable editable surface for the result but does not perform the deterministic computation that Code Execution would run.",
+      "B": "Use Code Execution, which runs code in a sandbox to perform calculations on the uploaded file and produce verified outputs the associate can check.",
+      "C": "Use the Research feature for the calculations, which gathers and synthesizes external sources and is not the appropriate feature for deterministic computation on an uploaded spreadsheet.",
+      "D": "Use a standard chat prompt for the calculations, which generates text without running code and does not produce the verified deterministic output the multi-tab calculation task requires."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Claude Code Execution can run code in a secure sandbox, process uploaded files, and perform complex calculations. That makes it the appropriate feature for reproducible computations across a multi-tab spreadsheet.\n\nLearn more\n- Code execution tool",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-112",
+    "question": "A Claude associate is investigating a Claude response that answered only one of three required questions in a prompt. The prompt presented all three questions in one paragraph, separated by commas.\n\nWhich root cause is most likely?",
+    "options": {
+      "A": "The prompt was too long and Claude focused on the question with the strongest grounding in the surrounding context.",
+      "B": "The prompt’s required questions were addressed implicitly across the response, even though the response did not visibly answer each question.",
+      "C": "The prompt’s task statement did not enumerate the three required questions explicitly enough for Claude to address each one in turn.",
+      "D": "The prompt’s audience and tone specification overshadowed the task statement, so Claude prioritized voice over coverage."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "When a prompt contains several required items, explicitly numbering or otherwise enumerating each item makes the required coverage unambiguous and helps ensure that each is answered in sequence. Combining all three questions into a comma-separated paragraph leaves the task structure insufficiently explicit.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-113",
+    "question": "A sales manager is refining a Claude-generated solution prototype after a stakeholder review identified two particular concerns. The remainder of the prototype was approved as written.\n\nWhich iteration approach is most likely to create a strong next version?",
+    "options": {
+      "A": "Rewrite the prototype from scratch incorporating the two specific concerns, since starting fresh integrates the feedback more cleanly than targeted edits.",
+      "B": "Address the two specific concerns and add a third improvement the associate identified, since combining stakeholder feedback with self- identified improvements is more efficient.",
+      "C": "Address the two specific concerns directly, leave unrelated parts unchanged, and document the changes for the next review.",
+      "D": "Address the two specific concerns and also revise unrelated sections to maintain consistent voice across the prototype after the edits."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A focused revision incorporates the specific stakeholder feedback while retaining content that was already accepted. Documenting the changes also makes the subsequent review clearer and more traceable.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-114",
+    "question": "As a senior analyst, you use Claude to analyze requirements from several stakeholder sources.\n\nWhat is the correct sequence of steps?\n\n1. Group related requirements and flag conflicts or ambiguities for stakeholder review.\n2. Validate the structured output against the original sources for accuracy and completeness.\n3. Submit the consolidated inputs to Claude using a structured extraction prompt.\n4. Gather and label the source materials so that every requirement can be traced.\n5. Document the final requirements set with source traceability and status.",
+    "options": {
+      "A": "4, 1, 3, 2, 5",
+      "B": "4, 3, 1, 2, 5",
+      "C": "1, 4, 3, 2, 5",
+      "D": "3, 4, 1, 2, 5"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Source materials must be gathered and labeled before consolidation so each requirement remains traceable. The consolidated material is then submitted to Claude with a structured extraction prompt; the extracted requirements can subsequently be grouped and reviewed for conflicts or ambiguities. Validation against the original sources must occur before documenting the final, traceable requirements set. Anthropic’s citations documentation supports providing documents to Claude and retaining source references for verification.\n\nLearn more\n- Anthropic Claude Platform Docs: Citations",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-115",
+    "question": "You are assessing whether a request to “redesign new-hire onboarding” should be broken into parts before prompting Claude. Which characteristic of the request most strongly suggests that decomposition would be useful?",
+    "options": {
+      "A": "The request is for a single structured document that can be produced from one set of inputs in one prompt.",
+      "B": "The request requires multiple distinct outputs: a process map, supporting materials, and a measurement plan.",
+      "C": "The request involves a single well-defined output with a clear input and a familiar format.",
+      "D": "The request involves content the associate has produced many times before and knows can be handled in a single well-structured prompt."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Decomposition is most valuable when work contains multiple distinct deliverables that require different kinds of content and evaluation. A process map, supporting materials, and a measurement plan are separate outputs, so treating them as coordinated subtasks improves clarity and control.\n\nLearn more\n- Customer Support Agent - Anthropic",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-116",
+    "question": "You are a procurement associate breaking down a vendor-evaluation task. Which dependency sequence represents sound ordering?",
+    "options": {
+      "A": "Define evaluation criteria first, gather vendor data against those criteria, then score and rank.",
+      "B": "Rank vendors before any data is collected.",
+      "C": "Score vendors first and decide on the criteria afterward.",
+      "D": "Skip criteria and ask Claude to produce a vendor recommendation from no inputs."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A defensible vendor evaluation defines the assessment criteria before collecting evidence, then gathers vendor information aligned to those criteria, and finally uses that information to score and rank the vendors.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-117",
+    "question": "You are a marketing manager using Claude to develop ideas for a campaign and must complete the framing steps before generating concepts. Which two framing steps must be completed BEFORE asking Claude to generate concepts?\n\nEach correct answer represents part of the solution.\n\nChoose two",
+    "options": {
+      "A": "Select a finalist concept and prepare it for stakeholder approval.",
+      "B": "Define the goal of the campaign and the success metrics for the campaign.",
+      "C": "Review the Claude-generated concepts and select the two strongest for further development.",
+      "D": "Schedule the campaign launch and the rollout dates with the agency.",
+      "E": "Define the brand voice and the audience the concepts will speak to."
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "explanation": "Campaign ideation should begin with a clear objective and measurable success metrics, plus the target audience and brand voice that constrain relevance, tone, and style. Concept review, finalist selection, approval preparation, launch scheduling, and rollout planning take place after concepts have been generated.\n\nLearn more\n- Define success criteria and build evaluations — Claude Platform Docs\n- Prompting best practices — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-118",
+    "question": "You are a knowledge worker determining whether to escalate Claude-generated output. What is the correct sequence of decision steps?\n\n1. Identify the audience and the impact if the output is incorrect.\n2. Document the decision and its rationale for traceability.\n3. Compare the output’s risk profile with the organization’s escalation criteria.\n4. Decide whether to use the output, iterate further, or escalate.\n5. Evaluate the output’s accuracy, completeness, and any unverified claims.",
+    "options": {
+      "A": "5, 1, 3, 4, 2",
+      "B": "3, 1, 5, 4, 2",
+      "C": "1, 5, 3, 4, 2",
+      "D": "1, 3, 5, 4, 2"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Assessing the audience and consequences establishes the potential impact, while evaluating accuracy, completeness, and unverified claims establishes the output’s quality risk. Those factors can then be measured against organizational escalation criteria before selecting use, iteration, or escalation; recording the decision and rationale provides traceability. Claude outputs can contain factual errors or unsupported claims, so critical and high-stakes information requires validation.\n\nLearn more\n- Reduce hallucinations — Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccao-f-119",
+    "question": "You are a product designer using Claude in a solution-design exercise. Which solution-design step should be completed first when using Claude?",
+    "options": {
+      "A": "Articulate the problem the solution must address and the constraints in play.",
+      "B": "Compare the candidate concepts against the constraints and select a finalist.",
+      "C": "Produce detailed mock-ups of the chosen solution for stakeholder review.",
+      "D": "Generate candidate solution concepts using Claude across diverse styles."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Defining the problem to solve and the applicable constraints establishes the goals, boundaries, and evaluation criteria for subsequent concept generation. Candidate concepts can then be generated, assessed against those constraints, selected, and developed into detailed mock-ups. Anthropic’s prompting guidance recommends clear, explicit instructions and relevant context so Claude can produce targeted results.\n\nLearn more\n- Claude 4 Prompt Engineering Best Practices — Anthropic",
+    "imageUrl": ""
+  }
+]

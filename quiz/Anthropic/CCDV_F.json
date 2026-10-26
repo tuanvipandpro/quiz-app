@@ -1,0 +1,797 @@
+[
+  {
+    "id": "ccdv-f-1",
+    "question": "Your Claude application's content policy defines categories of content that it must never produce under any circumstances. The application currently has no way to enforce this policy, and content in these categories is appearing in its output. How would you enforce the content policy?",
+    "options": {
+      "A": "Enhance the system prompt to contain explicit instructions for the categories to avoid, complete with examples of each category. Treat the strengthened prompt as the primary enforcement mechanism for the application’s content policy across all responses.",
+      "B": "Remove the content policy entirely and let any output reach users during normal operation, accepting whatever content the application produces in response to incoming traffic.",
+      "C": "Add deterministic output filtering that checks responses against the content policy before they reach users.",
+      "D": "Move enforcement to users by asking them to report content policy violations after the violating content has already reached them in the application’s responses."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Deterministic output filtering evaluates each generated response against the defined prohibited categories before it is delivered to users, enabling matching content to be blocked consistently. System-prompt instructions may steer model behavior but are not a guaranteed enforcement control.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-2",
+    "question": "Your Claude application’s API keys are kept in a secrets manager. The team is considering whether to use the same key in development, staging, and production. How should the keys be handled across environments?",
+    "options": {
+      "A": "Use a single development key everywhere on the grounds that production keys are too risky to deploy across the application's three environments during normal operation.",
+      "B": "Use distinct keys for each environment so a compromise in one environment does not affect the others during normal operation across the application’s lifecycle.",
+      "C": "Rotate the same key across environments at random intervals on the grounds that random rotation provides isolation between environments without requiring distinct keys.",
+      "D": "Use the same key across all environments for simplicity and treat the propagation of any compromise as a known operational tradeoff for the team's key management approach."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Each environment should use its own API key. Environment-specific credentials isolate compromise, revocation, auditing, permissions, and rotation, so exposure in development or staging does not grant access to production. Anthropic documentation also recommends creating a dedicated API key for direct API use and storing it securely.\n\nLearn more\n- Claude Code SDK — Authentication",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-3",
+    "question": "The team is considering whether to implement a new capability as a custom tool or use an existing built-in tool that almost meets the use case but is missing one specific feature. How should you make the decision?",
+    "options": {
+      "A": "Review the built-in tool’s documentation and assess whether its existing capabilities are sufficient to cover the use case without any modification or extension.",
+      "B": "Identify whether the team has previously built similar custom tools and use those precedents to determine which approach is more consistent with the existing codebase.",
+      "C": "Examine the custom tool option by scoping the implementation effort and determining whether the additional flexibility justifies the development and maintenance cost.",
+      "D": "Evaluate whether the missing feature can be addressed by extending the built-in tool or warrants a custom tool, then choose accordingly."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Choose the approach based on whether the built-in tool can be extended to support the missing feature and whether that is preferable to the flexibility, implementation effort, and ongoing maintenance of a custom tool. This evaluates the relevant technical and lifecycle trade-off across both options.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-4",
+    "question": "A teammate has asked for an explanation of when a Skill is the better choice than an MCP server. The teammate is unsure how the two differ in practice when both can be reused across teams. How would you describe the distinction?",
+    "options": {
+      "A": "A Skill is preferable for cross-team reuse because it loads more efficiently than an MCP server during normal operation in the team’s typical multi-team workloads.",
+      "B": "A Skill bundles prompts, scripts, and data into a package the model loads as a unit while a MCP server exposes resources, tools, and prompts through a standard client interface.",
+      "C": "A Skill and an MCP server are equivalent extension mechanisms that the team can use interchangeably for any reusable capability that needs to be accessible across teams.",
+      "D": "A Skill is the older mechanism and an MCP server is the newer one, so the team should prefer an MCP server for any reusable capability that the team builds going forward."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A Skill packages instructions and optional workflow resources, including scripts, templates, and references, to guide repeatable work. An MCP server exposes live information and controlled actions through a standard client-server interface, including tools, resources, and prompts. Skills can complement MCP servers by defining how to use their capabilities for a workflow.\n\nLearn more\n- Skills – Plugins | OpenAI Developers\n- MCP server – Plugins | OpenAI Developers",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-5",
+    "question": "You are creating a system prompt for a Claude application that must generate output in a particular JSON shape. The downstream system will reject any output that fails to conform to the schema. Your prompt would need to ...",
+    "options": {
+      "A": "omit any reference to the format and rely on a post-processing step in the application to reshape Claude’s output.",
+      "B": "instruct Claude to return JSON sometimes and free text other times so the application's output captures both formats.",
+      "C": "include explicit constraints describing the required JSON schema and an instruction to produce only output matching that schema.",
+      "D": "instruct Claude to use whichever output format it considers most appropriate for each request the application handles."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "When a downstream system requires a particular JSON schema, the model must receive explicit instructions defining that schema and requiring output only in that format. Clear, specific output-format constraints improve compliance and prevent extra free text or incompatible structures.\n\nLearn more\n- Anthropic Prompting Best Practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-6",
+    "question": "Your Claude application generates good responses for typical inputs but has difficulty with edge cases. You have several labeled examples of edge-case inputs and the desired response for each. You want to use these examples to improve the model’s treatment of edge cases. What is the best way to use these examples?",
+    "options": {
+      "A": "Embed the examples in a database for the model to find during inference.",
+      "B": "Train a custom model on the edge-case examples and deploy that custom model in place of the team’s current Claude integration.",
+      "C": "Add the labeled edge-case examples to the prompt as few-shot examples so the model can learn the pattern.",
+      "D": "Tell users to avoid submitting the edge-case inputs to the application by adding warnings in the application’s user interface."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Few-shot prompting places representative labeled input-output examples in the prompt so Claude can infer and apply the desired handling pattern. Anthropic recommends relevant, diverse examples that cover edge cases because they improve output accuracy and consistency.\n\nLearn more\n- Anthropic Prompting Best Practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-7",
+    "question": "Your Claude application validates structured output, but it has been treating validation failures as terminal errors. Every validation failure makes the entire user request fail. The team wants to handle validation failures more gracefully. How would you handle the validation failures?",
+    "options": {
+      "A": "Tell users that validation failures are unavoidable and instruct them to perform manual accuracy checks before relying on outputs.",
+      "B": "Disable output validation until the underlying cause of validation failures has been identified and addressed in a future release.",
+      "C": "Treat validation failures as a recognized error path that triggers retry, repair, or fallback logic before failing the user request.",
+      "D": "Pass validation failures directly to downstream systems and let each downstream system decide how to handle the malformed output."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Validation failures should be handled as a recognized error path with bounded recovery: retry generation, repair invalid structured data when safe, or use a valid fallback before failing the user-facing request. Keeping validation in place prevents malformed output from reaching downstream systems while avoiding unnecessary terminal failures.\n\nLearn more\n- Claude API errors",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-8",
+    "question": "You are designing an agent to manage a complex claim-processing workflow. Each claim proceeds through fact extraction, eligibility evaluation, and a decision step. The three subtasks have separate success criteria, and some claims need iteration between fact extraction and eligibility evaluation before a decision can be made.\n\nWhich agent pattern would you use?",
+    "options": {
+      "A": "A single tool-use loop pattern that gives one agent access to all the tools needed for fact extraction, eligibility evaluation, and decision-making.",
+      "B": "A graph-based pattern that lets the agent move between subtasks based on the state of each claim, with each subtask evaluated against its own criteria.",
+      "C": "A linear chain pattern that processes every claim through fact extraction, then eligibility evaluation, then decision, with no return paths between subtasks.",
+      "D": "A streaming pattern that emits partial decisions as the agent processes each claim, refining the output until a final decision emerges from the stream."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A graph-based pattern models each subtask as a stateful node with conditional transitions, allowing claims to return from eligibility evaluation to fact extraction when more or corrected facts are needed. It also supports evaluating each specialized subtask against its own success criteria. This flexibility is required for branching and iterative workflows, unlike a fixed sequential chain.\n\nLearn more\n- Choose a design pattern for your agentic AI system",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-9",
+    "question": "The Anthropic API has deprecated a request parameter that your Claude application uses in approximately 40 locations across the codebase. The deprecation notice provides a six-month window before the parameter is removed and recommends a replacement parameter with slightly different semantics. You would address the deprecation by ...",
+    "options": {
+      "A": "swapping all 40 call sites in a single change right away to prevent drawn-out migration work that will delay ongoing functioning.",
+      "B": "migrating all 40 call sites in a single change near the removal date to ensure the deprecated parameter continues to work as long as possible.",
+      "C": "adding regression tests to cover the parameter’s behavior, then migrating call sites in batches that you validate against regression tests.",
+      "D": "keeping the deprecated parameter in place while writing a wrapper function around it to insulate the rest of the codebase from the eventual change."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "When a deprecated API parameter has a replacement with different semantics, regression tests preserve the intended behavior as a migration baseline. Updating call sites in validated batches limits the scope of each change, exposes behavioral differences early, and allows the migration to finish safely before removal. Anthropic recommends thoroughly testing applications with replacements well before a retirement date and updating code promptly.\n\nLearn more\n- Model deprecations - Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-10",
+    "question": "A Claude application uses structured output that downstream code consumes. The team wants to gracefully handle malformed or unexpected output so that it does not crash downstream systems. The best option for addressing this issue is to ...",
+    "options": {
+      "A": "use the output the model produces and leave schema enforcement to a later phase of production after the application is more complete.",
+      "B": "apply defensive parsing to handle unexpected fields, missing values, and type mismatches that the downstream code might otherwise crash on.",
+      "C": "crash on any unexpected output and require manual recovery on affected requests the application handles during normal operation.",
+      "D": "silently drop any output that does not match expectations so downstream systems do not see the malformed output the application receives from the model."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Defensive parsing validates and safely handles unexpected fields, missing values, and type mismatches at the boundary where model output enters application code, preventing unhandled parsing or runtime failures. Anthropic notes that, without structured outputs, malformed JSON, missing required fields, inconsistent types, and schema violations can occur; robust downstream handling addresses these failure cases.\n\nLearn more\n- Structured outputs — Claude API Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-11",
+    "question": "A teammate asks why your Claude agent’s tool definitions contain detailed descriptions even though the tool names are already descriptive. They propose removing those descriptions to make the tool definitions simpler. How would you reply?",
+    "options": {
+      "A": "Agree with the teammate because tool names are sufficient for the model to choose the right tool on every request the agent handles.",
+      "B": "Explain that the model uses the tool description to decide when to call the tool, and descriptions disambiguate cases where the tool name is not enough.",
+      "C": "Suggest moving the descriptions out of the tool definition and into a separate documentation file the team maintains so the tool definitions stay short and the descriptions remain available.",
+      "D": "Suggest replacing the descriptions with example calls embedded in the tool definition, treating example calls as a complete substitute for the prose description."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Claude uses a tool’s description to understand what the tool does, when it should and should not be called, and how its parameters affect behavior. Detailed descriptions provide context that tool names cannot reliably express, helping Claude distinguish between tools and select the appropriate one. Anthropic identifies detailed tool descriptions as a key factor in tool-use performance.\n\nLearn more\n- Anthropic: Implement tool use",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-12",
+    "question": "You are designing a Claude application that requires structured JSON output for downstream processing. The output schema is clearly defined, and downstream systems will reject malformed JSON. Your application design would ...",
+    "options": {
+      "A": "avoid structured output and use free-form text everywhere instead, on the grounds that free-form text is more flexible and handles edge cases better than structured schemas.",
+      "B": "structure the prompt to request output in a schema that is described in plain English, with downstream systems parsing whatever shape Claude produces.",
+      "C": "define a clear schema and structure the prompt to request output in that schema, with downstream systems handling any validation needed.",
+      "D": "define a clear schema, structure the prompt to request output in that schema, and validate Claude’s output against the schema before passing it downstream."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A defined schema gives the model an unambiguous target format, while validating the returned JSON against that schema prevents malformed JSON, missing required fields, incorrect data types, and other schema violations from reaching systems that reject invalid input. Anthropic’s structured-output guidance likewise identifies schema-conforming JSON as the appropriate mechanism for reliable downstream processing.\n\nLearn more\n- Structured outputs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-13",
+    "question": "Your Claude application processes 50-page legal contracts and generates summaries with citation references to the source. The team is considering whether to send each contract as a whole or divide it into smaller pieces. The contracts fit within Claude’s context window.\n\nInitial testing indicates that whole-document processing produces summaries with better cross-section reasoning, but citation accuracy occasionally drifts in later sections. Chunked processing yields stronger citation accuracy for each chunk but loses cross-section reasoning. The team has not yet decided which property is more important. How would you guide the team’s decision?",
+    "options": {
+      "A": "Assess the cost and latency implications of both approaches against the application’s performance requirements before recommending which processing strategy to adopt.",
+      "B": "Examine the use cases where cross-section reasoning failures occur and assess whether whole-document processing meets the application’s accuracy requirements across a representative sample of contracts.",
+      "C": "Review the citation accuracy results from chunked processing and determine whether the loss of cross-section reasoning produces summaries that still meet the application’s quality bar.",
+      "D": "Identify which property matters more for the application’s actual use case and let that decision drive the chunking approach, then validate the choice against representative contracts."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "The processing approach should be driven by the quality property that is most important to the application’s actual use case: whole-document processing favors reasoning across contract sections, while chunking favors citation precision within each section. The selected approach should then be tested against representative contracts to confirm that it meets the required quality standard.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-14",
+    "question": "A teammate has asked you to explain why the team’s Claude application is charged a different rate for output tokens than for input tokens. They had assumed that the two rates were identical.\n\nHow would you explain the difference?",
+    "options": {
+      "A": "Output tokens are typically billed at a higher rate than input tokens, and cost models for the application should reflect both rates separately.",
+      "B": "Output tokens are typically billed at the same rate as input tokens, and the apparent rate difference is a billing error to report to Anthropic.",
+      "C": "Output tokens are typically billed at a lower rate than input tokens, because output tokens are cheaper to produce than input tokens are to process.",
+      "D": "Output tokens are not billed at all, because cost is determined entirely by the input tokens sent to the model on each request."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Anthropic prices input and output tokens as separate usage categories, and its model pricing tables generally charge more per output token than per base input token. Cost models must therefore calculate input-token and output-token charges independently using their respective rates.\n\nLearn more\n- Anthropic Claude API pricing",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-15",
+    "question": "You are designing a multi-step Claude workflow in which certain steps must reason without viewing the complete preceding conversation history. The team wants to keep particular context isolated to particular steps. The context-engineering technique to use is ...",
+    "options": {
+      "A": "context isolation through subagents or multi-step agentic workflows that scope each step’s context to only what the step needs.",
+      "B": "using a single global prompt that applies to every step in the workflow no matter what each step is reasoning about during its run.",
+      "C": "embedding the full prior history in each step regardless of whether the step needs the prior history for its reasoning.",
+      "D": "augmenting the context with all available content at every step so each step has access to the entire prior history of the workflow during its reasoning."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Context isolation scopes each subagent or workflow step to only the information needed for its task, preventing irrelevant prior conversation history from being exposed to that step. Anthropic identifies isolated context as a valid use case for subagents in agentic workflows.\n\nLearn more\n- Anthropic Claude Platform Docs — Prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-16",
+    "question": "A teammate is reviewing the team’s threat model for a Claude application and has asked you to identify the AI-specific threat categories the model should cover. The teammate has already listed traditional web-application threats and wants to know which additional categories apply to a Claude application.\n\nWhich AI-specific threat categories would you add?",
+    "options": {
+      "A": "Supply chain attacks on the Claude SDK because the SDK itself is the only point of vulnerability that a Claude application introduces beyond traditional web application threats.",
+      "B": "Network-level denial of service and physical infrastructure attacks, because these categories cover the threats most likely to affect any Claude application in production.",
+      "C": "Cross-site scripting and SQL injection, because these traditional web application threats apply with equal weight to any application that uses Claude in any way.",
+      "D": "Prompt injection, data leakage from prompts or context, jailbreak attempts, and unsafe model output that bypasses application controls."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Claude applications have LLM-specific risks: prompt injection can redirect model behavior, prompts and context can disclose sensitive data, jailbreak attempts can circumvent guardrails, and unsafe generated output can bypass or undermine application controls. Anthropic identifies jailbreaks and both direct and indirect prompt injection as distinct threat models, and recommends limiting the model’s access to sensitive data and actions.\n\nLearn more\n- Mitigate jailbreaks and prompt injections",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-17",
+    "question": "A Claude agent can access a tool that retrieves customer records. A teammate observes that the agent sometimes invokes the tool with arguments not declared by its schema, causing the downstream service to return an error each time. The teammate suggests loosening the schema so the tool accepts any arguments the model generates.\n\nHow would you respond?",
+    "options": {
+      "A": "Remove the schema entirely and rely on the downstream service to reject invalid calls, treating the downstream service as the team’s primary enforcement layer.",
+      "B": "Loosen the schema as the teammate proposed so the downstream service receives every call the agent makes during normal operation.",
+      "C": "Add a system prompt instruction telling the model to produce schema-conforming arguments, treating the prompt instruction as the primary mechanism for keeping the agent’s tool calls valid.",
+      "D": "Keep the schema strict, validate arguments before dispatching, and return a structured error so the agent can retry."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Tool schemas establish the valid input contract for a tool. Strict pre-dispatch validation prevents malformed or undeclared arguments from reaching the downstream service, and a structured tool error provides feedback the agent can use to make a corrected retry. Prompting can improve behavior but does not replace validation at the system boundary.\n\nLearn more\n- Anthropic: Implement tool use",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-18",
+    "question": "Your Claude agent’s hooks currently fire for every action, substantially slowing the agent even when the actions present no risk. The team wants to scope the hooks more precisely. How should you scope the hooks?",
+    "options": {
+      "A": "Replace hooks with system prompt instructions on the grounds that prompt instructions can produce the same enforcement effect that hooks produce on the agent’s actions.",
+      "B": "Scope hooks to only the high-risk actions, such as destructive operations or sensitive data access, and remove hooks from low-risk actions to balance safety with performance.",
+      "C": "Disable all hooks while the team re-scopes them, treating the period of no hook enforcement as a temporary state during the re-scoping work.",
+      "D": "Disable the agent during peak hours so the hook overhead does not slow the application down during the busiest periods of the day across the application’s operation."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Claude Code hook configuration supports matchers and conditional filters that restrict a handler to relevant tool calls or subcommands. Applying hooks only to high-risk operations—such as destructive commands or sensitive-data access—maintains deterministic safeguards while avoiding the process overhead of executing them for low-risk actions.\n\nLearn more\n- Hooks reference — Claude Code Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-19",
+    "question": "You are designing an agent for a multi-step research task. You want it to divide the task into smaller parts, delegate each part to a specialized subagent, and consolidate the results. The agent pattern to apply is ...",
+    "options": {
+      "A": "a single tool-use loop that includes every tool the agent might need across all subtasks.",
+      "B": "an orchestrator and subagent pattern with specialized subagents assigned to each subtask.",
+      "C": "a memory pattern that stores the entire research history in advance, before any subtask begins execution.",
+      "D": "a context-window pruning pattern that drops each subtask’s content after the agent moves on."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A manager/orchestrator pattern uses a central agent to delegate work to specialized agents and synthesize their outputs into a unified result. OpenAI describes this as the manager pattern for coordinated multi-agent workflows.\n\nLearn more\n- A practical guide to building agents",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-20",
+    "question": "You are creating an agent that must call multiple internal APIs and a database in a structured, repeatable manner. Your team has chosen the Claude Agent SDK instead of building a custom loop. You are configuring the agent’s tool definitions and execution loop. How should you configure the tools and execution loop?",
+    "options": {
+      "A": "Call the Messages API directly and let the model format its tool calls in plain text.",
+      "B": "Use the SDK’s tool interface and loop, with conversation history stored in a separate team database.",
+      "C": "Use the SDK’s tool interface and let the SDK handle the loop, dispatch, and history.",
+      "D": "Use the SDK’s tool interface and write the loop and history layer in the team’s own code."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude’s SDK Tool Runner supports SDK-defined tools and automatically manages the agentic loop, including tool dispatch, request/response handling, and conversation-state history. This removes the need to build and maintain a separate custom loop or history layer for the normal tool-use workflow.\n\nLearn more\n- Tool runner (SDK)",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-21",
+    "question": "Your team’s Claude agent has built up several customizations that bypass the SDK defaults, including custom history management, retry logic, and error handling. A new team member proposes reverting every customization to make the codebase easier to maintain. The tech lead disagrees, stating that each customization was introduced for a reason. What would you advise the team?",
+    "options": {
+      "A": "Revert all customizations to the SDK’s defaults to standardize the codebase.",
+      "B": "Decide on each customization individually based on its original reason and the SDK’s current capabilities.",
+      "C": "Keep all customizations, trusting that the tech lead’s original reasoning is still valid.",
+      "D": "Migrate the agent off the SDK and rebuild it with a custom loop."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Each SDK override should be assessed individually against the need that originally justified it and the SDK’s current capabilities. This preserves custom behavior where it remains necessary while removing overrides that have become redundant, improving maintainability without sacrificing required reliability or functionality.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-22",
+    "question": "Your team’s Claude application has been in production for one year, and the team has chosen to formalize its testing strategy. At present, the team writes ad-hoc tests for individual features but lacks an overall testing approach. Which testing approach should be formalized?",
+    "options": {
+      "A": "Adopt a test-driven development practice where unit tests are written before each feature is implemented and must pass before code is merged.",
+      "B": "Define unit tests for individual functions, integration tests for the Claude integration, and end-to-end tests for critical user flows, applied consistently across the codebase.",
+      "C": "Continue writing ad-hoc tests as features ship and introduce a peer review step to ensure each test adequately covers the feature being released.",
+      "D": "Define a single testing approach that uses end-to-end tests and apply it consistently across all new features as they are added to the codebase."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A layered test strategy provides fast, focused validation of individual functions through unit tests, verifies the Claude integration with integration tests, and protects the most important user journeys with end-to-end tests. Applying these levels consistently gives the codebase comprehensive and maintainable coverage; relying only on end-to-end tests or continuing ad-hoc testing does not provide that balance.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-23",
+    "question": "A teammate submitted a pull request that introduces a Claude-powered feature to your service. The code functions, but its prompt and model choice are hard-coded inline, it lacks error handling, and there are no tests for the integration. What would you request in code review?",
+    "options": {
+      "A": "Request changes that move prompt and model configuration to a configurable location, add error handling for Claude API failures, and add tests for the integration.",
+      "B": "Request changes that move prompt and model configuration to a configurable location and add tests, treating the missing error handling as a follow-up release item.",
+      "C": "Approve the pull request and add the missing pieces yourself in a follow-up commit so the teammate can move on to other work immediately.",
+      "D": "Approve the pull request as-is, on the grounds that the feature works in the happy path and the missing pieces can be added in follow-up commits."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Prompt and model settings should be configurable, Claude API failures require explicit error handling for reliable service behavior, and integration tests are needed to validate the feature and prevent regressions. All three are necessary review changes before approval.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-24",
+    "question": "A teammate asks why your Claude application sometimes returns a response that repeats the prompt text, while at other times it rephrases that prompt text. They suspect there is a bug in the application’s request construction. How would you respond?",
+    "options": {
+      "A": "Explain that LLMs generate output token by token, and variation in how prompt content appears in output is a property of generation, not a bug in request construction.",
+      "B": "Confirm that the variation is a bug in the application’s request construction and start investigating which part of the application is producing the inconsistent prompt text.",
+      "C": "Tell the teammate that the variation depends on which Claude model serves the request, and recommend pinning the application to a single model version to make the output behavior consistent.",
+      "D": "Tell the teammate that the variation is caused by the application sending two different prompts on different runs and propose a code change that pins the system prompt to a single version."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Language models generate output as token-by-token continuations of their input context. Normal variation in generation can cause prompt wording to be echoed in one response and restated in another, without indicating a defect in request construction.\n\nLearn more\n- Anthropic glossary",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-25",
+    "question": "The team is considering whether to integrate with the Claude API directly or via a third-party abstraction layer that supports multiple LLM providers. The team has determined that all current and anticipated use cases run on Claude, no internal customer has asked for LLM portability, and the product roadmap contains no multi-provider support over the next two years. The third-party abstraction would add about 15 percent overhead in code complexity and introduce an additional dependency.\n\nWhich integration approach would you recommend?",
+    "options": {
+      "A": "The third-party abstraction layer, on the grounds that multi-provider support is valuable for any application as a matter of long-term flexibility across vendors.",
+      "B": "Direct integration with Claude through its SDK, because no multi-provider need exists and abstraction would add complexity that does not pay off.",
+      "C": "A custom multi-provider abstraction layer the team builds in-house so that the team controls every part of the abstraction the application uses for its API calls.",
+      "D": "Both integration paths in parallel, where the application uses each path on different runs to compare which performs better in production over time."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A direct Claude SDK integration meets every identified requirement while avoiding the added code complexity and dependency of a multi-provider abstraction. An abstraction layer is justified only when provider portability or multi-provider support has a concrete expected benefit.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-26",
+    "question": "You are examining an architectural diagram for a Claude-powered travel-booking system. It depicts a top-level component that interprets user requests and three subordinate components responsible for flights, hotels, and ground transportation. The top-level component routes each request, sequences the subordinate components, and reconciles their outputs into a final itinerary. The diagram also indicates that every subordinate component has its own tool list and its own short conversation history, neither of which is shared with the others. Which architectural pattern does this diagram most closely represent?",
+    "options": {
+      "A": "A manager and supervisor pattern with shared context, where the top-level agent and the subagents all share a single conversation history that grows as the request flows through the system.",
+      "B": "A manager and supervisor pattern with isolated context per subagent, where the top-level agent coordinates specialized subagents that each maintain their own conversation history and tool list.",
+      "C": "A retrieval-augmented pattern, where the top-level component retrieves relevant context from the subordinate components' indexed data stores before generating each response.",
+      "D": "A pipeline pattern, where each component processes the user request in sequence and passes the full conversation history along with the request to the next component in the pipeline."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A manager or supervisor agent coordinates specialized subagents, delegates the relevant parts of a task, sequences their work, and synthesizes their outputs. Separate tool lists and nonshared conversation histories indicate isolated context for each subagent, rather than a shared-context manager pattern or a pipeline that passes the full history between stages. Anthropic’s guidance identifies isolated context and independent workstreams as appropriate uses for subagents.\n\nLearn more\n- Anthropic Prompting Best Practices — Subagent orchestration",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-27",
+    "question": "You are designing a Claude application that preserves user sessions across multi-turn conversations. The product team has asked how the application will manage session lifecycle: when sessions should expire, how state is reset, and how it prevents stale context from being carried into new conversations. How would you design the session lifecycle?",
+    "options": {
+      "A": "Define explicit session expiration rules but rely on users to start new conversations when they want fresh context, with no automatic reset triggers in the application.",
+      "B": "Define explicit session expiration rules, state reset triggers, and rules for starting fresh sessions so stale context does not leak into new conversations.",
+      "C": "Define a single short session timeout that applies across all conversations and treat the timeout as the application’s complete session lifecycle mechanism.",
+      "D": "Define state reset triggers tied to specific application events but apply them across all sessions globally, with no per-session expiration rules."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A robust session lifecycle defines per-session expiration rules, explicit triggers that clear session state, and conditions for beginning a new session. Together, these controls prevent stale conversational context from leaking into subsequent conversations.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-28",
+    "question": "Your enterprise has an AWS contract requiring Claude API calls to be routed through Amazon Bedrock instead of the direct Anthropic API. Your team is developing a new Claude application and is unfamiliar with this restriction. How should you build the application?",
+    "options": {
+      "A": "Build two parallel implementations of every call, one for the direct Anthropic API and one for Bedrock, and pick the faster one at runtime.",
+      "B": "Configure the application to invoke Claude through the Bedrock-compatible API path while keeping the application’s logic provider- agnostic.",
+      "C": "Build the application against the direct Anthropic API and ignore the contractual requirement to route Claude calls through Amazon Bedrock.",
+      "D": "Build the application against the direct Anthropic API now and migrate to Bedrock in a follow-up release once the team has more experience with the Bedrock API."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Claude requests must be sent through Amazon Bedrock to meet the contractual routing requirement. Anthropic supports invoking Claude on Bedrock through its Bedrock integration and SDKs, allowing the application’s higher-level Claude interaction logic to remain decoupled from the underlying provider while the configured invocation path uses Bedrock.\n\nLearn more\n- Claude on Amazon Bedrock",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-29",
+    "question": "You have recently deployed a new Claude-powered application to production. Development is finished, and the system is now actively used by internal teams. The system’s next phase of work is ...",
+    "options": {
+      "A": "operating and maintaining the system, including monitoring, responding to issues, and planning evolution.",
+      "B": "handing the system over to a separate operations team that will manage it independently of the development team going forward.",
+      "C": "retiring the system, since shipping is the final lifecycle stage for any application that reaches production.",
+      "D": "running a formal post-deployment review that assesses the development phase before the team does any further work on the system."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A production application proceeds into ongoing operations and maintenance, including monitoring, incident response, and planning or delivering future evolution.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-30",
+    "question": "You are setting up Claude Code for a new project. The team must configure permissions, default model selections, and environment-specific behavior at the project level so that the configuration remains consistent for every developer working in the repository. Which Claude Code mechanism would you use?",
+    "options": {
+      "A": "environment variables that each developer sets on their own machine when working with Claude Code on the project.",
+      "B": "a shared spreadsheet that lists configuration values for team members to reference and update by hand as the project evolves.",
+      "C": "the settings.json file, scoped at the project level so the configuration applies consistently across developers and persists with the repository.",
+      "D": "a system prompt embedded in every Claude Code conversation by each developer at the start of every session in the project."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "The project-scoped .claude/settings.json file is version-controlled with the repository and shared across collaborators. It supports configuration such as permissions, environment variables, and model defaults, providing consistent project-level Claude Code behavior.\n\nLearn more\n- Claude Code settings\n- Explore the .claude directory",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-31",
+    "question": "You are developing a Claude application that must keep a persistent connection to a service streaming real-time updates. The team is uncertain which communication pattern to use. Which communication pattern would you choose?",
+    "options": {
+      "A": "A single long HTTP request the server holds open indefinitely, with no standard websocket framing on the connection.",
+      "B": "File-based communication where the service writes new updates to disk and the application polls the file system for changes.",
+      "C": "A websocket, because websockets are designed for bidirectional, persistent, real-time communication between the client and the streaming service.",
+      "D": "Repeated short-lived HTTP polling requests, where the application opens a new HTTP connection each time it checks for updates."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "WebSockets are designed for persistent, bidirectional, real-time communication between a client and a streaming service, avoiding the overhead and latency of repeated polling requests.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-32",
+    "question": "Your Claude application’s prompt was authored months ago and has not been updated. The team has learned through evaluations that the prompt performs well for common cases but performs poorly for a particular category of inputs whose volume has increased. How should you respond?",
+    "options": {
+      "A": "Replace the prompt with a new one aligned to the underperforming category, treating any common-case performance change as a known tradeoff.",
+      "B": "Tell users to avoid the underperforming category by adding warnings in the application's user interface about handled inputs.",
+      "C": "Iterate on the prompt to address the underperforming category, validate the change with evals, and continue refining as needed.",
+      "D": "Add the underperforming category to a separate Claude application with its own prompt so the original prompt does not change."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Prompt engineering should be an iterative process: update the prompt to improve performance for the growing failure category, validate the update with evaluations that also protect common-case performance, and continue refining based on the results.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-33",
+    "question": "You are developing a Claude application that must provide model output to end users as it is produced, rather than waiting for the entire response to finish. The Claude API mechanism to use is ...",
+    "options": {
+      "A": "structured JSON output, which delivers responses only after the model has finalized the JSON shape across the entire response.",
+      "B": "prompt caching, which speeds up the cost profile of future requests and does not affect the delivery timing of the first response.",
+      "C": "streaming responses, which deliver tokens incrementally as the model generates them so users see output progressively.",
+      "D": "the batch API, which delivers full responses after a delay suitable for non-interactive workloads."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Claude streaming sends Messages API responses incrementally through server-sent events, including text deltas as generation proceeds. This lets an application display output progressively instead of waiting for the completed response.\n\nLearn more\n- Streaming Messages — Claude API",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-34",
+    "question": "You are designing a Claude application that processes customer-support tickets in two stages: a triage stage that classifies tickets and a response stage that drafts replies. The team is considering either one Claude call for both stages or separate Claude calls for each stage. How would you structure the application?",
+    "options": {
+      "A": "Use separate Claude calls for triage and response, because each stage has distinct inputs, outputs, and success criteria that benefit from focused prompts.",
+      "B": "Use a single Claude call for triage and then use a non-Claude rule-based system for response generation, on the grounds that rule-based systems are more reliable for drafting replies.",
+      "C": "Use multiple Claude calls in parallel that each draft a complete ticket reply, then have a fourth Claude call select the best one to send to the customer.",
+      "D": "Use a single Claude call for both stages, on the grounds that a single call is cheaper than multiple calls in any production Claude application setup."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Separate Claude calls let the triage stage use a focused classification prompt and produce an intermediate result that can be inspected, evaluated, routed, or constrained before a response-specific prompt drafts the reply. Explicit prompt chaining is appropriate when an application needs a defined sequential pipeline and observable intermediate outputs.\n\nLearn more\n- Prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-35",
+    "question": "The product team has expressed a new Claude feature in business terms: “agents should help our analysts create client memos more quickly.” You need to translate this into actionable technical requirements for the engineering team. Your first step would be to …",
+    "options": {
+      "A": "ask the analysts about the current memo production process to see where they think Claude could be introduced as a prompt-driven drafting step.",
+      "B": "examine what model capabilities and tier options are available and determine which best supports the memo drafting workflow described by the product team.",
+      "C": "assess what similar agent-based features have been built internally or in the industry and use those precedents to scope the technical approach.",
+      "D": "interpret the functional and infrastructure requirements implied by the business goal."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Business goals must first be interpreted as functional requirements, such as the agent’s required memo-drafting tasks and user interactions, and infrastructure or nonfunctional requirements, such as performance, security, integration, and reliability constraints. Those requirements provide the basis for later workflow discovery, model selection, and technical scoping.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-36",
+    "question": "Your team is getting ready to deploy a configuration change that updates several prompt versions across a Claude application used by multiple downstream systems. The change has already been tested in staging, but the team has not evaluated how the prompt change will affect every downstream system that relies on the application's output. What should you do before deploying the change?",
+    "options": {
+      "A": "Document the prompt version changes in the application changelog and proceed with the rollout, treating the staging test results as sufficient evidence of impact across all downstream systems.",
+      "B": "Limit the rollout to systems that were explicitly included in staging testing, and defer all other downstream systems until a later release cycle.",
+      "C": "Notify downstream system owners that a change is coming and schedule the rollout for the following week, without conducting a formal impact assessment.",
+      "D": "Assess the configuration impact on each downstream system before rolling out, and coordinate with downstream system owners as needed."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "A prompt-version change can change the output contract, behavior, format, or quality consumed by dependent systems. Each downstream dependency therefore requires an impact assessment before deployment, with coordination from its owners where needed. Anthropic’s evaluation guidance recommends rerunning the full evaluation set after a prompt update to determine how the new prompt affects performance across test cases.\n\nLearn more\n- Anthropic: Use the Evaluation Tool",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-37",
+    "question": "Your Claude application makes a high volume of API calls during business hours and very few calls overnight. The team is concerned about remaining within rate limits at peak hours and wants to understand how the Claude API applies those limits. How should you proceed?",
+    "options": {
+      "A": "Examine the peak-hour request patterns in your application logs and smooth traffic by distributing requests more evenly across the business-hours window.",
+      "B": "Assess the average payload size of current API calls and consolidate requests where possible to reduce the total number of calls made during peak hours.",
+      "C": "Review the API documentation for streaming endpoints and evaluate whether migrating peak-hour calls to streaming reduces exposure to rate limit enforcement.",
+      "D": "Identify the rate limits, design the application to stay within them during peak hours, and use exponential backoff when limits are reached."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "The Claude API enforces organization-level limits for requests per minute, input tokens per minute, and output tokens per minute, including over short intervals through a token-bucket mechanism. Applications should identify their applicable limits, keep peak-hour traffic within them, and handle rate-limit responses by waiting and retrying with exponential backoff. A 429 rate-limit response supplies a retry-after header indicating when retrying may succeed.\n\nLearn more\n- Anthropic Claude API rate limits",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-38",
+    "question": "A teammate asks you to explain the distinction between context engineering and prompt engineering. They have heard the terms used interchangeably and are uncertain how each applies to a Claude application that handles long-running, multi-step tasks. How would you describe the difference?",
+    "options": {
+      "A": "Prompt engineering focuses on the model's response, while context engineering focuses on the user’s input across many sessions in a long-running multi-step Claude application.",
+      "B": "Prompt engineering and context engineering each address content the team gives Claude, but the team can group them under a single workflow because the practices use overlapping techniques.",
+      "C": "Prompt engineering is the older term for prompt design, while context engineering is the newer term that has replaced it in modern Claude applications across the industry.",
+      "D": "Prompt engineering shapes individual prompts for specific outputs, while context engineering manages how content flows across turns and steps and takes steps to keep relevant state visible."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Prompt engineering shapes the instructions, examples, constraints, and output format of an individual model interaction. Context engineering manages the relevant information and state supplied throughout a multi-step, long-horizon workflow, including continuity across turns or context windows, so the model retains the information needed for subsequent work.\n\nLearn more\n- Anthropic Claude Platform Docs — Prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-39",
+    "question": "A Claude application sometimes declines to answer questions that should be within scope, including questions it has previously answered correctly. You want to investigate this behavior. What should be the first step of the investigation?",
+    "options": {
+      "A": "Identify which questions have been refused and compare them against previously answered questions to determine what changed between the successful and refused interactions.",
+      "B": "Test whether removing or adjusting those instructions resolves the behavior.",
+      "C": "Assess whether the refusals cluster around specific input patterns, question types, or time periods by analyzing the distribution of refused requests in the logs.",
+      "D": "Examine traces of the refused requests to identify what triggers the refusal, whether input patterns, system prompt content, or other context."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Request traces expose the complete context of each refusal, allowing the specific trigger—such as the input pattern, system-prompt content, or other request context—to be identified before making changes or performing aggregate analysis. Claude identifies safety refusals with a refusal stop reason, so request-level inspection is the appropriate starting point for diagnosing them.\n\nLearn more\n- Handling stop reasons — Anthropic",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-40",
+    "question": "A new Claude model release provides performance improvements for several reasoning tasks, but it changes how it responds to system prompts containing multi-section instructions. Your application relies extensively on multi-section system prompts. An initial evaluation using the application’s real workload finds that the new model performs 8 percent better on reasoning tasks, but its format change causes malformed output on approximately 3 percent of requests. The team is considering whether to upgrade.\n\nHow would you make the decision?",
+    "options": {
+      "A": "Upgrade and add a downstream validation step that catches the 3 percent malformed output before it reaches users, treating the validation step as the team’s mitigation for the format change.",
+      "B": "Adapt the application’s system prompt to the new model’s format expectations and re-evaluate, then upgrade only if the adapted prompt eliminates the malformed output while preserving the reasoning improvements.",
+      "C": "Stay on the previous model permanently to avoid the malformed output rate and any future format changes that subsequent model releases might introduce in the application.",
+      "D": "Upgrade immediately, because the 8 percent reasoning improvement outweighs the 3 percent malformed output rate across the application’s typical request distribution."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "A model upgrade should be validated with the application’s actual prompts and workload. When a regression is caused by changed response formatting for multi-section system prompts, adapting the prompt to the new model’s documented formatting and instruction conventions, followed by re-evaluation, directly tests whether compatibility can be restored without losing the measured reasoning benefit. Claude’s prompting guidance recommends clear, explicit output requirements and structured prompts for complex instructions, and its migration guidance calls for updating prompts and configurations when moving between model generations.\n\nLearn more\n- Anthropic Claude Platform Docs — Prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-41",
+    "question": "You are establishing the configuration-management approach for a new Claude Code project. Your team will use CLAUDE.md files and settings.json files to control behavior, and you want to ensure that changes are tracked and reviewable. The configuration-management approach would ...",
+    "options": {
+      "A": "version-control CLAUDE.md alongside the project’s source code and settings.json files in a separate repository from the project’s source code.",
+      "B": "version-control CLAUDE.md and settings.json files alongside the project’s source code, with changes reviewed through standard pull request workflows the team applies.",
+      "C": "duplicate CLAUDE.md and settings.json files in multiple repositories to provide redundancy, on the grounds that a single source of truth is risky for project configuration.",
+      "D": "version-control CLAUDE.md and settings.json files in a separate repository from the project’s source code, so configuration evolves independently from the application code over time."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Project-level CLAUDE.md instructions are team-shared through source control, and shared project settings belong with the repository they configure. Keeping both alongside the application source provides one reviewable history and lets standard pull-request controls govern changes to code and its Claude Code configuration.\n\nLearn more\n- How Claude remembers your project\n- Claude Code settings",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-42",
+    "question": "You are launching a new Claude application and have a small set of well-labeled examples that show the required output format. You want to use these examples to steer Claude’s behavior. How would you guide the application’s behavior?",
+    "options": {
+      "A": "Embed the examples in a database and retrieve them at runtime as reference material for the team.",
+      "B": "Use zero-shot prompting and rely on the model’s general capability to produce the desired output format consistently across all incoming requests.",
+      "C": "Train a custom model on the labeled examples before deployment so that the application does not need to include the examples in any prompt during operation.",
+      "D": "Use multi-shot prompting by including the labeled examples in the prompt so Claude can match the desired output format on each request."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Multi-shot prompting includes labeled examples in the prompt, allowing Claude to recognize and reproduce the intended output format for each request. Anthropic identifies well-crafted few-shot or multi-shot examples as a reliable way to steer output format and improve consistency.\n\nLearn more\n- Anthropic Claude Platform Docs: Prompting best practices",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-43",
+    "question": "A Claude application produces outputs that progressively drift from the expected JSON format after several conversation turns. The initial few turns generate correctly formatted output, but later turns gradually lose structure. How would you address this drift?",
+    "options": {
+      "A": "Truncate every response to the first few characters, validate that the truncated output matches the expected JSON structure, and log any mismatches for review.",
+      "B": "Identify the failure mode as format drift, examine how the conversation context evolves over turns, and address the drift through context management or output validation.",
+      "C": "Switch to a smaller Claude model and re-test the application to determine whether the drift persists across conversation turns.",
+      "D": "Restart the application after every turn and monitor whether the format remains consistent across subsequent interactions."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Format drift in a multi-turn application is addressed by examining how accumulated conversation context affects instruction adherence, managing that context, and validating outputs against the required JSON structure. Explicit output-format constraints and structured prompting help maintain consistent formatting, while validation detects outputs that fail the required schema.\n\nLearn more\n- Prompting best practices - Claude Platform Docs",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-44",
+    "question": "Your team uses Claude Code across several repositories. You want team rules and general coding standards to apply to every repository, while other rules should apply only to particular repositories. The team currently duplicates instructions in each repository’s CLAUDE.md file. How would you handle this?",
+    "options": {
+      "A": "Use a CLAUDE.md hierarchy that scopes general standards broadly and project-specific context within each repository’s local CLAUDE.md.",
+      "B": "Stop using CLAUDE.md altogether and ask each developer to configure Claude Code manually for each project they work on.",
+      "C": "Move all instructions to a separate documentation site that developers consult during Claude Code sessions across all repositories.",
+      "D": "Use a single repository’s CLAUDE.md as the central source of truth and link to it from every other repository’s CLAUDE.md file."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Claude Code reads CLAUDE.md files hierarchically, allowing broadly scoped instructions to provide shared standards and repository-local files to add project-specific rules. This centralizes common guidance without losing repository-specific context.\n\nLearn more\n- Manage Claude Code memory",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-45",
+    "question": "A team has deployed a multi-agent system where a primary agent breaks down user requests and assigns subtasks to three specialized subagents: one for data retrieval, one for analysis, and one for report generation. In production, the team finds that subagents make redundant tool calls, sometimes exceed token budgets, and occasionally produce contradictory outputs—all of which the primary agent forwards without detecting. What is the most appropriate way to resolve these failures?",
+    "options": {
+      "A": "Strengthen the primary agent’s management layer to enforce per-subagent tool budgets, validate outputs against a defined schema before passing them forward, and establish explicit handoff contracts between stages.",
+      "B": "Give each subagent read access to the other subagents’ outputs so they can identify and resolve contradictions without routing back through the primary agent.",
+      "C": "Add retry logic to each subagent so that when a tool call fails, the subagent retries automatically before escalating – and configure each subagent to log its tool calls and outputs to a shared trace so the team can audit redundancy and contradictions after the fact.",
+      "D": "Collapse the three subagents into a single large-context model call that handles retrieval, analysis, and generation in one pass."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "A primary orchestration layer should govern specialized agents through enforceable per-agent resource limits, structured output validation, and explicit contracts for information passed between stages. These controls prevent unnecessary tool use and token overruns, reject malformed or incompatible outputs before propagation, and make responsibilities and expected data formats clear enough to reduce contradictions.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-46",
+    "question": "Your Claude application produces inconsistent outputs for similar inputs, even when it uses the same model and prompt. You want to troubleshoot the issue systematically. Your debugging approach would ...",
+    "options": {
+      "A": "retry every request that produces an unexpected output and log the results to identify whether repeated calls converge on a consistent response pattern.",
+      "B": "lower the model’s temperature and re-run the inconsistent inputs to determine whether the parameter change reduces output variability across runs.",
+      "C": "capture full traces of input, system prompt, user messages, model output, and parameters, then analyze the differences between consistent and inconsistent runs.",
+      "D": "assume inconsistent outputs reflect normal LLM non-determinism and document the variability as an accepted characteristic of the application’s behavior."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Full request-and-response traces make runs reproducible and comparable. Recording the input, system prompt, user messages, model output, and parameters exposes hidden contextual or configuration differences that can account for inconsistent behavior. Anthropic’s documentation supports logging and inspecting intermediate API outputs when diagnosing application behavior.\n\nLearn more\n- Prompting best practices\n- Claude on Amazon Bedrock — Activity logging",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-47",
+    "question": "You are choosing among Claude models for a task. The team has identified three relevant tradeoff dimensions: quality, latency, and cost. The appropriate model is the one that ...",
+    "options": {
+      "A": "fits the task’s quality, latency, and cost requirements together, recognizing that improving one dimension typically affects the others.",
+      "B": "meets the task’s cost target within a defined latency budget, with quality validated against a representative sample of inputs after the model is selected.",
+      "C": "meets the task’s quality requirements at an acceptable latency, with cost reviewed separately once the quality and latency bar has been established.",
+      "D": "satisfies the task’s latency requirement first, then evaluated against quality and cost thresholds to confirm the selection is acceptable across all three dimensions."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Claude model selection should satisfy the task’s quality, latency, and cost requirements jointly, because model capability, response time, and token pricing are interdependent tradeoffs. Selecting by one dimension first and evaluating the others only afterward can produce a model that is unsuitable for the overall workload. Anthropic’s model pricing documentation also shows that Claude models have materially different costs, reinforcing that cost must be considered alongside performance requirements.\n\nLearn more\n- Anthropic Claude pricing",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-48",
+    "question": "You are using Claude Code in an automated continuous-integration pipeline. The pipeline must have Claude Code perform a set of clearly defined tasks without asking for confirmation, and its output must be captured for downstream processing. How should the pipeline be configured?",
+    "options": {
+      "A": "Disable Claude Code’s confirmation prompts globally across all environments so the pipeline runs without interruption from any prompt.",
+      "B": "Run Claude Code in headless mode with the required permissions configured in settings.json and capture its output for downstream processing.",
+      "C": "Replace Claude Code with a different tool that does not require any configuration to operate without confirmation prompts in the pipeline.",
+      "D": "Run Claude Code in interactive mode and have a developer manually approve every confirmation prompt while the pipeline executes its tasks."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Claude Code supports non-interactive/headless execution with print mode (-p) for scripts and CI pipelines. Preconfiguring the permitted tools in settings.json allows the defined actions to run without manual approval, and JSON or stream-JSON output can be captured for downstream processing.\n\nLearn more\n- Claude Code CLI reference\n- Claude Code common workflows",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-49",
+    "question": "The Claude application your team built has expanded over six months, and its prompt-handling code has built up duplication and convoluted control flow. The functionality works, but adding new features is becoming more difficult. How should you address this?",
+    "options": {
+      "A": "Move all the prompt-handling code into a single large function to reduce the number of files developers have to navigate when reading the code.",
+      "B": "Continue adding features and plan a refactoring pass after the next two release cycles when the team has more bandwidth for internal work.",
+      "C": "Plan a refactoring pass to consolidate duplicated logic, separate concerns, and simplify control flow before adding new features.",
+      "D": "Refactor the prompt-handling code in small increments as part of each new feature ticket, treating the cleanup as a side effect of feature work."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "A planned refactoring pass removes the technical debt that is making further development difficult. Consolidating duplicated logic, separating concerns, and simplifying control flow improves maintainability and establishes a safer foundation for new features.",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-50",
+    "question": "You are configuring a Claude application that will handle a mix of multi-turn conversations and one-off requests. You want to use caching methods to lower token costs where applicable. A teammate also proposes caching the model’s output so the application need not make duplicate Claude calls when similar queries arrive. You would use prompt caching for ...",
+    "options": {
+      "A": "the model’s output, treating the response from each request as cacheable content the application can return on similar future queries.",
+      "B": "nothing, because prompt caching does not affect cost in any application that mixes multi-turn conversations and one-off requests in a single deployment.",
+      "C": "only the user’s input portion of each request because user input is the part of the prompt that varies the most across the application's normal operation.",
+      "D": "the static portions of prompts that are repeated across requests, such as system prompts, instructions, or shared context."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Prompt caching reuses an identical prefix of an API prompt to reduce input-token processing time and cost. The reusable prefix should contain static content that recurs across requests, including system prompts, instructions, shared context, examples, and tool definitions. It does not cache generated model output; application-level response caching is a separate technique.\n\nLearn more\n- Anthropic Claude Platform Docs: Prompt caching",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-51",
+    "question": "Your Claude application uses multi-step workflows in which each step’s output is required only briefly before the agent continues. Cumulative tool output is filling the context window with content that is no longer relevant. How would you manage the accumulating tool output?",
+    "options": {
+      "A": "Apply prompt caching to the accumulated tool outputs so the application does not re-pay for the older content on each subsequent step.",
+      "B": "Keep every tool output in the context indefinitely so the agent has the full record of every step it has executed during the workflow.",
+      "C": "Switch to a smaller Claude model that processes context more efficiently and treat any quality loss as a tradeoff for the cost reduction.",
+      "D": "Apply tool output pruning to remove tool outputs that are no longer needed by later steps in the workflow."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Tool output pruning removes results that later workflow steps no longer require, preventing obsolete tool-result content from consuming the context window. Tool-result blocks contribute to the input tokens sent to Claude, so caching retained results does not solve context bloat.\n\nLearn more\n- Anthropic API pricing: Tool use pricing",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-52",
+    "question": "You are deciding between STDIO-based and HTTP-based communication for an MCP server. The server will be started by a locally running Claude Code session. Which communication pattern should you use?",
+    "options": {
+      "A": "HTTP on the grounds that HTTP is preferable to STDIO in any context the application might encounter during normal operation.",
+      "B": "HTTP polling against the MCP server, treating HTTP as a substitute for the standard MCP communication patterns.",
+      "C": "STDIO and HTTP simultaneously for redundancy, with the team running two communication patterns at the same time across Claude Code sessions.",
+      "D": "STDIO because STDIO is well-suited to local process communication and avoids unnecessary network setup."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "STDIO is appropriate for a local, process-spawned MCP server: the client launches the server as a subprocess and exchanges JSON-RPC messages through standard input and output. This avoids the unnecessary network endpoint and configuration required by HTTP transport. MCP Transport Specification\n\nLearn more\n- MCP Transport Specification\n- Claude Code MCP documentation",
+    "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-53",
+    "question": "You are explaining to a stakeholder why executing the same Claude prompt twice may yield slightly different results. The stakeholder is worried that this indicates the application is broken. How would you respond to the stakeholder’s concern?",
+    "options": {
+      "A": "Tell the stakeholder the variation is caused by Claude being updated continuously by Anthropic, and that switching to a fixed model snapshot will eliminate the variation entirely.",
+      "B": "Tell the stakeholder the variation comes from network latency and that switching to a faster network connection will produce more consistent results across runs.",
+      "C": "Tell the stakeholder the variation is a bug that the team will fix in the next release of the application, then create a work ticket to fix the bug.",
+      "D": "Explain that LLMs are non-deterministic by default due to sampling, and describe how the application handles this through validation, retries, or temperature adjustment."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "LLM generation is probabilistic: sampling can select different plausible tokens for identical inputs, so minor variation across runs is expected and does not by itself indicate an application defect. Production applications should manage this variability with measures such as output validation, retries, and—where supported by the selected model—sampling controls such as temperature. Anthropic notes that API outputs can remain non-deterministic even at temperature 0.\n\nLearn more\n- Claude Platform Docs — Glossary",
+    "imageUrl": ""
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "quizId": "anthropic-ccdv-f",
+  "title": "CCDV-F · Ôn nhanh theo chủ đề",
+  "description": "Ôn theo 53 câu CCDV-F trong app, có đối chiếu nguồn tham khảo. Không thay thế exam guide chính thức; xác nhận API, SDK và transport theo phiên bản khi triển khai.",
+  "language": "vi",
+  "status": "published",
+  "version": 1,
+  "updatedAt": "2026-10-26",
+  "readingMinutes": 8,
+  "sourceQuestionCount": 53,
+  "sourceQuizHash": "20859d630256ffe9ed89ed5031540afaa7ed9d71dcec9a6783110f926823c241",
+  "contentFile": "vi.md",
+  "topics": [
+    { "id": "architecture", "title": "Kiến trúc, SDK & tích hợp", "questionIds": ["ccdv-f-3", "ccdv-f-4", "ccdv-f-8", "ccdv-f-19", "ccdv-f-20", "ccdv-f-21", "ccdv-f-25", "ccdv-f-26", "ccdv-f-28", "ccdv-f-34", "ccdv-f-35", "ccdv-f-45"] },
+    { "id": "prompt-model", "title": "Prompt, few-shot & chọn model", "questionIds": ["ccdv-f-5", "ccdv-f-6", "ccdv-f-24", "ccdv-f-32", "ccdv-f-40", "ccdv-f-42", "ccdv-f-47", "ccdv-f-53"] },
+    { "id": "validation", "title": "Structured output & validation", "questionIds": ["ccdv-f-7", "ccdv-f-10", "ccdv-f-12", "ccdv-f-17", "ccdv-f-43"] },
+    { "id": "context", "title": "Context, session & chunking", "questionIds": ["ccdv-f-13", "ccdv-f-15", "ccdv-f-27", "ccdv-f-38", "ccdv-f-51"] },
+    { "id": "tools-streaming", "title": "Tool, MCP & streaming", "questionIds": ["ccdv-f-11", "ccdv-f-31", "ccdv-f-33", "ccdv-f-52"] },
+    { "id": "security", "title": "Bảo mật, API key & hooks", "questionIds": ["ccdv-f-1", "ccdv-f-2", "ccdv-f-16", "ccdv-f-18"] },
+    { "id": "configuration", "title": "Claude Code, cấu hình & CI", "questionIds": ["ccdv-f-23", "ccdv-f-30", "ccdv-f-36", "ccdv-f-41", "ccdv-f-44", "ccdv-f-48", "ccdv-f-49"] },
+    { "id": "operations", "title": "Test, debug, vận hành & chi phí", "questionIds": ["ccdv-f-9", "ccdv-f-14", "ccdv-f-22", "ccdv-f-29", "ccdv-f-37", "ccdv-f-39", "ccdv-f-46", "ccdv-f-50"] }
+  ],
+  "sources": [
+    { "title": "Anthropic · Building effective agents", "url": "https://www.anthropic.com/research/building-effective-agents" },
+    { "title": "Claude Platform · Structured outputs", "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs" },
+    { "title": "Claude Platform · Streaming with SSE", "url": "https://platform.claude.com/docs/en/build-with-claude/streaming" },
+    { "title": "MCP · STDIO & Streamable HTTP", "url": "https://modelcontextprotocol.io/specification/2025-06-18/basic/transports" },
+    { "title": "Claude Code · Non-interactive execution", "url": "https://code.claude.com/docs/en/headless" },
+    { "title": "Claude Platform · Evaluation criteria", "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" },
+    { "title": "Claude Platform · Prompt caching", "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching" }
+  ]
+}
