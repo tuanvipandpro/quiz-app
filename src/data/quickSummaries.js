@@ -1,4 +1,8 @@
 const quickSummaries = {
+  'anthropic-cca-f': {
+    status: 'published',
+    metadataPath: 'summaries/anthropic-cca-f/meta.json',
+  },
   'anthropic-ccar-p': {
     status: 'published',
     metadataPath: 'summaries/anthropic-ccar-p/meta.json',

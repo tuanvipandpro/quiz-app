@@ -67,7 +67,7 @@ Practice progress is stored under `users/{uid}.quizProgress.{quizId}` as `quizId
 
 - Use icon buttons with accessible names and tooltips on phone screens; desktop keeps text labels.
 - Keep Practice and Exam actions in a compact bottom toolbar on phones, with question content above it.
-- Quick Summary is available for CCAR-P: a short Vietnamese guide across eight topics with key concepts, answer-selection tips, common traps, memory aids, and source links. It is based on the app's 63-question bank, not a guarantee of complete official exam coverage.
+- Quick Summary is available for CCA-F (175 questions) and CCAR-P (63 questions): each has a short Vietnamese guide across eight topics with key concepts, answer-selection tips, common traps, memory aids, and source links. Guides are based on the app's question banks, not a guarantee of complete official exam coverage.
 - Desktop has a topic sidebar; phone/tablet has a collapsible contents menu. Topic question links open the current question in Practice by stable ID without changing a saved checkpoint.
 - Guides are authored separately and served as static Markdown plus JSON metadata; reading needs neither login nor an AI key and makes no model call. Other quizzes and custom uploads keep Quick Summary disabled.
 - A question-bank fingerprint warns when a guide needs review after content changes. Loading failures offer Retry and Back. See [Quick Summary authoring](docs/quick-summary-authoring.md) to add or revise a guide.

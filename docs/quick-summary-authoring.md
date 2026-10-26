@@ -10,6 +10,8 @@ Metadata contains `quizId`, `title`, `description` (scope of coverage), `languag
 
 Use the CCAR-P files as the first template. Its eight topic mappings reference all 63 bank questions by ID. IDs are not array positions: the current bank skips ID 56 and ends at ID 64. The reader resolves current positions and excludes references to removed questions.
 
+CCA-F has its own eight-topic guide and mappings for all 175 bank questions. Shared asset checks cover both published guides, including their distinct metadata/content paths. When adding a guide, extend the asset list in `tests/quickSummary.test.js`; keep the service/error tests reusable. Names or flags in a bank may reflect an older API/SDK version, so qualify version-sensitive advice and link primary documentation.
+
 ## Content contract
 
 - Start with a short introduction and a decision checklist.

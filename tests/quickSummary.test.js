@@ -4,31 +4,39 @@ import fs from 'node:fs';
 import { getQuickSummary } from '../src/data/quickSummaries.js';
 import { fingerprintQuestions, validateSummaryMetadata, parseSummaryMarkdown, loadQuickSummary } from '../src/services/quickSummary.js';
 
-const quizId = 'anthropic-ccar-p';
-const questions = JSON.parse(fs.readFileSync(new URL('../public/quiz/Anthropic/CCAR_P.json', import.meta.url), 'utf8'));
-const meta = JSON.parse(fs.readFileSync(new URL('../public/summaries/anthropic-ccar-p/meta.json', import.meta.url), 'utf8'));
-const markdown = fs.readFileSync(new URL('../public/summaries/anthropic-ccar-p/vi.md', import.meta.url), 'utf8');
+const assets = [
+  { quizId: 'anthropic-ccar-p', bank: 'CCAR_P.json', label: 'CCAR-P' },
+  { quizId: 'anthropic-cca-f', bank: 'CCA_F.json', label: 'CCA-F' },
+].map(asset => ({
+  ...asset,
+  questions: JSON.parse(fs.readFileSync(new URL('../public/quiz/Anthropic/' + asset.bank, import.meta.url), 'utf8')),
+  meta: JSON.parse(fs.readFileSync(new URL('../public/summaries/' + asset.quizId + '/meta.json', import.meta.url), 'utf8')),
+  markdown: fs.readFileSync(new URL('../public/summaries/' + asset.quizId + '/vi.md', import.meta.url), 'utf8'),
+}));
+const { quizId, questions, meta, markdown } = assets[0];
 
-function fetchFixture() {
+function fetchFixture(asset = assets[0]) {
   const calls = [];
   const fetchImpl = async (url, options) => {
     calls.push({ url, options });
-    return { ok: true, json: async () => structuredClone(meta), text: async () => markdown };
+    return { ok: true, json: async () => structuredClone(asset.meta), text: async () => asset.markdown };
   };
   return { calls, fetchImpl };
 }
 
-test('published CCAR-P guide covers the bank with valid topic references and current content fingerprint', async () => {
-  assert.equal(validateSummaryMetadata(meta, quizId), meta);
-  assert.equal(meta.sourceQuestionCount, questions.length);
-  assert.equal(meta.sourceQuizHash, await fingerprintQuestions(questions));
-  const document = parseSummaryMarkdown(markdown, meta.topics);
-  assert.equal(document.sections.length, 8);
-  const ids = new Set(questions.map(question => question.id));
-  const references = new Set(document.sections.flatMap(section => section.questionIds));
-  assert.deepEqual([...references].sort(), [...ids].sort());
-  assert.ok(markdown.split(/\s+/).length < 1600, 'Keep the quick guide within a short reading session');
-});
+for (const { quizId, questions, meta, markdown, label } of assets) {
+  test(`published ${label} guide covers the bank with valid topic references and current content fingerprint`, async () => {
+    assert.equal(validateSummaryMetadata(meta, quizId), meta);
+    assert.equal(meta.sourceQuestionCount, questions.length);
+    assert.equal(meta.sourceQuizHash, await fingerprintQuestions(questions));
+    const document = parseSummaryMarkdown(markdown, meta.topics);
+    assert.equal(document.sections.length, 8);
+    const ids = new Set(questions.map(question => question.id));
+    const references = new Set(document.sections.flatMap(section => section.questionIds));
+    assert.deepEqual([...references].sort(), [...ids].sort());
+    assert.ok(markdown.split(/\s+/).length < 1600, 'Keep the quick guide within a short reading session');
+  });
+}
 
 test('question and option reordering keep the guide current; changed answers or wording mark it stale', async () => {
   const reordered = [...questions].reverse().map(question => ({
@@ -43,7 +51,7 @@ test('question and option reordering keep the guide current; changed answers or 
 });
 
 test('no guide is exposed for other quizzes, uploads, or inherited object keys', async () => {
-  for (const id of [null, 'anthropic-cca-f', 'uploaded-file', 'constructor', '__proto__']) assert.equal(getQuickSummary(id), null);
+  for (const id of [null, 'az-900', 'uploaded-file', 'constructor', '__proto__']) assert.equal(getQuickSummary(id), null);
   const { calls, fetchImpl } = fetchFixture();
   await assert.rejects(loadQuickSummary({ quizId: 'unknown', questions, fetchImpl }), /No Quick Summary/);
   assert.equal(calls.length, 0);
@@ -67,16 +75,25 @@ test('empty or missing/mismatched Markdown topics fail visibly instead of displa
 });
 
 test('guide requests honor deployment base paths and pass cancellation to both fetches', async () => {
-  for (const baseUrl of ['/', '/quiz-app/', '/quiz-app']) {
-    const { calls, fetchImpl } = fetchFixture();
-    const controller = new AbortController();
-    const guide = await loadQuickSummary({ quizId, questions, baseUrl, signal: controller.signal, fetchImpl });
-    const prefix = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
-    assert.equal(calls[0].url, prefix + 'summaries/anthropic-ccar-p/meta.json');
-    assert.equal(calls[1].url, prefix + 'summaries/anthropic-ccar-p/vi.md');
-    assert.ok(calls.every(call => call.options.signal === controller.signal));
-    assert.equal(guide.sourceChanged, false);
+  for (const asset of assets) {
+    for (const baseUrl of ['/', '/quiz-app/', '/quiz-app']) {
+      const { calls, fetchImpl } = fetchFixture(asset);
+      const controller = new AbortController();
+      const guide = await loadQuickSummary({ quizId: asset.quizId, questions: asset.questions, baseUrl, signal: controller.signal, fetchImpl });
+      const prefix = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+      assert.equal(calls[0].url, prefix + 'summaries/' + asset.quizId + '/meta.json');
+      assert.equal(calls[1].url, prefix + 'summaries/' + asset.quizId + '/vi.md');
+      assert.ok(calls.every(call => call.options.signal === controller.signal));
+      assert.equal(guide.sourceChanged, false);
+      assert.equal(guide.meta.quizId, asset.quizId);
+    }
   }
+});
+
+test('CCA-F cannot display the published CCAR-P document after a wrong metadata response', async () => {
+  const { calls, fetchImpl } = fetchFixture(assets[0]);
+  await assert.rejects(loadQuickSummary({ quizId: assets[1].quizId, questions: assets[1].questions, fetchImpl }), /metadata/);
+  assert.equal(calls.length, 1, 'Reject a different quiz before requesting its Markdown');
 });
 
 test('failed metadata/content loads reject and a later retry can recover', async () => {
