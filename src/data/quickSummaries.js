@@ -7,6 +7,14 @@ const quickSummaries = {
     status: 'published',
     metadataPath: 'summaries/anthropic-ccar-p/meta.json',
   },
+  'anthropic-ccao-f': {
+    status: 'published',
+    metadataPath: 'summaries/anthropic-ccao-f/meta.json',
+  },
+  'anthropic-ccdv-f': {
+    status: 'published',
+    metadataPath: 'summaries/anthropic-ccdv-f/meta.json',
+  },
 };
 
 export function getQuickSummary(quizId) {

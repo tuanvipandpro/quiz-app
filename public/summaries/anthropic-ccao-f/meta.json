@@ -1,0 +1,31 @@
+{
+  "quizId": "anthropic-ccao-f",
+  "title": "CCAO-F · Ôn nhanh theo chủ đề",
+  "description": "Ôn theo 119 câu CCAO-F trong app, có đối chiếu nguồn tham khảo. Không thay thế exam guide chính thức; tính năng và chính sách cần kiểm tra theo phiên bản/gói sử dụng.",
+  "language": "vi",
+  "status": "published",
+  "version": 1,
+  "updatedAt": "2026-10-26",
+  "readingMinutes": 8,
+  "sourceQuestionCount": 119,
+  "sourceQuizHash": "3dd456848502677b9d0ee8affdc439d39536598863c0f012055e90de13665697",
+  "contentFile": "vi.md",
+  "topics": [
+    { "id": "models-tools", "title": "Chọn công việc, công cụ & model", "questionIds": ["ccao-f-3", "ccao-f-37", "ccao-f-38", "ccao-f-40", "ccao-f-71", "ccao-f-86", "ccao-f-87", "ccao-f-88", "ccao-f-98", "ccao-f-110", "ccao-f-111"] },
+    { "id": "prompt-output", "title": "Prompt rõ & định dạng đầu ra", "questionIds": ["ccao-f-11", "ccao-f-20", "ccao-f-24", "ccao-f-28", "ccao-f-32", "ccao-f-36", "ccao-f-48", "ccao-f-65", "ccao-f-73", "ccao-f-74", "ccao-f-79", "ccao-f-81", "ccao-f-82", "ccao-f-89", "ccao-f-102", "ccao-f-103", "ccao-f-106", "ccao-f-112", "ccao-f-117"] },
+    { "id": "projects-memory", "title": "Projects, Memory, Skills & Connectors", "questionIds": ["ccao-f-7", "ccao-f-16", "ccao-f-17", "ccao-f-18", "ccao-f-23", "ccao-f-26", "ccao-f-33", "ccao-f-50", "ccao-f-51", "ccao-f-61", "ccao-f-72", "ccao-f-78", "ccao-f-100"] },
+    { "id": "context-isolation", "title": "Context dài & tách biệt khách hàng", "questionIds": ["ccao-f-12", "ccao-f-41", "ccao-f-49", "ccao-f-85", "ccao-f-93", "ccao-f-101"] },
+    { "id": "verification", "title": "Kiểm chứng & đánh giá đầu ra", "questionIds": ["ccao-f-1", "ccao-f-6", "ccao-f-9", "ccao-f-14", "ccao-f-19", "ccao-f-25", "ccao-f-30", "ccao-f-31", "ccao-f-52", "ccao-f-56", "ccao-f-58", "ccao-f-62", "ccao-f-63", "ccao-f-70", "ccao-f-91", "ccao-f-92"] },
+    { "id": "workflow", "title": "Workflow, yêu cầu & phân rã nhiệm vụ", "questionIds": ["ccao-f-5", "ccao-f-8", "ccao-f-10", "ccao-f-13", "ccao-f-22", "ccao-f-34", "ccao-f-46", "ccao-f-54", "ccao-f-57", "ccao-f-59", "ccao-f-67", "ccao-f-69", "ccao-f-84", "ccao-f-97", "ccao-f-108", "ccao-f-109", "ccao-f-114", "ccao-f-115", "ccao-f-116", "ccao-f-119"] },
+    { "id": "governance", "title": "Governance, dữ liệu & quyền sở hữu", "questionIds": ["ccao-f-2", "ccao-f-4", "ccao-f-15", "ccao-f-21", "ccao-f-27", "ccao-f-29", "ccao-f-35", "ccao-f-39", "ccao-f-42", "ccao-f-53", "ccao-f-55", "ccao-f-64", "ccao-f-66", "ccao-f-68", "ccao-f-75", "ccao-f-76", "ccao-f-80", "ccao-f-83", "ccao-f-90", "ccao-f-94", "ccao-f-96", "ccao-f-99", "ccao-f-104", "ccao-f-105", "ccao-f-118"] },
+    { "id": "iteration", "title": "Iteration, troubleshooting & mẹo làm bài", "questionIds": ["ccao-f-43", "ccao-f-44", "ccao-f-45", "ccao-f-47", "ccao-f-60", "ccao-f-77", "ccao-f-95", "ccao-f-107", "ccao-f-113"] }
+  ],
+  "sources": [
+    { "title": "Claude Help · Projects & knowledge", "url": "https://support.claude.com/en/articles/9517075-what-are-projects" },
+    { "title": "Claude Help · Incognito chats & memory boundaries", "url": "https://support.claude.com/en/articles/12260368-use-incognito-chats" },
+    { "title": "Anthropic · AI Fluency framework", "url": "https://www.anthropic.com/ai-fluency" },
+    { "title": "Anthropic · High-risk use case safeguards", "url": "https://www.anthropic.com/news/usage-policy-update" },
+    { "title": "Claude Platform · Evaluation criteria", "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" },
+    { "title": "Claude Platform · Agent Skills", "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview" }
+  ]
+}
