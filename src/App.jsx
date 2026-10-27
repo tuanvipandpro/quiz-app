@@ -1,732 +1,693 @@
-// App.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { Layout, Typography, Upload, Button, message, Empty, Card, Row, Col, Select, Modal, Space, Divider, Avatar, Dropdown, Spin, Tag, ConfigProvider, Alert, theme as antdTheme } from 'antd';
-import { UploadOutlined, FileTextOutlined, PlayCircleOutlined, CloudUploadOutlined, ArrowLeftOutlined, LoginOutlined, GoogleOutlined, GithubOutlined, UserOutlined, LogoutOutlined, SettingOutlined, BookFilled, MoonOutlined, SunOutlined, ReloadOutlined, DownloadOutlined } from '@ant-design/icons';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  Avatar,
+  Button,
+  ConfigProvider,
+  Dropdown,
+  Layout,
+  Modal,
+  Space,
+  Spin,
+  Typography,
+  message,
+  theme as antdTheme,
+} from 'antd';
+import enUS from 'antd/locale/en_US';
+import viVN from 'antd/locale/vi_VN';
+import {
+  ArrowLeftOutlined,
+  BookOutlined,
+  GithubOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MoonOutlined,
+  SettingOutlined,
+  SunOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { useAuth } from './contexts/AuthContext';
+import { useLanguage } from './contexts/LanguageContext';
+import { useHashRoute } from './hooks/useHashRoute';
+import { useQuizProgress } from './hooks/useQuizProgress';
+import QuizLibrary from './components/QuizLibrary';
+import MyQuizzes from './components/MyQuizzes';
+import QuizMode from './components/QuizMode';
+import { findQuiz } from './data/quizzes';
+import { getQuickSummary } from './data/quickSummaries';
+import { resolveCheckpoint } from './utils/quizProgress';
+import { validateQuizQuestions } from './utils/questionModel';
+import { clearStudySessions, readStudySession, sessionKey } from './utils/studySession';
+import { quizUrl, resolveLoadedQuiz } from './utils/navigation';
+import 'antd/dist/reset.css';
 import './App.css';
 import './markdown.css';
-import QuizMode from './components/QuizMode';
-import QuizActionButton from './components/QuizActionButton';
-import PracticeMode from './components/PracticeMode';
-import ExamMode from './components/ExamMode';
-import QuickSummaryMode from './components/QuickSummaryMode';
-import { getQuickSummary } from './data/quickSummaries';
-import { scrollToTop } from './utils/scroll';
-import SettingsModal from './components/SettingsModal';
-import { useQuizProgress } from './hooks/useQuizProgress';
-import { checkpointLabel, latestSavedQuiz, resolveCheckpoint } from './utils/quizProgress';
-import { validateQuizQuestions } from './utils/questionModel';
 
 const { Header, Content, Footer } = Layout;
-const { Title, Text, Paragraph } = Typography;
-const { Dragger } = Upload;
-const THEME_STORAGE_KEY = 'quiz-app-theme';
+const { Title, Text } = Typography;
+const UPLOAD_KEY = 'quiz-tab-upload-v1';
+const PracticeMode = lazy(() => import('./components/PracticeMode'));
+const ExamMode = lazy(() => import('./components/ExamMode'));
+const QuickSummaryMode = lazy(() => import('./components/QuickSummaryMode'));
+const SettingsModal = lazy(() => import('./components/SettingsModal'));
 
-const getInitialDarkMode = () => {
-  if (typeof window === 'undefined') return false;
-
-  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-  if (savedTheme === 'dark') return true;
-  if (savedTheme === 'light') return false;
-
+function initialDarkMode() {
+  try {
+    const saved = localStorage.getItem('quiz-app-theme');
+    if (saved) return saved === 'dark';
+  } catch {
+    /* Use system appearance. */
+  }
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
-};
+}
 
-function App() {
+export default function App() {
   const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
-  const [messageApi, messageContextHolder] = message.useMessage();
+  const { language, setLanguage, t } = useLanguage();
   const uid = user?.uid || null;
   const progressState = useQuizProgress(uid);
-  const quizLoadRequest = useRef(0);
-  const activeUid = useRef(uid);
-  activeUid.current = uid;
-  const [isQuizLoading, setIsQuizLoading] = useState(false);
-  const [loadedQuizId, setLoadedQuizId] = useState(null);
-  const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
-  const [questions, setQuestions] = useState([]);
-  const [mode, setMode] = useState(null); // 'summary', 'practice', or 'exam'
-  const [examTime, setExamTime] = useState(60); // Default 1 hour in minutes
-  const [examQuestionCount, setExamQuestionCount] = useState(50); // Default exam question count
-  const [fileUploaded, setFileUploaded] = useState(false);
-  const [fileName, setFileName] = useState('');
-  const [startScreen, setStartScreen] = useState(true); // New state for initial screen
-  const [showQuizSelection, setShowQuizSelection] = useState(false); // New state for quiz selection
-  const [selectedQuiz, setSelectedQuiz] = useState(null); // Selected quiz from dropdown
-  const [loginModalVisible, setLoginModalVisible] = useState(false); // Login modal state
-  const [settingsModalVisible, setSettingsModalVisible] = useState(false); // Settings modal state
-  const [initialQuestionIndex, setInitialQuestionIndex] = useState(0); // Initial question index for PracticeMode
-  const quizSelectionProgress = progressState.progress[selectedQuiz] || null;
-  const quizSelectionLoading = progressState.loading;
-  const quickSummary = getQuickSummary(loadedQuizId);
+  const [isDarkMode, setIsDarkMode] = useState(initialDarkMode);
+  const [modal, modalHolder] = Modal.useModal();
+  const [messageApi, messageHolder] = message.useMessage();
+  const [examActive, setExamActive] = useState(false);
+  const guardPending = useRef(false);
+  const guard = useCallback(
+    (proceed, cancelled) => {
+      if (!examActive) return false;
+      if (guardPending.current) return true;
+      guardPending.current = true;
+      modal.confirm({
+        title: t('Leave this exam?'),
+        content: t('Your draft will remain in this tab. The timer keeps running.'),
+        okText: t('Leave exam'),
+        cancelText: t('Continue exam'),
+        onOk: () => {
+          guardPending.current = false;
+          proceed();
+        },
+        onCancel: () => {
+          guardPending.current = false;
+          cancelled?.();
+        },
+      });
+      return true;
+    },
+    [examActive, modal, t]
+  );
+  const { hash, route, navigate, replace } = useHashRoute(guard, {
+    active: examActive,
+    message:
+      t('Leave this exam?') +
+      '\n' +
+      t('Your draft will remain in this tab. The timer keeps running.'),
+  });
+  const [query, setQuery] = useState('');
+  const [expanded, setExpanded] = useState({});
+  const [loaded, setLoaded] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
+  const [loadRevision, setLoadRevision] = useState(0);
+  const [upload, setUpload] = useState(null);
+  const [uploadReady, setUploadReady] = useState(false);
+  const [loginVisible, setLoginVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const cache = useRef(new Map());
+  const scrollPositions = useRef(new Map());
+  const previousUid = useRef(uid);
+  const header = useRef(null);
 
   useEffect(() => {
-    quizLoadRequest.current++;
-    setIsQuizLoading(false);
-    setSelectedQuiz(null);
-  }, [uid]);
+    const observer = new ResizeObserver(() => {
+      if (header.current)
+        document.documentElement.style.setProperty(
+          '--app-header-height',
+          `${header.current.getBoundingClientRect().height}px`
+        );
+    });
+    if (header.current) observer.observe(header.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light';
-    window.localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
-  
-  // Available demo quizzes organized by folder
-  const availableQuizzes = [
-    // Anthropic
-    { id: 'anthropic-cca-f', name: 'Claude Certified Architect Foundations (CCA-F)', file: 'quiz/Anthropic/CCA_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 175 },
-    { id: 'anthropic-ccar-p', name: 'Claude Certified Architect Professional (CCAR-P)', file: 'quiz/Anthropic/CCAR_P.json', category: 'Anthropic', difficulty: 'Professional', totalQuestions: 126 },
-    { id: 'anthropic-ccao-f', name: 'Claude Certified Associate Foundations (CCAO-F)', file: 'quiz/Anthropic/CCAO_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 119 },
-    { id: 'anthropic-ccdv-f', name: 'Claude Certified Developer Foundations (CCDV-F)', file: 'quiz/Anthropic/CCDV_F.json', category: 'Anthropic', difficulty: 'Foundations', totalQuestions: 53 },
-    // Google Cloud
-    { id: 'gcp-ace', name: 'Associate Cloud Engineer (ACE)', file: 'quiz/Google/GCP-ACE.json', category: 'Google Cloud', difficulty: 'Associate', totalQuestions: 302 },
-    { id: 'gcp-pca', name: 'Professional Cloud Architect (PCA)', file: 'quiz/Google/GCP-PCA.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 279 },
-    { id: 'gcp-pcd', name: 'Professional Cloud Developer (PCD)', file: 'quiz/Google/GCP_PCD.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 359 },
-    { id: 'gcp-pcde', name: 'Professional Cloud Data Engineer (PCDE)', file: 'quiz/Google/GCP-PCDE.json', category: 'Google Cloud', difficulty: 'Professional', totalQuestions: 139 },
-    { id: 'gcp-gal', name: 'Generative AI Leader (GAL)', file: 'quiz/Google/GCP-GAL.json', category: 'Google Cloud', difficulty: 'Foundations', totalQuestions: 56 },
-    // Microsoft
-    { id: 'az-900', name: 'Microsoft Azure Fundamentals (AZ-900)', file: 'quiz/Azure/AZ-900.json', category: 'Microsoft', difficulty: 'Fundamentals', totalQuestions: 472 },
-    { id: 'gh-300', name: 'Github Copilot (GH-300)', file: 'quiz/Azure/GH-300.json', category: 'Microsoft', difficulty: 'Associate', totalQuestions: 115 },
-    { id: 'ab-100', name: 'Microsoft Agentic AI Business Solutions Architect Expert (AB-100)', file: 'quiz/Azure/AB-100.json', category: 'Microsoft', difficulty: 'Expert', totalQuestions: 111 },
-    { id: 'ai-103', name: 'Microsoft Azure AI Apps and Agents Developer Associate (AI-103)', file: 'quiz/Azure/AI-103.json', category: 'Microsoft', difficulty: 'Associate', totalQuestions: 117 },
-    // AWS
-    { id: 'aws-ace', name: 'Certified Cloud Practitioner (ACE)', file: 'quiz/AWS/AWS-ACE.json', category: 'AWS', difficulty: 'Practitioner', totalQuestions: 302 },
-    { id: 'aws-saa', name: 'Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 529 },
-    { id: 'aws-dva', name: 'Developer Associate (DVA)', file: 'quiz/AWS/AWS_DVA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 557 },
-    { id: 'aws-dea', name: 'Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 227 },
-    { id: 'aws-aip-c01', name: 'Generative AI Developer Professional (AIP-C01)', file: 'quiz/AWS/AIP_C01.json', category: 'AWS', difficulty: 'Professional', totalQuestions: 136 },
-    // ISTQB
-    { id: 'istqb-ctfl-v4-0', name: 'ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB', difficulty: 'Foundation', totalQuestions: 240 },
-    { id: 'istqb-ct-ai', name: 'ISTQB Certified Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 118 },
-    { id: 'istqb-ctal-ta-v4-0', name: 'ISTQB Certified Tester Advanced Level Test Analyst v4.0 (CTAL-TA v4.0)', file: 'quiz/ISTQB/CTAL_TAV4_0.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 42 }
-  ];
-  
-  const mostRecentQuiz = latestSavedQuiz(progressState.progress, availableQuizzes.map(quiz => quiz.id));
-  useEffect(() => {
-    if (showQuizSelection && !quizSelectionLoading && !progressState.error && !selectedQuiz && mostRecentQuiz) {
-      setSelectedQuiz(mostRecentQuiz);
-    }
-  }, [showQuizSelection, quizSelectionLoading, progressState.error, selectedQuiz, mostRecentQuiz]);
-
-  const loadQuiz = async (quizFile, quizName, quizId, checkpoint = null) => {
-    const request = ++quizLoadRequest.current;
-    const account = uid;
-    setIsQuizLoading(true);
     try {
-      const response = await fetch(import.meta.env.BASE_URL + quizFile);
-      if (!response.ok) throw new Error('Could not load quiz');
-      const data = await response.json();
-      validateQuizQuestions(data, { allowLegacyIncomplete: true });
-      if (quizLoadRequest.current !== request || activeUid.current !== account) return;
-      const position = resolveCheckpoint(data, checkpoint);
-      setQuestions(data);
-      setLoadedQuizId(quizId);
-      setFileUploaded(true);
-      setFileName(quizName);
-      setInitialQuestionIndex(position?.index ?? 0);
-      setMode(position ? 'practice' : null);
-      setStartScreen(false);
-      setShowQuizSelection(false);
-      if (position?.adjusted) {
-        messageApi.info(position.reason === 'moved'
-          ? 'Quiz order changed. Your saved question is now Question ' + (position.index + 1) + '.'
-          : 'The quiz has changed. Continuing near your saved position at Question ' + (position.index + 1) + '.');
-      } else {
-        messageApi.success(position ? 'Resuming ' + quizName + ' from question ' + (position.index + 1) : quizName + ' loaded successfully!');
-      }
+      localStorage.setItem('quiz-app-theme', isDarkMode ? 'dark' : 'light');
     } catch {
-      if (quizLoadRequest.current === request && activeUid.current === account) messageApi.error('Failed to load quiz. Please try again.');
-    } finally {
-      if (quizLoadRequest.current === request) setIsQuizLoading(false);
+      /* Keep the active theme. */
     }
-  };
+  }, [isDarkMode]);
 
-  const loadDemoQuiz = (file, name, id) => loadQuiz(file, name, id);
-  const loadAndResumePractice = (file, name, id, checkpoint) => loadQuiz(file, name, id, checkpoint);
+  useEffect(() => {
+    const beforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    if (examActive) window.addEventListener('beforeunload', beforeUnload);
+    return () => window.removeEventListener('beforeunload', beforeUnload);
+  }, [examActive]);
 
-  const showQuizSelectionScreen = () => {
-    quizLoadRequest.current++;
-    setIsQuizLoading(false);
-    setShowQuizSelection(true);
-    setSelectedQuiz(null);
-    if (!progressState.loading) progressState.reload();
-  };
-
-  const backFromQuizSelection = () => {
-    quizLoadRequest.current++;
-    setIsQuizLoading(false);
-    setShowQuizSelection(false);
-    setSelectedQuiz(null);
-  };
-
-  // File upload props
-  const uploadProps = {
-    name: 'file',
-    multiple: false,
-    accept: '.json',
-    showUploadList: true,
-    maxCount: 1,
-    beforeUpload: (file) => {
-      // Check file type
-      if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-        messageApi.error('You can only upload JSON files!');
-        return Upload.LIST_IGNORE;
+  useEffect(() => {
+    if (authLoading) return;
+    if (previousUid.current !== uid) {
+      setLoaded((previous) => (previous?.id === 'custom' ? null : previous));
+      try {
+        clearStudySessions(sessionStorage, previousUid.current);
+      } catch {
+        /* Optional local drafts. */
       }
-      
-      // Parse the file
-      const request = ++quizLoadRequest.current;
-      setIsQuizLoading(false);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (request !== quizLoadRequest.current) return;
-        try {
-          const data = JSON.parse(e.target.result);
-          
-          // Validate the JSON structure
-          if (!Array.isArray(data) || !data.length) {
-            messageApi.error('The JSON file must contain an array of questions!');
-            return;
-          }
-          
-          // Check if questions have the required fields
-          validateQuizQuestions(data);
-          
-          setSelectedQuiz(null);
-          setLoadedQuizId(null);
-          setInitialQuestionIndex(0);
-          setMode(null);
-          // Set the questions and mark file as uploaded
-          setQuestions(data);
-          setFileUploaded(true);
-          setFileName(file.name);
-          setStartScreen(false);
-          messageApi.success(`${file.name} uploaded successfully!`);
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-          messageApi.error('Invalid quiz file: ' + error.message);
-        }
-      };
-      reader.readAsText(file);
-      
-      // Prevent default upload behavior
-      return false;
-    },
-    onRemove: () => {
-      quizLoadRequest.current++;
-      setLoadedQuizId(null);
-      setSelectedQuiz(null);
-      setInitialQuestionIndex(0);
-      setQuestions([]);
-      setFileUploaded(false);
-      setFileName('');
-      setMode(null);
+      if (route.quizId === 'custom') navigate('#/library', true);
+      previousUid.current = uid;
     }
-  };
+    let next = null;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(UPLOAD_KEY));
+      if (
+        saved &&
+        saved.owner === uid &&
+        saved.id === 'custom' &&
+        typeof saved.name === 'string' &&
+        saved.name.trim()
+      ) {
+        validateQuizQuestions(saved.questions);
+        if (saved.questions.length <= 100) next = saved;
+      }
+      if (!next) sessionStorage.removeItem(UPLOAD_KEY);
+    } catch {
+      /* A malformed or inaccessible upload is ignored. */
+    }
+    setUpload(next);
+    setUploadReady(true);
+  }, [uid, authLoading]);
 
-  const handleModeSelect = (selectedMode, time, questionCount) => {
-    if (selectedMode === 'summary' && !quickSummary) return;
-    setMode(selectedMode);
-    if (selectedMode === 'summary') scrollToTop();
-    if (time) {
-      setExamTime(time);
-    }
-    if (questionCount) {
-      setExamQuestionCount(questionCount);
-    }
-  };
-
-  const practiceSummaryQuestion = questionId => {
-    const index = questions.findIndex(question => String(question.id) === questionId);
-    if (index < 0) {
-      messageApi.warning('This question is no longer available in the quiz.');
+  useEffect(() => {
+    if (route.page !== 'quiz') {
+      setLoading(false);
       return;
     }
-    setInitialQuestionIndex(index);
-    setMode('practice');
-    scrollToTop();
-  };
+    const id = route.quizId;
+    if (id === 'custom' && !uploadReady) return;
+    const controller = new AbortController();
+    let current = true;
+    setLoading(true);
+    setLoadError(null);
+    const load = async () => {
+      try {
+        if (id === 'custom') {
+          if (!upload) throw new Error('This quiz is no longer available.');
+          if (current) setLoaded(upload);
+          return;
+        }
+        const quiz = findQuiz(id);
+        if (!quiz) throw new Error('This quiz is no longer available.');
+        let questions = cache.current.get(id);
+        if (!questions) {
+          const response = await fetch(import.meta.env.BASE_URL + quiz.file, {
+            signal: controller.signal,
+          });
+          if (!response.ok) throw new Error('Could not load this quiz.');
+          questions = await response.json();
+          validateQuizQuestions(questions, { allowLegacyIncomplete: true });
+          cache.current.set(id, questions);
+        }
+        if (current) setLoaded({ ...quiz, questions });
+      } catch (error) {
+        if (current && error.name !== 'AbortError') setLoadError(error.message);
+      } finally {
+        if (current) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      current = false;
+      controller.abort();
+    };
+  }, [route.page, route.quizId, upload, uploadReady, loadRevision]);
 
-  const resetApp = () => {
-    setMode(null);
-    setInitialQuestionIndex(0);
-    setExamQuestionCount(Math.min(50, questions.length || 50));
-  };
-  
-  const goToStartScreen = () => {
-    quizLoadRequest.current++;
-    setIsQuizLoading(false);
-    setLoadedQuizId(null);
-    setSelectedQuiz(null);
-    setFileUploaded(false);
-    setQuestions([]);
-    setFileName('');
-    setMode(null);
-    setStartScreen(true);
-    setInitialQuestionIndex(0);
-    setExamQuestionCount(50);
-  };
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const top = scrollPositions.current.get(hash) || 0;
+      window.scrollTo({ top, behavior: 'auto' });
+      document.body.scrollTo({ top, behavior: 'auto' });
+      document.getElementById('main-content')?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [hash]);
 
-
-  // Handle Google login
-  const handleGoogleLogin = async () => {
-    setLoginModalVisible(false);
+  const go = (next, bypass = false) => {
+    scrollPositions.current.set(hash, Math.max(window.scrollY, document.body.scrollTop));
+    navigate(next, bypass);
+  };
+  const openQuiz = (quiz, mode, resume = false, setupMode = null) => {
+    const params = resume
+      ? { resume: '1', entry: String(Date.now()) }
+      : setupMode
+        ? { mode: setupMode }
+        : {};
+    go(quizUrl(quiz.id, mode, params));
+  };
+  const active = resolveLoadedQuiz(loaded, route.quizId, uid);
+  const guide = getQuickSummary(route.quizId);
+  useEffect(() => {
+    document.title =
+      (route.page === 'library'
+        ? t('Quiz Bank')
+        : route.page === 'my-quizzes'
+          ? t('My quizzes')
+          : active?.name || t('Quiz overview')) + ' · Quiz App';
+  }, [route.page, active?.name, t]);
+  let examDraft = null;
+  if (active && route.mode === 'overview') {
+    try {
+      examDraft = readStudySession(
+        sessionStorage,
+        sessionKey(uid, active.id, 'exam'),
+        active.questions,
+        'exam'
+      );
+    } catch {
+      /* No local draft. */
+    }
+  }
+  const hasExamDraft = !!examDraft && !examDraft.submitted;
+  const selectMode = (mode, time, count, fresh = false) => {
+    const start = () =>
+      go(
+        quizUrl(
+          active.id,
+          mode,
+          mode === 'exam'
+            ? {
+                time: String(time),
+                count: String(count),
+                ...(fresh || !hasExamDraft ? { fresh: String(Date.now()) } : {}),
+              }
+            : {}
+        )
+      );
+    if (mode === 'exam' && fresh && hasExamDraft)
+      modal.confirm({
+        title: t('Start a new exam?'),
+        content: t('This replaces the draft in this tab.'),
+        okText: t('Start mock exam'),
+        cancelText: t('Cancel'),
+        onOk: start,
+      });
+    else start();
+  };
+  const useUpload = (next) => {
+    const value = { ...next, owner: uid };
+    try {
+      sessionStorage.setItem(UPLOAD_KEY, JSON.stringify(value));
+      for (const mode of ['practice', 'exam'])
+        sessionStorage.removeItem(sessionKey(uid, 'custom', mode));
+    } catch {
+      /* The current upload still works without browser storage. */
+    }
+    setUpload(value);
+    go(quizUrl('custom'));
+  };
+  const removeUpload = () => {
+    try {
+      sessionStorage.removeItem(UPLOAD_KEY);
+      for (const mode of ['practice', 'exam'])
+        sessionStorage.removeItem(sessionKey(uid, 'custom', mode));
+    } catch {
+      /* Remove the in-memory upload too. */
+    }
+    setUpload(null);
+  };
+  const login = async () => {
     const result = await signInWithGoogle();
-    
     if (result.success) {
-      messageApi.success(`Welcome, ${result.user.displayName}!`);
-    } else {
-      messageApi.error(result.error || 'Failed to sign in with Google');
-    }
+      setLoginVisible(false);
+      messageApi.success(
+        t('Welcome, {name}!', { name: result.user.displayName || result.user.email })
+      );
+    } else messageApi.error(t('Could not sign in. Please retry.'));
+  };
+  const logout = () => {
+    const run = async () => {
+      const result = await signOut();
+      if (result.success) messageApi.success(t('Signed out successfully'));
+      else messageApi.error(t('Could not sign out. Please retry.'));
+    };
+    if (!guard(run)) run();
   };
 
-  // Handle logout
-  const handleLogout = async () => {
-    const result = await signOut();
-    
-    if (result.success) {
-      messageApi.success('Signed out successfully');
-    } else {
-      messageApi.error('Failed to sign out');
-    }
-  };
-
-  // Handle settings click
-  const handleSettingsClick = () => {
-    setSettingsModalVisible(true);
-  };
-
-  // Handle return to home page
-  const handleReturnHome = () => {
-    quizLoadRequest.current++;
-    setIsQuizLoading(false);
-    setLoadedQuizId(null);
-    setSelectedQuiz(null);
-    setStartScreen(true);
-    setShowQuizSelection(false);
-    setMode(null);
-    setFileUploaded(false);
-    setFileName('');
-    setQuestions([]);
-    setInitialQuestionIndex(0);
-  };
-
-  // User menu items
-  const userMenuItems = [
-    {
-      key: 'profile',
-      label: (
-        <div>
-          <div style={{ fontWeight: 'bold' }}>{user?.displayName}</div>
-          <div className="user-email">{user?.email}</div>
-        </div>
-      ),
-      disabled: true
-    },
-    {
-      type: 'divider'
-    },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: 'Settings',
-      onClick: handleSettingsClick
-    },
-    {
-      key: 'logout',
-      icon: <LogoutOutlined />,
-      label: 'Sign Out',
-      onClick: handleLogout
-    }
-  ];
-
-  // Simplified header without the back button
-  const renderHeader = () => (
-    <Header className="app-header">
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title 
-          level={3} 
-          className="app-header-title"
-          onClick={handleReturnHome}
-        >
-          Quiz Application
-        </Title>
-
-        <div className="header-actions">
-          <Button
-            type="text"
-            className="theme-toggle"
-            icon={isDarkMode ? <SunOutlined /> : <MoonOutlined />}
-            onClick={() => setIsDarkMode((current) => !current)}
-            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            aria-pressed={isDarkMode}
-            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          />
-
-          {authLoading ? (
-            <Spin />
-          ) : user ? (
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <div className="header-user-menu">
-                <Avatar
-                  src={user.photoURL}
-                  icon={<UserOutlined />}
-                />
-                <span className="app-header-user-name">{user.displayName}</span>
-              </div>
-            </Dropdown>
-          ) : (
-            <QuizActionButton label="Login"
-              type="primary"
-              icon={<LoginOutlined />}
-              onClick={() => setLoginModalVisible(true)}
-              className="header-login-button"
-            >
-              Login
-            </QuizActionButton>
-          )}
-        </div>
+  let screen;
+  if (route.page === 'library')
+    screen = (
+      <QuizLibrary
+        query={query}
+        onQueryChange={setQuery}
+        expanded={expanded}
+        onExpandedChange={setExpanded}
+        progressState={progressState}
+        onOpen={openQuiz}
+      />
+    );
+  else if (route.page === 'my-quizzes')
+    screen = (
+      <MyQuizzes
+        key={uid || 'guest'}
+        upload={upload?.owner === uid ? upload : null}
+        onUse={useUpload}
+        onOpen={(mode) => go(quizUrl('custom', mode, mode === 'overview' ? { mode: 'exam' } : {}))}
+        onRemove={removeUpload}
+      />
+    );
+  else if (loadError)
+    screen = (
+      <div className="load-state">
+        <Alert
+          type="error"
+          showIcon
+          message={t(loadError)}
+          description={t('Please retry or return to the library.')}
+        />
+        <Space wrap>
+          <Button onClick={() => setLoadRevision((value) => value + 1)}>{t('Retry')}</Button>
+          <Button onClick={() => go('#/library')}>{t('Back to library')}</Button>
+        </Space>
       </div>
-    </Header>
-  );
+    );
+  else if (
+    loading ||
+    !active ||
+    authLoading ||
+    (route.params.get('resume') === '1' && progressState.loading)
+  )
+    screen = (
+      <div className="load-state" role="status">
+        <Spin size="large" />
+        <Text>{t('Loading quiz…')}</Text>
+      </div>
+    );
+  else if (route.mode === 'practice') {
+    const questionId = route.params.get('question');
+    const relatedIndex =
+      questionId === null
+        ? null
+        : active.questions.findIndex((question) => String(question.id) === questionId);
+    const checkpoint =
+      route.params.get('resume') === '1'
+        ? resolveCheckpoint(active.questions, progressState.progress[active.id])
+        : null;
+    screen = (
+      <PracticeMode
+        key={`${active.id}:${uid || 'guest'}:${route.params.get('fresh') || ''}:${questionId || ''}:${route.params.get('entry') || ''}`}
+        questions={active.questions}
+        quizId={active.id === 'custom' ? null : active.id}
+        sessionId={active.id}
+        quizName={active.name}
+        progressState={progressState}
+        initialQuestionIndex={
+          relatedIndex >= 0 && relatedIndex !== null ? relatedIndex : (checkpoint?.index ?? null)
+        }
+        adjustedCheckpoint={checkpoint?.adjusted}
+        fresh={route.params.get('fresh')}
+        entryToken={hash}
+        onSignIn={() => setLoginVisible(true)}
+        onExit={() => go(quizUrl(active.id))}
+        onBackToSummary={
+          route.params.get('from') === 'summary' ? () => go(quizUrl(active.id, 'summary')) : null
+        }
+      />
+    );
+  } else if (route.mode === 'exam')
+    screen = (
+      <ExamMode
+        key={`${active.id}:${uid || 'guest'}:${route.params.get('fresh') || ''}`}
+        questions={active.questions}
+        quizId={active.id}
+        quizName={active.name}
+        examTimeMinutes={Number(route.params.get('time')) === 120 ? 120 : 60}
+        examQuestionCount={
+          [50, 60, 70, 80].includes(Number(route.params.get('count')))
+            ? Number(route.params.get('count'))
+            : Math.min(50, active.questions.length)
+        }
+        fresh={route.params.get('fresh')}
+        onRunningChange={setExamActive}
+        onExit={() => go(quizUrl(active.id, 'overview', { mode: 'exam' }))}
+        onRestart={() => go(quizUrl(active.id, 'overview', { mode: 'exam' }))}
+      />
+    );
+  else if (route.mode === 'summary' && guide)
+    screen = (
+      <QuickSummaryMode
+        key={active.id}
+        quizId={active.id}
+        quizName={active.name}
+        questions={active.questions}
+        initialScroll={scrollPositions.current.get(hash) || 0}
+        onExit={() => go(quizUrl(active.id))}
+        onPracticeQuestion={(id) =>
+          go(
+            quizUrl(active.id, 'practice', {
+              question: String(id),
+              from: 'summary',
+              entry: String(Date.now()),
+            })
+          )
+        }
+      />
+    );
+  else
+    screen = (
+      <div className="quiz-setup">
+        <div className="quiz-overview-header">
+          <div className="quiz-overview-identity">
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined aria-hidden="true" />}
+              onClick={() => go(active.id === 'custom' ? '#/my-quizzes' : '#/library')}
+            >
+              {t('Back to library')}
+            </Button>
+            <div className="quiz-provider-label">{active.category || t('Your uploaded quiz')}</div>
+            <Title level={1}>{active.name}</Title>
+            <Text type="secondary">
+              {t('{count} questions', { count: active.questions.length })}
+            </Text>
+          </div>
+        </div>
+        <QuizMode
+          key={active.id}
+          onSelectMode={selectMode}
+          onModeChange={(mode) => replace(quizUrl(active.id, 'overview', { mode }))}
+          totalQuestions={active.questions.length}
+          quickSummary={guide}
+          initialMode={
+            ['exam', 'summary'].includes(route.params.get('mode'))
+              ? route.params.get('mode')
+              : 'practice'
+          }
+          hasExamDraft={hasExamDraft}
+          examDraftCount={examDraft?.questions.length}
+        />
+        {progressState.progress[active.id] && (
+          <Button
+            className="overview-resume"
+            onClick={() =>
+              go(quizUrl(active.id, 'practice', { resume: '1', entry: String(Date.now()) }))
+            }
+          >
+            {Number.isInteger(progressState.progress[active.id].questionIndex)
+              ? t('Saved at question {number}', {
+                  number: progressState.progress[active.id].questionIndex + 1,
+                })
+              : t('Saved position')}{' '}
+            · {t('Resume')}
+          </Button>
+        )}
+      </div>
+    );
 
+  const studying = route.page === 'quiz' && ['practice', 'exam', 'summary'].includes(route.mode);
   return (
     <ConfigProvider
+      locale={language === 'vi' ? viVN : enUS}
       theme={{
         algorithm: isDarkMode ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
-          colorPrimary: '#1677ff',
-          borderRadius: 8,
+          colorPrimary: isDarkMode ? '#91bfff' : '#245db4',
+          colorLink: isDarkMode ? '#a8ceff' : '#245db4',
+          colorBgContainer: isDarkMode ? '#1c2736' : '#ffffff',
+          colorBgElevated: isDarkMode ? '#1c2736' : '#ffffff',
+          colorText: isDarkMode ? '#ecf2fa' : '#192e49',
+          colorTextSecondary: isDarkMode ? '#b0bed1' : '#586b82',
+          colorBorder: isDarkMode ? '#38485c' : '#dce4ee',
+          borderRadius: 10,
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
+          controlHeight: 40,
         },
       }}
     >
-      {messageContextHolder}
-      <Layout className="layout" style={{ minHeight: '100vh' }}>
-        {renderHeader()}
-
-        <Content className="ant-layout-content">
-        {startScreen && !showQuizSelection ? (
-          // Initial start screen with options
-          <div style={{ textAlign: 'center' }}>
-            <Title level={2}>Welcome to Quiz Application</Title>
-            <Paragraph>Please choose an option to get started:</Paragraph>
-            
-            <Row gutter={[16, 16]} style={{ marginTop: '30px' }}>
-              <Col xs={24} sm={12}>
-                <Card 
-                  hoverable 
-                  style={{ height: '100%' }}
-                  onClick={showQuizSelectionScreen}
-                  className="option-card"
-                >
-                  <PlayCircleOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '15px' }} />
-                  <Title level={4}>Load Demo Quiz</Title>
-                  <Paragraph>
-                    Choose from our pre-loaded set of questions to try out the application.
-                  </Paragraph>
-                  <QuizActionButton label="Select Quiz" type="primary" size="large" icon={<PlayCircleOutlined />} style={{ marginTop: '10px' }}>
-                    Select Quiz
-                  </QuizActionButton>
-                </Card>
-              </Col>
-              
-              <Col xs={24} sm={12}>
-                <Card 
-                  hoverable 
-                  style={{ height: '100%' }}
-                  className="option-card"
-                >
-                  <div>
-                    <CloudUploadOutlined style={{ fontSize: '48px', color: '#52c41a', marginBottom: '15px' }} />
-                    <Title level={4}>Upload Your Own Quiz</Title>
-                    <Paragraph>
-                      Use your own JSON file with custom questions.
-                    </Paragraph>
-                    
-                    <Upload {...uploadProps}>
-                      <QuizActionButton label="Upload Quiz File" type="primary" size="large" icon={<UploadOutlined />} style={{ marginTop: '10px' }}>
-                        Upload Quiz File
-                      </QuizActionButton>
-                    </Upload>
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-            
-            <div style={{ marginTop: '30px' }}>
-              <Title level={5}>Need a sample file?</Title>
-              <QuizActionButton label="Download Sample Quiz File" icon={<DownloadOutlined />}
-                type="link" 
-                href={import.meta.env.BASE_URL + 'sample-quiz.json'}
-                download="sample-quiz.json"
+      {modalHolder}
+      {messageHolder}
+      <Layout className={`layout${studying ? ' is-studying' : ''}`}>
+        <a
+          href="#main-content"
+          className="skip-link"
+          onClick={(event) => {
+            event.preventDefault();
+            document.getElementById('main-content')?.focus();
+          }}
+        >
+          {language === 'vi' ? 'Đến nội dung chính' : 'Skip to content'}
+        </a>
+        <Header ref={header} className="app-header">
+          <div className="app-header-inner">
+            <button className="app-brand" onClick={() => go('#/library')}>
+              <BookOutlined aria-hidden="true" />
+              <span>Quiz App</span>
+            </button>
+            <nav
+              className="app-nav"
+              aria-label={language === 'vi' ? 'Điều hướng chính' : 'Main navigation'}
+            >
+              <Button
+                type="text"
+                aria-current={route.page !== 'my-quizzes' ? 'page' : undefined}
+                onClick={() => go('#/library')}
               >
-                Download Sample Quiz File
-              </QuizActionButton>
-              
-              <div style={{ marginTop: '20px', textAlign: 'left' }}>
-                <Text type="secondary">
-                  Example format:
-                  <pre style={{ 
-                    padding: '10px', 
-                    borderRadius: '5px',
-                    textAlign: 'left',
-                    overflow: 'auto'
-                  }} className="quiz-example-code">
-{`[
-  {
-    "id": "1",
-    "question": "What is the capital of France?",
-    "options": {
-      "A": "London",
-      "B": "Berlin",
-      "C": "Paris",
-      "D": "Madrid"
-    },
-    "answer": ["C"]
-  }
-]`}
-                  </pre>
-                </Text>
+                {t('Quiz Bank')}
+              </Button>
+              <Button
+                type="text"
+                aria-current={route.page === 'my-quizzes' ? 'page' : undefined}
+                onClick={() => go('#/my-quizzes')}
+              >
+                {t('My quizzes')}
+              </Button>
+            </nav>
+            <div className="header-actions">
+              <Button
+                type="text"
+                className="theme-toggle"
+                icon={
+                  isDarkMode ? (
+                    <SunOutlined aria-hidden="true" />
+                  ) : (
+                    <MoonOutlined aria-hidden="true" />
+                  )
+                }
+                aria-label={t(isDarkMode ? 'Switch to light mode' : 'Switch to dark mode')}
+                onClick={() => setIsDarkMode((value) => !value)}
+              />
+              <div className="language-toggle" role="group" aria-label={t('Language')}>
+                <button
+                  aria-label="Tiếng Việt"
+                  aria-pressed={language === 'vi'}
+                  onClick={() => setLanguage('vi')}
+                >
+                  VN
+                </button>
+                <button
+                  aria-label="English"
+                  aria-pressed={language === 'en'}
+                  onClick={() => setLanguage('en')}
+                >
+                  EN
+                </button>
               </div>
-            </div>
-          </div>
-        ) : showQuizSelection ? (
-          // Quiz selection screen
-          <div className="quiz-selection-screen" style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <Title level={2} style={{ textAlign: 'center' }}>Select a Quiz</Title>
-            <Paragraph style={{ textAlign: 'center', marginBottom: '30px' }}>
-              Choose from our available quizzes:
-            </Paragraph>
-            
-            <Card className="quiz-selection-card" style={{ marginBottom: '20px' }}>
-              <Select
-                size="large"
-                style={{ width: '100%' }}
-                placeholder="Select a quiz to load"
-                value={selectedQuiz}
-                onChange={value => setSelectedQuiz(value)}
-                disabled={isQuizLoading}
-                virtual={false}
-                showSearch
-                optionFilterProp="label"
-                options={(() => {
-                  // Group quizzes by category
-                  const categories = [...new Set(availableQuizzes.map(q => q.category))];
-                  return categories.map(category => ({
-                    label: category,
-                    options: availableQuizzes
-                      .filter(q => q.category === category)
-                       .map(quiz => ({
-                         label: quiz.name,
-                         value: quiz.id,
-                         difficulty: quiz.difficulty,
-                         totalQuestions: quiz.totalQuestions,
-                         savedProgress: progressState.progress[quiz.id]
-                       }))
-                   }));
-                 })()}
-                optionRender={(option) => (
-                  <div className="quiz-option">
-                    <span className="quiz-option-name">{option.data.label}</span>
-                    <span className="quiz-option-meta">
-                      {option.data.difficulty && (
-                        <Tag color="blue" style={{ margin: 0, fontSize: '11px' }}>{option.data.difficulty}</Tag>
-                      )}
-                      {option.data.savedProgress && <Tag color="orange" style={{ margin: 0, fontSize: '11px' }}>{checkpointLabel(option.data.savedProgress)}</Tag>}
-                      {option.data.totalQuestions && (
-                        <Tag color="green" style={{ margin: 0, fontSize: '11px' }}>{option.data.totalQuestions} Qs</Tag>
-                      )}
-                    </span>
-                  </div>
-                )}
-               />
-              
-              {progressState.error && (
-                <Alert style={{ marginTop: 14 }} type="error" showIcon message={progressState.error}
-                  action={<QuizActionButton label="Retry saved progress" icon={<ReloadOutlined />} size="small" onClick={progressState.reload}>Retry</QuizActionButton>} />
-              )}
-              {/* Firestore progress check result */}
-              {quizSelectionLoading && (
-                <div style={{ marginTop: '14px', textAlign: 'center', padding: '10px' }}>
-                  <Spin size="small" /> <Text style={{ marginLeft: 8 }} type="secondary">Checking saved progress...</Text>
-                </div>
-              )}
-
-              {!quizSelectionLoading && !progressState.error && quizSelectionProgress && (
-                <div className="quiz-progress-notice" style={{
-                  marginTop: '14px',
-                  padding: '14px 16px',
-                  borderRadius: '8px',
-                }}>                  
-                  <div className="quiz-progress-notice-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <BookFilled style={{ color: '#fa8c16', fontSize: '16px' }} />
-                    <Text strong className="quiz-progress-notice-title">Saved progress found!</Text>
-                  </div>
-                  <Text className="quiz-progress-notice-text"><Text strong>{checkpointLabel(quizSelectionProgress)}</Text>. Do you want to continue from there?</Text>
-                  <div className="quiz-progress-notice-actions" style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-                    <QuizActionButton label="Resume saved progress"
-                      className="quiz-progress-action-button quiz-progress-resume-button"
-                      type="primary"
-                      icon={<PlayCircleOutlined />}
-                      style={{ flex: 1 }}
-                      loading={isQuizLoading}
-                      disabled={isQuizLoading}
-                      onClick={() => {
-                        const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
-                        if (quiz) loadAndResumePractice(quiz.file, quiz.name, quiz.id, quizSelectionProgress);
-                      }}
-                    >
-                      Resume saved progress
-                    </QuizActionButton>
-                    <QuizActionButton label="Start from beginning" icon={<ReloadOutlined />}
-                      className="quiz-progress-action-button"
-                      style={{ flex: 1 }}
-                      disabled={isQuizLoading}
-                      onClick={() => {
-                        const quiz = availableQuizzes.find(item => item.id === selectedQuiz);
-                        if (quiz) loadDemoQuiz(quiz.file, quiz.name, quiz.id);
-                      }}
-                    >
-                      Start from beginning
-                    </QuizActionButton>
-                  </div>
-                </div>
-              )}
-
-              {!quizSelectionLoading && (progressState.error || !quizSelectionProgress) && (
-                <QuizActionButton label={progressState.error ? 'Load quiz without resuming' : 'Load Selected Quiz'}
-                  type="primary"
-                  size="large"
-                  block
-                  style={{ marginTop: '20px' }}
-                  disabled={!selectedQuiz || isQuizLoading}
-                  loading={isQuizLoading}
-                  icon={<PlayCircleOutlined />}
-                  onClick={() => {
-                    const quiz = availableQuizzes.find(q => q.id === selectedQuiz);
-                    if (quiz) {
-                      loadDemoQuiz(quiz.file, quiz.name, quiz.id);
-                    }
+              <Button
+                type="text"
+                className="header-settings"
+                icon={<SettingOutlined aria-hidden="true" />}
+                aria-label={t('AI Settings')}
+                onClick={() => setSettingsVisible(true)}
+              />
+              {authLoading ? (
+                <Spin size="small" />
+              ) : user ? (
+                <Dropdown
+                  menu={{
+                    items: [
+                      { key: 'name', label: user.displayName || user.email, disabled: true },
+                      {
+                        key: 'settings',
+                        label: t('AI Settings'),
+                        icon: <SettingOutlined aria-hidden="true" />,
+                        onClick: () => setSettingsVisible(true),
+                      },
+                      {
+                        key: 'logout',
+                        label: t('Sign out'),
+                        icon: <LogoutOutlined aria-hidden="true" />,
+                        onClick: logout,
+                      },
+                    ],
                   }}
                 >
-                  {progressState.error ? 'Load quiz without resuming' : 'Load Selected Quiz'}
-                </QuizActionButton>
+                  <Button
+                    type="text"
+                    className="profile-button"
+                    aria-label={user.displayName || user.email}
+                  >
+                    <Avatar
+                      size={28}
+                      src={user.photoURL}
+                      icon={<UserOutlined aria-hidden="true" />}
+                    />
+                  </Button>
+                </Dropdown>
+              ) : (
+                <Button
+                  type="text"
+                  aria-label={t('Sign in')}
+                  icon={<LoginOutlined aria-hidden="true" />}
+                  className="header-login"
+                  onClick={() => setLoginVisible(true)}
+                >
+                  <span>{t('Sign in')}</span>
+                </Button>
               )}
-            </Card>
-            
-            <div style={{ textAlign: 'center' }}>
-              <QuizActionButton label="Back"
-                icon={<ArrowLeftOutlined />} 
-                size="large"
-                onClick={backFromQuizSelection}
-              >
-                Back
-              </QuizActionButton>
             </div>
           </div>
-        ) : !mode ? (
-          // Quiz mode selection after file is loaded
-          <div className="quiz-setup">
-            <div className="quiz-overview-header">
-              <div className="quiz-overview-identity">
-                <Title level={2}>{fileName}</Title>
-                <Text type="secondary">{questions.length} questions</Text>
+        </Header>
+        <Content id="main-content" tabIndex={-1}>
+          <Suspense
+            fallback={
+              <div className="load-state" role="status">
+                <Spin />
+                <Text>{t('Loading quiz…')}</Text>
               </div>
-              <div className="quiz-overview-actions">
-                <QuizActionButton label="Back to Start Screen" icon={<ArrowLeftOutlined />} onClick={goToStartScreen}>Back</QuizActionButton>
-                <Upload {...uploadProps}>
-                  <QuizActionButton label="Change File" icon={<UploadOutlined />} />
-                </Upload>
-              </div>
-            </div>
-            <QuizMode onSelectMode={handleModeSelect} totalQuestions={questions.length} quickSummary={quickSummary} />
-          </div>
-        ) : mode === 'summary' && quickSummary ? (
-          <QuickSummaryMode key={loadedQuizId} quizId={loadedQuizId} quizName={fileName} questions={questions}
-            onExit={() => { setMode(null); scrollToTop(); }} onPracticeQuestion={practiceSummaryQuestion} />
-        ) : mode === 'practice' && questions.length > 0 ? (
-          <PracticeMode 
-            questions={questions} 
-            onExit={resetApp} 
-            initialQuestionIndex={initialQuestionIndex}
-            key={(loadedQuizId || fileName) + ':' + (uid || 'guest')}
-            quizId={loadedQuizId}
-            progressState={progressState}
-          />
-        ) : mode === 'exam' && questions.length > 0 ? (
-          <ExamMode 
-            questions={questions} 
-            onExit={resetApp} 
-            examTimeMinutes={examTime}
-            examQuestionCount={examQuestionCount}
-          />
-        ) : (
-          <Empty 
-            description="No valid questions found" 
-            style={{ marginTop: '50px' }}
-          />
-        )}
+            }
+          >
+            {screen}
+          </Suspense>
         </Content>
-
-        <Footer className="app-footer">
-          <div className="app-footer-content">
-            <span className="app-footer-brand">Quiz Application</span>
-            <span>© {new Date().getFullYear()} Tuanvipandpro</span>
+        {!studying && (
+          <Footer className="app-footer">
+            <span>Quiz App · {t('Learn at your own pace.')}</span>
             <a
               href="https://github.com/tuanvipandpro/quiz-app"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <GithubOutlined />
-              <span>View on GitHub</span>
+              <GithubOutlined aria-hidden="true" /> {t('View on GitHub')}
             </a>
-          </div>
-        </Footer>
-
-        {/* Login Modal */}
-        <Modal
-        title="Choose Login Method"
-        open={loginModalVisible}
-        onCancel={() => setLoginModalVisible(false)}
+          </Footer>
+        )}
+      </Layout>
+      <Modal
+        title={t('Sign in')}
+        open={loginVisible}
+        onCancel={() => setLoginVisible(false)}
         footer={null}
         centered
       >
-        <div style={{ padding: '20px 0' }}>
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <Button 
-              type="primary"
-              icon={<GoogleOutlined />}
-              size="large"
-              block
-              onClick={handleGoogleLogin}
-              style={{ height: '50px', fontSize: '16px' }}
-            >
-              Login with Google
-            </Button>
-          </Space>
-          
-          <Divider style={{ margin: '24px 0' }} />
-          
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <Button 
-              icon={<GithubOutlined />}
-              size="large"
-              block
-              disabled
-              style={{ height: '50px', fontSize: '16px' }}
-            >
-              Login with GitHub (Coming Soon)
-            </Button>
-          </Space>
-        </div>
-        </Modal>
-
-        {/* Settings Modal */}
-        <SettingsModal
-          visible={settingsModalVisible}
-          onClose={() => setSettingsModalVisible(false)}
-        />
-      </Layout>
+        <Button type="primary" block size="large" onClick={login}>
+          {t('Continue with Google')}
+        </Button>
+      </Modal>
+      {settingsVisible && (
+        <Suspense fallback={null}>
+          <SettingsModal visible onClose={() => setSettingsVisible(false)} />
+        </Suspense>
+      )}
     </ConfigProvider>
   );
 }
-
-export default App;

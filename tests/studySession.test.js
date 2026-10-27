@@ -1,0 +1,204 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {
+  createExamSession,
+  examStats,
+  finishExam,
+  initialStudySession,
+  questionFingerprint,
+  readStudySession,
+  sessionKey,
+  clearStudySessions,
+} from '../src/utils/studySession.js';
+import { emptyAnswer } from '../src/utils/questionModel.js';
+
+const questions = [
+  { id: 'one', question: 'Pick one', options: { A: 'First', B: 'Second' }, answer: ['A'] },
+  {
+    id: 'two',
+    question: 'Pick two',
+    options: { A: 'First', B: 'Second', C: 'Third' },
+    answer: ['A', 'C'],
+  },
+  {
+    id: 'three',
+    type: 'yes_no',
+    question: 'Decide',
+    statements: [
+      { id: 's1', text: 'First statement' },
+      { id: 's2', text: 'Second statement' },
+    ],
+    options: { Y: 'Yes', N: 'No' },
+    answer: { s1: 'Y', s2: 'N' },
+  },
+];
+const storage = () => {
+  const values = {};
+  Object.defineProperties(values, {
+    getItem: { value: (key) => values[key] ?? null },
+    setItem: {
+      value: (key, value) => {
+        values[key] = value;
+      },
+    },
+    removeItem: {
+      value: (key) => {
+        delete values[key];
+      },
+    },
+  });
+  return values;
+};
+
+test('reopening a new-exam URL restores the exact order, choices, answers and deadline', () => {
+  const store = storage();
+  const key = sessionKey('alice', 'bank', 'exam');
+  const make = () => createExamSession(questions, 3, 60, 1000, () => 0.25);
+  const first = initialStudySession(store, key, questions, 'exam', make, { fresh: 'new-exam-1' });
+  first.index = 1;
+  first.answers[1] = ['A'];
+  first.flags = [1];
+  store.setItem(key, JSON.stringify(first));
+  const restored = initialStudySession(
+    store,
+    key,
+    questions,
+    'exam',
+    () => {
+      throw new Error('Must restore, not recreate');
+    },
+    { fresh: 'new-exam-1' }
+  );
+  assert.deepEqual(restored, first);
+  assert.equal(restored.deadline, 3601000);
+  const fresh = initialStudySession(store, key, questions, 'exam', make, { fresh: 'new-exam-2' });
+  assert.equal(fresh.index, 0);
+  assert.deepEqual(fresh.answers, fresh.questions.map(emptyAnswer));
+});
+
+test('returning to an older exam link cannot reset a newer running exam', () => {
+  const store = storage();
+  const key = sessionKey('alice', 'bank', 'exam');
+  const make = () => createExamSession(questions, 3, 60, 1000);
+  const running = initialStudySession(store, key, questions, 'exam', make, { fresh: '2000' });
+  running.answers[0] = 'A';
+  store.setItem(key, JSON.stringify(running));
+  const restored = initialStudySession(
+    store,
+    key,
+    questions,
+    'exam',
+    () => {
+      throw new Error('Must keep the running exam');
+    },
+    { fresh: '1000' }
+  );
+  assert.deepEqual(restored, running);
+});
+
+test('cloud resume sets a position once; refreshing keeps the subsequent local position', () => {
+  const store = storage();
+  const key = sessionKey('alice', 'bank', 'practice');
+  const make = () => ({
+    signature: questionFingerprint(questions),
+    index: 0,
+    answers: questions.map(emptyAnswer),
+  });
+  const resumed = initialStudySession(store, key, questions, 'practice', make, {
+    initialIndex: 1,
+    entryToken: 'resume-1',
+  });
+  resumed.index = 2;
+  resumed.answers[0] = 'A';
+  store.setItem(key, JSON.stringify(resumed));
+  const refreshed = initialStudySession(store, key, questions, 'practice', make, {
+    initialIndex: 1,
+    entryToken: 'resume-1',
+  });
+  assert.equal(refreshed.index, 2);
+  assert.equal(refreshed.answers[0], 'A');
+  assert.equal(
+    initialStudySession(store, key, questions, 'practice', make, {
+      initialIndex: 1,
+      entryToken: 'resume-2',
+    }).index,
+    1
+  );
+});
+
+test('content changes, corrupted storage and invalid sessions never restore a different quiz', () => {
+  const store = storage();
+  const key = sessionKey(null, 'bank', 'exam');
+  const session = createExamSession(questions, 80, 60, 1000);
+  store.setItem(key, JSON.stringify(session));
+  assert.equal(session.questions.length, questions.length);
+  const changed = questions.map((question, index) =>
+    index === 0 ? { ...question, answer: ['B'] } : question
+  );
+  assert.equal(readStudySession(store, key, changed, 'exam'), null);
+  for (const corrupt of [
+    '{',
+    JSON.stringify({ ...session, questions: [{ ...questions[0], id: 'unknown' }] }),
+    JSON.stringify({ ...session, index: 900 }),
+    JSON.stringify({ ...session, answers: [] }),
+    JSON.stringify({ ...session, flags: [-1] }),
+  ]) {
+    store.setItem(key, corrupt);
+    assert.equal(readStudySession(store, key, questions, 'exam'), null);
+  }
+  assert.equal(
+    readStudySession(
+      {
+        getItem() {
+          throw new Error('Denied');
+        },
+      },
+      key,
+      questions,
+      'exam'
+    ),
+    null
+  );
+});
+
+test('expiry and manual submission lock the same exam once, without extending its deadline', () => {
+  const session = createExamSession(questions, 2, 60, 1000);
+  assert.equal(finishExam(session, session.deadline - 1), session);
+  const expired = finishExam(session, session.deadline);
+  assert.equal(expired.submitted, true);
+  assert.equal(expired.timeExpired, true);
+  assert.equal(expired.deadline, session.deadline);
+  assert.equal(finishExam(expired, session.deadline + 10000), expired);
+  const submitted = finishExam(session, 2000, true);
+  assert.equal(submitted.submitted, true);
+  assert.equal(submitted.timeExpired, false);
+});
+
+test('result counts distinguish incorrect answers from incomplete and unanswered questions', () => {
+  assert.deepEqual(examStats({ questions, answers: ['B', ['A'], { s1: 'Y' }] }), {
+    correct: 0,
+    answered: 1,
+    incorrect: 1,
+    unanswered: 2,
+  });
+  assert.deepEqual(examStats({ questions, answers: ['A', ['A', 'C'], { s1: 'Y', s2: 'N' }] }), {
+    correct: 3,
+    answered: 3,
+    incorrect: 0,
+    unanswered: 0,
+  });
+});
+
+test('account changes clear only that account’s drafts and preserve unrelated preferences', () => {
+  const store = storage();
+  const alice = sessionKey('alice', 'bank', 'practice');
+  const bob = sessionKey('bob', 'bank', 'exam');
+  assert.notEqual(alice, sessionKey('bob', 'bank', 'practice'));
+  store.setItem(alice, '{}');
+  store.setItem(bob, '{}');
+  store.setItem('quiz-app-language', 'vi');
+  clearStudySessions(store, 'alice');
+  assert.equal(store.getItem(alice), null);
+  assert.equal(store.getItem(bob), '{}');
+  assert.equal(store.getItem('quiz-app-language'), 'vi');
+});
