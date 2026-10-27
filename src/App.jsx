@@ -93,6 +93,7 @@ function App() {
     { id: 'aws-saa', name: 'Solutions Architect Associate (SAA)', file: 'quiz/AWS/AWS_SAA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 529 },
     { id: 'aws-dva', name: 'Developer Associate (DVA)', file: 'quiz/AWS/AWS_DVA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 557 },
     { id: 'aws-dea', name: 'Data Engineer Associate (DEA)', file: 'quiz/AWS/AWS_DEA.json', category: 'AWS', difficulty: 'Associate', totalQuestions: 227 },
+    { id: 'aws-aip-c01', name: 'Generative AI Developer Professional (AIP-C01)', file: 'quiz/AWS/AIP_C01.json', category: 'AWS', difficulty: 'Professional', totalQuestions: 136 },
     // ISTQB
     { id: 'istqb-ctfl-v4-0', name: 'ISTQB Certified Tester Foundation Level v4.0 (CTFL v4.0)', file: 'quiz/ISTQB/CTFL_V4_0.json', category: 'ISTQB', difficulty: 'Foundation', totalQuestions: 240 },
     { id: 'istqb-ct-ai', name: 'ISTQB Certified Tester AI Testing (CT-AI)', file: 'quiz/ISTQB/CT_AI.json', category: 'ISTQB', difficulty: 'Advanced', totalQuestions: 118 },

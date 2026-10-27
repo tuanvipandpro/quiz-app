@@ -30,12 +30,12 @@ CI installs with `yarn install --frozen-lockfile`. A production build writes to 
 
 ## Quiz library
 
-The app includes **20 quiz sets**, grouped by category and searchable by name. Counts below describe the files in this repository.
+The app includes **21 quiz sets**, grouped by category and searchable by name. Counts below describe the files in this repository.
 
 | Category | Quiz sets and question counts |
 | --- | --- |
 | Anthropic | Architect Foundations (CCA-F, 175), Architect Professional (CCAR-P, 126), Associate Foundations (CCAO-F, 119), Developer Foundations (CCDV-F, 53) |
-| AWS | Cloud Practitioner (302), Solutions Architect Associate (529), Developer Associate (557), Data Engineer Associate (227) |
+| AWS | Cloud Practitioner (302), Solutions Architect Associate (529), Developer Associate (557), Data Engineer Associate (227), Generative AI Developer Professional (AIP-C01, 136) |
 | Microsoft | Azure Fundamentals (AZ-900, 472), GitHub Copilot (GH-300, 115), Agentic AI Business Solutions Architect Expert (AB-100, 111), Azure AI Apps and Agents Developer Associate (AI-103, 117) |
 | Google Cloud | Associate Cloud Engineer (302), Professional Cloud Architect (279), Professional Cloud Developer (359), Professional Data Engineer (139), Generative AI Leader (56) |
 | ISTQB | Foundation Level v4.0 (240), AI Testing (118), Advanced Test Analyst v4.0 (42) |
