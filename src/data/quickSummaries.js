@@ -15,6 +15,10 @@ const quickSummaries = {
     status: 'published',
     metadataPath: 'summaries/anthropic-ccdv-f/meta.json',
   },
+  'aws-aip-c01': {
+    status: 'published',
+    metadataPath: 'summaries/aws-aip-c01/meta.json',
+  },
 };
 
 export function getQuickSummary(quizId) {

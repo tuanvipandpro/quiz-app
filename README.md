@@ -66,7 +66,7 @@ A checkpoint saves the current position, not selected answers. Saving is manual,
 
 ## Quick Summary
 
-Four Anthropic quizzes have prepared Vietnamese guides, each with **eight topics** and an estimated **eight-minute** reading time. Topics contain core knowledge, scenario cues, wrong-answer traps, memory aids, primary references and links into Practice.
+Four Anthropic quizzes and the AWS AIP-C01 quiz have prepared Vietnamese guides, each with **eight topics** and an estimated **eight-minute** reading time. Topics contain core knowledge, scenario cues, wrong-answer traps, memory aids, primary references and links into Practice.
 
 | Guide | Reviewed source |
 | --- | --- |
@@ -74,6 +74,7 @@ Four Anthropic quizzes have prepared Vietnamese guides, each with **eight topics
 | [CCAR-P](public/summaries/anthropic-ccar-p/vi.md) | Original 63-question revision; the current bank has 126 questions and displays a review warning |
 | [CCAO-F](public/summaries/anthropic-ccao-f/vi.md) | 119 questions |
 | [CCDV-F](public/summaries/anthropic-ccdv-f/vi.md) | 53 questions |
+| [AIP-C01](public/summaries/aws-aip-c01/vi.md) | 136 questions |
 
 Desktop has a contents sidebar; phones/tablets use a collapsible contents menu. Related-question buttons resolve stable question IDs to their current Practice positions without changing saved checkpoints. Loading failures offer Retry and Back.
 

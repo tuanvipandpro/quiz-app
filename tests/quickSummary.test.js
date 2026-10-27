@@ -5,13 +5,14 @@ import { getQuickSummary } from '../src/data/quickSummaries.js';
 import { fingerprintQuestions, validateSummaryMetadata, parseSummaryMarkdown, loadQuickSummary } from '../src/services/quickSummary.js';
 
 const assets = [
-  { quizId: 'anthropic-ccar-p', bank: 'CCAR_P.json', label: 'CCAR-P' },
-  { quizId: 'anthropic-cca-f', bank: 'CCA_F.json', label: 'CCA-F' },
-  { quizId: 'anthropic-ccao-f', bank: 'CCAO_F.json', label: 'CCAO-F' },
-  { quizId: 'anthropic-ccdv-f', bank: 'CCDV_F.json', label: 'CCDV-F' },
+  { quizId: 'anthropic-ccar-p', bank: 'Anthropic/CCAR_P.json', label: 'CCAR-P' },
+  { quizId: 'anthropic-cca-f', bank: 'Anthropic/CCA_F.json', label: 'CCA-F' },
+  { quizId: 'anthropic-ccao-f', bank: 'Anthropic/CCAO_F.json', label: 'CCAO-F' },
+  { quizId: 'anthropic-ccdv-f', bank: 'Anthropic/CCDV_F.json', label: 'CCDV-F' },
+  { quizId: 'aws-aip-c01', bank: 'AWS/AIP_C01.json', label: 'AIP-C01' },
 ].map(asset => ({
   ...asset,
-  questions: JSON.parse(fs.readFileSync(new URL('../public/quiz/Anthropic/' + asset.bank, import.meta.url), 'utf8')),
+  questions: JSON.parse(fs.readFileSync(new URL('../public/quiz/' + asset.bank, import.meta.url), 'utf8')),
   meta: JSON.parse(fs.readFileSync(new URL('../public/summaries/' + asset.quizId + '/meta.json', import.meta.url), 'utf8')),
   markdown: fs.readFileSync(new URL('../public/summaries/' + asset.quizId + '/vi.md', import.meta.url), 'utf8'),
 }));
