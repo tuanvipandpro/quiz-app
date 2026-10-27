@@ -1,4 +1,5 @@
 export const questionType = question => question.type || 'multiple_choice';
+export const questionExplanation = question => typeof question?.explanation === 'string' ? question.explanation.trim() : '';
 export const isStructuredQuestion = question => ['dropdown', 'yes_no'].includes(questionType(question));
 export const questionParts = question => questionType(question) === 'yes_no' ? question.statements : question.slots;
 export const partOptions = (question, id) => questionType(question) === 'yes_no' ? question.options : question.options[id];

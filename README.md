@@ -84,9 +84,9 @@ The guides follow the app's question banks and include source references; they d
 
 ## AI explanations
 
-Google Gemini and Groq are supported. Sign in with Google, open **AI Settings** from the profile menu, add either provider's key and choose **Save**. **Test connection** sends a small generation request and consumes provider quota; it does not save the entered key.
+Google Gemini and Groq are supported. Sign in with Google, open **AI Settings** from the profile menu, add either provider's key and choose **Save**. Keys stay masked while entering or editing them, with no visibility toggle. Each provider includes a step-by-step key setup guide and links to its key console and official documentation. **Test connection** sends a small generation request and consumes provider quota; it does not save the entered key.
 
-Practice's Explain action requires sign-in. Exam review can also open AI Settings for a guest session, whose keys are stored in that browser. Explanations use concise Vietnamese Markdown, identify the provider/model and ask the model to flag questionable marked answers or missing context.
+Practice's Explain action requires sign-in. Exam review can also open AI Settings for a guest session, whose keys are stored in that browser. Explanations use concise Vietnamese Markdown, identify the provider/model and ask the model to flag questionable marked answers or missing context. When a question has an included `explanation`, GenAI compares it with the question and choices to produce a combined explanation, identifying disagreements rather than assuming it is correct. The original text is also available in the **Included explanation** panel, even while GenAI is loading or reports an error.
 
 ### Configured routing
 
@@ -101,7 +101,7 @@ The configured fallback order is defined in [modelRegistry.js](src/services/llm/
 
 These are application settings; access, availability and rate limits depend on the provider account. The router uses up to 20 seconds per attempt within a 60-second generation budget. Rate limits put a model on cooldown using the provider's retry guidance, with a 60-second default. Transient failures use a short cooldown; authentication failures skip the provider until its key/session is refreshed or a connection test succeeds. Invalid requests and content blocks stop fallback.
 
-Closing an explanation, changing the question/account or leaving the mode cancels pending work. Successful explanations stay in a per-tab memory cache for 30 minutes, up to 100 entries, keyed by account and full question/choice/marked-answer content. Concurrent identical requests share one call; errors are not cached. Key/account changes invalidate the relevant cache, and reloading clears it. **Regenerate** requests a fresh explanation and consumes provider quota.
+Closing an explanation, changing the question/account or leaving the mode cancels pending work. Successful explanations stay in a per-tab memory cache for 30 minutes, up to 100 entries, keyed by account and full question/choice/marked-answer/included-explanation content. Concurrent identical requests share one call; errors are not cached. Key/account changes invalidate the relevant cache, and reloading clears it. **Regenerate** requests a fresh explanation and consumes provider quota.
 
 ### Data and credentials
 
@@ -183,7 +183,7 @@ Example single-choice question:
 
 For multi-select, use an array such as `"answer": ["A", "C"]`. Dropdowns define `slots` and per-slot options; yes/no defines `statements` and shared Yes/No options. An inline dropdown template includes each `{{slotId}}` exactly once. See [question-formats.md](docs/question-formats.md) for complete examples and behavior.
 
-The optional `explanation` field is retained as source content. AI explanations are generated separately, and Exam review shows marked choices. New imports/uploads validate strictly; historical incomplete/image demo questions retain their basic compatibility.
+The optional `explanation` field supplies reference material for AI explanations and can be read separately in the explanation dialog. It does not change marked answers or scoring. New imports/uploads validate strictly; historical incomplete/image demo questions retain their basic compatibility.
 
 ### Reviewed Anthropic import
 

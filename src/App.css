@@ -292,6 +292,10 @@ html[data-theme='dark'] .app-footer a {
   color: var(--app-text);
 }
 
+.ai-provider-card input[type="password"]::-ms-reveal {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .app-header {
     padding: 0 16px;
