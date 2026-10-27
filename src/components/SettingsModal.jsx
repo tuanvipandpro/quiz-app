@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, Card, Space, Input, Typography, Alert, Spin } from 'antd';
+import { Modal, Card, Collapse, Space, Input, Typography, Alert, Spin } from 'antd';
 import { CheckOutlined, SaveOutlined, ApiOutlined, DeleteOutlined } from '@ant-design/icons';
 import QuizActionButton from './QuizActionButton';
 import { useAuth } from '../hooks/useAuth';
@@ -77,7 +77,8 @@ function SettingsModal({ visible, onClose }) {
               extra={<a href={provider.keyUrl} target="_blank" rel="noopener noreferrer">Get API key</a>}>
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Input.Password aria-label={`${provider.name} API key`} placeholder={`Enter your ${provider.name} API key`}
-                  value={keys[provider.id]} disabled={loading || !!busy} autoComplete="off"
+                  value={keys[provider.id]} disabled={loading || !!busy} visibilityToggle={false}
+                  autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                   onChange={event => { setKeys(value => ({ ...value, [provider.id]: event.target.value })); setStatuses(value => ({ ...value, [provider.id]: null })); }} />
                 <Space wrap>
                   <QuizActionButton label={`Save ${provider.name} key`} icon={<SaveOutlined />} type="primary" disabled={loading || !!busy || !keys[provider.id].trim()} loading={busy === `${provider.id}:save`} onClick={() => run(provider.id, 'save')}>Save</QuizActionButton>
@@ -85,6 +86,15 @@ function SettingsModal({ visible, onClose }) {
                   <QuizActionButton label={`Clear ${provider.name} key`} icon={<DeleteOutlined />} danger disabled={loading || !!busy} loading={busy === `${provider.id}:clear`} onClick={() => run(provider.id, 'clear')}>Clear key</QuizActionButton>
                 </Space>
                 <Text type="secondary">Test connection sends a small request using this key and uses your provider quota. Save to use it for explanations.</Text>
+                <Collapse size="small" items={[{
+                  key: 'key-help', label: `How to get a ${provider.name} API key`,
+                  children: <>
+                    <ol style={{ margin: '0 0 8px', paddingInlineStart: 20 }}>
+                      {provider.keySteps.map(step => <li key={step}>{step}</li>)}
+                    </ol>
+                    <a href={provider.keyHelpUrl} target="_blank" rel="noopener noreferrer">Official setup guide</a>
+                  </>,
+                }]} />
                 {statuses[provider.id] && <Alert type={statuses[provider.id].type} message={statuses[provider.id].text} showIcon />}
               </Space>
             </Card>
