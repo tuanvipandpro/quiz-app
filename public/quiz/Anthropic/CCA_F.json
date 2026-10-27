@@ -2523,5 +2523,420 @@
     "answer": [
       "C"
     ]
+  },
+  {
+    "id": "176",
+    "question": "Your team is designing a research assistant and debating between a single agent with many tools versus a multi-agent architecture with a coordinator and specialized subagents. Which characteristic of the workload most strongly justifies choosing the multi-agent approach?",
+    "options": {
+      "A": "The research tasks decompose into independent subtasks that can run in parallel and would collectively accumulate more context than a single window can hold",
+      "B": "The team wants to reduce total token consumption, since multiple smaller agents always cost less than one large agent",
+      "C": "The tasks require strictly sequential steps where each step depends entirely on the previous step's output",
+      "D": "The system needs faster responses, and adding more agents reliably reduces end-to-end latency"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Multi-agent hợp lý khi: (1) subtasks độc lập, chạy song song được, và (2) tổng context cần thiết vượt quá khả năng một context window — cho phép context isolation giữa các subagent.\n\n**The research tasks decompose into independent subtasks that can run in parallel and would collectively accumulate more context than a single window can hold:** Đúng. Đây là hai lý do chính đáng nhất cho multi-agent: (1) tasks độc lập có thể chạy song song → giảm latency thực sự, và (2) context isolation cho phép tổng lượng thông tin xử lý vượt quá một context window đơn lẻ — mỗi subagent chỉ giữ phần context liên quan đến việc của nó.\n\n**The team wants to reduce total token consumption, since multiple smaller agents always cost less than one large agent:** Sai. Nhiều agent nhỏ KHÔNG tự động rẻ hơn — mỗi subagent vẫn cần system prompt, tool definitions, và context riêng, có thể dẫn đến tổng token tiêu thụ NHIỀU hơn do trùng lặp overhead.\n\n**The tasks require strictly sequential steps where each step depends entirely on the previous step's output:** Sai. Đây thực ra là lý do ủng hộ SEQUENTIAL execution (có thể vẫn multi-agent nhưng không chạy song song được) — không phải lý do đặc trưng để chọn multi-agent over single-agent. Nếu mọi bước phụ thuộc chặt vào nhau, một agent tuần tự đơn giản có thể xử lý tốt.\n\n**The system needs faster responses, and adding more agents reliably reduces end-to-end latency:** Sai. 'Adding more agents reliably reduces latency' là khẳng định sai — chỉ đúng khi các tác vụ ĐỘC LẬP và chạy song song. Nếu tasks phụ thuộc tuần tự, thêm agent không giảm latency mà còn tăng overhead giao tiếp.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "177",
+    "question": "Production logs show that when the agent handles complex billing disputes requiring 6+ tool calls, it sometimes exhausts its max_turns limit after gathering data but before completing resolution or escalating. The team's goal is to guarantee that every customer interaction ends with resolution or a human handoff, regardless of how the agent loop terminates. Which approach achieves this guarantee?",
+    "options": {
+      "A": "Add system prompt instructions telling the agent to call escalate_to_human with a summary of its findings within its remaining actions",
+      "B": "Split the workflow into two sequential agent invocations — a first agent gathers information, a second handles process_refund or escalate_to_human, each with separate turn budgets",
+      "C": "Add orchestration-layer code that checks the agent's outcome after each loop termination — if the loop ends without resolution or escalation, programmatically call escalate_to_human with the accumulated conversation context",
+      "D": "Implement a pre-tool-use hook that counts tool invocations and terminates the loop with an automatic escalation when approaching the limit"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Khi cần 'guarantee' (đảm bảo tuyệt đối), phải dùng deterministic/programmatic enforcement ở tầng orchestration — không thể chỉ dựa vào prompt instructions vì luôn có tỷ lệ lỗi khác 0.\n\n**Add system prompt instructions telling the agent to call escalate_to_human with a summary of its findings within its remaining actions:** Sai. Đây là prompt-based guidance (hướng dẫn qua system prompt) — không đảm bảo (guarantee) 100%, vì model vẫn có thể không tuân theo trong một số trường hợp (non-zero failure rate). Yêu cầu đề bài là 'guarantee', đòi hỏi deterministic enforcement.\n\n**Split the workflow into two sequential agent invocations — a first agent gathers information, a second handles process_refund or escalate_to_human, each with separate turn budgets:** Sai. Tách thành 2 lần gọi tuần tự với turn budget riêng vẫn không đảm bảo: agent thứ hai vẫn có thể exhaust turn limit của chính nó trước khi resolve/escalate — vấn đề gốc (không có safety net cuối cùng) chưa được giải quyết.\n\n**Add orchestration-layer code that checks the agent's outcome after each loop termination — if the loop ends without resolution or escalation, programmatically call escalate_to_human with the accumulated conversation context:** Đúng. Đây là deterministic enforcement ở tầng orchestration (không phải model): code kiểm tra kết quả SAU MỖI lần loop kết thúc — nếu không có resolution/escalation, code TỰ ĐỘNG (programmatic) gọi escalate_to_human. Đây chính xác là 'programmatic enforcement' đối lập với 'prompt-based guidance' — đảm bảo guarantee tuyệt đối vì không phụ thuộc vào quyết định của model.\n\n**Implement a pre-tool-use hook that counts tool invocations and terminates the loop with an automatic escalation when approaching the limit:** Sai. Pre-tool-use hook chỉ chặn TRƯỚC khi gọi tool, không phải cơ chế đảm bảo escalation SAU KHI loop đã kết thúc mà chưa resolve — không đúng thời điểm can thiệp cần thiết.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "178",
+    "question": "You're designing the get_customer tool for your support agent. The backend customer record contains 200+ fields including internal billing codes, marketing segments, and audit metadata. The agent typically needs the customer's name, account status, active subscriptions, and recent orders. How should the tool's response be designed?",
+    "options": {
+      "A": "Return the complete customer record so the agent never lacks information it might need",
+      "B": "Return only a customer ID and require a separate follow-up tool call for each individual field",
+      "C": "Return the fields the agent commonly needs in a concise structure, with an optional parameter or follow-up tool to retrieve additional detail when required",
+      "D": "Return the full record but instruct the agent in the system prompt to ignore irrelevant fields"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Tool result nên súc tích (concise), chỉ trả về các trường phổ biến cần thiết, với cơ chế follow-up để lấy thêm chi tiết khi thực sự cần — tránh vừa lãng phí context vừa thiếu tính linh hoạt.\n\n**Return the complete customer record so the agent never lacks information it might need:** Sai. Trả về toàn bộ 200+ trường sẽ nhanh chóng làm đầy context window, đặc biệt sau nhiều lần gọi liên tiếp — đa số các trường (internal billing codes, audit metadata) không cần thiết cho agent, gây lãng phí context và tăng nguy cơ context rot.\n\n**Return only a customer ID and require a separate follow-up tool call for each individual field:** Sai. Yêu cầu gọi tool riêng cho từng trường đơn lẻ tạo ra quá nhiều round-trip không cần thiết cho các trường mà agent hầu như luôn cần (tên, trạng thái tài khoản...) — quá cực đoan theo hướng ngược lại.\n\n**Return the fields the agent commonly needs in a concise structure, with an optional parameter or follow-up tool to retrieve additional detail when required:** Đúng. Đây là nguyên tắc 'concise tool results' được nhấn mạnh: trả về các trường phổ biến agent cần trong một cấu trúc súc tích, kèm theo cơ chế (optional parameter hoặc follow-up tool) để lấy thêm chi tiết KHI CẦN. Điều này cân bằng giữa đủ thông tin cho tác vụ hiện tại và tiết kiệm context.\n\n**Return the full record but instruct the agent in the system prompt to ignore irrelevant fields:** Sai. Dựa vào system prompt để 'bỏ qua' các trường không liên quan không giải quyết được vấn đề gốc: dữ liệu dư thừa vẫn chiếm context window dù model có được hướng dẫn bỏ qua hay không — lãng phí context là vấn đề vật lý, không phải vấn đề hướng dẫn.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "179",
+    "question": "Your support agent can issue refunds through a process_refund tool. Company policy limits agent-issued refunds to $200; larger amounts require manager approval. During red-team testing, a tester convinced the agent to call process_refund for $1,500 by claiming a manager had already approved it in a previous conversation. What is the most reliable way to prevent this failure?",
+    "options": {
+      "A": "Add a system prompt rule stating the agent must never process refunds above $200 regardless of claimed approvals",
+      "B": "Enforce the $200 limit server-side in the process_refund tool implementation, returning an error that directs the agent to escalate amounts above the limit",
+      "C": "Fine-tune the model on examples of correctly refusing unauthorized refund requests",
+      "D": "Require the agent to ask the customer to confirm twice before processing any refund"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Business rule cứng (hard limits) như hạn mức refund phải được thực thi server-side/deterministic — không dựa vào system prompt hay model behavior, vì social engineering luôn có thể tìm cách bypass advisory instructions.\n\n**Add a system prompt rule stating the agent must never process refunds above $200 regardless of claimed approvals:** Sai. System prompt rule chỉ là advisory/prompt-based enforcement — có tỷ lệ lỗi khác 0 (non-zero failure rate), như đã thấy trong red-team test, kẻ tấn công có thể social-engineer model bỏ qua rule này bằng claim giả mạo.\n\n**Enforce the $200 limit server-side in the process_refund tool implementation, returning an error that directs the agent to escalate amounts above the limit:** Đúng. Đây là deterministic/programmatic enforcement ở tầng server-side (tool implementation) — không phụ thuộc vào việc model có tuân theo hướng dẫn hay không. Server tự kiểm tra amount, nếu vượt $200 thì TỪ CHỐI xử lý (return error) bất kể model 'tin' điều gì. Đây chính là nguyên tắc: khi cần compliance đảm bảo tuyệt đối, dùng enforcement ở tool/hook layer, không phải prompt.\n\n**Fine-tune the model on examples of correctly refusing unauthorized refund requests:** Sai. Fine-tuning không đảm bảo tuyệt đối (vẫn có thể bị bypass bằng social engineering tinh vi hơn), tốn kém, và không phải giải pháp kiến trúc đúng cho việc thực thi chính sách cứng (business rule enforcement) — đây là vấn đề kiến trúc, không phải vấn đề huấn luyện model.\n\n**Require the agent to ask the customer to confirm twice before processing any refund:** Sai. Xác nhận 2 lần với khách hàng không giải quyết được vấn đề gốc — kẻ tấn công vẫn có thể 'xác nhận' theo kịch bản giả mạo tương tự, không có gì ngăn cản việc vượt hạn mức $200 về mặt kỹ thuật.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "180",
+    "question": "You're tasked with adding real-time updates to the application. This could be implemented using WebSockets, Server-Sent Events, or polling, each with different complexity, browser support, and infrastructure requirements. What's the most effective way to begin this task?",
+    "options": {
+      "A": "Enter plan mode to explore the architecture, evaluate trade-offs, and present options for team approval before implementing",
+      "B": "Use direct execution to implement polling first, then evaluate whether to upgrade to WebSockets later",
+      "C": "Start direct execution with WebSockets, then refactor if infrastructure issues arise",
+      "D": "Use direct execution with a prompt asking Claude to analyze all approaches and implement the one it determines is best"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Khi có nhiều cách tiếp cận hợp lệ với trade-off khác nhau (complexity, infrastructure, compatibility), Plan Mode cho phép khám phá và đánh giá TRƯỚC KHI cam kết implementation — tránh costly rework và đảm bảo team có thể tham gia quyết định kiến trúc.\n\n**Enter plan mode to explore the architecture, evaluate trade-offs, and present options for team approval before implementing:** Đúng. Đây chính xác là trường hợp Plan Mode được thiết kế cho: nhiều lựa chọn hợp lệ (WebSockets, SSE, polling) với TRADE-OFF khác nhau (complexity, browser support, infrastructure) cần đánh giá TRƯỚC KHI cam kết vào một hướng — Plan Mode cho phép khám phá và trình bày các lựa chọn để team phê duyệt trước khi implement, tránh phải làm lại tốn kém.\n\n**Use direct execution to implement polling first, then evaluate whether to upgrade to WebSockets later:** Sai. Bắt đầu trực tiếp với polling mà không đánh giá trade-off có thể dẫn đến việc chọn giải pháp không phù hợp nhất với yêu cầu thực tế (ví dụ nếu cần real-time thực sự, polling có thể không đủ) — thiếu bước phân tích trước khi cam kết.\n\n**Start direct execution with WebSockets, then refactor if infrastructure issues arise:** Sai. Tương tự B, bắt đầu với một lựa chọn cụ thể (WebSockets) mà không đánh giá trade-off trước có thể dẫn đến 'costly rework' nếu phát hiện vấn đề hạ tầng SAU KHI đã implement — đây chính xác là điều Plan Mode được thiết kế để tránh.\n\n**Use direct execution with a prompt asking Claude to analyze all approaches and implement the one it determines is best:** Sai. Để Claude tự quyết định 'approach nào tốt nhất' mà không có sự tham gia đánh giá của team/developer bỏ qua vai trò quan trọng của việc CON NGƯỜI xem xét trade-off và đưa ra quyết định kiến trúc — đặc biệt quan trọng khi có multiple valid approaches cần business/team input.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "181",
+    "question": "You need to extract structured data from technical manuals that are 300+ pages long — far exceeding the model's context window. Each manual contains product specifications scattered across multiple sections, and some specifications reference values defined in earlier chapters. What is the most effective processing strategy?",
+    "options": {
+      "A": "Truncate each manual to the first pages that fit in the context window, since key specifications usually appear early in the document",
+      "B": "Split each manual into overlapping chunks, extract from each chunk independently, then merge results with a reconciliation step that resolves cross-references and conflicts",
+      "C": "Increase the max_tokens parameter so the model can process the entire manual in a single request",
+      "D": "Ask the model to summarize the manual first, then extract the specifications from the summary"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi tài liệu vượt quá context window, chia thành overlapping chunks + extract độc lập + reconciliation step để merge/giải quyết cross-reference và conflict là chiến lược toàn diện nhất, tránh mất thông tin ở ranh giới chunk.\n\n**Truncate each manual to the first pages that fit in the context window, since key specifications usually appear early in the document:** Sai. Cắt bỏ phần sau sẽ MẤT HOÀN TOÀN các specification nằm ở phần cuối tài liệu — giả định 'key specs thường ở đầu' không đáng tin cậy và có thể bỏ sót dữ liệu quan trọng.\n\n**Split each manual into overlapping chunks, extract from each chunk independently, then merge results with a reconciliation step that resolves cross-references and conflicts:** Đúng. Đây là chiến lược đúng cho tài liệu vượt quá context window: chia thành các chunk CÓ CHỒNG LẤN (overlapping) để không bỏ sót nội dung ở ranh giới, extract độc lập từng chunk, sau đó có một bước RECONCILIATION riêng để giải quyết cross-reference (tham chiếu giữa các chương) và xung đột dữ liệu. Đây là cách xử lý toàn diện và không mất thông tin.\n\n**Increase the max_tokens parameter so the model can process the entire manual in a single request:** Sai. `max_tokens` là tham số giới hạn ĐỘ DÀI OUTPUT được sinh ra, không phải kích thước INPUT/context window — tăng max_tokens không giúp xử lý tài liệu 300+ trang vượt quá context window đầu vào.\n\n**Ask the model to summarize the manual first, then extract the specifications from the summary:** Sai. Tóm tắt trước khi extract có nguy cơ MẤT chi tiết cụ thể (con số, thông số kỹ thuật chính xác) trong quá trình tóm tắt — đặc biệt nguy hiểm cho technical specifications cần độ chính xác cao, và không giải quyết được vấn đề cross-reference giữa các chương.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "182",
+    "question": "Your pipeline must extract data from supplier invoices that arrive as scanned images of varying quality. Your current flow runs third-party OCR and passes the raw text to Claude, but extraction accuracy suffers because OCR mangles table layouts and misreads low-quality scans. What is the most effective improvement?",
+    "options": {
+      "A": "Pass the invoice images directly to Claude as vision input so the model reads values in their original layout, routing illegible documents to human review",
+      "B": "Run three different OCR engines and have Claude reconcile the three text outputs",
+      "C": "Add few-shot examples of correctly extracted invoices to compensate for OCR noise",
+      "D": "Preprocess images with sharpening filters before OCR to improve character recognition"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Khi OCR làm hỏng layout và độ chính xác, giải pháp hiệu quả nhất là bỏ qua OCR trung gian, cho Claude đọc TRỰC TIẾP hình ảnh qua vision input — giữ nguyên layout gốc, tránh lỗi truyền qua qua bước trung gian.\n\n**Pass the invoice images directly to Claude as vision input so the model reads values in their original layout, routing illegible documents to human review:** Đúng. Đây là cách giải quyết TRỰC TIẾP vấn đề gốc: OCR bên thứ ba làm HỎNG layout bảng và đọc sai ảnh chất lượng thấp — bỏ qua bước OCR trung gian bằng cách cho Claude ĐỌC TRỰC TIẾP hình ảnh (vision input) giữ nguyên layout GỐC, tránh lỗi truyền qua OCR. Kèm theo route ảnh không đọc được sang human review là cách xử lý toàn diện.\n\n**Run three different OCR engines and have Claude reconcile the three text outputs:** Sai. Chạy 3 OCR engine khác nhau và để Claude 'hòa giải' vẫn giữ nguyên vấn đề GỐC (OCR làm hỏng layout bảng) — chỉ tăng số lượng nguồn lỗi tiềm ẩn để reconcile, phức tạp hơn mà không giải quyết triệt để.\n\n**Add few-shot examples of correctly extracted invoices to compensate for OCR noise:** Sai. Few-shot examples không thể BÙ ĐẮP cho dữ liệu ĐÃ BỊ HỎNG do OCR sai layout — vấn đề nằm ở chất lượng INPUT (text đã mangled), không phải ở việc model chưa biết cách xử lý.\n\n**Preprocess images with sharpening filters before OCR to improve character recognition:** Sai. Preprocessing bằng sharpening filter có thể cải thiện PHẦN NÀO character recognition, nhưng không giải quyết được vấn đề LAYOUT BẢNG bị OCR làm hỏng (mangled table layouts) — vẫn phụ thuộc vào OCR như một bước trung gian có thể gây lỗi.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "183",
+    "question": "Your extraction pipeline processes 50,000 documents per night with no real-time requirement. Every request uses the same 4,000-token system prompt containing the schema and extraction instructions, followed by a unique document. Costs are becoming significant. Which approach most effectively reduces cost without hurting extraction quality?",
+    "options": {
+      "A": "Shorten the system prompt by removing the schema details and few-shot examples",
+      "B": "Switch every request to the smallest available model to minimize the per-token price",
+      "C": "Submit the workload through the Batch API for discounted asynchronous processing, and use prompt caching so the shared system prompt isn't reprocessed at full cost on every request",
+      "D": "Concatenate 20 documents into each request so the system prompt is amortized across more documents"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Khi workload có latency tolerance cao (overnight, không real-time) và có shared system prompt lặp lại, kết hợp Batch API (giảm 50% chi phí) + Prompt Caching (giảm chi phí system prompt lặp lại) là chiến lược tối ưu chi phí mà không ảnh hưởng chất lượng.\n\n**Shorten the system prompt by removing the schema details and few-shot examples:** Sai. Loại bỏ schema details và few-shot examples sẽ LÀM GIẢM CHẤT LƯỢNG trích xuất (vi phạm yêu cầu 'without hurting extraction quality') — đây là đánh đổi sai, hy sinh chất lượng để tiết kiệm chi phí.\n\n**Switch every request to the smallest available model to minimize the per-token price:** Sai. Chuyển sang model nhỏ nhất có thể làm giảm CHẤT LƯỢNG trích xuất đáng kể (đặc biệt với schema phức tạp) — vi phạm yêu cầu giữ nguyên chất lượng.\n\n**Submit the workload through the Batch API for discounted asynchronous processing, and use prompt caching so the shared system prompt isn't reprocessed at full cost on every request:** Đúng. Đây là combo tối ưu nhất: (1) Batch API giảm 50% chi phí cho khối lượng công việc KHÔNG có yêu cầu real-time ('50,000 documents per night', 'no real-time requirement' — khớp hoàn hảo với use case của Batch API), và (2) prompt caching giúp KHÔNG phải xử lý lại system prompt 4000-token ĐẦY ĐỦ giá cho mỗi request — giảm chi phí đáng kể MÀ KHÔNG ảnh hưởng đến chất lượng (schema và instructions vẫn giữ nguyên).\n\n**Concatenate 20 documents into each request so the system prompt is amortized across more documents:** Sai. Gộp 20 tài liệu vào một request làm tăng độ phức tạp xử lý cho model (nhiều tài liệu cùng lúc dễ gây nhầm lẫn/lỗi gán sai giá trị giữa các tài liệu), và không phải cách tối ưu chi phí chính thống được khuyến nghị — rủi ro làm giảm chất lượng.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "184",
+    "question": "You're preparing to improve your extraction prompts, but the team currently judges quality by eyeballing a handful of outputs after each change. Improvements for one document type sometimes silently degrade another. What should you establish before iterating further on the prompts?",
+    "options": {
+      "A": "A golden evaluation set of representative documents with verified expected outputs, scored automatically field-by-field after every prompt change",
+      "B": "A/B testing in production, routing half the documents to each prompt variant and comparing downstream error reports",
+      "C": "A rule that every prompt change must be reviewed by two senior engineers before deployment",
+      "D": "Longer manual review sessions covering a larger sample of outputs after each change"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Trước khi lặp lại cải thiện prompt một cách có hệ thống, cần một golden evaluation set với expected output đã xác minh, được chấm điểm TỰ ĐỘNG field-by-field — để phát hiện suy giảm ẩn (silent regression) giữa các loại tài liệu.\n\n**A golden evaluation set of representative documents with verified expected outputs, scored automatically field-by-field after every prompt change:** Đúng. Đây là giải pháp đúng nguyên tắc: một golden evaluation set (bộ tài liệu ĐẠI DIỆN với expected output ĐÃ ĐƯỢC XÁC MINH) cho phép đo lường CHÍNH XÁC, TỰ ĐỘNG, và NHẤT QUÁN mỗi khi có thay đổi prompt — phát hiện ngay lập tức nếu cải thiện cho loại tài liệu này gây suy giảm ('silently degrade') cho loại khác, điều mà việc 'eyeball một vài output' không thể phát hiện được.\n\n**A/B testing in production, routing half the documents to each prompt variant and comparing downstream error reports:** Sai. A/B testing trong PRODUCTION có rủi ro cao — đưa các thay đổi CHƯA ĐƯỢC XÁC THỰC vào môi trường thật, có thể gây ra lỗi cho khách hàng thực; cần có evaluation set OFFLINE trước khi thử nghiệm trên production.\n\n**A rule that every prompt change must be reviewed by two senior engineers before deployment:** Sai. Review bởi kỹ sư cấp cao là quy trình con người, chậm, chủ quan, và không có khả năng phát hiện suy giảm silent (ẩn) một cách hệ thống như automated field-by-field scoring.\n\n**Longer manual review sessions covering a larger sample of outputs after each change:** Sai. Tăng thời gian review thủ công vẫn là 'eyeballing' — chỉ tăng QUY MÔ của cách tiếp cận hiện tại (đã được xác định là không đủ), không giải quyết được vấn đề cốt lõi: thiếu một cơ chế đo lường TỰ ĐỘNG, NHẤT QUÁN, CÓ THỂ SO SÁNH.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "185",
+    "question": "Compliance requires that every value your pipeline extracts from loan agreements be traceable to the exact source text, so auditors can verify extractions without re-reading entire documents. Which extraction design best supports this requirement?",
+    "options": {
+      "A": "Have the model output each extracted value alongside the verbatim source quote and its location, then programmatically verify that the quote actually appears in the document",
+      "B": "Log the full model response for every extraction so auditors can review the model's reasoning afterwards",
+      "C": "Run each extraction twice and flag disagreements between the two runs for audit",
+      "D": "Store a model-reported confidence score per field so auditors can prioritize low-confidence extractions"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Để đáp ứng yêu cầu traceability/audit compliance, thiết kế extraction nên bao gồm verbatim source quote + location cho mỗi giá trị, kèm bước xác minh CHƯƠNG TRÌNH HÓA (không phải suy đoán) rằng quote thực sự tồn tại trong nguồn.\n\n**Have the model output each extracted value alongside the verbatim source quote and its location, then programmatically verify that the quote actually appears in the document:** Đúng. Đây là cách trực tiếp nhất đáp ứng yêu cầu 'traceable to the exact source text': mỗi giá trị trích xuất đi kèm QUOTE NGUYÊN VĂN (verbatim) từ nguồn VÀ vị trí (location), sau đó XÁC MINH BẰNG PROGRAMMATIC (không phải suy đoán) rằng quote đó THỰC SỰ tồn tại trong tài liệu — đảm bảo tính xác thực (auditor có thể verify ngay mà không cần đọc lại toàn bộ tài liệu), và bước verify chương trình hóa ngăn model 'bịa' quote không có thật.\n\n**Log the full model response for every extraction so auditors can review the model's reasoning afterwards:** Sai. Log toàn bộ response của model chỉ cho thấy REASONING của model, không đảm bảo TRUY VẾT trực tiếp đến TEXT NGUỒN CHÍNH XÁC — auditor vẫn phải đọc và tự xác minh, không tiết kiệm được công sức như yêu cầu.\n\n**Run each extraction twice and flag disagreements between the two runs for audit:** Sai. Chạy 2 lần và so sánh sự khác biệt chỉ phát hiện được TÍNH KHÔNG ỔN ĐỊNH (inconsistency) của model, không đảm bảo TRUY VẾT được đến text nguồn chính xác — không đáp ứng yêu cầu traceability trực tiếp.\n\n**Store a model-reported confidence score per field so auditors can prioritize low-confidence extractions:** Sai. Confidence score chỉ cho biết MODEL TỰ TIN đến đâu, không cung cấp bằng chứng TRUY VẾT (traceability) trực tiếp đến text nguồn — một giá trị có thể có confidence cao nhưng vẫn sai, và auditor vẫn không có cách xác minh nhanh.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "186",
+    "question": "Your pipeline extracts the payment_terms field from vendor contracts. Downstream systems expect one of five standardized codes (e.g., NET30, NET60), but contracts express terms in varied language — \"payment due within thirty (30) days\", \"net 30 days from invoice date\", \"1.5% discount if paid within 10 days, net 30\". Extractions currently return inconsistent free-text values. What is the most reliable fix?",
+    "options": {
+      "A": "Add a post-processing lookup table that maps every observed phrasing to a standard code",
+      "B": "Constrain the field in the extraction tool's schema to an enum of the five standard codes, with a description of each code's meaning, plus a separate free-text field for unusual terms",
+      "C": "Instruct the model in the prompt to standardize its answers whenever possible",
+      "D": "Extract the raw contract wording and let each downstream system apply its own normalization"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi cần chuẩn hóa output về một tập giá trị cố định (standardized codes), dùng ENUM constraint ở schema level (với description rõ ràng cho mỗi mã + free-text field cho case đặc biệt) đảm bảo tính nhất quán tốt hơn nhiều so với lookup table, prompt instruction, hay đẩy normalization cho downstream.\n\n**Add a post-processing lookup table that maps every observed phrasing to a standard code:** Sai. Lookup table cần liệt kê MỌI cách diễn đạt có thể có (rất nhiều biến thể ngôn ngữ tự nhiên) — không khả thi để bao phủ hết, dễ bỏ sót cách diễn đạt mới, cần bảo trì liên tục.\n\n**Constrain the field in the extraction tool's schema to an enum of the five standard codes, with a description of each code's meaning, plus a separate free-text field for unusual terms:** Đúng. Đây là giải pháp schema-level đúng chuẩn: dùng ENUM để RÀNG BUỘC field về đúng 5 mã chuẩn (loại bỏ khả năng model tạo ra biến thể tự do), kèm description rõ ràng cho mỗi mã (giúp model map đúng ngôn ngữ tự nhiên phức tạp vào mã tương ứng), và thêm free-text field riêng cho trường hợp bất thường (không rơi vào enum) — đây chính là pattern 'enum + other/detail field' được khuyến nghị, đảm bảo output luôn nhất quán và có khả năng mở rộng cho case đặc biệt.\n\n**Instruct the model in the prompt to standardize its answers whenever possible:** Sai. Hướng dẫn 'standardize whenever possible' trong prompt là advisory/mơ hồ — không đảm bảo NHẤT QUÁN 100% như enum constraint ở tầng schema, vẫn có thể sinh ra biến thể tự do.\n\n**Extract the raw contract wording and let each downstream system apply its own normalization:** Sai. Đẩy trách nhiệm normalization cho TỪNG hệ thống downstream riêng biệt là kém hiệu quả — lặp lại logic chuẩn hóa ở nhiều nơi, không nhất quán giữa các downstream system, và không giải quyết vấn đề tại NGUỒN.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "187",
+    "question": "Your extraction pipeline validates outputs against JSON schemas, but you need to implement human review given limited reviewer capacity (they can handle only a fraction of extraction volume). What is the most effective basis for selecting which extractions to route for human review?",
+    "options": {
+      "A": "Route specific high-priority entity types (e.g., financial figures, dates) for human review, regardless of extraction confidence",
+      "B": "Route when the model indicates low confidence or where source documents contain ambiguous or contradictory information",
+      "C": "Randomly sample extractions for review",
+      "D": "Route only when downstream systems report data quality issues or processing failures"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi reviewer capacity hạn chế, route dựa trên confidence thấp hoặc tài liệu nguồn mơ hồ/mâu thuẫn là cách sử dụng nguồn lực hiệu quả nhất — tập trung vào nơi có khả năng sai cao nhất thay vì random hay theo loại cố định.\n\n**Route specific high-priority entity types (e.g., financial figures, dates) for human review, regardless of extraction confidence:** Sai. Route theo LOẠI entity cố định (bất kể confidence) không hiệu quả — nhiều extraction về 'financial figures' có thể ĐÚNG với confidence cao, lãng phí reviewer time cho trường hợp không cần thiết, trong khi bỏ lỡ các entity type khác có confidence thấp thực sự cần review.\n\n**Route when the model indicates low confidence or where source documents contain ambiguous or contradictory information:** Đúng. Đây là cơ sở HIỆU QUẢ NHẤT khi reviewer capacity hạn chế: route dựa trên CONFIDENCE THẤP (model tự báo hiệu không chắc chắn) hoặc TÀI LIỆU NGUỒN mơ hồ/mâu thuẫn — tập trung reviewer time vào đúng nơi có khả năng SAI CAO NHẤT, tối ưu hóa việc sử dụng nguồn lực hạn chế một cách có mục tiêu (targeted).\n\n**Randomly sample extractions for review:** Sai. Random sampling không tận dụng được TÍN HIỆU sẵn có (confidence, ambiguity) để ưu tiên — lãng phí reviewer time vào các case CHẮC CHẮN đúng trong khi bỏ lỡ case thực sự cần xem xét.\n\n**Route only when downstream systems report data quality issues or processing failures:** Sai. Chỉ route SAU KHI có báo cáo lỗi từ downstream là cách tiếp cận BỊ ĐỘNG (reactive) — lỗi đã xảy ra và có thể đã gây hậu quả trước khi được phát hiện, không phải cách PHÒNG NGỪA chủ động.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "188",
+    "question": "Monitoring reveals that specifications sometimes appear inconsistently within source documents. For example, a summary section might state \"Battery: 4000mAh\" while the detailed specs table shows \"Battery: 4200mAh.\" Your current schema uses a single battery_capacity_mah field. This inconsistency occurs in approximately 15% of documents, and historical analysis confirms the detailed specs table is more accurate 90% of the time. What's the most effective approach?",
+    "options": {
+      "A": "Change to an array field that captures all values found with their source locations, letting downstream systems apply precedence rules",
+      "B": "Include extraction instructions specifying to prefer values from the detailed specs table when multiple values exist, keeping the single-value field",
+      "C": "Implement schema validation that rejects results containing conflicting values, requiring source document correction before processing",
+      "D": "Add a conflict_detected boolean field that flags inconsistencies, triggering manual review for aOected documents"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi có dữ liệu lịch sử RÕ RÀNG về độ tin cậy tương đối giữa các nguồn xung đột (ví dụ: specs table đúng 90% thời gian), nên áp dụng rule ưu tiên trực tiếp trong extraction instructions thay vì route toàn bộ sang manual review hay từ chối xử lý.\n\n**Change to an array field that captures all values found with their source locations, letting downstream systems apply precedence rules:** Sai (dù có ưu điểm bảo toàn thông tin). Chuyển thành array field và để downstream systems TỰ áp dụng precedence rules đẩy trách nhiệm xử lý logic ra khỏi pipeline chính — trong khi ĐÃ CÓ dữ liệu lịch sử rõ ràng (detailed specs table đúng 90% thời gian), nên xử lý ngay tại nguồn hiệu quả hơn.\n\n**Include extraction instructions specifying to prefer values from the detailed specs table when multiple values exist, keeping the single-value field:** Đúng. Vì đã có DỮ LIỆU LỊCH SỬ RÕ RÀNG cho biết specs table đúng 90% thời gian — đây là tín hiệu đủ mạnh để đưa ra RULE ưu tiên rõ ràng trong prompt: 'prefer detailed specs table value'. Giữ nguyên schema đơn giản (single-value field) trong khi thêm hướng dẫn ưu tiên nguồn đáng tin cậy hơn là cách tiếp cận thực dụng và hiệu quả nhất, tận dụng đúng insight đã có.\n\n**Implement schema validation that rejects results containing conflicting values, requiring source document correction before processing:** Sai. Từ chối xử lý và yêu cầu 'sửa tài liệu nguồn' trước là không thực tế — không thể yêu cầu supplier sửa lại 15% tài liệu, và điều này chặn đứng toàn bộ pipeline một cách không cần thiết khi đã có cách xử lý hợp lý hơn (ưu tiên nguồn đáng tin cậy).\n\n**Add a conflict_detected boolean field that flags inconsistencies, triggering manual review for aOected documents:** Sai. Flag boolean + route toàn bộ 15% tài liệu này sang manual review là LÃNG PHÍ nguồn lực con người không cần thiết — khi đã biết RÕ RÀNG specs table đúng 90% thời gian, có thể xử lý TỰ ĐỘNG theo rule ưu tiên, chỉ cần route phần còn lại (10% specs table sai) sang review nếu cần thiết, không phải toàn bộ 15%.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "189",
+    "question": "Your extraction pipeline occasionally receives responses that don't parse as valid JSON, causing downstream processing failures. Currently, you prompt Claude to return JSON in the response text and then parse it. What is the most reliable approach to ensure Claude returns structured data?",
+    "options": {
+      "A": "Implement a retry loop that catches JSON parse errors and re-prompts Claude with the error details, asking it to correct the mistake",
+      "B": "Add explicit formatting instructions with JSON examples, emphasizing that Claude must return only valid JSON",
+      "C": "Use regular expressions to locate and extract JSON from the response text, handling cases where Claude includes explanatory text",
+      "D": "Define a tool with a JSON schema specifying the expected structure, using tool_use to constrain Claude's output to schema-conformant JSON"
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "Khi gặp lỗi parse JSON từ text response, giải pháp gốc rễ là chuyển sang tool_use với JSON schema (thay vì retry loop hay regex vá lỗi ở cách tiếp cận text-based vốn đã không đáng tin cậy).\n\n**Implement a retry loop that catches JSON parse errors and re-prompts Claude with the error details, asking it to correct the mistake:** Sai. Retry loop chỉ xử lý TRIỆU CHỨNG (parse error sau khi đã xảy ra) — vẫn có thể lặp lại lỗi tương tự ở lần retry, không giải quyết gốc rễ là cách tiếp cận text-based vốn không đáng tin cậy.\n\n**Add explicit formatting instructions with JSON examples, emphasizing that Claude must return only valid JSON:** Sai. Instructions + ví dụ vẫn là cách tiếp cận PROBABILISTIC — cải thiện xác suất nhưng không đảm bảo tuyệt đối, vẫn có khả năng xảy ra lỗi parse trong tương lai.\n\n**Use regular expressions to locate and extract JSON from the response text, handling cases where Claude includes explanatory text:** Sai. Regex để trích JSON từ text tự do là giải pháp MONG MANH — dễ thất bại khi Claude thay đổi cách trình bày (thêm markdown, giải thích, format khác) không lường trước được.\n\n**Define a tool with a JSON schema specifying the expected structure, using tool_use to constrain Claude's output to schema-conformant JSON:** Đúng. Đây là giải pháp GỐC RỄ đáng tin cậy nhất: chuyển từ cách tiếp cận 'yêu cầu Claude trả JSON trong text response' (vốn không đáng tin cậy) sang tool_use với JSON schema — Claude API đảm bảo CHẮC CHẮN rằng structure của tool call luôn khớp schema, loại bỏ hoàn toàn class lỗi 'không parse được JSON' vì không còn phải parse text tự do nữa.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "190",
+    "question": "Testing reveals that when source documents are missing certain specifications, the model fabricates plausible values for required fields. For example, a document mentioning only dimensions receives a fabricated \"weight: 2.3 kg\" in the output. What change most effectively addresses this hallucination behavior?",
+    "options": {
+      "A": "Add explicit instructions to the prompt stating \"only extract information explicitly stated in the document\"",
+      "B": "Add a \"confidence\" field alongside each specification where the model self-reports its certainty",
+      "C": "Change fields that may not exist in source documents from required to optional, allowing the model to omit them",
+      "D": "Implement semantic validation that verifies each extracted value appears in or can be inferred from the source"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Khi model fabricate giá trị cho field không có trong nguồn, nguyên nhân gốc thường là schema đánh dấu field đó là REQUIRED sai cách — đổi sang OPTIONAL/NULLABLE cho model một 'đường trung thực' để không trả lời, thay vì ép buộc phải bịa giá trị.\n\n**Add explicit instructions to the prompt stating \"only extract information explicitly stated in the document\":** Sai (dù hữu ích một phần). Instruction 'chỉ extract thông tin có trong tài liệu' là advisory — không giải quyết được vấn đề GỐC RỄ: schema đang đánh dấu field là REQUIRED, buộc model PHẢI trả về giá trị dù nguồn không có, bất kể instruction nói gì. Đây chính là nguyên nhân cốt lõi được nhấn mạnh: 'A required field on something that is sometimes absent forces the model to invent a value'.\n\n**Add a \"confidence\" field alongside each specification where the model self-reports its certainty:** Sai. Confidence field chỉ báo hiệu MỨC ĐỘ TIN CẬY, nhưng KHÔNG NGĂN việc model vẫn phải điền một giá trị nào đó cho field REQUIRED — vấn đề gốc (ép buộc phải có giá trị) vẫn còn nguyên.\n\n**Change fields that may not exist in source documents from required to optional, allowing the model to omit them:** Đúng. Đây là giải pháp GỐC RỄ chính xác nhất: đổi field có thể KHÔNG XUẤT HIỆN trong nguồn từ REQUIRED sang OPTIONAL (hoặc NULLABLE) — cho phép model CÓ ĐƯỜNG TRUNG THỰC để không trả lời khi dữ liệu không tồn tại, thay vì bị BUỘC phải fabricate giá trị để thỏa mãn ràng buộc required. Đây chính xác là nguyên tắc: 'nullable/optional gives the model an honest path'.\n\n**Implement semantic validation that verifies each extracted value appears in or can be inferred from the source:** Sai (dù có ích như một lớp validation bổ sung). Semantic validation SAU KHI đã extract chỉ là biện pháp XỬ LÝ TRIỆU CHỨNG (bắt lỗi sau khi xảy ra) — không giải quyết NGUYÊN NHÂN GỐC là schema constraint sai (required khi lẽ ra nên optional/nullable), khiến model VẪN fabricate trước, rồi mới bị validation bắt lỗi.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "191",
+    "question": "Your customer support agent's system prompt includes ten different behavioral rules covering tone, escalation, refund limits, and formatting. During evaluation, you notice the agent reliably follows the first three rules but frequently ignores rules seven through ten, especially under longer conversations. The rules themselves are clear and unambiguous. What is the most effective change to improve adherence to the later rules?",
+    "options": {
+      "A": "Rewrite the later rules using stronger imperative language (\"MUST\", \"ALWAYS\") to increase their priority",
+      "B": "Restructure the prompt so the most critical rules are placed near the end, immediately before the conversation, since models often weight recent context more heavily",
+      "C": "Split the rules into a shorter, prioritized set placed close to the user turn, and move less critical guidance to a reference section, reducing the number of competing instructions the model must track at once",
+      "D": "Repeat all ten rules twice in the system prompt so each one appears with higher overall frequency"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Khi có quá nhiều rule cạnh tranh khiến model bỏ sót rule sau, giải pháp đúng là giảm số lượng rule cạnh tranh cùng lúc (ưu tiên hóa, đặt gần user turn) và tách guidance ít quan trọng sang reference section riêng — không phải chỉ tăng emphasis hay lặp lại toàn bộ nội dung.\n\n**Rewrite the later rules using stronger imperative language (\"MUST\", \"ALWAYS\") to increase their priority:** Sai. Emphasis mạnh hơn ('MUST', 'ALWAYS') có thể cải thiện PHẦN NÀO nhưng không giải quyết vấn đề GỐC: có QUÁ NHIỀU rule cạnh tranh nhau (10 rules) khiến model khó theo dõi hết — đây không phải vấn đề về mức độ nhấn mạnh mà là vấn đề về SỐ LƯỢNG instruction cạnh tranh.\n\n**Restructure the prompt so the most critical rules are placed near the end, immediately before the conversation, since models often weight recent context more heavily:** Sai một phần. Dù đúng là vị trí gần cuối/gần user turn giúp cải thiện recall (do 'lost in the middle' effect), nhưng giải pháp này KHÔNG giảm được số lượng instruction cạnh tranh — vẫn giữ nguyên 10 rule, chỉ đổi vị trí mà không giải quyết vấn đề tải nhận thức (cognitive load) của việc theo dõi quá nhiều rule cùng lúc.\n\n**Split the rules into a shorter, prioritized set placed close to the user turn, and move less critical guidance to a reference section, reducing the number of competing instructions the model must track at once:** Đúng. Đây là giải pháp toàn diện nhất: giảm SỐ LƯỢNG rule CẠNH TRANH cùng lúc (chỉ giữ tập rule quan trọng nhất, ưu tiên cao, đặt GẦN user turn — nơi model chú ý mạnh nhất), đồng thời chuyển guidance ít quan trọng hơn sang một REFERENCE SECTION riêng (không cạnh tranh trực tiếp). Điều này giải quyết đúng nguyên nhân gốc: quá nhiều instruction phải theo dõi cùng lúc làm giảm khả năng tuân thủ rule sau, đặc biệt trong conversation dài.\n\n**Repeat all ten rules twice in the system prompt so each one appears with higher overall frequency:** Sai. Lặp lại TOÀN BỘ 10 rule 2 lần không giảm được số lượng instruction cạnh tranh — thực tế còn làm TĂNG tổng khối lượng nội dung cần theo dõi, có thể làm tình hình tệ hơn thay vì cải thiện.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "192",
+    "question": "You're building a content moderation classifier that must output one of five categories along with a severity score from 1-10. In testing, Claude's plain-text responses are usually correct but occasionally include hedging language (\"this could be considered...\") that breaks your parsing logic. You need consistent, machine-parsable output while preserving Claude's reasoning quality. What is the most effective approach?",
+    "options": {
+      "A": "Add a rule to the prompt stating \"Do not hedge or qualify your answer\"",
+      "B": "Use a tool definition with an enum-constrained category field and an integer severity field, letting Claude reason in its response before calling the tool",
+      "C": "Post-process every response with string-matching rules that strip hedging phrases before parsing",
+      "D": "Lower the temperature parameter to reduce variability in Claude's phrasing"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi cần output có cấu trúc (parseable) nhưng vẫn giữ được chất lượng reasoning, dùng tool_use với schema ràng buộc (enum, integer) cho phép Claude suy luận trước khi gọi tool — đảm bảo cả 2 mục tiêu đồng thời.\n\n**Add a rule to the prompt stating \"Do not hedge or qualify your answer\":** Sai. Instruction 'không hedge' là advisory, không đảm bảo tuyệt đối — Claude vẫn có thể thỉnh thoảng dùng ngôn ngữ hedging dù có instruction, không giải quyết được vấn đề PARSING một cách chắc chắn.\n\n**Use a tool definition with an enum-constrained category field and an integer severity field, letting Claude reason in its response before calling the tool:** Đúng. Đây là giải pháp đúng đắn nhất: dùng tool_use với enum-constrained category field (chỉ 5 category cố định, không cho phép hedging language) và integer severity field (chỉ số 1-10, không phải text mơ hồ) — đảm bảo output LUÔN Ở DẠNG CẤU TRÚC parse được, ĐỒNG THỜI vẫn cho phép Claude 'reason' (suy luận) TRONG response TRƯỚC KHI gọi tool — giữ được chất lượng reasoning MÀ KHÔNG hy sinh machine-parsability.\n\n**Post-process every response with string-matching rules that strip hedging phrases before parsing:** Sai. String-matching để 'strip hedging phrases' là giải pháp MONG MANH (fragile) — không thể liệt kê hết mọi cách diễn đạt hedging có thể có, dễ bỏ sót case mới, và không đảm bảo cấu trúc output nhất quán như tool use.\n\n**Lower the temperature parameter to reduce variability in Claude's phrasing:** Sai. Giảm temperature chỉ giảm ĐỘ NGẪU NHIÊN trong cách diễn đạt, không đảm bảo LOẠI BỎ hedging language hoàn toàn — đây không phải cơ chế đúng để ép buộc structured output.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "193",
+    "question": "Your team is deciding how to instruct Claude to solve multi-step word problems in a tutoring application. Some team members want to ask Claude to \"think step by step\" in the prompt; others want to use extended thinking. Evaluation shows both approaches improve accuracy over a direct-answer baseline, but the team is unsure when each is the better choice. Which distinction should guide the decision?",
+    "options": {
+      "A": "\"Think step by step\" prompting is strictly obsolete now that extended thinking exists, so extended thinking should always be preferred",
+      "B": "Extended thinking is best reserved for problems requiring deep, extended reasoning where the thinking process itself doesn't need to be shown to the user, while simple step-by-step prompting works well for moderate-complexity tasks where showing brief reasoning inline is useful",
+      "C": "\"Think step by step\" only works for math problems, while extended thinking is required for any non-mathematical reasoning",
+      "D": "The two techniques are functionally identical and the choice should be based purely on API cost, not task requirements"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Extended thinking phù hợp cho suy luận sâu, không cần hiển thị process cho user; 'think step by step' phù hợp cho tác vụ vừa phải cần hiển thị reasoning ngắn gọn trực tiếp trong response — lựa chọn dựa trên yêu cầu hiển thị và độ phức tạp, không phải một kỹ thuật luôn ưu việt hơn.\n\n**\"Think step by step\" prompting is strictly obsolete now that extended thinking exists, so extended thinking should always be preferred:** Sai. 'Think step by step' KHÔNG lỗi thời — đây vẫn là kỹ thuật hữu ích cho các tác vụ độ phức tạp vừa phải, nơi việc HIỂN THỊ reasoning ngắn gọn TRỰC TIẾP trong câu trả lời (inline) có giá trị (ví dụ: cho ứng dụng tutoring, học sinh cần THẤY các bước suy luận) — không phải lúc nào extended thinking cũng ưu việt hơn.\n\n**Extended thinking is best reserved for problems requiring deep, extended reasoning where the thinking process itself doesn't need to be shown to the user, while simple step-by-step prompting works well for moderate-complexity tasks where showing brief reasoning inline is useful:** Đúng. Đây là phân biệt đúng đắn: extended thinking phù hợp cho vấn đề cần suy luận SÂU, MỞ RỘNG mà quá trình suy nghĩ KHÔNG CẦN hiển thị cho người dùng cuối (thường ẩn hoặc tách biệt); trong khi 'think step by step' đơn giản phù hợp cho tác vụ độ phức tạp VỪA PHẢI nơi việc hiển thị reasoning NGẮN GỌN TRỰC TIẾP trong response (inline) có giá trị (như ứng dụng tutoring cần cho học sinh thấy các bước giải).\n\n**\"Think step by step\" only works for math problems, while extended thinking is required for any non-mathematical reasoning:** Sai. Không có giới hạn nào như vậy — 'think step by step' không CHỈ giới hạn cho toán học, và extended thinking không PHẢI BẮT BUỘC cho mọi vấn đề phi toán học; đây là khẳng định sai về phạm vi áp dụng của cả 2 kỹ thuật.\n\n**The two techniques are functionally identical and the choice should be based purely on API cost, not task requirements:** Sai. Hai kỹ thuật KHÔNG giống nhau về mặt chức năng — chúng phục vụ mục đích khác nhau (hiển thị reasoning inline vs. suy luận sâu ẩn/tách biệt); chọn lựa nên dựa trên YÊU CẦU TÁC VỤ (có cần hiển thị reasoning không, độ phức tạp thế nào), không chỉ dựa vào chi phí API.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "194",
+    "question": "You are writing a system prompt for an agent that drafts legal disclaimers. You want Claude to strictly follow a specific paragraph structure (background, risk statement, recommended action) every time, without deviation, even as user requests vary widely in subject matter. Which prompting technique most reliably enforces this structural consistency?",
+    "options": {
+      "A": "Provide a small number of complete input/output examples in the prompt that demonstrate the exact structure, alongside a clear description of each section's purpose",
+      "B": "Describe the desired structure once in abstract terms and trust the model's general writing ability to apply it consistently",
+      "C": "Ask Claude to self-critique its own output after generation and revise if the structure looks wrong",
+      "D": "Increase the system prompt's overall length by adding more general writing-quality guidance"
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "Để đảm bảo cấu trúc output nhất quán nghiêm ngặt qua các chủ đề đa dạng, few-shot examples (ví dụ hoàn chỉnh minh họa cấu trúc chính xác) đáng tin cậy hơn nhiều so với mô tả trừu tượng, self-critique, hay guidance chung chung.\n\n**Provide a small number of complete input/output examples in the prompt that demonstrate the exact structure, alongside a clear description of each section's purpose:** Đúng. Đây chính xác là nguyên tắc few-shot prompting cho structural consistency: cung cấp một số VÍ DỤ HOÀN CHỈNH (input/output) minh họa CHÍNH XÁC cấu trúc mong muốn, kèm mô tả rõ ràng mục đích mỗi phần — ví dụ THỂ HIỆN cấu trúc cụ thể hơn nhiều so với mô tả trừu tượng, giúp model 'copy' đúng shape mong muốn một cách nhất quán qua nhiều chủ đề khác nhau.\n\n**Describe the desired structure once in abstract terms and trust the model's general writing ability to apply it consistently:** Sai. Mô tả TRỪU TƯỢNG một lần và 'tin tưởng' khả năng viết chung của model là cách tiếp cận YẾU — đây chính là ví dụ về zero-shot approach có nguy cơ tạo ra format KHÔNG NHẤT QUÁN qua các lần chạy khác nhau, đặc biệt khi chủ đề user request đa dạng.\n\n**Ask Claude to self-critique its own output after generation and revise if the structure looks wrong:** Sai. Self-critique sau khi sinh ra output là bước XỬ LÝ SAU (reactive), không đảm bảo cấu trúc ĐÚNG NGAY TỪ ĐẦU — và self-review có giới hạn (context retention bias) khiến model khó phát hiện lỗi trong chính output của mình.\n\n**Increase the system prompt's overall length by adding more general writing-quality guidance:** Sai. Tăng ĐỘ DÀI với guidance chung chung về 'chất lượng viết' không giải quyết được vấn đề CẤU TRÚC CỤ THỂ (structural consistency) — không có gì đảm bảo cấu trúc 3 phần (background, risk, action) được tuân thủ nhất quán.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "195",
+    "question": "You're prompting Claude to generate product descriptions and want it to avoid making unverifiable superlative claims (e.g., \"the best on the market\") while still writing persuasive copy. Simply instructing \"don't make unverifiable claims\" reduces but doesn't eliminate the behavior. What refinement to the prompt would most likely improve compliance?",
+    "options": {
+      "A": "Remove the instruction entirely, since negative instructions are known to always backfire",
+      "B": "Pair the negative instruction with a positive alternative and a concrete example: instead of superlative claims, describe specific, verifiable features and benefits, showing one example of a rewritten sentence",
+      "C": "Repeat the same negative instruction three times in different parts of the prompt for emphasis",
+      "D": "Ask Claude to generate the copy twice and pick whichever version is shorter"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Để cải thiện tuân thủ negative instruction, kết hợp với positive alternative cụ thể VÀ ví dụ minh họa (concrete example) hiệu quả hơn nhiều so với chỉ lặp lại negative instruction hay loại bỏ nó hoàn toàn.\n\n**Remove the instruction entirely, since negative instructions are known to always backfire:** Sai. Loại bỏ hoàn toàn instruction không giải quyết được vấn đề — khẳng định 'negative instructions always backfire' là quá tuyệt đối/sai, và bỏ instruction sẽ khiến hành vi không mong muốn (superlative claims) không được kiểm soát chút nào.\n\n**Pair the negative instruction with a positive alternative and a concrete example: instead of superlative claims, describe specific, verifiable features and benefits, showing one example of a rewritten sentence:** Đúng. Đây là cách cải thiện tuân thủ hiệu quả nhất: kết hợp negative instruction ('không dùng superlative claim') với MỘT LỰA CHỌN TÍCH CỰC cụ thể (mô tả feature/benefit CỤ THỂ, có thể kiểm chứng) VÀ một VÍ DỤ MINH HỌA (câu được viết lại) — cho model thấy CHÍNH XÁC 'làm đúng' trông như thế nào, thay vì chỉ nói 'đừng làm X' mà không chỉ ra 'nên làm Y như thế nào'. Đây đúng nguyên tắc few-shot/example-based approach kết hợp với positive framing.\n\n**Repeat the same negative instruction three times in different parts of the prompt for emphasis:** Sai. Lặp lại CÙNG MỘT negative instruction 3 lần không cung cấp thêm THÔNG TIN MỚI (không có ví dụ cụ thể, không có positive alternative) — chỉ tăng emphasis mà không giải quyết vấn đề gốc: model không biết CHÍNH XÁC nên làm gì thay thế.\n\n**Ask Claude to generate the copy twice and pick whichever version is shorter:** Sai. Chọn theo tiêu chí 'ngắn hơn' không liên quan gì đến việc loại bỏ superlative claims — đây là tiêu chí không phù hợp với mục tiêu thực sự (tránh unverifiable claims), có thể chọn nhầm version vẫn chứa superlative claim.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "196",
+    "question": "Your coding agent operates in a long-running session where the context window is approaching its limit after many file reads and edits. The team wants the agent to continue working on the same task without losing critical information about what's been done and what remains. Which context management strategy is most appropriate?",
+    "options": {
+      "A": "Let the context window fill completely and rely on the API to automatically truncate the oldest messages",
+      "B": "Periodically compact the conversation by summarizing completed work and decisions into a condensed record, then continue with that summary plus recent messages rather than the full history",
+      "C": "Stop the task entirely once the context window is 80% full and ask the user to start a new session with no context",
+      "D": "Switch to a smaller model mid-task to gain more effective context headroom"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi context window gần đầy trong session dài, compaction (tóm tắt công việc đã hoàn thành thành bản ghi cô đọng + giữ tin nhắn gần đây) là chiến lược đúng — giải phóng không gian mà không mất thông tin quan trọng.\n\n**Let the context window fill completely and rely on the API to automatically truncate the oldest messages:** Sai. Claude API là STATELESS — không có cơ chế tự động 'truncate old messages'; việc quản lý context là TRÁCH NHIỆM của developer, không phải điều gì API tự làm. Để context đầy hoàn toàn dẫn đến context rot và có thể gây lỗi request.\n\n**Periodically compact the conversation by summarizing completed work and decisions into a condensed record, then continue with that summary plus recent messages rather than the full history:** Đúng. Đây chính là 'Compaction' pattern: định kỳ TÓM TẮT công việc đã hoàn thành và quyết định thành một bản ghi CÔ ĐỌNG, sau đó tiếp tục với summary NÀY cộng với các tin nhắn GẦN ĐÂY thay vì toàn bộ lịch sử — giải phóng không gian context trong khi vẫn giữ được thông tin quan trọng về những gì đã làm và còn lại.\n\n**Stop the task entirely once the context window is 80% full and ask the user to start a new session with no context:** Sai. Dừng hoàn toàn và yêu cầu bắt đầu session MỚI KHÔNG CÓ CONTEXT sẽ MẤT TOÀN BỘ tiến độ công việc đã làm — quá cực đoan và lãng phí, compaction là giải pháp tốt hơn nhiều để GIỮ LẠI tiến độ.\n\n**Switch to a smaller model mid-task to gain more effective context headroom:** Sai. Chuyển sang model NHỎ HƠN giữa chừng không liên quan đến việc quản lý context window — kích thước model không tương đương với dung lượng context, và việc chuyển đổi giữa chừng có thể gây gián đoạn không cần thiết.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "197",
+    "question": "A production agent occasionally produces a response that is technically valid but subtly wrong — for example, citing a plausible-sounding but nonexistent internal policy number. The agent has no tool to verify policy numbers against a real source, and the error only appears in edge cases involving rarely-referenced policies. What is the most reliable way to prevent this class of error going forward?",
+    "options": {
+      "A": "Add an instruction to the system prompt telling the model to double check its facts before responding",
+      "B": "Increase the model's context window so it has more room to reason about the answer",
+      "C": "Connect the agent to a tool or retrieval system that looks up actual policy numbers, grounding its answer in verified data rather than relying on the model's internal knowledge",
+      "D": "Lower the temperature to reduce the likelihood of the model generating incorrect details"
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "Khi model tạo ra thông tin plausible-nhưng-sai (hallucination) về dữ liệu THỰC TẾ mà nó không có quyền truy cập, giải pháp đúng là GROUNDING — kết nối với tool/retrieval system thực tế, không phải cải thiện prompt hay giảm temperature.\n\n**Add an instruction to the system prompt telling the model to double check its facts before responding:** Sai. Instruction 'double check facts' không thể giúp model kiểm tra thông tin nó KHÔNG CÓ QUYỀN TRUY CẬP — model không có cách nào để 'double check' nếu không có TOOL/NGUỒN THỰC TẾ để verify; đây là advisory, không giải quyết vấn đề gốc.\n\n**Increase the model's context window so it has more room to reason about the answer:** Sai. Tăng context window không liên quan đến vấn đề model THIẾU KIẾN THỨC THỰC TẾ (không biết policy number chính xác) — đây không phải vấn đề về dung lượng suy luận, mà là vấn đề THIẾU DỮ LIỆU NGUỒN đáng tin cậy.\n\n**Connect the agent to a tool or retrieval system that looks up actual policy numbers, grounding its answer in verified data rather than relying on the model's internal knowledge:** Đúng. Đây chính là nguyên tắc GROUNDING được nhấn mạnh: model không biết những gì nó không được huấn luyện hay không có trong context — giải pháp đúng là KẾT NỐI agent với một TOOL/RETRIEVAL SYSTEM thực tế để tra cứu policy number CHÍNH XÁC, thay vì dựa vào 'internal knowledge' của model (vốn có thể fabricate thông tin hợp lý nhưng sai). Đây là cách duy nhất đảm bảo câu trả lời được neo (grounded) vào dữ liệu THẬT.\n\n**Lower the temperature to reduce the likelihood of the model generating incorrect details:** Sai. Giảm temperature chỉ giảm TÍNH NGẪU NHIÊN trong cách diễn đạt, không giải quyết được vấn đề model KHÔNG CÓ THÔNG TIN THỰC TẾ về policy number — model vẫn có thể tự tin tạo ra thông tin sai một cách NHẤT QUÁN (deterministic) dù temperature thấp.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "198",
+    "question": "Your agent's reliability metrics show that failures cluster around a specific pattern: whenever a tool call returns a result larger than roughly 50K tokens, the agent's next few responses show degraded reasoning quality, sometimes ignoring earlier parts of the conversation. Other tool calls with smaller results don't show this issue. What is the most likely explanation and the most effective fix?",
+    "options": {
+      "A": "The model has a hard 50K token limit on tool results; the fix is to reject any tool result above that size",
+      "B": "Large tool results are consuming a disproportionate share of the context window, crowding out earlier conversational context; the fix is to have the tool return a filtered or summarized result containing only the fields relevant to the task",
+      "C": "This is expected behavior with no available fix, since larger inputs always degrade reasoning proportionally",
+      "D": "The issue is caused by the tool_use_id not matching correctly for large payloads; the fix is to regenerate IDs for large results"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi tool result lớn gây suy giảm reasoning quality, nguyên nhân là do nó chiếm tỷ lệ lớn context window, đẩy context quan trọng khác ra ngoài tầm chú ý — giải pháp là lọc/tóm tắt tool result để chỉ giữ field liên quan, không phải giới hạn cứng hay vấn đề kỹ thuật khác.\n\n**The model has a hard 50K token limit on tool results; the fix is to reject any tool result above that size:** Sai. Không có 'hard 50K token limit' cụ thể trên tool result trong Claude API — đây là giải thích sai về nguyên nhân kỹ thuật; vấn đề thực sự là về TỶ LỆ chiếm dụng context window, không phải một giới hạn cứng.\n\n**Large tool results are consuming a disproportionate share of the context window, crowding out earlier conversational context; the fix is to have the tool return a filtered or summarized result containing only the fields relevant to the task:** Đúng. Đây chính là hiện tượng 'context rot': tool result LỚN chiếm một PHẦN KHÔNG CÂN XỨNG của context window, ĐẨY (crowd out) context hội thoại quan trọng trước đó ra khỏi 'tầm chú ý' hiệu quả của model — giải pháp đúng là làm cho TOOL trả về kết quả đã LỌC/TÓM TẮT (chỉ chứa field liên quan đến tác vụ), giảm lượng token chiếm dụng, giữ context window sạch sẽ cho reasoning.\n\n**This is expected behavior with no available fix, since larger inputs always degrade reasoning proportionally:** Sai. Đây KHÔNG phải 'hành vi mong đợi không có cách khắc phục' — context management là một kỹ năng RELIABILITY quan trọng, có nhiều giải pháp cụ thể (filtering, summarization) để giải quyết vấn đề này.\n\n**The issue is caused by the tool_use_id not matching correctly for large payloads; the fix is to regenerate IDs for large results:** Sai. Không có vấn đề về 'tool_use_id không khớp' liên quan đến kích thước payload — đây là giải thích kỹ thuật sai, không phải nguyên nhân thực sự của việc suy giảm reasoning quality.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "199",
+    "question": "Your team is deciding how to handle a customer-facing agent's context when a conversation spans multiple days (the customer returns to continue a support thread). Simply replaying the full multi-day transcript on each new session works but is costly and includes a lot of resolved, now-irrelevant back-and-forth. What is the most effective approach to balance cost and continuity?",
+    "options": {
+      "A": "Discard all prior context and start fresh each time the customer returns, asking them to restate their issue",
+      "B": "Store a structured summary of the case (issue, key facts established, actions taken, current status) and load that summary plus only the most recent few turns when the customer returns, rather than the full historical transcript",
+      "C": "Keep the full multi-day transcript in every request regardless of length, since completeness is more important than cost",
+      "D": "Have a separate agent re-read the entire transcript from scratch at the start of every new session to regenerate context"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Khi conversation trải dài nhiều ngày với nhiều nội dung đã giải quyết không còn liên quan, lưu structured summary (case facts) + vài turn gần đây cân bằng tốt giữa chi phí và continuity — thay vì replay toàn bộ transcript hay bắt đầu lại từ đầu.\n\n**Discard all prior context and start fresh each time the customer returns, asking them to restate their issue:** Sai. Yêu cầu khách hàng NHẮC LẠI toàn bộ vấn đề tạo trải nghiệm KHÁCH HÀNG TỆ (frustrating) — mất hoàn toàn continuity, vi phạm nguyên tắc dịch vụ khách hàng tốt.\n\n**Store a structured summary of the case (issue, key facts established, actions taken, current status) and load that summary plus only the most recent few turns when the customer returns, rather than the full historical transcript:** Đúng. Đây là giải pháp cân bằng đúng đắn nhất: lưu một STRUCTURED SUMMARY (issue, key facts, actions taken, status) — cô đọng nhưng đầy đủ thông tin quan trọng — và chỉ load summary NÀY cộng với vài turn GẦN ĐÂY nhất, thay vì toàn bộ transcript nhiều ngày (chứa nhiều back-and-forth đã GIẢI QUYẾT, không còn liên quan). Cân bằng tốt giữa CHI PHÍ (giảm token đáng kể) và CONTINUITY (vẫn giữ đủ thông tin cần thiết).\n\n**Keep the full multi-day transcript in every request regardless of length, since completeness is more important than cost:** Sai. Giữ TOÀN BỘ transcript nhiều ngày trong MỌI request là TỐN KÉM không cần thiết — phần lớn nội dung là back-and-forth ĐÃ GIẢI QUYẾT, không còn giá trị, vi phạm nguyên tắc cân bằng cost/continuity được yêu cầu.\n\n**Have a separate agent re-read the entire transcript from scratch at the start of every new session to regenerate context:** Sai. Yêu cầu một agent RIÊNG đọc lại TOÀN BỘ transcript mỗi session mới là LÃNG PHÍ — vừa tốn thời gian, vừa tốn token để 'đọc lại' nội dung mà một structured summary đã có thể nắm bắt đủ.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "200",
+    "question": "Your multi-turn agent occasionally loses track of user-stated constraints from early in a long conversation (e.g., a stated budget limit mentioned in turn 2 is violated by a recommendation in turn 40), even though the full conversation history is still within the context window and being sent on every call. What is the most likely cause and the most effective mitigation?",
+    "options": {
+      "A": "This indicates a bug in the API's message handling and should be reported rather than addressed in the application",
+      "B": "Important constraints stated early can become diluted amid dozens of subsequent turns; the mitigation is to have the system periodically re-surface active constraints in a structured summary near the top of context or just before the current turn, rather than relying on the model to recall them unaided from deep in the transcript",
+      "C": "The context window has a strict recency-only attention mechanism that makes early-turn information permanently inaccessible after 10 turns",
+      "D": "The only reliable fix is to end the conversation and start a new one every 10 turns to prevent constraint loss"
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "Đây là 'lost in the middle' effect — thông tin/constraint quan trọng nêu sớm trong conversation dài dễ bị pha loãng. Giải pháp: định kỳ tái xuất hiện constraint đang hiệu lực trong structured summary gần đầu/cuối context, không dựa vào model tự nhớ từ giữa transcript.\n\n**This indicates a bug in the API's message handling and should be reported rather than addressed in the application:** Sai. Đây KHÔNG phải bug của API — đây là hiện tượng ĐÃ ĐƯỢC BIẾT ĐẾN và có tên gọi cụ thể ('lost in the middle' effect) về cách model chú ý đến các phần khác nhau của context dài; có giải pháp ứng dụng cụ thể, không cần 'report bug'.\n\n**Important constraints stated early can become diluted amid dozens of subsequent turns; the mitigation is to have the system periodically re-surface active constraints in a structured summary near the top of context or just before the current turn, rather than relying on the model to recall them unaided from deep in the transcript:** Đúng. Đây chính là 'lost in the middle' effect: thông tin quan trọng (constraint) nêu SỚM trong conversation dài dễ bị 'pha loãng' (diluted) khi có nhiều turn tiếp theo — model chú ý mạnh nhất ở ĐẦU và CUỐI, kém nhất ở GIỮA. Giải pháp đúng là hệ thống ĐỊNH KỲ TÁI XUẤT HIỆN (re-surface) các constraint ĐANG HIỆU LỰC trong một structured summary GẦN ĐẦU context hoặc NGAY TRƯỚC turn hiện tại — không dựa vào việc model 'tự nhớ' từ sâu trong transcript.\n\n**The context window has a strict recency-only attention mechanism that makes early-turn information permanently inaccessible after 10 turns:** Sai. Không có 'cơ chế attention chỉ theo recency tuyệt đối' làm thông tin sớm 'vĩnh viễn không truy cập được sau 10 turn' — đây là khẳng định quá cứng nhắc/sai về cách attention hoạt động; hiệu ứng là DẦN DẦN (gradual), không phải một ngưỡng cứng.\n\n**The only reliable fix is to end the conversation and start a new one every 10 turns to prevent constraint loss:** Sai. Kết thúc và bắt đầu conversation MỚI mỗi 10 turn quá cực đoan — sẽ làm MẤT continuity của cuộc trò chuyện thực sự, và không phải giải pháp thực tế/hiệu quả nhất so với việc re-surface constraint có cấu trúc.",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "201",
+    "question": "Your automated reviewer uses a single prompt covering security issues, API design, and business logic correctness. Your evaluation suite shows strong recall for API design findings (82%) but poor recall for business logic edge cases in quiz scoring (34%). When you add few-shot examples of logic bugs to the prompt, logic recall improves to 41% but API design recall drops to 68%. How should you address this trade- off to improve detection across both categories?",
+    "options": {
+      "A": "Split the review into separate focused prompts — one for security and API design, another for business logic — each with dedicated examples, then consolidate findings before posting.",
+      "B": "Replace the few-shot examples with a detailed checklist of specific logic edge cases to verify, such as division-by-zero In score calculations and boundary conditions in grading thresholds.",
+      "C": "Upgrade to a more capable model tier, since its stronger reasoning will handle both concern types in a single prompt and eliminate the recall trade-off."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "The correct choice is A: Split the review into separate focused prompts — one for security and API design, another for business logic — each with dedicated examples, then consolidate findings before posting. This directly addresses the scenario described in the question.",
+    "imageUrl": "",
+    "type": "multiple_choice"
   }
 ]
