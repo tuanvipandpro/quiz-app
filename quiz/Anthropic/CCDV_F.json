@@ -793,5 +793,693 @@
     ],
     "explanation": "LLM generation is probabilistic: sampling can select different plausible tokens for identical inputs, so minor variation across runs is expected and does not by itself indicate an application defect. Production applications should manage this variability with measures such as output validation, retries, and—where supported by the selected model—sampling controls such as temperature. Anthropic notes that API outputs can remain non-deterministic even at temperature 0.\n\nLearn more\n- Claude Platform Docs — Glossary",
     "imageUrl": ""
+  },
+  {
+    "id": "ccdv-f-54",
+    "question": "Your Claude application's error handling currently logs every API error with the same severity level. The team wants to differentiate between errors that should page an on-call engineer and errors that should be logged for later review.\n\nHow would you structure the error handling?",
+    "options": {
+      "A": "Disable logging for any error that does not page, treating non-paging errors as not worth recording for later review either.",
+      "B": "Log every error with the same severity, on the grounds that differentiating severity adds complexity that does not pay off in most application setups over time.",
+      "C": "Page on every error, on the grounds that paging guarantees that no error is missed by the team during normal operation across the application's lifecycle.",
+      "D": "Categorize errors by severity based on impact and recoverability, then route each category to the appropriate channel for paging or logging."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-55",
+    "question": "You are extending a Claude agent with a capability that needs to be reusable across multiple teams in the organization, with each team able to invoke and use it independently.\n\nHow would you build the capability?",
+    "options": {
+      "A": "As a Skill or MCP server because both are purpose-built for cross-team reuse independently by each consuming team.",
+      "B": "As a custom tool embedded in this team's agent only, with other teams able to copy the implementation into their own agents when they need the capability.",
+      "C": "As a wrapper around an existing built-in tool that adds the missing functionality, on the grounds that built-in tools cover the reuse pattern when extended carefully.",
+      "D": "As a shared library that each team imports into their own Claude application code, with each team responsible for keeping the library up to date in their integration."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-56",
+    "question": "Your agent is processing tasks that take 30 to 60 minutes to complete. Each task has well-defined intermediate checkpoints, and the team wants the agent to be able to resume from the most recent checkpoint if a process is interrupted.\n\nHow would you implement this resumability?",
+    "options": {
+      "A": "Run two copies of the agent in parallel for every task and use whichever one finishes first as the source of truth.",
+      "B": "Apply a checkpointing pattern that persists the agent's intermediate state and reloads that state when resuming an interrupted task.",
+      "C": "Restart the task from the beginning whenever a process is interrupted.",
+      "D": "Increase the agent's timeout to several hours so that interruptions become rare enough to ignore in practice."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-57",
+    "question": "Your agent makes 10 to 15 tool calls per task, and you have noticed it sometimes loses track of earlier results by the time it reaches later steps. The agent's context window is large enough to hold all the messages, but the relevant information appears to get buried as the conversation grows.\n\nHow would you address this?",
+    "options": {
+      "A": "Reduce the number of tool calls per task by combining several existing tools into larger, multi-purpose tools.",
+      "B": "Increase the context window further so all tool outputs from every prior step remain in full detail throughout the task.",
+      "C": "Switch to a different agentic framework that advertises automatic context-window management as a built-in feature.",
+      "D": "Apply a context-management pattern that summarizes or prunes older tool outputs while preserving the active task state."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-58",
+    "question": "Your Claude application receives untrusted input from external sources. The team is establishing how the application should treat this untrusted input.\n\nHow would untrusted input be treated?",
+    "options": {
+      "A": "Blocked entirely so the application accepts only trusted input, with no path for legitimate external input the application might process.",
+      "B": "Validated and sanitized before being incorporated into prompts, and treated as data the model should not interpret as instructions.",
+      "C": "Routed through a separate Claude application with more lax security controls so the original application does not handle the untrusted input directly.",
+      "D": "Treated identically to trusted input from internal sources, on the grounds that all input the application receives can be handled the same way."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-59",
+    "question": "You are deciding between deploying a Claude-powered agent on Anthropic's hosted infrastructure or self-hosting under a \"bring your own cloud\" model in your own AWS account. The agent processes customer data subject to your enterprise's data residency policies, but the team wants to ship quickly and avoid managing infrastructure.\n\nWhich deployment model would you recommend?",
+    "options": {
+      "A": "Self-hosting under BYOC for an initial pilot, then evaluating whether to migrate to Anthropic-hosted infrastructure once the agent's data handling patterns are better understood.",
+      "B": "Deploying on Anthropic-hosted infrastructure while the team drafts a request to update the enterprise data residency policy to accommodate hosted AI deployments.",
+      "C": "Self-hosting under BYOC to satisfy the data residency requirement, while working with the infrastructure team to reduce the operational overhead of managing the deployment.",
+      "D": "Deploying on Anthropic-hosted infrastructure to meet the team's shipping timeline, and flagging the data residency requirement for a follow-up compliance review after launch."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-60",
+    "question": "Your application uses the Messages API to handle multi-turn conversations. Each new turn resends the entire conversation history, and your token costs are growing as conversations get longer. You suspect there is a more efficient approach.\n\nHow would you address this?",
+    "options": {
+      "A": "Switch to the batch API for every turn so the per-call cost is reduced, treating the batch as the team's primary cost-control mechanism for multi-turn work.",
+      "B": "Use prompt caching to reuse the static portions of the conversation context across turns instead of paying for them on every request the application sends.",
+      "C": "Summarize each conversation after every turn and replace the full history with the summary on the next request, reducing token count at the cost of fidelity.",
+      "D": "Truncate every conversation to the last two messages so that token usage stays low and costs remain predictable across the application's normal operation."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-61",
+    "question": "You are establishing the guardrail strategy for a Claude application. The team wants to ensure guardrail failure does not expose the application to unsafe behavior.\n\nWhat would the guardrail strategy do?",
+    "options": {
+      "A": "Implement a single comprehensive system prompt guardrail and validate its coverage against the application's full range of expected inputs.",
+      "B": "Layer multiple guardrails so a single guardrail failure does not expose the application to unsafe behavior.",
+      "C": "Apply guardrails at the model level only and rely on the model's built-in safety behaviors to handle any cases the guardrail does not explicitly cover.",
+      "D": "Apply guardrails at the application output level only and route flagged responses to a human reviewer before they are delivered to the user."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-62",
+    "question": "Your Claude application returns confident-sounding answers, but occasionally those answers contain factual errors that downstream systems treat as ground truth. The team is concerned about the application's confidence-versus-accuracy gap.\n\nHow would you address the gap?",
+    "options": {
+      "A": "Add a disclaimer to every output telling users to verify the accuracy of the output and treat the disclaimer as the primary mechanism for managing the confidence-versus-accuracy gap.",
+      "B": "Apply skepticism toward confident output by adding validation steps, sourcing requirements, or confidence calibration before treating outputs as ground truth.",
+      "C": "Reject every response the application produces until a manual accuracy review is conducted on each response by a human reviewer before any downstream system uses it.",
+      "D": "Lower the model's temperature so the model's responses sound less confident and downstream systems are less likely to treat the responses as ground truth in normal operation."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-63",
+    "question": "Your Claude application uses tool calling to fetch patient data and generate summary reports. The flow occasionally fails because the model returns a tool_use block that references arguments not present in the schema, and your application code does not handle this case gracefully.\n\nHow would you address this?",
+    "options": {
+      "A": "Validate the tool_use block's arguments against the tool schema before dispatching the tool and handle invalid arguments as a recognized error path.",
+      "B": "Log invalid tool_use blocks when they occur and allow the tool dispatch to proceed, relying on the tool's own error handling to surface failures back to the application.",
+      "C": "Retry the same request repeatedly until the model returns a valid tool_use block that matches the schema as expected.",
+      "D": "Stop using tool calling entirely and replace tools with prompted text generation that asks the model to describe what it would do."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-64",
+    "question": "Your team is integrating Claude into an existing REST API service. The service handles concurrent requests, and you are deciding how to structure the Claude API calls within the existing async codebase.\n\nHow would you structure the Claude calls?",
+    "options": {
+      "A": "Replace the existing async REST service with a synchronous service to match the call style of synchronous Claude SDK clients.",
+      "B": "Use the Claude SDK's async client and structure Claude calls as awaitable operations alongside the rest of the service's async code.",
+      "C": "Run Claude API calls in a separate thread pool isolated from the rest of the service so the main event loop is not affected.",
+      "D": "Make synchronous Claude API calls and block the async event loop until each call completes before processing the next request."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-65",
+    "question": "You are designing a Claude application that helps medical researchers analyze multi-step clinical case studies. The application must work through differential diagnoses by considering symptom patterns, weighing evidence across competing hypotheses, and showing intermediate reasoning steps before producing a final recommendation. The team is choosing among Claude's available model options.\n\nWhich model option is best suited to this use case?",
+    "options": {
+      "A": "Zero-shot prompting alone with no model option adjustments, which keeps the application's configuration as simple as possible.",
+      "B": "Extended thinking, which lets the model reason through the differential diagnosis steps before producing the final recommendation.",
+      "C": "A smaller model with a tighter context window, which encourages the model to focus its limited capacity on the task.",
+      "D": "Fast mode, which prioritizes lowest possible latency at the expense of reasoning depth on complex tasks."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-66",
+    "question": "A new agent your team built handles customer support tickets, but it routinely gets confused when a single ticket spans billing, shipping, and product issues. The agent often loses track of which sub-issue it has already addressed and revisits the same one. The team is considering architectural changes.\n\nWhat architectural change would you recommend?",
+    "options": {
+      "A": "Add detailed prompting that instructs the agent to track which sub-issues have been resolved and which remain.",
+      "B": "Introduce a orchestrator agent that delegates billing, shipping, and product sub-issues to a dedicated subagent.",
+      "C": "Switch to a deterministic workflow that handles billing, shipping, and product issues in a fixed sequence.",
+      "D": "Increase the size of the agent's context window so it can hold the full ticket history at once."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-67",
+    "question": "A teammate has asked how to extend Claude Code with a custom Skill that the team can invoke during sessions. The Skill consists of a set of instructions and a few support scripts the team wants Claude to be able to call when the Skill is loaded.\n\nWhere is the right place to define the Skill?",
+    "options": {
+      "A": "Define the Skill inside the application's source code as a regular library module and call it from the application code instead of from Claude Code.",
+      "B": "Define the Skill as a long inline instruction at the top of every CLAUDE.md file in the team's repositories so Claude has access to it on every session.",
+      "C": "Define the Skill in a personal scratch directory on each developer's machine and load it manually before each Claude Code session that needs it.",
+      "D": "Define the Skill in a Skills directory recognized by Claude Code, where Claude can discover and load it during sessions for the team's repositories."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-68",
+    "question": "Your Claude agent performs database operations. A recent incident occurred where the agent ran a destructive query that affected production data. The team wants to add deterministic controls to prevent similar incidents.\n\nHow would you prevent similar incidents?",
+    "options": {
+      "A": "Run the agent only during business hours when humans are available to monitor its activity, treating the schedule as the primary control mechanism for destructive operations.",
+      "B": "Switch to a higher-capability Claude model on the grounds that a more capable model is less likely to run destructive queries during normal operation across all requests.",
+      "C": "Add Claude hooks that intercept database operations and apply deterministic checks, such as blocking destructive queries or requiring approval, before the queries execute.",
+      "D": "Add a system prompt instruction telling the agent to be careful with database operations on every request the application handles during normal operation across all incoming traffic."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-69",
+    "question": "You are designing a Claude application that processes user-submitted text. Some of that text could include sensitive information such as account numbers or passwords that the application should not send to Claude.\n\nHow would you design the application?",
+    "options": {
+      "A": "Apply filtering at the boundary for the most commonly observed sensitive data patterns and expand coverage to additional patterns based on findings from production monitoring.",
+      "B": "Define the application boundary explicitly, identify what content can leave the boundary for Claude, and add filtering or redaction at the boundary.",
+      "C": "Log all user-submitted text before it is sent to Claude and review the logs periodically to identify whether sensitive information is reaching the model.",
+      "D": "Add a prompt instruction in the system prompt specifying the categories of sensitive information Claude should disregard when processing user-submitted text."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-70",
+    "question": "Your Claude application's outputs are inconsistent in format. The team's instructions are scattered across the system prompt and user messages, with some instructions stated only once and others repeated.\n\nHow would you fix the inconsistency?",
+    "options": {
+      "A": "Move all instructions into the user message so the application's behavior is controlled at the input point.",
+      "B": "Repeat all instructions in both the system prompt and the user message so the model sees each instruction more than once.",
+      "C": "Consolidate behavioral and format instructions in the system prompt and keep user messages focused on the user's input.",
+      "D": "Place each instruction wherever the developer who first wrote it found most natural, retaining the original intent."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-71",
+    "question": "You are implementing a custom tool for your Claude agent. The tool needs to interact with an external pricing service that returns product data.\n\nWhich of the following best practices would you apply as you develop this tool?",
+    "options": {
+      "A": "Implement the tool with no error handling and let the agent loop catch failures whenever the pricing service returns an error during operation.",
+      "B": "Define the tool with a loose schema and let the model interpret the inputs flexibly on each call the agent makes.",
+      "C": "Omit the tool description and let the model infer when to use the tool based on the tool's name and the rest of the prompt context.",
+      "D": "Define the tool with a clear schema, write a precise description for when to call it, and handle pricing service errors explicitly."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-72",
+    "question": "You are setting up a CI/CD pipeline for a new Claude application. The pipeline needs to run automated checks on every pull request before code can be merged.\n\nWhich CI/CD checks would you include?",
+    "options": {
+      "A": "Automated linting and security scanning, with Claude integration testing handled manually during pre-release verification by a designated reviewer.",
+      "B": "A full end-to-end production deployment on every pull request to catch all possible issues before any code is merged into the main branch.",
+      "C": "Automated tests of the Claude integration, linting, and any other standard quality gates the team applies to its other services.",
+      "D": "Automated tests of the Claude integration only, with linting handled separately during local development on each developer's machine."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-73",
+    "question": "You are setting up Claude Code for a new project repository. Your team has shared coding standards, preferred libraries, and project-specific context that every developer working on the repository should have available when they use Claude Code.\n\nHow would you set this up?",
+    "options": {
+      "A": "Add the coding standards and project context to the repository's existing README file and direct developers to reference it when starting Claude Code sessions.",
+      "B": "Configure Claude Code through environment variables that each developer sets on their own machine when they begin working in the repository.",
+      "C": "Initialize Claude Code in the repository and document the standards and project-specific context in a CLAUDE.md file at the repository root.",
+      "D": "Document the standards in a separate wiki page maintained outside the repository so the documentation stays decoupled from the source code."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-74",
+    "question": "You maintain a Claude application that uses Claude Sonnet 4.5 across several production workflows. Anthropic released Claude Sonnet 4.7, which your evaluation suite shows performing 8% better on your highest-volume task. However, this version produces different output formatting on two of your structured-extraction prompts that downstream consumers parse with regex-based code.\n\nHow would you roll out the upgrade?",
+    "options": {
+      "A": "Adjust the prompts to constrain output format, re-run evals against the expected parsing layer schema, then roll out the model out with a feature flag and the option to revert per workflow.",
+      "B": "Rewrite the downstream parsing code to accept a wider range of output formats to ensure the application is resilient to future model upgrades without requiring prompt changes.",
+      "C": "Switch the model identifier in the application's configuration to the new model, then monitor production for parsing failures to be fixed as failures surface.",
+      "D": "Keep the older model in production to preserve the fragile parsing layer that may risk breaking with any model change."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-75",
+    "question": "You are building an MCP server that exposes several internal data sources as MCP resources. The server needs to be deployed so multiple Claude applications can integrate with it.\n\nHow would you approach the build and deployment?",
+    "options": {
+      "A": "Bypass the MCP server and embed each data source directly in every Claude application that needs the data, with each application maintaining its own integration.",
+      "B": "Build the MCP server with resource and tool definitions scoped to the first Claude application that needs it, and extend the definitions to additional applications as each integration is requested.",
+      "C": "Author the server with clearly defined resources, tools, and prompts, choose a communication pattern, and deploy to an accessible hosting environment.",
+      "D": "Deploy the MCP server only on individual developer machines, with the Claude applications unable to reach the server outside each developer's machine."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-76",
+    "question": "You are designing an agent that processes vendor invoices. The work involves a small number of well-understood steps, but occasionally an invoice arrives in an unexpected format that requires the system to decide between rerouting, requesting clarification, or flagging for human review.\n\nWhich architecture is most appropriate for this system?",
+    "options": {
+      "A": "A manager agent that delegates each step of standard invoice processing to a dedicated subagent, with a separate subagent handling each unexpected format.",
+      "B": "A single large prompt that processes every incoming invoice, both standard and unexpected, in one model call.",
+      "C": "A fully autonomous agent that handles every invoice from start to finish across all formats.",
+      "D": "A workflow for the standard path with an agent invoked at the decision point for unexpected formats."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-77",
+    "question": "A teammate is debugging a Claude application whose system prompt has grown to several hundred lines and now contains overlapping, contradictory, and obsolete instructions.\n\nHow would you advise the teammate?",
+    "options": {
+      "A": "Tighten only the contradictory rules first, treating the overlap and obsolete content as lower-priority work the team can address later.",
+      "B": "Audit the prompt for overlap, contradiction, and obsolete content, then refactor so each instruction is clear, current, and non-redundant.",
+      "C": "Split the prompt across multiple system prompts so the model sees a smaller portion at any given time.",
+      "D": "Add more explicit instructions so the most recent rules dominate the model's interpretation of the prompt during each request."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-78",
+    "question": "Your Claude application runs a complex research workflow. Some research steps require access to all previous findings, while others only need the current question. The current implementation passes the full conversation history to every step.\n\nHow would you adjust the implementation?",
+    "options": {
+      "A": "Summarize the conversation history into a compact representation and pass the summary to each research step regardless of its context requirements.",
+      "B": "Continue passing the full conversation history to steps that require prior findings, and reduce the history passed to steps that only need the current question.",
+      "C": "Use subagents or multi-step workflows so each research step receives only the context it needs for its reasoning.",
+      "D": "Pass recent conversation history to every step and prune older turns beyond a fixed lookback window to limit token consumption across the workflow."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-79",
+    "question": "Your team uses several plugins across multiple Claude applications, and a recent plugin update introduced a regression. The team had not been tracking plugin versions, so the team cannot easily identify which version was previously working.\n\nHow would you address this?",
+    "options": {
+      "A": "Upgrade every plugin to the latest version on a regular cadence to keep version drift small, on the grounds that drift contributes to regression risk.",
+      "B": "Stop using all plugins until the team can rebuild equivalent functionality directly into the application code, treating plugin avoidance as a way to remove version-related risk.",
+      "C": "Add explicit plugin version tracking to the project's configuration so the team can identify, pin, and upgrade plugin versions deliberately.",
+      "D": "Treat plugins as untrackable third-party code and rely on plugin authors to communicate breaking changes when they happen, with no internal version tracking."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-80",
+    "question": "Your Claude application's token costs have grown faster than expected. The team has not been tracking token usage by feature, so the team cannot identify which features are driving cost. The team is debating how to respond.\n\nHow would you respond?",
+    "options": {
+      "A": "Tell the team that cost growth is unavoidable as the application scales and that no investigation will change the trajectory of the application's cost over the next several quarters.",
+      "B": "Switch every feature to the smallest model to cut cost broadly across the application during normal operation.",
+      "C": "Add token usage tracking by feature to the application's logging so the team can identify which features drive cost before recommending changes.",
+      "D": "Reduce token usage uniformly across all features by half, applying the cut evenly across the application during normal operation."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-81",
+    "question": "Your Claude application requests structured JSON output from the model. Most of the time the JSON is well-formed, but occasionally Claude returns malformed JSON that breaks downstream processing.\n\nHow would you handle the malformed output?",
+    "options": {
+      "A": "Add output validation that parses Claude's response against the expected schema and treats malformed output as a recognized error path with retry or fallback handling.",
+      "B": "Manually inspect every response before downstream processing so a human reviewer catches any malformed JSON before the application passes the response to downstream systems.",
+      "C": "Retry the same request repeatedly until valid JSON appears in the model's response, with the retry loop adding delay to the application's response time on affected requests.",
+      "D": "Switch to free-form text output so the application no longer depends on JSON parsing for any of the responses it sends to downstream systems during normal operation."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-82",
+    "question": "You are setting up a Claude application that requires API keys for several external services.\n\nWhat is the best way to store the keys?",
+    "options": {
+      "A": "Use a single shared key across all external services, so any developer working on the application can find the keys easily during development.",
+      "B": "Email the keys to each developer as needed and have each developer paste the keys into their local environment when they begin working on the application's code.",
+      "C": "Store the keys in a secrets manager or environment-specific configuration that is not checked into source code, and load them at runtime.",
+      "D": "Put the keys in the application's configuration file and check the configuration file into the team's repository alongside the rest of the source code."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-83",
+    "question": "You are integrating Claude into an application written in Python. The Claude SDK provides a Python client that wraps the underlying REST API.\n\nHow would you integrate the SDK?",
+    "options": {
+      "A": "Use the Claude Python SDK and let it handle authentication, retries, and response parsing through its standard documented patterns for Python integrations.",
+      "B": "Use a different LLM provider's SDK and translate the responses into Claude's API shape so the application can switch providers in the future.",
+      "C": "Call the REST API directly with raw HTTP requests so the application avoids the SDK's abstraction between the application code and the API.",
+      "D": "Skip the SDK and embed Claude calls in shell commands invoked from Python, so that the application runs the calls outside the main Python process."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-84",
+    "question": "Your team is preparing a new Claude application for production and the product team has asked for a cost projection. The team needs to estimate the cost based on expected request volume, average input length, and average output length.\n\nHow would you build the projection?",
+    "options": {
+      "A": "Build a cost model based on expected request volume and the chosen model's pricing, treating average input and output token counts as variables to be estimated post-launch.",
+      "B": "Build a cost model that combines expected request volume, average input tokens, average output tokens, the chosen model's pricing, and any caching benefits.",
+      "C": "Build a cost model that uses the average per-request cost from a similar Claude application the team built last year, scaling that figure by expected request volume.",
+      "D": "Build a cost model that combines expected request volume and average input tokens, treating output tokens as a small enough share of cost to leave out of the projection."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-85",
+    "question": "You are choosing a Claude model for a high-volume classification task. Each classification is straightforward, latency requirements are tight, and per-request cost matters at scale.\n\nWhich model would you choose?",
+    "options": {
+      "A": "A smaller, faster Claude model, because the task is straightforward and the workload prioritizes latency and per-request cost at scale.",
+      "B": "Multiple Claude models in series, where each request runs through more than one model and the application combines the outputs into a final classification.",
+      "C": "A mid-tier Claude model selected by default, because mid-tier models balance quality and cost in a way the team can apply across most tasks.",
+      "D": "The largest, highest-capability Claude model, to maximize quality on every classification the application produces during normal operation across all requests."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-86",
+    "question": "Your Claude application is deployed to development, staging, and production environments. Each environment uses a different model version, different prompt versions, and different plugin dependencies, but the configuration is currently scattered across environment variables, hardcoded values, and undocumented setup scripts.\n\nHow would you manage the configuration?",
+    "options": {
+      "A": "Move all configuration into hardcoded application code to reduce reliance on external configuration sources that are difficult to track over time.",
+      "B": "Consolidate the configuration into a version-controlled system documenting model version pinning, prompt versioning, and plugin dependencies for each environment.",
+      "C": "Standardize all environments to use the same configuration values to eliminate the differences between development, staging, and production.",
+      "D": "Use the latest available model version everywhere and stop pinning model versions, on the grounds that pinning adds maintenance overhead the team should aim to reduce."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-87",
+    "question": "You are building a Claude application that processes 10,000 customer emails overnight to extract structured data. The work is non-interactive, runs once daily, and has a flexible completion window of several hours.\n\nWhich Claude API would you use?",
+    "options": {
+      "A": "The streaming responses API to process each email and return partial results to a database as the model generates them.",
+      "B": "The realtime Messages API processing the emails one at a time sequentially to ensure consistent ordering of results.",
+      "C": "The batch API, which is designed for non-interactive workloads with flexible completion windows.",
+      "D": "The realtime Messages API with concurrent requests to process the emails as fast as possible during the overnight window."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-88",
+    "question": "Your Claude application has been running for several conversation turns and you notice the model occasionally references information that was discussed many turns ago but is no longer relevant. You suspect context drift is causing the model to weight stale content too heavily.\n\nHow would you address the drift?",
+    "options": {
+      "A": "Increase the context window size so all turns of the conversation remain visible to the model in full detail.",
+      "B": "Truncate the conversation so the model sees only the most recent turn during each subsequent response.",
+      "C": "Reset the conversation after every turn so the model loses all prior turns when generating a response.",
+      "D": "Apply compaction to summarize older portions of the conversation so the gist remains while the specifics carry less weight."
+    },
+    "answer": [
+      "D"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-89",
+    "question": "A Claude application that worked well in testing is now occasionally returning outputs that mention information not present in the input. The development team initially assumed the model was hallucinating so they asked you to troubleshoot.\n\nWhat would your do first?",
+    "options": {
+      "A": "Examine production traces to identify whether the issue is hallucination by the model, context loss, prompt injection, or another failure mode before recommending a fix.",
+      "B": "Replace the current model with a larger one to reduce the chance of hallucination, on the grounds that larger models tend to hallucinate less in typical applications.",
+      "C": "Apply a retrieval-augmented generation pattern to ground the responses in source content before any further investigation of the production traces.",
+      "D": "Add a system prompt instruction telling the model not to invent information, on the grounds that prompt-level instructions are the fastest fix for hallucination concerns."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-90",
+    "question": "A teammate has asked how the Claude SDK handles transient API errors, such as a temporary network issue or a brief rate-limit response. They want to know whether the application code needs to handle every transient error or whether the SDK provides any default behavior.\n\nHow would you describe the SDK's default behavior?",
+    "options": {
+      "A": "The SDK provides default retry behavior for many transient errors, and the application code can configure or extend that behavior as needed.",
+      "B": "The SDK logs transient errors to a default error stream and continues execution without retrying, leaving the application code responsible for detecting and responding to failed calls.",
+      "C": "The SDK provides default retry behavior for transient errors up to a fixed number of attempts and this behavior is not configurable.",
+      "D": "The SDK provides default retry behavior for network errors but surfaces rate-limit responses directly to the application code, which must implement its own retry logic for those cases."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-91",
+    "question": "The product team has asked you to choose a Claude model for a new feature. The team has provided functional requirements but has not specified performance, cost, or quality targets. The team's product manager says, \"Use whatever model gives us the best results.\"\n\nHow would you respond?",
+    "options": {
+      "A": "Ask the product team to specify quality, latency, and cost targets, then select the model whose tradeoffs best fit those targets.",
+      "B": "Choose a mid-tier model and ship the feature, because mid-tier models work for most use cases without specified targets.",
+      "C": "Run every Claude model on a representative sample and pick whichever scores best on a generic benchmark.",
+      "D": "Choose the largest, highest-capability Claude model, on the grounds that \"best results\" is most likely to mean highest quality."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-92",
+    "question": "Your team is debating how to manage the prompts used in your Claude application. Some prompts are checked into the code repository, some live in a separate configuration file, and some are constructed inline at runtime. The result is inconsistent, and a recent prompt change went out without code review.\n\nWhat steps would you take?",
+    "options": {
+      "A": "Move all prompts out of version control to a separate spreadsheet that team members can edit freely as the application evolves over time.",
+      "B": "Move all prompts to inline runtime construction so the team can update them quickly through a streamlined process outside the standard code review workflow.",
+      "C": "Establish a single source of truth for prompts, version-control them alongside code, and require code review for prompt changes.",
+      "D": "Establish a single source of truth for prompts but keep change review optional, allowing developers to update prompts directly when changes are urgent."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-93",
+    "question": "Your Claude application is hitting context window limits when processing long customer service transcripts. A junior developer suggests increasing the temperature parameter to fix the issue.\n\nHow would you respond?",
+    "options": {
+      "A": "Explain that temperature controls sampling randomness and is unrelated to context capacity, then address the context issue through summarization or chunking.",
+      "B": "Increase the temperature parameter as the junior developer suggested and observe whether the context window issue resolves over the next several runs of the application in production.",
+      "C": "Adjust the temperature parameter together with the max_tokens parameter, treating the combined adjustment as the team's mechanism for managing context window pressure during long-transcript processing.",
+      "D": "Remove the system prompt entirely to make room for longer transcripts in each request, freeing up context window space the system prompt would otherwise consume."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-94",
+    "question": "Your Claude agent has too many tools, and many of them have overlapping functionality. The agent often picks an inappropriate tool when several could plausibly handle a request.\n\nHow would you address the tool selection problem?",
+    "options": {
+      "A": "Restructure the tool set by consolidating overlapping tools, removing unused tools, and clarifying tool descriptions so each tool has a distinct purpose.",
+      "B": "Add more tools to cover every variation of the requests the agent handles, on the grounds that more tools give the agent more accurate options to choose from.",
+      "C": "Remove all tools and rely on the agent's general capability instead, with the application losing the workflows that previously relied on tools.",
+      "D": "Add detailed examples to each tool's description so the agent can match incoming requests to the right tool by example, treating the examples as the team's selection mechanism."
+    },
+    "answer": [
+      "A"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-95",
+    "question": "Your Claude application runs long agentic workflows where the agent makes many tool calls, and the conversation history grows quickly. After about 20 tool calls, you notice the agent's responses become less focused and sometimes ignore earlier task constraints.\n\nHow would you address this?",
+    "options": {
+      "A": "Remove tool calling from the workflow entirely so the agent operates as a single text-generation step with no tool outputs accumulating in the context window.",
+      "B": "Restart the agent every five tool calls to prevent any drift, with the agent losing all task state at each restart point during the workflow.",
+      "C": "Apply context engineering techniques such as tool output pruning or compaction to keep the active task state visible while reducing the volume of older content.",
+      "D": "Increase the model's context window so the agent can hold every tool output at full detail across the entire workflow no matter how many tool calls it accumulates."
+    },
+    "answer": [
+      "C"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
+  },
+  {
+    "id": "ccdv-f-96",
+    "question": "Your team is choosing how to add a capability to a Claude application. You want to apply the appropriate option, whether built-in tool, custom tool, Skill, or MCP server, based on the use case.\n\nWhich option would you choose?",
+    "options": {
+      "A": "The option that is the newest available option among built-in tools, custom tools, Skills, and MCP servers.",
+      "B": "The option that matches the use case's scope, reuse needs, and integration context.",
+      "C": "The option that is the easiest to build given the team's current development tools and workflows.",
+      "D": "The option that is the most familiar to the team based on prior experience with similar capabilities."
+    },
+    "answer": [
+      "B"
+    ],
+    "explanation": "",
+    "imageUrl": "",
+    "type": "multiple_choice"
   }
 ]
