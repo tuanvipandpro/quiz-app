@@ -12,7 +12,9 @@ Use the CCAR-P files as the first template. Its eight topic mappings reference t
 
 CCA-F has its own eight-topic guide and mappings for all 175 bank questions. Shared asset checks cover both published guides, including their distinct metadata/content paths. When adding a guide, extend the asset list in `tests/quickSummary.test.js`; keep the service/error tests reusable. Names or flags in a bank may reflect an older API/SDK version, so qualify version-sensitive advice and link primary documentation.
 
-CCAO-F (119 questions) and CCDV-F (53 questions) also have separate eight-topic Vietnamese guides. Asset/base-path tests cover all four published guides, and metadata from a different quiz is rejected before any Markdown request. Keep provider policies distinct from organization-specific approval rules; qualify privacy/Memory behavior and version-dependent API/SDK syntax rather than copying a bank answer as a universal guarantee.
+CCAO-F (119 questions) and CCDV-F (53 questions) also have separate eight-topic Vietnamese guides. Asset/base-path tests cover all four Anthropic guides, and metadata from a different quiz is rejected before any Markdown request. Keep provider policies distinct from organization-specific approval rules; qualify privacy/Memory behavior and version-dependent API/SDK syntax rather than copying a bank answer as a universal guarantee.
+
+AWS AIP-C01 has an eight-topic Vietnamese guide mapped to all 136 questions. The shared asset list uses paths relative to `public/quiz/` to cover multiple providers. Tests cover all five guides. Check AWS service capabilities against current primary documentation; latency targets, privacy accuracy and regional availability in a scenario are requirements to verify, not service guarantees.
 
 ## Content contract
 

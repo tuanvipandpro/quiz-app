@@ -30,12 +30,12 @@ CI installs with `yarn install --frozen-lockfile`. A production build writes to 
 
 ## Quiz library
 
-The app includes **20 quiz sets**, grouped by category and searchable by name. Counts below describe the files in this repository.
+The app includes **21 quiz sets**, grouped by category and searchable by name. Counts below describe the files in this repository.
 
 | Category | Quiz sets and question counts |
 | --- | --- |
 | Anthropic | Architect Foundations (CCA-F, 175), Architect Professional (CCAR-P, 126), Associate Foundations (CCAO-F, 119), Developer Foundations (CCDV-F, 53) |
-| AWS | Cloud Practitioner (302), Solutions Architect Associate (529), Developer Associate (557), Data Engineer Associate (227) |
+| AWS | Cloud Practitioner (302), Solutions Architect Associate (529), Developer Associate (557), Data Engineer Associate (227), Generative AI Developer Professional (AIP-C01, 136) |
 | Microsoft | Azure Fundamentals (AZ-900, 472), GitHub Copilot (GH-300, 115), Agentic AI Business Solutions Architect Expert (AB-100, 111), Azure AI Apps and Agents Developer Associate (AI-103, 117) |
 | Google Cloud | Associate Cloud Engineer (302), Professional Cloud Architect (279), Professional Cloud Developer (359), Professional Data Engineer (139), Generative AI Leader (56) |
 | ISTQB | Foundation Level v4.0 (240), AI Testing (118), Advanced Test Analyst v4.0 (42) |
@@ -66,7 +66,7 @@ A checkpoint saves the current position, not selected answers. Saving is manual,
 
 ## Quick Summary
 
-Four Anthropic quizzes have prepared Vietnamese guides, each with **eight topics** and an estimated **eight-minute** reading time. Topics contain core knowledge, scenario cues, wrong-answer traps, memory aids, primary references and links into Practice.
+Four Anthropic quizzes and the AWS AIP-C01 quiz have prepared Vietnamese guides, each with **eight topics** and an estimated **eight-minute** reading time. Topics contain core knowledge, scenario cues, wrong-answer traps, memory aids, primary references and links into Practice.
 
 | Guide | Reviewed source |
 | --- | --- |
@@ -74,6 +74,7 @@ Four Anthropic quizzes have prepared Vietnamese guides, each with **eight topics
 | [CCAR-P](public/summaries/anthropic-ccar-p/vi.md) | Original 63-question revision; the current bank has 126 questions and displays a review warning |
 | [CCAO-F](public/summaries/anthropic-ccao-f/vi.md) | 119 questions |
 | [CCDV-F](public/summaries/anthropic-ccdv-f/vi.md) | 53 questions |
+| [AIP-C01](public/summaries/aws-aip-c01/vi.md) | 136 questions |
 
 Desktop has a contents sidebar; phones/tablets use a collapsible contents menu. Related-question buttons resolve stable question IDs to their current Practice positions without changing saved checkpoints. Loading failures offer Retry and Back.
 
