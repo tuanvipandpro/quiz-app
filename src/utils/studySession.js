@@ -5,6 +5,8 @@ import {
   shuffleQuestionOptions,
   validateQuizQuestions,
 } from './questionModel.js';
+import { canonicalQuizId, QUIZ_ID_ALIASES } from '../data/quizAliases.js';
+import { canonicalQuizHash } from './navigation.js';
 
 export const SESSION_PREFIX = 'quiz-study-v1:';
 
@@ -17,7 +19,7 @@ export function questionFingerprint(questions) {
 }
 
 export function sessionKey(uid, quizId, mode) {
-  return `${SESSION_PREFIX}${uid || 'guest'}:${quizId}:${mode}`;
+  return `${SESSION_PREFIX}${uid || 'guest'}:${canonicalQuizId(quizId)}:${mode}`;
 }
 
 export function createExamSession(
@@ -57,6 +59,7 @@ export function initialStudySession(
   create,
   { fresh = null, initialIndex = null, entryToken = null } = {}
 ) {
+  if (typeof entryToken === 'string') entryToken = canonicalQuizHash(entryToken);
   const restored = readStudySession(storage, key, questions, mode);
   // Back to an older start URL must not replace a newer running draft.
   const olderLink = fresh && restored?.freshToken && Number(fresh) < Number(restored.freshToken);
@@ -80,6 +83,28 @@ export function finishExam(session, now = Date.now(), submit = false) {
 }
 
 export function readStudySession(storage, key, questions, mode) {
+  const keys = [key];
+  for (const [alias, canonicalId] of Object.entries(QUIZ_ID_ALIASES)) {
+    const suffix = `:${canonicalId}:${mode}`;
+    if (key.startsWith(SESSION_PREFIX) && key.endsWith(suffix))
+      keys.push(key.slice(0, -suffix.length) + `:${alias}:${mode}`);
+  }
+  let restored = null;
+  for (const candidateKey of keys) {
+    const candidate = readStoredStudySession(storage, candidateKey, questions, mode);
+    if (!candidate) continue;
+    if (typeof candidate.entryToken === 'string')
+      candidate.entryToken = canonicalQuizHash(candidate.entryToken);
+    if (
+      !restored ||
+      (mode === 'exam' && Number(candidate.freshToken) > Number(restored.freshToken || 0))
+    )
+      restored = candidate;
+  }
+  return restored;
+}
+
+function readStoredStudySession(storage, key, questions, mode) {
   try {
     const saved = JSON.parse(storage.getItem(key));
     if (

@@ -1,3 +1,5 @@
+import { canonicalQuizId } from './quizAliases.js';
+
 export const PROVIDERS = ['Anthropic', 'AWS', 'Microsoft', 'Google Cloud', 'ISTQB'];
 
 export const FEATURED_QUIZ_IDS = ['aws-aip-c01', 'anthropic-ccar-p'];
@@ -123,15 +125,6 @@ export const quizzes = [
     code: 'AI-103',
   },
   {
-    id: 'aws-ace',
-    name: 'Cloud Practitioner (CLF-C02)',
-    file: 'quiz/AWS/AWS-ACE.json',
-    category: 'AWS',
-    difficulty: 'Practitioner',
-    totalQuestions: 302,
-    code: 'CLF-C02',
-  },
-  {
     id: 'aws-saa',
     name: 'Solutions Architect Associate (SAA-C03)',
     file: 'quiz/AWS/AWS_SAA.json',
@@ -196,4 +189,4 @@ export const quizzes = [
   },
 ];
 
-export const findQuiz = (id) => quizzes.find((quiz) => quiz.id === id);
+export const findQuiz = (id) => quizzes.find((quiz) => quiz.id === canonicalQuizId(id));

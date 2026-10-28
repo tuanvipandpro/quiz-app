@@ -1,3 +1,16 @@
+import { canonicalQuizId } from '../data/quizAliases.js';
+
+export function canonicalQuizHash(hash) {
+  return hash.replace(/^(#\/quiz\/)([^/?]+)/, (match, prefix, encodedId) => {
+    try {
+      const id = decodeURIComponent(encodedId);
+      return id === canonicalQuizId(id) ? match : prefix + encodeURIComponent(canonicalQuizId(id));
+    } catch {
+      return match;
+    }
+  });
+}
+
 export function parseRoute(hash) {
   try {
     const [path, query = ''] = hash.replace(/^#/, '').split('?');
@@ -7,7 +20,7 @@ export function parseRoute(hash) {
     if (parts[0] === 'quiz' && parts[1])
       return {
         page: 'quiz',
-        quizId: parts[1],
+        quizId: canonicalQuizId(parts[1]),
         mode: ['practice', 'exam', 'summary'].includes(parts[2]) ? parts[2] : 'overview',
         params: new URLSearchParams(query),
       };
@@ -19,7 +32,7 @@ export function parseRoute(hash) {
 
 export function quizUrl(id, mode = 'overview', params = {}) {
   const query = new URLSearchParams(params).toString();
-  return `#/quiz/${encodeURIComponent(id)}${mode === 'overview' ? '' : '/' + mode}${query ? '?' + query : ''}`;
+  return `#/quiz/${encodeURIComponent(canonicalQuizId(id))}${mode === 'overview' ? '' : '/' + mode}${query ? '?' + query : ''}`;
 }
 
 export function resolveLoadedQuiz(loaded, quizId, uid) {

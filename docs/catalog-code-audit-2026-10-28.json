@@ -1,6 +1,17 @@
 {
   "checkedAt": "2026-10-28",
-  "scope": "Display names and codes for all 21 catalog entries. Existing quiz IDs, JSON paths, question content, checkpoints and summary registry keys are preserved. This does not assert that a community question bank covers every current exam objective.",
+  "scope": "Display names and codes for 20 unique catalog entries. The mislabeled AWS ACE entry has been retired and aliased to Google ACE after content verification. This does not assert that a community question bank covers every current exam objective.",
+  "retiredEntries": [
+    {
+      "id": "aws-ace",
+      "canonicalId": "gcp-ace",
+      "incorrectLabel": "Cloud Practitioner (CLF-C02)",
+      "legacyFile": "quiz/AWS/AWS-ACE.json",
+      "canonicalFile": "quiz/Google/GCP-ACE.json",
+      "sha256": "509b3980d9e104170db206ffa19bdcc70f28da7f012e7d482b0f6258cec997d0",
+      "reason": "Both files are byte-identical and contain 302 Google Cloud ACE questions. The legacy file remains only for old direct asset URLs; the active catalog loads the Google file. Routes, cloud checkpoints and tab drafts resolve the legacy ID to gcp-ace. No genuine CLF-C02 bank is available in this repository."
+    }
+  ],
   "notes": [
     "Google Cloud labels are app abbreviations of certification names, not AWS-style versioned exam identifiers. Professional Data Engineer is abbreviated PDE; the former PCDE label remains searchable.",
     "ISTQB CTFL and CTAL-TA are certification abbreviations. v4.0 remains in the title as a syllabus version, separate from the code. CT-AI belongs to the Specialist stream; this audit does not upgrade its question bank to syllabus v2.0.",
@@ -44,7 +55,6 @@
     { "id": "gh-300", "code": "GH-300", "source": "gh-300" },
     { "id": "ab-100", "code": "AB-100", "source": "ab-100" },
     { "id": "ai-103", "code": "AI-103", "source": "ai-103" },
-    { "id": "aws-ace", "code": "CLF-C02", "previousCode": "ACE", "source": "aws" },
     { "id": "aws-saa", "code": "SAA-C03", "previousCode": "SAA", "source": "aws" },
     { "id": "aws-dva", "code": "DVA-C02", "previousCode": "DVA", "source": "aws" },
     { "id": "aws-dea", "code": "DEA-C01", "previousCode": "DEA", "source": "aws" },

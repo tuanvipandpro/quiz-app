@@ -9,6 +9,8 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import app from '../config/firebase';
+import { canonicalQuizId, legacyQuizIds } from '../data/quizAliases.js';
+import { normalizeProgress } from '../utils/quizProgress.js';
 
 const db = getFirestore(app);
 const USERS_COLLECTION = 'users';
@@ -204,8 +206,16 @@ class UserService {
    * @returns {Promise<Object>}
    */
   async saveQuizProgress(uid, quizId, questionIndex, questionId = null) {
+    quizId = canonicalQuizId(quizId);
     try {
-      if (!uid || typeof quizId !== 'string' || !quizId || quizId.includes('.') || !Number.isInteger(questionIndex) || questionIndex < 0) {
+      if (
+        !uid ||
+        typeof quizId !== 'string' ||
+        !quizId ||
+        quizId.includes('.') ||
+        !Number.isInteger(questionIndex) ||
+        questionIndex < 0
+      ) {
         throw new Error('Invalid quiz checkpoint');
       }
       const userDocRef = this.getUserDocRef(uid);
@@ -214,9 +224,12 @@ class UserService {
           quizId,
           questionIndex,
           questionId: questionId === null ? null : String(questionId),
-          savedAt: serverTimestamp()
+          savedAt: serverTimestamp(),
         },
-        updatedAt: serverTimestamp()
+        ...Object.fromEntries(
+          legacyQuizIds(quizId).map((id) => [`quizProgress.${id}`, deleteField()])
+        ),
+        updatedAt: serverTimestamp(),
       });
       return { success: true };
     } catch (error) {
@@ -236,7 +249,7 @@ class UserService {
       const userDocRef = this.getUserDocRef(uid);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
-        return userDoc.data().quizProgress ?? {};
+        return normalizeProgress(userDoc.data().quizProgress);
       }
       return {};
     } catch (error) {
@@ -253,7 +266,7 @@ class UserService {
    */
   async getQuizProgress(uid, quizId) {
     const progress = await this.getAllQuizProgress(uid);
-    return progress[quizId] ?? null;
+    return progress[canonicalQuizId(quizId)] ?? null;
   }
 
   /**
@@ -263,12 +276,17 @@ class UserService {
    * @returns {Promise<Object>}
    */
   async clearQuizProgress(uid, quizId) {
+    quizId = canonicalQuizId(quizId);
     try {
-      if (!uid || typeof quizId !== 'string' || !quizId || quizId.includes('.')) throw new Error('Invalid quiz checkpoint');
+      if (!uid || typeof quizId !== 'string' || !quizId || quizId.includes('.'))
+        throw new Error('Invalid quiz checkpoint');
       const userDocRef = this.getUserDocRef(uid);
       await updateDoc(userDocRef, {
         [`quizProgress.${quizId}`]: deleteField(),
-        updatedAt: serverTimestamp()
+        ...Object.fromEntries(
+          legacyQuizIds(quizId).map((id) => [`quizProgress.${id}`, deleteField()])
+        ),
+        updatedAt: serverTimestamp(),
       });
       return { success: true };
     } catch (error) {

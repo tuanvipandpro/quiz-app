@@ -40,7 +40,7 @@ import { getQuickSummary } from './data/quickSummaries';
 import { resolveCheckpoint } from './utils/quizProgress';
 import { validateQuizQuestions } from './utils/questionModel';
 import { clearStudySessions, readStudySession, sessionKey } from './utils/studySession';
-import { quizUrl, resolveLoadedQuiz } from './utils/navigation';
+import { canonicalQuizHash, quizUrl, resolveLoadedQuiz } from './utils/navigation';
 import 'antd/dist/reset.css';
 import './App.css';
 import './markdown.css';
@@ -119,6 +119,11 @@ export default function App() {
   const scrollPositions = useRef(new Map());
   const previousUid = useRef(uid);
   const header = useRef(null);
+
+  useEffect(() => {
+    const canonical = canonicalQuizHash(hash);
+    if (canonical !== hash) replace(canonical);
+  }, [hash]);
 
   useEffect(() => {
     const observer = new ResizeObserver(() => {
@@ -343,12 +348,30 @@ export default function App() {
     }
   };
   const logout = () => {
-    const run = async () => {
-      const result = await signOut();
-      if (result.success) messageApi.success(t('Signed out successfully'));
-      else messageApi.error(t('Could not sign out. Please retry.'));
-    };
-    if (!guard(run)) run();
+    modal.confirm({
+      title: t('Sign out?'),
+      content: t(
+        examActive
+          ? 'Signing out will end this exam and clear its local draft. Saved checkpoints stay in your account.'
+          : 'Local study drafts will be cleared. Saved checkpoints stay in your account.'
+      ),
+      okText: t('Sign out'),
+      cancelText: t('Cancel'),
+      okButtonProps: { danger: true },
+      autoFocusButton: 'cancel',
+      onOk: async () => {
+        try {
+          const result = await signOut();
+          if (!result.success) throw new Error('Sign out failed');
+          setExamActive(false);
+          go('#/library', true);
+          messageApi.success(t('Signed out successfully'));
+        } catch (error) {
+          messageApi.error(t('Could not sign out. Please retry.'));
+          throw error;
+        }
+      },
+    });
   };
 
   let screen;
@@ -619,13 +642,6 @@ export default function App() {
                   EN
                 </button>
               </div>
-              <Button
-                type="text"
-                className="header-settings"
-                icon={<SettingOutlined aria-hidden="true" />}
-                aria-label={t('AI Settings')}
-                onClick={() => setSettingsVisible(true)}
-              />
               {authLoading ? (
                 <Spin size="small" />
               ) : user ? (
@@ -639,11 +655,13 @@ export default function App() {
                         icon: <SettingOutlined aria-hidden="true" />,
                         onClick: () => setSettingsVisible(true),
                       },
+                      { type: 'divider' },
                       {
                         key: 'logout',
                         label: t('Sign out'),
                         icon: <LogoutOutlined aria-hidden="true" />,
                         onClick: logout,
+                        danger: true,
                       },
                     ],
                   }}

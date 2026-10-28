@@ -50,6 +50,100 @@ const storage = () => {
   return values;
 };
 
+test('Google ACE restores a legacy practice draft within the same account and preserves existing canonical answers', () => {
+  const store = storage();
+  const legacyKey = 'quiz-study-v1:alice:aws-ace:practice';
+  const key = sessionKey('alice', 'gcp-ace', 'practice');
+  const draft = {
+    signature: questionFingerprint(questions),
+    index: 1,
+    answers: ['A', ['A', 'C'], {}],
+  };
+  store.setItem(legacyKey, JSON.stringify(draft));
+  assert.equal(sessionKey('alice', 'aws-ace', 'practice'), key);
+  assert.deepEqual(readStudySession(store, key, questions, 'practice'), draft);
+  assert.equal(
+    readStudySession(store, sessionKey('bob', 'gcp-ace', 'practice'), questions, 'practice'),
+    null
+  );
+  assert.equal(
+    readStudySession(store, sessionKey(null, 'gcp-ace', 'practice'), questions, 'practice'),
+    null
+  );
+  const canonical = { ...draft, index: 2 };
+  store.setItem(key, JSON.stringify(canonical));
+  assert.deepEqual(readStudySession(store, key, questions, 'practice'), canonical);
+  assert.equal(
+    readStudySession(store, key, [...questions, { ...questions[0], id: 'new' }], 'practice'),
+    null
+  );
+  clearStudySessions(store, 'alice');
+  assert.equal(store.getItem(legacyKey), null);
+  assert.equal(store.getItem(key), null);
+});
+
+test('aliased exam links keep the newest draft, exact shuffle, answers, flags and deadline', () => {
+  const store = storage();
+  const legacyKey = 'quiz-study-v1:alice:aws-ace:exam';
+  const key = sessionKey('alice', 'gcp-ace', 'exam');
+  const legacy = {
+    ...createExamSession(questions, 3, 60, 2000, () => 0.25),
+    freshToken: '2000',
+    index: 1,
+    flags: [1],
+  };
+  legacy.answers[0] = ['A'];
+  store.setItem(legacyKey, JSON.stringify(legacy));
+  store.setItem(
+    key,
+    JSON.stringify({ ...createExamSession(questions, 2, 60, 1000), freshToken: '1000' })
+  );
+  const neverCreate = () => {
+    throw new Error('Must not restart the timer or reshuffle');
+  };
+  const restored = initialStudySession(store, key, questions, 'exam', neverCreate, {
+    fresh: '2000',
+  });
+  assert.deepEqual(restored.questions, legacy.questions);
+  assert.deepEqual(restored.answers, legacy.answers);
+  assert.deepEqual(restored.flags, legacy.flags);
+  assert.equal(restored.deadline, legacy.deadline);
+  const canonical = { ...legacy, freshToken: '3000', deadline: 3603000 };
+  store.setItem(key, JSON.stringify(canonical));
+  assert.equal(
+    initialStudySession(store, key, questions, 'exam', neverCreate, { fresh: '2000' }).deadline,
+    canonical.deadline
+  );
+});
+
+test('an old resume URL does not reset a continued practice draft to its earlier cloud checkpoint', () => {
+  const store = storage();
+  const oldLink = '#/quiz/aws-ace/practice?resume=1&entry=100';
+  const newLink = '#/quiz/gcp-ace/practice?resume=1&entry=100';
+  store.setItem(
+    'quiz-study-v1:alice:aws-ace:practice',
+    JSON.stringify({
+      signature: questionFingerprint(questions),
+      index: 2,
+      answers: ['A', ['A', 'C'], {}],
+      entryToken: oldLink,
+    })
+  );
+  const restored = initialStudySession(
+    store,
+    sessionKey('alice', 'gcp-ace', 'practice'),
+    questions,
+    'practice',
+    () => {
+      throw new Error('Must restore');
+    },
+    { initialIndex: 0, entryToken: newLink }
+  );
+  assert.equal(restored.index, 2);
+  assert.equal(restored.entryToken, newLink);
+  assert.deepEqual(restored.answers[1], ['A', 'C']);
+});
+
 test('reopening a new-exam URL restores the exact order, choices, answers and deadline', () => {
   const store = storage();
   const key = sessionKey('alice', 'bank', 'exam');

@@ -30,17 +30,19 @@ CI installs with `yarn install --frozen-lockfile`. A production build writes to 
 
 ## Quiz library
 
-The app opens directly to **21 quiz sets**, grouped by provider and searchable by name or exam code. AWS AIP-C01 and Anthropic CCAR-P are pinned as featured exams. Counts below describe the files in this repository and are checked against the catalog by automated tests.
+The app opens directly to **20 unique quiz sets**, grouped by provider and searchable by name or exam code. AWS AIP-C01 and Anthropic CCAR-P are pinned as featured exams. Counts below describe the files in this repository and are checked against the catalog by automated tests.
 
 | Category | Quiz sets and question counts |
 | --- | --- |
 | Anthropic | Architect Foundations (CCAR-F, 201), Architect Professional (CCAR-P, 157), Associate Foundations (CCAO-F, 151), Developer Foundations (CCDV-F, 96) |
-| AWS | Cloud Practitioner (CLF-C02, 302), Solutions Architect Associate (SAA-C03, 529), Developer Associate (DVA-C02, 557), Data Engineer Associate (DEA-C01, 227), Generative AI Developer Professional (AIP-C01, 136) |
+| AWS | Solutions Architect Associate (SAA-C03, 529), Developer Associate (DVA-C02, 557), Data Engineer Associate (DEA-C01, 227), Generative AI Developer Professional (AIP-C01, 136) |
 | Microsoft | Azure Fundamentals (AZ-900, 472), GitHub Copilot (GH-300, 115), Agentic AI Business Solutions Architect Expert (AB-100, 111), Azure AI Apps and Agents Developer Associate (AI-103, 117) |
 | Google Cloud | Associate Cloud Engineer (ACE, 302), Professional Cloud Architect (PCA, 279), Professional Cloud Developer (PCD, 359), Professional Data Engineer (PDE, 139), Generative AI Leader (GAL, 56) |
 | ISTQB | Foundation Level v4.0 (CTFL, 240), AI Testing (CT-AI, 118), Advanced Test Analyst v4.0 (CTAL-TA, 42) |
 
-Display codes were checked against provider sources on 2026-10-28; the [catalog audit](docs/catalog-code-audit-2026-10-28.json) records every entry and reference. Google Cloud labels are name abbreviations, and ISTQB syllabus versions remain separate from certification codes. Stored quiz IDs and paths are unchanged, including the legacy `anthropic-cca-f`, `aws-ace` and `gcp-pcde` keys.
+Display codes were checked against provider sources on 2026-10-28; the [catalog audit](docs/catalog-code-audit-2026-10-28.json) records every entry and reference. Google Cloud labels are name abbreviations, and ISTQB syllabus versions remain separate from certification codes. The legacy `anthropic-cca-f` and `gcp-pcde` keys remain stable.
+
+The former `aws-ace` entry was an exact copy of Google ACE, not a Cloud Practitioner bank. It is no longer listed under AWS. Old quiz links resolve to `gcp-ace` with their mode and query parameters intact. Cloud reads select the newest valid ACE checkpoint (canonical wins ties); the next save or removal clears both old/new fields atomically. Account-scoped tab drafts restore from the legacy key when needed; if both exam drafts exist, the newer start token wins without changing its shuffle or deadline. Existing canonical Practice drafts take priority. The duplicate static file remains for old direct download URLs, but is never used by the catalog.
 
 Start Practice directly from a quiz card, open its overview, or select Mock exam to configure the count and duration. Provider sections can be expanded/collapsed and have quick-jump buttons. Returning to the library keeps the search and section state. Featured cards and provider rows use the same quiz ID and checkpoint.
 
@@ -51,6 +53,8 @@ The **VN / EN** toggle changes interface labels without translating question/gui
 **My quizzes** retains JSON upload with validation and a preview before use: 1–100 questions, up to 1 MiB per file. The active upload is stored in this tab, with its owner, and survives refresh when browser session storage is available. Keep the original file for other devices. Per-user Firestore storage, a three-quiz quota and cloud management are tracked separately in [issue #42](https://github.com/tuanvipandpro/quiz-app/issues/42).
 
 The question-format guide is displayed directly on My quizzes, with complete single-choice, multi-select, yes/no, row-dropdown and inline-dropdown examples, field explanations, Copy JSON and example downloads. All examples run through the same strict validator in automated tests. Sign-in shows branded Google, GitHub and Microsoft options. Google remains active; GitHub and Microsoft are disabled and labelled unavailable. Phones use centered, compact upload controls and show the preview after file selection.
+
+AI Settings is available in the signed-in account menu. A divider separates it from Sign out, which opens a confirmation dialog. Cancel preserves the session; confirming signs out and returns to the library. An active exam receives an explicit warning about clearing its tab draft. Failed sign-out attempts leave the account signed in and allow retry.
 
 ### Practice
 

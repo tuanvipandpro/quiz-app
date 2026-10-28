@@ -1,9 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { quizzes, FEATURED_QUIZ_IDS, PROVIDERS } from '../src/data/quizzes.js';
+import { quizzes, findQuiz, FEATURED_QUIZ_IDS, PROVIDERS } from '../src/data/quizzes.js';
+import { createHash } from 'node:crypto';
 import { translate, vi } from '../src/i18n/messages.js';
-import { parseRoute, quizUrl, resolveLoadedQuiz } from '../src/utils/navigation.js';
+import {
+  canonicalQuizHash,
+  parseRoute,
+  quizUrl,
+  resolveLoadedQuiz,
+} from '../src/utils/navigation.js';
 import { LANGUAGE_KEY, readPreferredLanguage } from '../src/i18n/preferences.js';
 import { questionFormats } from '../src/data/questionFormats.js';
 import { validateQuizQuestions } from '../src/utils/questionModel.js';
@@ -55,9 +61,49 @@ test('exam codes match the reviewed provider catalog without changing stored qui
     assert.equal(new URL(audit.sources[entry.source]).protocol, 'https:');
     assert.equal(parseRoute(quizUrl(entry.id, 'practice')).quizId, entry.id);
   }
-  assert.equal(quizzes.find((quiz) => quiz.id === 'aws-ace').file, 'quiz/AWS/AWS-ACE.json');
+  assert.equal(findQuiz('aws-ace').id, 'gcp-ace');
   assert.ok(quizzes.find((quiz) => quiz.id === 'anthropic-cca-f').aliases.includes('CCA-F'));
   assert.ok(quizzes.find((quiz) => quiz.id === 'gcp-pcde').aliases.includes('PCDE'));
+});
+
+test('the catalog contains unique question banks and the mislabeled AWS copy only resolves as Google ACE', async () => {
+  const hashes = new Map();
+  for (const quiz of quizzes) {
+    const questions = JSON.parse(
+      await readFile(new URL('../public/' + quiz.file, import.meta.url), 'utf8')
+    );
+    const hash = createHash('sha256').update(JSON.stringify(questions)).digest('hex');
+    assert.equal(hashes.has(hash), false, `${quiz.id} duplicates ${hashes.get(hash)}`);
+    hashes.set(hash, quiz.id);
+  }
+  assert.equal(quizzes.length, 20);
+  assert.equal(quizzes.filter((quiz) => quiz.category === 'AWS').length, 4);
+  assert.equal(
+    quizzes.some((quiz) => quiz.code === 'CLF-C02' || quiz.id === 'aws-ace'),
+    false
+  );
+  assert.equal(findQuiz('aws-ace'), findQuiz('gcp-ace'));
+  const legacy = await readFile(new URL('../public/quiz/AWS/AWS-ACE.json', import.meta.url));
+  const canonical = await readFile(new URL('../public/quiz/Google/GCP-ACE.json', import.meta.url));
+  assert.deepEqual(legacy, canonical, 'Alias migration is only valid for the identical bank');
+});
+
+test('legacy ACE links keep their mode and every query parameter while resolving Google ACE', () => {
+  for (const mode of ['', '/practice', '/exam', '/summary']) {
+    const oldHash =
+      '#/quiz/aws-ace' + mode + '?resume=1&entry=100&fresh=250&time=60&count=50&question=17';
+    const next = canonicalQuizHash(oldHash);
+    assert.equal(next, oldHash.replace('aws-ace', 'gcp-ace'));
+    assert.equal(parseRoute(oldHash).quizId, 'gcp-ace');
+    assert.equal(parseRoute(next).params.toString(), parseRoute(oldHash).params.toString());
+  }
+  assert.equal(quizUrl('aws-ace', 'practice'), '#/quiz/gcp-ace/practice');
+  assert.equal(
+    canonicalQuizHash('#/quiz/%61ws-ace/exam?fresh=100'),
+    '#/quiz/gcp-ace/exam?fresh=100'
+  );
+  assert.equal(canonicalQuizHash('#/quiz/%E0%A4%A'), '#/quiz/%E0%A4%A');
+  assert.equal(canonicalQuizHash('#/my-quizzes?quiz=aws-ace'), '#/my-quizzes?quiz=aws-ace');
 });
 
 test('every provider resolves to a local, valid icon and unknown providers have a safe fallback', async () => {

@@ -14,6 +14,11 @@ export const vi = {
   'Continue with GitHub': 'Tiếp tục với GitHub',
   'Continue with Microsoft': 'Tiếp tục với Microsoft',
   Unavailable: 'Chưa hỗ trợ',
+  'Sign out?': 'Đăng xuất?',
+  'Local study drafts will be cleared. Saved checkpoints stay in your account.':
+    'Bản nháp học trong tab sẽ được xóa. Tiến trình đã lưu vẫn ở trong tài khoản.',
+  'Signing out will end this exam and clear its local draft. Saved checkpoints stay in your account.':
+    'Đăng xuất sẽ kết thúc bài thi này và xóa bản nháp trong tab. Tiến trình đã lưu vẫn ở trong tài khoản.',
   Specialist: 'Chuyên biệt',
   'Choose a file': 'Chọn tệp',
   'Review your quiz': 'Kiểm tra quiz',

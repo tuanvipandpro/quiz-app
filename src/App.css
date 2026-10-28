@@ -1377,12 +1377,8 @@ summary:focus-visible {
     min-width: 44px;
     min-height: 44px;
   }
-  .header-settings {
-    grid-column: 4;
-    grid-row: 1;
-  }
   .app-nav {
-    grid-column: 1 / 4;
+    grid-column: 1 / -1;
     grid-row: 2;
     justify-content: flex-start;
     gap: 8px;
@@ -1395,7 +1391,7 @@ summary:focus-visible {
   .profile-button,
   .header-actions > .ant-spin {
     grid-column: 4;
-    grid-row: 2;
+    grid-row: 1;
   }
   .header-login.ant-btn {
     padding: 0;
