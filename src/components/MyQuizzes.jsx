@@ -3,6 +3,7 @@ import { Alert, Button, Card, Input, Modal, Space, Typography, Upload } from 'an
 import { CloudUploadOutlined, DownloadOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
 import { validateQuizQuestions } from '../utils/questionModel';
+import QuestionFormatGuide from './QuestionFormatGuide';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -52,6 +53,7 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
     <div className="my-quizzes">
       {holder}
       <div className="page-heading">
+        <span className="section-eyebrow">{t('Personal workspace')}</span>
         <Title level={1}>{t('My quizzes')}</Title>
         <Paragraph type="secondary">{t('Practise with your own questions.')}</Paragraph>
       </div>
@@ -62,6 +64,17 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
           'This upload is available in this tab. Keep your file to use it on another device.'
         )}
       />
+      <ol className="upload-workflow" aria-label={t('Upload steps')}>
+        {['Choose a file', 'Review your quiz', 'Start learning'].map((label, index) => (
+          <li
+            key={label}
+            aria-current={(candidate ? 1 : upload ? 2 : 0) === index ? 'step' : undefined}
+          >
+            <span aria-hidden="true">{index + 1}</span>
+            {t(label)}
+          </li>
+        ))}
+      </ol>
       {upload && (
         <Card className="uploaded-quiz">
           <div className="section-heading">
@@ -118,9 +131,12 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
             </Button>
             <Button
               icon={<FileTextOutlined aria-hidden="true" />}
-              href="https://github.com/tuanvipandpro/quiz-app/blob/master/docs/question-formats.md"
-              target="_blank"
-              rel="noopener noreferrer"
+              aria-controls="question-format-guide"
+              onClick={() => {
+                const guide = document.getElementById('question-format-guide');
+                guide?.focus({ preventScroll: true });
+                guide?.scrollIntoView({ block: 'start' });
+              }}
             >
               {t('Question format guide')}
             </Button>
@@ -159,10 +175,17 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
               </Button>
             </Space>
           ) : (
-            <Text type="secondary">{t('Choose a JSON file to get started.')}</Text>
+            <div className="upload-preview-empty">
+              <FileTextOutlined aria-hidden="true" />
+              <Paragraph type="secondary">{t('Choose a JSON file to get started.')}</Paragraph>
+              <Text type="secondary">
+                {t('Review the name and question count before you start.')}
+              </Text>
+            </div>
           )}
         </Card>
       </div>
+      <QuestionFormatGuide />
     </div>
   );
 }

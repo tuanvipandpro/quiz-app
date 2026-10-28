@@ -33,6 +33,7 @@ import { useQuizProgress } from './hooks/useQuizProgress';
 import QuizLibrary from './components/QuizLibrary';
 import MyQuizzes from './components/MyQuizzes';
 import QuizMode from './components/QuizMode';
+import SignInModal from './components/SignInModal';
 import { findQuiz } from './data/quizzes';
 import { getQuickSummary } from './data/quickSummaries';
 import { resolveCheckpoint } from './utils/quizProgress';
@@ -110,6 +111,8 @@ export default function App() {
   const [upload, setUpload] = useState(null);
   const [uploadReady, setUploadReady] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
+  const [loginBusy, setLoginBusy] = useState(false);
+  const [loginError, setLoginError] = useState(null);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const cache = useRef(new Map());
   const scrollPositions = useRef(new Map());
@@ -316,14 +319,27 @@ export default function App() {
     }
     setUpload(null);
   };
+  const openLogin = () => {
+    setLoginError(null);
+    setLoginVisible(true);
+  };
   const login = async () => {
-    const result = await signInWithGoogle();
-    if (result.success) {
-      setLoginVisible(false);
-      messageApi.success(
-        t('Welcome, {name}!', { name: result.user.displayName || result.user.email })
-      );
-    } else messageApi.error(t('Could not sign in. Please retry.'));
+    if (loginBusy) return;
+    setLoginBusy(true);
+    setLoginError(null);
+    try {
+      const result = await signInWithGoogle();
+      if (result.success) {
+        setLoginVisible(false);
+        messageApi.success(
+          t('Welcome, {name}!', { name: result.user.displayName || result.user.email })
+        );
+      } else setLoginError('Could not sign in. Please retry.');
+    } catch {
+      setLoginError('Could not sign in. Please retry.');
+    } finally {
+      setLoginBusy(false);
+    }
   };
   const logout = () => {
     const run = async () => {
@@ -407,7 +423,7 @@ export default function App() {
         adjustedCheckpoint={checkpoint?.adjusted}
         fresh={route.params.get('fresh')}
         entryToken={hash}
-        onSignIn={() => setLoginVisible(true)}
+        onSignIn={openLogin}
         onExit={() => go(quizUrl(active.id))}
         onBackToSummary={
           route.params.get('from') === 'summary' ? () => go(quizUrl(active.id, 'summary')) : null
@@ -517,10 +533,14 @@ export default function App() {
           colorBgElevated: isDarkMode ? '#1c2736' : '#ffffff',
           colorText: isDarkMode ? '#ecf2fa' : '#192e49',
           colorTextSecondary: isDarkMode ? '#b0bed1' : '#586b82',
+          colorTextDescription: isDarkMode ? '#b0bed1' : '#586b82',
+          colorTextPlaceholder: isDarkMode ? '#b0bed1' : '#586b82',
           colorBorder: isDarkMode ? '#38485c' : '#dce4ee',
           borderRadius: 10,
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
           controlHeight: 40,
+          fontSize: 15,
+          fontSizeLG: 16,
         },
       }}
     >
@@ -639,7 +659,7 @@ export default function App() {
                   aria-label={t('Sign in')}
                   icon={<LoginOutlined aria-hidden="true" />}
                   className="header-login"
-                  onClick={() => setLoginVisible(true)}
+                  onClick={openLogin}
                 >
                   <span>{t('Sign in')}</span>
                 </Button>
@@ -672,17 +692,16 @@ export default function App() {
           </Footer>
         )}
       </Layout>
-      <Modal
-        title={t('Sign in')}
+      <SignInModal
         open={loginVisible}
-        onCancel={() => setLoginVisible(false)}
-        footer={null}
-        centered
-      >
-        <Button type="primary" block size="large" onClick={login}>
-          {t('Continue with Google')}
-        </Button>
-      </Modal>
+        busy={loginBusy}
+        error={loginError}
+        onSignIn={login}
+        onClose={() => {
+          setLoginVisible(false);
+          setLoginError(null);
+        }}
+      />
       {settingsVisible && (
         <Suspense fallback={null}>
           <SettingsModal visible onClose={() => setSettingsVisible(false)} />

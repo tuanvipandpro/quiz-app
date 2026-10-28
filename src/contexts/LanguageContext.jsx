@@ -1,17 +1,16 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { translate } from '../i18n/messages';
+import { LANGUAGE_KEY, readPreferredLanguage } from '../i18n/preferences';
 
 const LanguageContext = createContext(null);
-const LANGUAGE_KEY = 'quiz-app-language';
 
 function initialLanguage() {
   try {
-    const saved = localStorage.getItem(LANGUAGE_KEY);
-    if (saved === 'vi' || saved === 'en') return saved;
+    return readPreferredLanguage(localStorage);
   } catch {
     /* Preferences are optional when browser storage is disabled. */
   }
-  return navigator.language?.toLowerCase().startsWith('vi') ? 'vi' : 'en';
+  return 'en';
 }
 
 export function LanguageProvider({ children }) {

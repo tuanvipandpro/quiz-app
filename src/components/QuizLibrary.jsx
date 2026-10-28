@@ -76,6 +76,7 @@ export default function QuizLibrary({
   return (
     <div className="quiz-library">
       <div className="page-heading">
+        <span className="section-eyebrow">{t('Certification practice')}</span>
         <Title level={1}>{t('Quiz Bank')}</Title>
         <Paragraph type="secondary">
           {t('Start with a featured exam or explore each provider.')}
@@ -105,14 +106,15 @@ export default function QuizLibrary({
                 return (
                   <article key={id} className="featured-quiz">
                     <div className="library-row-heading">
-                      <Text className="quiz-provider-label">
-                        {quiz.category} · {quiz.code}
-                      </Text>
+                      <Text className="quiz-provider-label">{quiz.category}</Text>
                       <Tag>{t('Featured')}</Tag>
                     </div>
                     <Title level={3}>
                       <button className="quiz-title-link" onClick={() => onOpen(quiz, 'overview')}>
-                        {quiz.name.replace(/\s*\([^)]+\)$/, '')}
+                        <span className="featured-exam-code">{quiz.code}</span>
+                        <span className="featured-exam-name">
+                          {quiz.name.replace(/\s*\([^)]+\)$/, '')}
+                        </span>
                       </button>
                     </Title>
                     <Text type="secondary">
@@ -162,87 +164,98 @@ export default function QuizLibrary({
           {t('{count} quiz sets', { count: filtered.length })}
         </Text>
       </div>
-      <nav className="provider-jumps" aria-label={t('Browse by provider')}>
-        {PROVIDERS.filter((provider) => filtered.some((quiz) => quiz.category === provider)).map(
-          (provider) => (
-            <Button key={provider} onClick={() => jumpToProvider(provider)}>
-              {provider}
-              <span className="provider-count">
-                {filtered.filter((quiz) => quiz.category === provider).length}
-              </span>
-            </Button>
-          )
+      <div className={'library-browser' + (!filtered.length ? ' is-empty' : '')}>
+        {!!filtered.length && (
+          <aside className="provider-rail">
+            <Text className="provider-rail-label" type="secondary">
+              {t('Providers')}
+            </Text>
+            <nav className="provider-jumps" aria-label={t('Browse by provider')}>
+              {PROVIDERS.filter((provider) =>
+                filtered.some((quiz) => quiz.category === provider)
+              ).map((provider) => (
+                <Button key={provider} onClick={() => jumpToProvider(provider)}>
+                  {provider}
+                  <span className="provider-count">
+                    {filtered.filter((quiz) => quiz.category === provider).length}
+                  </span>
+                </Button>
+              ))}
+            </nav>
+          </aside>
         )}
-      </nav>
-      {!filtered.length && (
-        <Empty
-          description={
-            <>
-              <Title level={3}>{t('No matching quizzes')}</Title>
-              <Paragraph>{t('Try a different name or exam code.')}</Paragraph>
-              <Button
-                onClick={() => {
-                  onQueryChange('');
-                  search.current?.focus();
+        <div className="provider-sections">
+          {!filtered.length && (
+            <Empty
+              description={
+                <>
+                  <Title level={3}>{t('No matching quizzes')}</Title>
+                  <Paragraph>{t('Try a different name or exam code.')}</Paragraph>
+                  <Button
+                    onClick={() => {
+                      onQueryChange('');
+                      search.current?.focus();
+                    }}
+                  >
+                    {t('Clear search')}
+                  </Button>
+                </>
+              }
+            />
+          )}
+          {PROVIDERS.map((provider) => {
+            const matches = filtered.filter((quiz) => quiz.category === provider);
+            if (!matches.length) return null;
+            const open = needle ? true : (expanded[provider] ?? !mobile);
+            return (
+              <details
+                className="provider-group"
+                id={'provider-' + slug(provider)}
+                key={provider}
+                open={open}
+                onToggle={(event) => {
+                  const next = event.currentTarget.open;
+                  if (!needle && next !== open)
+                    onExpandedChange((previous) => ({ ...previous, [provider]: next }));
                 }}
               >
-                {t('Clear search')}
-              </Button>
-            </>
-          }
-        />
-      )}
-      {PROVIDERS.map((provider) => {
-        const matches = filtered.filter((quiz) => quiz.category === provider);
-        if (!matches.length) return null;
-        const open = needle ? true : (expanded[provider] ?? !mobile);
-        return (
-          <details
-            className="provider-group"
-            id={'provider-' + slug(provider)}
-            key={provider}
-            open={open}
-            onToggle={(event) => {
-              const next = event.currentTarget.open;
-              if (!needle && next !== open)
-                onExpandedChange((previous) => ({ ...previous, [provider]: next }));
-            }}
-          >
-            <summary>
-              <h3>{provider}</h3>
-              <Text type="secondary">{t('{count} quiz sets', { count: matches.length })}</Text>
-            </summary>
-            <div>
-              {matches.map((quiz) => (
-                <article key={quiz.id} className="library-quiz-row">
-                  <div>
-                    <div className="library-row-heading">
-                      <span className="exam-code">{quiz.code}</span>
-                      <Title level={3}>
-                        <button
-                          className="quiz-title-link"
-                          onClick={() => onOpen(quiz, 'overview')}
-                        >
-                          {quiz.name.replace(/\s*\([^)]+\)$/, '')}
-                        </button>
-                      </Title>
-                      {FEATURED_QUIZ_IDS.includes(quiz.id) && <Tag>{t('Featured')}</Tag>}
-                    </div>
-                    <Text type="secondary">
-                      {t('{count} questions', { count: quiz.totalQuestions })} ·{' '}
-                      {t(quiz.difficulty)}
-                      {progressState.progress[quiz.id] && (
-                        <> · {checkpointLabel(progressState.progress[quiz.id])}</>
-                      )}
-                    </Text>
-                  </div>
-                  {actions(quiz)}
-                </article>
-              ))}
-            </div>
-          </details>
-        );
-      })}
+                <summary>
+                  <h3>{provider}</h3>
+                  <Text type="secondary">{t('{count} quiz sets', { count: matches.length })}</Text>
+                </summary>
+                <div>
+                  {matches.map((quiz) => (
+                    <article key={quiz.id} className="library-quiz-row">
+                      <div>
+                        <div className="library-row-heading">
+                          <span className="exam-code">{quiz.code}</span>
+                          <Title level={4}>
+                            <button
+                              className="quiz-title-link"
+                              onClick={() => onOpen(quiz, 'overview')}
+                            >
+                              {quiz.name.replace(/\s*\([^)]+\)$/, '')}
+                            </button>
+                          </Title>
+                          {FEATURED_QUIZ_IDS.includes(quiz.id) && <Tag>{t('Featured')}</Tag>}
+                        </div>
+                        <Text type="secondary">
+                          {t('{count} questions', { count: quiz.totalQuestions })} ·{' '}
+                          {t(quiz.difficulty)}
+                          {progressState.progress[quiz.id] && (
+                            <> · {checkpointLabel(progressState.progress[quiz.id])}</>
+                          )}
+                        </Text>
+                      </div>
+                      {actions(quiz)}
+                    </article>
+                  ))}
+                </div>
+              </details>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

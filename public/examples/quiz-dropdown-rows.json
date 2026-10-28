@@ -1,0 +1,32 @@
+[
+  {
+    "id": "q1",
+    "type": "dropdown",
+    "layout": "rows",
+    "question": "Classify each item.",
+    "slots": [
+      {
+        "id": "first",
+        "label": "Keyboard"
+      },
+      {
+        "id": "second",
+        "label": "Monitor"
+      }
+    ],
+    "options": {
+      "first": {
+        "A": "Input",
+        "B": "Output"
+      },
+      "second": {
+        "A": "Input",
+        "B": "Output"
+      }
+    },
+    "answer": {
+      "first": "A",
+      "second": "B"
+    }
+  }
+]

@@ -1,0 +1,25 @@
+[
+  {
+    "id": "q1",
+    "type": "yes_no",
+    "question": "Evaluate each statement.",
+    "statements": [
+      {
+        "id": "s1",
+        "text": "Two is an even number."
+      },
+      {
+        "id": "s2",
+        "text": "Three is an even number."
+      }
+    ],
+    "options": {
+      "A": "Yes",
+      "B": "No"
+    },
+    "answer": {
+      "s1": "A",
+      "s2": "B"
+    }
+  }
+]

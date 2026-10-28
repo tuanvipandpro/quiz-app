@@ -1,0 +1,33 @@
+[
+  {
+    "id": "q1",
+    "type": "dropdown",
+    "layout": "inline",
+    "question": "Complete the sentence.",
+    "template": "Use {{first}} for input and {{second}} for output.",
+    "slots": [
+      {
+        "id": "first",
+        "label": "Input device"
+      },
+      {
+        "id": "second",
+        "label": "Output device"
+      }
+    ],
+    "options": {
+      "first": {
+        "A": "Keyboard",
+        "B": "Monitor"
+      },
+      "second": {
+        "A": "Keyboard",
+        "B": "Monitor"
+      }
+    },
+    "answer": {
+      "first": "A",
+      "second": "B"
+    }
+  }
+]

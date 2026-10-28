@@ -1,4 +1,61 @@
 export const vi = {
+  'Certification practice': 'Luyện thi chứng chỉ',
+  Providers: 'Nhà cung cấp',
+  'Personal workspace': 'Không gian cá nhân',
+  'Upload steps': 'Các bước tải quiz',
+  'Choose a file': 'Chọn tệp',
+  'Review your quiz': 'Kiểm tra quiz',
+  'Start learning': 'Bắt đầu học',
+  'Review the name and question count before you start.':
+    'Kiểm tra tên và số câu hỏi trước khi bắt đầu.',
+  'Choose a format, then copy or download a complete quiz example.':
+    'Chọn định dạng rồi sao chép hoặc tải một quiz mẫu hoàn chỉnh.',
+  'Question type': 'Loại câu hỏi',
+  'Single choice': 'Một đáp án',
+  'Multiple choice': 'Nhiều đáp án',
+  'Yes / No': 'Yes / No',
+  'Dropdown rows': 'Dropdown theo hàng',
+  'Inline dropdown': 'Dropdown trong dòng',
+  'Use an array with one correct option key.': 'Dùng mảng chứa một ký hiệu đáp án đúng.',
+  'Put every correct option key in the answer array.':
+    'Đưa tất cả ký hiệu đáp án đúng vào mảng answer.',
+  'Give each statement a unique ID and map it to Yes or No.':
+    'Đặt ID riêng cho từng phát biểu và ánh xạ đến lựa chọn Yes hoặc No.',
+  'Each slot needs a label, its own options and a correct answer key.':
+    'Mỗi ô cần có nhãn, bộ lựa chọn riêng và ký hiệu đáp án đúng.',
+  'Include each {{slotId}} exactly once in the template.':
+    'Đưa mỗi {{slotId}} vào template đúng một lần.',
+  'Copy JSON': 'Sao chép JSON',
+  'Download example': 'Tải tệp mẫu',
+  'Complete JSON example': 'Ví dụ JSON hoàn chỉnh',
+  'Example JSON copied.': 'Đã sao chép JSON mẫu.',
+  'Copy is unavailable. Download the example instead.':
+    'Không sao chép được. Bạn có thể tải tệp mẫu.',
+  'File requirements': 'Yêu cầu của tệp',
+  'Before you upload': 'Trước khi tải lên',
+  'The file must be a JSON array of questions.': 'Tệp phải là một mảng JSON chứa các câu hỏi.',
+  'Include 1–100 questions with unique IDs.':
+    'Có từ 1 đến 100 câu hỏi với các ID không trùng nhau.',
+  'Every answer must reference an existing option.':
+    'Mỗi đáp án phải trỏ đến một lựa chọn có trong câu hỏi.',
+  'Keep the file under 1 MiB.': 'Dung lượng tệp dưới 1 MiB.',
+  'Required fields': 'Các trường bắt buộc',
+  'A unique string or number for each question.': 'Một chuỗi hoặc số riêng biệt cho từng câu hỏi.',
+  'The question text.': 'Nội dung câu hỏi.',
+  'Choice keys mapped to their text. Dropdowns use one map per slot.':
+    'Ký hiệu lựa chọn và nội dung tương ứng. Dropdown dùng một bảng lựa chọn cho mỗi ô.',
+  'An array of option keys, or a mapping for yes/no and dropdown parts.':
+    'Mảng ký hiệu đáp án, hoặc bảng ánh xạ cho từng phần yes/no và dropdown.',
+  'Optional fields': 'Các trường tùy chọn',
+  'Your study space': 'Không gian học của bạn',
+  'Pick up where you left off.': 'Tiếp tục từ nơi bạn đã dừng.',
+  'Sign in to save your checkpoints and make the most of every practice session.':
+    'Đăng nhập để lưu vị trí và học hiệu quả hơn trong mỗi phiên luyện tập.',
+  'Resume saved checkpoints across devices': 'Tiếp tục từ vị trí đã lưu trên nhiều thiết bị',
+  'Get AI explanations with your own API key': 'Nhận giải thích AI bằng API key của bạn',
+  'The quiz bank is always open to guests.':
+    'Bạn có thể dùng thư viện quiz mà không cần tài khoản.',
+  'Continue as guest': 'Tiếp tục không đăng nhập',
   'Saved position': 'Vị trí đã lưu',
   'missing or invalid id, question, or imageUrl.':
     'Thiếu hoặc sai ID, nội dung câu hỏi hoặc đường dẫn ảnh.',

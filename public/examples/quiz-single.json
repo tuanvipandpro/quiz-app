@@ -1,0 +1,14 @@
+[
+  {
+    "id": "q1",
+    "question": "Which city is the capital of France?",
+    "options": {
+      "A": "London",
+      "B": "Paris",
+      "C": "Berlin"
+    },
+    "answer": [
+      "B"
+    ]
+  }
+]

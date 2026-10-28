@@ -42,9 +42,11 @@ The app opens directly to **21 quiz sets**, grouped by provider and searchable b
 
 Start Practice directly from a quiz card, open its overview, or select Mock exam to configure the count and duration. Provider sections can be expanded/collapsed and have quick-jump buttons. Returning to the library keeps the search and section state. Featured cards and provider rows use the same quiz ID and checkpoint.
 
-The **VN / EN** toggle changes interface labels without translating question/guide content or restarting an active session. Language and light/dark appearance preferences are remembered in this browser. Primary question navigation retains visible text on phones and respects the safe area. Quiz screens have hash URLs such as `/quiz-app/#/quiz/aws-aip-c01/practice`, so refresh and browser Back/Forward work on GitHub Pages.
+The **VN / EN** toggle changes interface labels without translating question/guide content or restarting an active session. English is the default on a first visit; an explicit language choice and light/dark appearance are remembered in this browser. Primary question navigation retains visible text on phones and respects the safe area. Quiz screens have hash URLs such as `/quiz-app/#/quiz/aws-aip-c01/practice`, so refresh and browser Back/Forward work on GitHub Pages.
 
 **My quizzes** retains JSON upload with validation and a preview before use: 1–100 questions, up to 1 MiB per file. The active upload is stored in this tab, with its owner, and survives refresh when browser session storage is available. Keep the original file for other devices. Per-user Firestore storage, a three-quiz quota and cloud management are tracked separately in [issue #42](https://github.com/tuanvipandpro/quiz-app/issues/42).
+
+The question-format guide is displayed directly on My quizzes, with complete single-choice, multi-select, yes/no, row-dropdown and inline-dropdown examples, field explanations, Copy JSON and example downloads. All examples run through the same strict validator in automated tests. Sign-in uses a focused Google dialog with checkpoint/AI context, loading/error feedback and a Continue as guest action.
 
 ### Practice
 

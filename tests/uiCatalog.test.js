@@ -4,6 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { quizzes, FEATURED_QUIZ_IDS, PROVIDERS } from '../src/data/quizzes.js';
 import { translate, vi } from '../src/i18n/messages.js';
 import { parseRoute, quizUrl, resolveLoadedQuiz } from '../src/utils/navigation.js';
+import { LANGUAGE_KEY, readPreferredLanguage } from '../src/i18n/preferences.js';
+import { questionFormats } from '../src/data/questionFormats.js';
+import { validateQuizQuestions } from '../src/utils/questionModel.js';
 
 test('library metadata matches actual question files and featured cards resolve to the canonical quiz', async () => {
   assert.equal(new Set(quizzes.map((quiz) => quiz.id)).size, quizzes.length);
@@ -16,6 +19,40 @@ test('library metadata matches actual question files and featured cards resolve 
     assert.equal(quiz.totalQuestions, questions.length, quiz.id);
     assert.ok(PROVIDERS.includes(quiz.category), quiz.id);
   }
+});
+
+test('English is the default while an explicit saved VN/EN choice is respected', () => {
+  assert.equal(readPreferredLanguage(null), 'en');
+  assert.equal(readPreferredLanguage({ getItem: () => null }), 'en');
+  assert.equal(readPreferredLanguage({ getItem: () => 'fr' }), 'en');
+  assert.equal(
+    readPreferredLanguage({
+      getItem() {
+        throw new Error('Storage unavailable');
+      },
+    }),
+    'en'
+  );
+  for (const language of ['vi', 'en'])
+    assert.equal(
+      readPreferredLanguage({ getItem: (key) => (key === LANGUAGE_KEY ? language : null) }),
+      language
+    );
+});
+
+test('every inline guide example matches its download and passes the upload validator', async () => {
+  assert.equal(new Set(questionFormats.map((format) => format.id)).size, questionFormats.length);
+  for (const format of questionFormats) {
+    const downloaded = JSON.parse(JSON.stringify(format.questions));
+    assert.ok(Array.isArray(downloaded) && downloaded.length > 0 && downloaded.length <= 100);
+    assert.doesNotThrow(() => validateQuizQuestions(downloaded), format.id);
+    const file = JSON.parse(
+      await readFile(new URL(`../public/examples/quiz-${format.id}.json`, import.meta.url), 'utf8')
+    );
+    assert.deepEqual(file, downloaded, format.id);
+  }
+  assert.ok(questionFormats.some((format) => format.questions[0].layout === 'inline'));
+  assert.ok(questionFormats.some((format) => format.questions[0].type === 'yes_no'));
 });
 
 test('Vietnamese messages preserve interpolation fields and English content is not translated', () => {
