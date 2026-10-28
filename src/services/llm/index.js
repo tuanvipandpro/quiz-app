@@ -21,9 +21,16 @@ export async function generateExplanation(question, options) {
 }
 export async function testConnection(provider, apiKey, signal) {
   if (!apiKey.trim()) throw new LlmError('NO_API_KEY', 'Enter an API key to test.');
-  const model = MODELS.find(item => item.provider === provider)?.model;
+  const model = MODELS.find((item) => item.provider === provider)?.model;
   if (!model) throw new LlmError('INVALID_REQUEST', 'Unknown AI provider.');
-  const result = await providers[provider]({ model, apiKey: apiKey.trim(), prompt: 'Reply with the single word OK.', signal, timeoutMs: 15_000, maxTokens: 1024 });
+  const result = await providers[provider]({
+    model,
+    apiKey: apiKey.trim(),
+    prompt: 'Reply with the single word OK.',
+    signal,
+    timeoutMs: 15_000,
+    maxTokens: 1024,
+  });
   // A successful test can clear an earlier authentication failure for this key.
   router.allowKey(provider, apiKey.trim());
   return result;

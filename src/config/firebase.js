@@ -1,27 +1,20 @@
-// config/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import publicProject from './firebaseProject.json';
 
-// Firebase configuration
-// TODO: Replace with your Firebase project configuration
+// Firebase web identifiers are public. Provider AI keys are never build-time config.
 const firebaseConfig = {
-  apiKey: "AIzaSyAbnG550P3or_hlBlCqrLLbm6iYkBgw9kU",
-  authDomain: "quiz-app-f70d5.firebaseapp.com",
-  projectId: "quiz-app-f70d5",
-  storageBucket: "quiz-app-f70d5.firebasestorage.app",
-  messagingSenderId: "124997463594",
-  appId: "1:124997463594:web:a1e2b6a4d3cf82f6b0dd53",
-  measurementId: "G-WLC1YFJQ2D"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || publicProject.apiKey,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || publicProject.authDomain,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || publicProject.projectId,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || publicProject.storageBucket,
+  messagingSenderId:
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || publicProject.messagingSenderId,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || publicProject.appId,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || publicProject.measurementId,
 };
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
-
-// Initialize Firestore and get a reference to the service
 export const db = getFirestore(app);
-
 export default app;

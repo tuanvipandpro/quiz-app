@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.vite/
+test-results/
+playwright-report/
+artifacts/
+public/
+.env*
+yarn.lock

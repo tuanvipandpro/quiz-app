@@ -1,7 +1,13 @@
 import { MODELS } from './modelRegistry.js';
 import { LlmError, cancelled } from './errors.js';
 
-export function createRouter({ providers, models = MODELS, now = Date.now, requestTimeoutMs = 20_000, totalTimeoutMs = 60_000 }) {
+export function createRouter({
+  providers,
+  models = MODELS,
+  now = Date.now,
+  requestTimeoutMs = 20_000,
+  totalTimeoutMs = 60_000,
+}) {
   const sessions = new Map();
   function providerState(uid, provider, apiKey) {
     const id = `${uid || 'guest'}:${provider}`;
@@ -13,7 +19,9 @@ export function createRouter({ providers, models = MODELS, now = Date.now, reque
     return state;
   }
   return {
-    reset() { sessions.clear(); },
+    reset() {
+      sessions.clear();
+    },
     allowKey(provider, apiKey) {
       for (const [id, state] of sessions) {
         if (id.endsWith(`:${provider}`) && state.apiKey === apiKey) state.denied = false;
@@ -21,7 +29,8 @@ export function createRouter({ providers, models = MODELS, now = Date.now, reque
     },
     async generate({ keys, prompt, uid, signal }) {
       if (signal?.aborted) throw cancelled();
-      if (!Object.values(keys).some(Boolean)) throw new LlmError('NO_API_KEY', 'Add a Gemini or Groq API key in AI settings.');
+      if (!Object.values(keys).some(Boolean))
+        throw new LlmError('NO_API_KEY', 'Add a Gemini or Groq API key in AI settings.');
       const deadline = now() + totalTimeoutMs;
       const failures = new Map();
       let earliestRetry = Infinity;
@@ -37,19 +46,30 @@ export function createRouter({ providers, models = MODELS, now = Date.now, reque
         const retryAt = state.cooldowns.get(model) || 0;
         if (retryAt > now()) {
           earliestRetry = Math.min(earliestRetry, retryAt);
-          failures.set(provider, 'Models are temporarily cooling down after a rate limit or connection error.');
+          failures.set(
+            provider,
+            'Models are temporarily cooling down after a rate limit or connection error.'
+          );
           continue;
         }
         const remaining = deadline - now();
         if (remaining <= 0) break;
         try {
-          const result = await providers[provider]({ model, apiKey, prompt, signal, timeoutMs: Math.min(requestTimeoutMs, remaining) });
+          const result = await providers[provider]({
+            model,
+            apiKey,
+            prompt,
+            signal,
+            timeoutMs: Math.min(requestTimeoutMs, remaining),
+          });
           if (signal?.aborted) throw cancelled();
           state.cooldowns.delete(model);
           return { ...result, provider };
         } catch (error) {
-          if (signal?.aborted || ['CANCELLED', 'BLOCKED', 'INVALID_REQUEST'].includes(error.code)) throw signal?.aborted ? cancelled() : error;
-          if (!(error instanceof LlmError)) throw new LlmError('INTERNAL', 'Could not process the AI response. Please retry.');
+          if (signal?.aborted || ['CANCELLED', 'BLOCKED', 'INVALID_REQUEST'].includes(error.code))
+            throw signal?.aborted ? cancelled() : error;
+          if (!(error instanceof LlmError))
+            throw new LlmError('INTERNAL', 'Could not process the AI response. Please retry.');
           failures.set(provider, error.message);
           if (error.code === 'AUTH_FAILED') state.denied = true;
           else {
@@ -59,10 +79,16 @@ export function createRouter({ providers, models = MODELS, now = Date.now, reque
           }
         }
       }
-      const summary = [...failures].map(([provider, message]) => `${provider === 'groq' ? 'Groq' : 'Gemini'}: ${message}`).join(' ');
-      throw new LlmError('ALL_PROVIDERS_FAILED', summary || 'AI requests exceeded the time limit. Please retry.', {
-        retryAt: Number.isFinite(earliestRetry) ? earliestRetry : null
-      });
-    }
+      const summary = [...failures]
+        .map(([provider, message]) => `${provider === 'groq' ? 'Groq' : 'Gemini'}: ${message}`)
+        .join(' ');
+      throw new LlmError(
+        'ALL_PROVIDERS_FAILED',
+        summary || 'AI requests exceeded the time limit. Please retry.',
+        {
+          retryAt: Number.isFinite(earliestRetry) ? earliestRetry : null,
+        }
+      );
+    },
   };
 }

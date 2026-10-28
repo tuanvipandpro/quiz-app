@@ -4,6 +4,6 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Sử dụng biến môi trường VITE_BASE nếu có, nếu không thì mặc định là '/'
-  base: process.env.VITE_BASE || '/quiz-app/', 
+  // GitHub Pages lives under /quiz-app/; VITE_BASE can override it explicitly.
+  base: process.env.VITE_BASE || '/quiz-app/',
 });

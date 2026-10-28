@@ -1,12 +1,12 @@
 // services/userService.js
-import { 
-  getFirestore, 
-  doc, 
-  getDoc, 
-  setDoc, 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
   updateDoc,
   deleteField,
-  serverTimestamp 
+  serverTimestamp,
 } from 'firebase/firestore';
 import app from '../config/firebase';
 import { canonicalQuizId, legacyQuizIds } from '../data/quizAliases.js';
@@ -52,9 +52,9 @@ class UserService {
   async createUser(userData) {
     try {
       const { uid, email, displayName, photoURL, emailVerified } = userData;
-      
+
       const userDocRef = this.getUserDocRef(uid);
-      
+
       const userProfile = {
         uid,
         email,
@@ -64,21 +64,21 @@ class UserService {
         llmProviders: { gemini: { apiKey: null }, groq: { apiKey: null } },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp()
+        lastLoginAt: serverTimestamp(),
       };
 
       await setDoc(userDocRef, userProfile);
-      
+
       console.log('User created in Firestore:', uid);
       return {
         success: true,
-        user: userProfile
+        user: userProfile,
       };
     } catch (error) {
       console.error('Error creating user:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -92,23 +92,23 @@ class UserService {
     try {
       const userDocRef = this.getUserDocRef(uid);
       const userDoc = await getDoc(userDocRef);
-      
+
       if (userDoc.exists()) {
         return {
           success: true,
-          user: userDoc.data()
+          user: userDoc.data(),
         };
       } else {
         return {
           success: false,
-          error: 'User not found'
+          error: 'User not found',
         };
       }
     } catch (error) {
       console.error('Error getting user profile:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -122,15 +122,15 @@ class UserService {
     try {
       const userDocRef = this.getUserDocRef(uid);
       await updateDoc(userDocRef, {
-        lastLoginAt: serverTimestamp()
+        lastLoginAt: serverTimestamp(),
       });
-      
+
       return { success: true };
     } catch (error) {
       console.error('Error updating last login:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -151,19 +151,19 @@ class UserService {
       const userDocRef = this.getUserDocRef(uid);
       const fields = {
         [`llmProviders.${provider}.apiKey`]: apiKey,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
       // Migrate/delete the legacy key atomically; never revive it after Clear.
       if (provider === 'gemini') fields.geminiApiKey = deleteField();
       await updateDoc(userDocRef, fields);
-      
+
       console.log('API key saved to Firestore for user:', uid);
       return { success: true };
     } catch (error) {
       console.error('Error saving API key:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -178,7 +178,9 @@ class UserService {
       const result = await this.getUserProfile(uid);
       if (result.success && result.user) {
         const gemini = result.user.llmProviders?.gemini;
-        return gemini && Object.hasOwn(gemini, 'apiKey') ? gemini.apiKey : result.user.geminiApiKey || null;
+        return gemini && Object.hasOwn(gemini, 'apiKey')
+          ? gemini.apiKey
+          : result.user.geminiApiKey || null;
       }
       return null;
     } catch (error) {
@@ -254,7 +256,7 @@ class UserService {
       return {};
     } catch (error) {
       console.error('Error getting all quiz progress:', error);
-      throw new Error('Could not load saved quiz progress.');
+      throw new Error('Could not load saved quiz progress.', { cause: error });
     }
   }
 
@@ -304,7 +306,7 @@ class UserService {
   async initializeUser(userData) {
     try {
       const exists = await this.userExists(userData.uid);
-      
+
       if (!exists) {
         // First time user - create profile
         console.log('First time login - creating user profile');
@@ -319,7 +321,7 @@ class UserService {
       console.error('Error initializing user:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }

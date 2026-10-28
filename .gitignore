@@ -25,6 +25,9 @@ dist-ssr
 
 .vite
 .env
-*lock*
+.env.*
+!.env.example
 test-results
+playwright-report
+artifacts
 extension

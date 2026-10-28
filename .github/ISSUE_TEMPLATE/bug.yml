@@ -1,0 +1,20 @@
+name: Bug report
+description: Reproduce a problem before changing the code
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and evidence
+      description: Browser, viewport, language/theme, quiz ID and screenshots. Do not include credentials.
