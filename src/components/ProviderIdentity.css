@@ -1,0 +1,227 @@
+:root {
+  --provider-logo-bg: #ffffff;
+  --provider-logo-border: #dce4ee;
+  --provider-logo-ink: #1f2937;
+}
+[data-provider] {
+  --provider-accent: var(--app-primary);
+  --provider-ink: var(--app-primary);
+  --provider-soft: var(--app-info-bg);
+  --provider-line: var(--app-border);
+  --provider-action: var(--app-primary-bg);
+  --provider-action-ink: var(--app-on-primary);
+  --provider-action-hover: var(--app-primary-bg);
+}
+[data-provider='aws'] {
+  --provider-accent: #ff9900;
+  --provider-ink: #874600;
+  --provider-soft: #fff4de;
+  --provider-line: #f3cc84;
+  --provider-action: #ff9900;
+  --provider-action-ink: #17202c;
+  --provider-action-hover: #e99100;
+}
+[data-provider='anthropic'] {
+  --provider-accent: #d97757;
+  --provider-ink: #914328;
+  --provider-soft: #fff0e8;
+  --provider-line: #ecc6b8;
+  --provider-action: #a8472e;
+  --provider-action-ink: #ffffff;
+  --provider-action-hover: #923c28;
+}
+[data-provider='microsoft'] {
+  --provider-accent: #0078d4;
+  --provider-ink: #005a9e;
+  --provider-soft: #ebf5ff;
+  --provider-line: #b8d9f4;
+  --provider-action: #006ac0;
+  --provider-action-ink: #ffffff;
+  --provider-action-hover: #005ba6;
+}
+[data-provider='google-cloud'] {
+  --provider-accent: #34a853;
+  --provider-ink: #176b36;
+  --provider-soft: #ebf7ef;
+  --provider-line: #b6ddc2;
+  --provider-action: #18713a;
+  --provider-action-ink: #ffffff;
+  --provider-action-hover: #125a2d;
+}
+[data-provider='istqb'] {
+  --provider-accent: #cf1148;
+  --provider-ink: #075883;
+  --provider-soft: #ebf3fa;
+  --provider-line: #bed4e6;
+  --provider-action: #075883;
+  --provider-action-ink: #ffffff;
+  --provider-action-hover: #06466a;
+}
+html[data-theme='dark'] [data-provider='aws'] {
+  --provider-accent: #ffb454;
+  --provider-ink: #ffd18f;
+  --provider-soft: #362a1a;
+  --provider-line: #795d2e;
+  --provider-action: #ffb454;
+  --provider-action-ink: #211d16;
+  --provider-action-hover: #ffc579;
+}
+html[data-theme='dark'] [data-provider='anthropic'] {
+  --provider-accent: #e49b7b;
+  --provider-ink: #f1bda5;
+  --provider-soft: #392820;
+  --provider-line: #785344;
+  --provider-action: #e49b7b;
+  --provider-action-ink: #2b1e19;
+  --provider-action-hover: #f0ad91;
+}
+html[data-theme='dark'] [data-provider='microsoft'] {
+  --provider-accent: #70baff;
+  --provider-ink: #acd8ff;
+  --provider-soft: #1a3045;
+  --provider-line: #3a6285;
+  --provider-action: #70baff;
+  --provider-action-ink: #10263c;
+  --provider-action-hover: #8cc7ff;
+}
+html[data-theme='dark'] [data-provider='google-cloud'] {
+  --provider-accent: #7bd596;
+  --provider-ink: #a5e7b8;
+  --provider-soft: #1d3428;
+  --provider-line: #3f6f50;
+  --provider-action: #7bd596;
+  --provider-action-ink: #12291b;
+  --provider-action-hover: #99e0af;
+}
+html[data-theme='dark'] [data-provider='istqb'] {
+  --provider-accent: #ff799c;
+  --provider-ink: #abd9f2;
+  --provider-soft: #1e3040;
+  --provider-line: #466c86;
+  --provider-action: #8bc4e7;
+  --provider-action-ink: #112735;
+  --provider-action-hover: #a2d6f2;
+}
+.provider-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.provider-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 3px;
+  border: 1px solid var(--provider-logo-border);
+  border-radius: 9px;
+  background: var(--provider-logo-bg);
+}
+.provider-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.provider-mark > span {
+  font-size: 9px;
+  font-weight: 750;
+  color: var(--provider-logo-ink);
+}
+.provider-name {
+  color: var(--provider-ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.provider-identity-compact {
+  gap: 8px;
+}
+.provider-identity-compact .provider-mark {
+  width: 26px;
+  height: 26px;
+  padding: 2px;
+  border-radius: 7px;
+}
+.provider-identity-compact .provider-name {
+  font-size: 13px;
+}
+.featured-quiz[data-provider] {
+  border-top: 3px solid var(--provider-accent);
+}
+.featured-quiz[data-provider] .featured-exam-code {
+  color: var(--provider-ink);
+}
+.featured-quiz[data-provider] .quiz-title-link:hover,
+.provider-group[data-provider] .quiz-title-link:hover {
+  color: var(--provider-ink);
+}
+.featured-quiz[data-provider] .ant-tag,
+.provider-group[data-provider] .ant-tag,
+.provider-group[data-provider] .exam-code {
+  color: var(--provider-ink);
+  background: var(--provider-soft);
+}
+.featured-quiz[data-provider] .ant-btn-primary,
+.continue-learning[data-provider] .ant-btn-primary {
+  color: var(--provider-action-ink);
+  background: var(--provider-action);
+  border-color: var(--provider-action);
+}
+.featured-quiz[data-provider] .ant-btn-primary:not(:disabled):hover,
+.continue-learning[data-provider] .ant-btn-primary:not(:disabled):hover {
+  color: var(--provider-action-ink);
+  background: var(--provider-action-hover);
+  border-color: var(--provider-action-hover);
+}
+.featured-quiz[data-provider] .ant-btn-link,
+.provider-group[data-provider] .ant-btn-link {
+  color: var(--provider-ink);
+}
+.provider-group[data-provider] {
+  border-top: 3px solid var(--provider-accent);
+}
+.provider-group[data-provider] > summary::before {
+  color: var(--provider-ink);
+}
+.provider-rail .provider-jumps .ant-btn[data-provider] {
+  border-inline-start: 3px solid var(--provider-accent);
+  padding-inline-start: 8px;
+}
+.provider-rail .provider-jumps .ant-btn[data-provider]:hover {
+  background: var(--provider-soft);
+}
+.continue-learning[data-provider] {
+  background: var(--provider-soft);
+}
+.continue-learning[data-provider] .quiz-provider-label {
+  color: var(--provider-ink);
+}
+@media (max-width: 600px) {
+  .provider-rail .provider-jumps {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .provider-rail .provider-jumps .ant-btn[data-provider] {
+    width: calc((100% - 32px) / 5);
+    min-width: 0;
+    padding: 8px 0;
+    justify-content: center;
+    border-inline-start: 1px solid var(--app-border);
+    border-top: 3px solid var(--provider-accent);
+  }
+  .provider-jumps .provider-name,
+  .provider-jumps .provider-count {
+    display: none;
+  }
+  .provider-rail .provider-identity-compact .provider-mark {
+    width: 28px;
+    height: 28px;
+  }
+}

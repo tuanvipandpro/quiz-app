@@ -4,7 +4,7 @@ import {
   ArrowRightOutlined,
   BookOutlined,
   CloudSyncOutlined,
-  GoogleOutlined,
+  GithubOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -41,17 +41,61 @@ export default function SignInModal({ open, onClose, onSignIn, busy, error }) {
           </Paragraph>
         </div>
         {error && <Alert showIcon type="error" role="alert" message={t(error)} />}
-        <Button
-          className="google-sign-in"
-          size="large"
-          icon={<GoogleOutlined aria-hidden="true" />}
-          block
-          loading={busy}
-          disabled={busy}
-          onClick={onSignIn}
-        >
-          {t('Continue with Google')}
-        </Button>
+        <div className="sign-in-providers">
+          <Button
+            className="provider-sign-in google-sign-in"
+            size="large"
+            icon={
+              <img
+                className="sign-in-logo"
+                src={import.meta.env.BASE_URL + 'providers/google.png'}
+                alt=""
+                width="20"
+                height="20"
+              />
+            }
+            block
+            loading={busy}
+            disabled={busy}
+            onClick={onSignIn}
+          >
+            {t('Continue with Google')}
+          </Button>
+          <Button
+            className="provider-sign-in"
+            size="large"
+            block
+            disabled
+            icon={<GithubOutlined aria-hidden="true" />}
+          >
+            <span className="sign-in-provider-label">
+              <span className="desktop-copy">{t('Continue with GitHub')}</span>
+              <span className="mobile-copy">GitHub</span>
+            </span>
+            <span className="sign-in-unavailable">{t('Unavailable')}</span>
+          </Button>
+          <Button
+            className="provider-sign-in"
+            size="large"
+            block
+            disabled
+            icon={
+              <img
+                className="sign-in-logo"
+                src={import.meta.env.BASE_URL + 'providers/microsoft.ico'}
+                alt=""
+                width="20"
+                height="20"
+              />
+            }
+          >
+            <span className="sign-in-provider-label">
+              <span className="desktop-copy">{t('Continue with Microsoft')}</span>
+              <span className="mobile-copy">Microsoft</span>
+            </span>
+            <span className="sign-in-unavailable">{t('Unavailable')}</span>
+          </Button>
+        </div>
         <ul className="sign-in-benefits">
           <li>
             <CloudSyncOutlined aria-hidden="true" />

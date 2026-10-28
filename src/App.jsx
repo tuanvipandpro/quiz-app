@@ -34,6 +34,7 @@ import QuizLibrary from './components/QuizLibrary';
 import MyQuizzes from './components/MyQuizzes';
 import QuizMode from './components/QuizMode';
 import SignInModal from './components/SignInModal';
+import ProviderIdentity from './components/ProviderIdentity';
 import { findQuiz } from './data/quizzes';
 import { getQuickSummary } from './data/quickSummaries';
 import { resolveCheckpoint } from './utils/quizProgress';
@@ -481,7 +482,13 @@ export default function App() {
             >
               {t('Back to library')}
             </Button>
-            <div className="quiz-provider-label">{active.category || t('Your uploaded quiz')}</div>
+            <div className="quiz-provider-label">
+              {active.category ? (
+                <ProviderIdentity provider={active.category} />
+              ) : (
+                t('Your uploaded quiz')
+              )}
+            </div>
             <Title level={1}>{active.name}</Title>
             <Text type="secondary">
               {t('{count} questions', { count: active.questions.length })}
@@ -559,7 +566,7 @@ export default function App() {
         </a>
         <Header ref={header} className="app-header">
           <div className="app-header-inner">
-            <button className="app-brand" onClick={() => go('#/library')}>
+            <button className="app-brand" aria-label="Quiz App" onClick={() => go('#/library')}>
               <BookOutlined aria-hidden="true" />
               <span>Quiz App</span>
             </button>

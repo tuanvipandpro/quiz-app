@@ -11,6 +11,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { FEATURED_QUIZ_IDS, PROVIDERS, quizzes, findQuiz } from '../data/quizzes';
 import { getQuickSummary } from '../data/quickSummaries';
 import { latestSavedQuiz } from '../utils/quizProgress';
+import { getProviderBrand } from '../data/providerBrands';
+import ProviderIdentity from './ProviderIdentity';
 
 const { Title, Text, Paragraph } = Typography;
 const slug = (provider) => provider.toLowerCase().replaceAll(' ', '-');
@@ -34,7 +36,9 @@ export default function QuizLibrary({
   }, []);
   const needle = query.trim().toLowerCase();
   const filtered = quizzes.filter((quiz) =>
-    `${quiz.name} ${quiz.code} ${quiz.category}`.toLowerCase().includes(needle)
+    `${quiz.name} ${quiz.code} ${quiz.category} ${(quiz.aliases || []).join(' ')}`
+      .toLowerCase()
+      .includes(needle)
   );
   const latest = findQuiz(
     latestSavedQuiz(
@@ -104,9 +108,13 @@ export default function QuizLibrary({
               {FEATURED_QUIZ_IDS.map((id) => {
                 const quiz = findQuiz(id);
                 return (
-                  <article key={id} className="featured-quiz">
+                  <article
+                    key={id}
+                    className="featured-quiz"
+                    data-provider={getProviderBrand(quiz.category)?.id}
+                  >
                     <div className="library-row-heading">
-                      <Text className="quiz-provider-label">{quiz.category}</Text>
+                      <ProviderIdentity provider={quiz.category} />
                       <Tag>{t('Featured')}</Tag>
                     </div>
                     <Title level={3}>
@@ -128,9 +136,16 @@ export default function QuizLibrary({
             </div>
           </section>
           {latest && !progressState.error && (
-            <section className="continue-learning" aria-label={t('Continue learning')}>
+            <section
+              className="continue-learning"
+              aria-label={t('Continue learning')}
+              data-provider={getProviderBrand(latest.category)?.id}
+            >
               <div>
-                <Text className="quiz-provider-label">{t('Continue learning')}</Text>
+                <div className="library-row-heading">
+                  <Text className="quiz-provider-label">{t('Continue learning')}</Text>
+                  <ProviderIdentity provider={latest.category} compact />
+                </div>
                 <Title level={3}>{latest.name}</Title>
                 <Text type="secondary">{checkpointLabel(progressState.progress[latest.id])}</Text>
               </div>
@@ -174,8 +189,14 @@ export default function QuizLibrary({
               {PROVIDERS.filter((provider) =>
                 filtered.some((quiz) => quiz.category === provider)
               ).map((provider) => (
-                <Button key={provider} onClick={() => jumpToProvider(provider)}>
-                  {provider}
+                <Button
+                  key={provider}
+                  data-provider={getProviderBrand(provider)?.id}
+                  aria-label={provider}
+                  title={provider}
+                  onClick={() => jumpToProvider(provider)}
+                >
+                  <ProviderIdentity provider={provider} compact />
                   <span className="provider-count">
                     {filtered.filter((quiz) => quiz.category === provider).length}
                   </span>
@@ -212,6 +233,7 @@ export default function QuizLibrary({
                 className="provider-group"
                 id={'provider-' + slug(provider)}
                 key={provider}
+                data-provider={getProviderBrand(provider)?.id}
                 open={open}
                 onToggle={(event) => {
                   const next = event.currentTarget.open;
@@ -220,7 +242,9 @@ export default function QuizLibrary({
                 }}
               >
                 <summary>
-                  <h3>{provider}</h3>
+                  <h3>
+                    <ProviderIdentity provider={provider} />
+                  </h3>
                   <Text type="secondary">{t('{count} quiz sets', { count: matches.length })}</Text>
                 </summary>
                 <div>

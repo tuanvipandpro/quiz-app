@@ -68,7 +68,11 @@
   font-size: 15px;
   line-height: 1.7;
 }
-.google-sign-in.ant-btn {
+.sign-in-providers {
+  display: grid;
+  gap: 10px;
+}
+.provider-sign-in.ant-btn {
   min-height: 52px;
   border-color: var(--app-control-border);
   border-radius: 10px;
@@ -83,8 +87,33 @@
   color: var(--app-primary);
   background: var(--app-info-bg);
 }
-.google-sign-in .anticon {
+.provider-sign-in .anticon {
   font-size: 20px;
+}
+.sign-in-logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+.provider-sign-in.ant-btn:disabled {
+  color: var(--app-muted);
+  background: var(--app-surface-subtle);
+  border-color: var(--app-border);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.sign-in-unavailable {
+  margin-inline-start: auto;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--app-code-bg);
+  color: var(--app-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.sign-in-provider-label {
+  text-align: start;
 }
 .sign-in-benefits {
   display: grid;
@@ -127,11 +156,30 @@
 }
 @media (max-width: 600px) {
   .sign-in-content {
-    padding: 28px 24px;
-    gap: 20px;
+    padding: 28px 20px 20px;
+    gap: 18px;
+    text-align: center;
+  }
+  .sign-in-brand {
+    justify-content: center;
+    padding: 0;
+  }
+  .sign-in-benefits {
+    text-align: start;
+    gap: 10px;
   }
   .sign-in-intro h2.ant-typography {
-    font-size: 27px;
+    font-size: 25px;
+  }
+  .sign-in-intro .ant-typography-secondary {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .provider-sign-in.ant-btn {
+    min-height: 48px;
+    padding-inline: 12px;
+    font-size: 14px;
+    gap: 8px;
   }
 }
 @media (max-height: 650px) {

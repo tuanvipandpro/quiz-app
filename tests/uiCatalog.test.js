@@ -7,6 +7,7 @@ import { parseRoute, quizUrl, resolveLoadedQuiz } from '../src/utils/navigation.
 import { LANGUAGE_KEY, readPreferredLanguage } from '../src/i18n/preferences.js';
 import { questionFormats } from '../src/data/questionFormats.js';
 import { validateQuizQuestions } from '../src/utils/questionModel.js';
+import { providerBrands, getProviderBrand } from '../src/data/providerBrands.js';
 
 test('library metadata matches actual question files and featured cards resolve to the canonical quiz', async () => {
   assert.equal(new Set(quizzes.map((quiz) => quiz.id)).size, quizzes.length);
@@ -38,6 +39,48 @@ test('English is the default while an explicit saved VN/EN choice is respected',
       readPreferredLanguage({ getItem: (key) => (key === LANGUAGE_KEY ? language : null) }),
       language
     );
+});
+
+test('exam codes match the reviewed provider catalog without changing stored quiz identities', async () => {
+  const audit = JSON.parse(
+    await readFile(new URL('../docs/catalog-code-audit-2026-10-28.json', import.meta.url), 'utf8')
+  );
+  assert.equal(audit.entries.length, quizzes.length);
+  assert.equal(new Set(audit.entries.map((entry) => entry.id)).size, quizzes.length);
+  for (const entry of audit.entries) {
+    const quiz = quizzes.find((item) => item.id === entry.id);
+    assert.ok(quiz, entry.id);
+    assert.equal(quiz.code, entry.code, entry.id);
+    assert.ok(quiz.name.endsWith(`(${entry.code})`), entry.id);
+    assert.equal(new URL(audit.sources[entry.source]).protocol, 'https:');
+    assert.equal(parseRoute(quizUrl(entry.id, 'practice')).quizId, entry.id);
+  }
+  assert.equal(quizzes.find((quiz) => quiz.id === 'aws-ace').file, 'quiz/AWS/AWS-ACE.json');
+  assert.ok(quizzes.find((quiz) => quiz.id === 'anthropic-cca-f').aliases.includes('CCA-F'));
+  assert.ok(quizzes.find((quiz) => quiz.id === 'gcp-pcde').aliases.includes('PCDE'));
+});
+
+test('every provider resolves to a local, valid icon and unknown providers have a safe fallback', async () => {
+  assert.deepEqual(Object.keys(providerBrands).sort(), [...PROVIDERS].sort());
+  assert.equal(
+    new Set(Object.values(providerBrands).map((brand) => brand.id)).size,
+    PROVIDERS.length
+  );
+  for (const provider of PROVIDERS) {
+    const brand = getProviderBrand(provider);
+    const bytes = await readFile(new URL('../public/' + brand.icon, import.meta.url));
+    const signature = bytes.subarray(0, brand.icon.endsWith('.ico') ? 4 : 8).toString('hex');
+    assert.equal(
+      signature,
+      brand.icon.endsWith('.ico') ? '00000100' : '89504e470d0a1a0a',
+      provider
+    );
+    assert.ok(brand.initials && bytes.length > 100, provider);
+  }
+  assert.equal(getProviderBrand(undefined), null);
+  assert.equal(getProviderBrand({}), null);
+  assert.equal(getProviderBrand('__proto__'), null);
+  assert.equal(getProviderBrand('Custom quiz'), null);
 });
 
 test('every inline guide example matches its download and passes the upload validator', async () => {

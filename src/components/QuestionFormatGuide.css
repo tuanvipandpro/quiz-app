@@ -161,6 +161,16 @@
   .format-guide-heading h2.ant-typography {
     font-size: 22px;
   }
+  .format-guide-heading,
+  .format-example-heading {
+    text-align: center;
+  }
+  .format-selector {
+    justify-content: center;
+  }
+  .format-example-actions {
+    justify-content: center;
+  }
   .format-selector .ant-radio-button-wrapper {
     padding: 10px;
   }

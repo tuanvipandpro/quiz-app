@@ -35,7 +35,7 @@ export default function QuestionFormatGuide() {
             <CodeOutlined aria-hidden="true" /> JSON
           </span>
           <Title level={2} id="format-guide-heading">
-            {t('Question format guide')}
+            {t('Format guide')}
           </Title>
           <Paragraph type="secondary">
             {t('Choose a format, then copy or download a complete quiz example.')}

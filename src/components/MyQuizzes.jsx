@@ -60,12 +60,11 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
       <Alert
         showIcon
         type="info"
-        message={t(
-          'This upload is available in this tab. Keep your file to use it on another device.'
-        )}
+        className="upload-notice"
+        message={t('Only in this tab. Keep your JSON file.')}
       />
       <ol className="upload-workflow" aria-label={t('Upload steps')}>
-        {['Choose a file', 'Review your quiz', 'Start learning'].map((label, index) => (
+        {['Upload', 'Review', 'Study'].map((label, index) => (
           <li
             key={label}
             aria-current={(candidate ? 1 : upload ? 2 : 0) === index ? 'step' : undefined}
@@ -117,8 +116,11 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
             disabled={reading}
           >
             <CloudUploadOutlined aria-hidden="true" className="upload-icon" />
-            <Title level={3}>{t('Drop a JSON file here, or choose a file')}</Title>
-            <Paragraph>{t('A quiz must contain 1–100 questions.')}</Paragraph>
+            <Title level={3}>
+              <span className="desktop-copy">{t('Drop a JSON file here, or choose a file')}</span>
+              <span className="mobile-copy">{t('Upload your quiz')}</span>
+            </Title>
+            <Paragraph>{t('JSON · 1–100 questions · Max 1 MiB')}</Paragraph>
             <Button loading={reading}>{t('Choose JSON file')}</Button>
           </Upload.Dragger>
           <Space wrap className="upload-help">
@@ -127,7 +129,7 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
               href={import.meta.env.BASE_URL + 'sample-quiz.json'}
               download="sample-quiz.json"
             >
-              {t('Download sample JSON')}
+              {t('Sample JSON')}
             </Button>
             <Button
               icon={<FileTextOutlined aria-hidden="true" />}
@@ -138,7 +140,7 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
                 guide?.scrollIntoView({ block: 'start' });
               }}
             >
-              {t('Question format guide')}
+              {t('Format guide')}
             </Button>
           </Space>
           {error && (
@@ -151,7 +153,7 @@ export default function MyQuizzes({ upload, onUse, onOpen, onRemove }) {
             />
           )}
         </div>
-        <Card title={t('Preview')} className="upload-preview">
+        <Card title={t('Preview')} className={'upload-preview' + (!candidate ? ' is-empty' : '')}>
           {candidate ? (
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
               <label>
