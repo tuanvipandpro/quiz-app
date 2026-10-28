@@ -187,6 +187,9 @@
   .quick-summary-header {
     flex-direction: column;
   }
+  .quick-summary-header > .ant-btn {
+    order: -1;
+  }
   .quick-summary-header h1.ant-typography {
     font-size: 24px;
   }

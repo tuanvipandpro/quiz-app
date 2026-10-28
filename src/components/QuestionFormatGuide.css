@@ -166,13 +166,22 @@
     text-align: center;
   }
   .format-selector {
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .format-example-actions {
     justify-content: center;
   }
   .format-selector .ant-radio-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 10px;
+    text-align: center;
+    white-space: normal;
+  }
+  .format-selector .ant-radio-button-wrapper:last-child {
+    grid-column: 1 / -1;
   }
   .format-example-heading > .ant-typography {
     min-height: 0;

@@ -199,7 +199,7 @@ summary:focus-visible {
   align-items: center;
   gap: 24px;
   min-height: 76px;
-  max-width: 1240px;
+  max-width: 1132px;
   margin: 0 auto;
 }
 .app-brand {
@@ -529,6 +529,8 @@ summary:focus-visible {
 .provider-group > summary .ant-typography {
   font-size: 12px;
   font-weight: 400;
+  margin-inline-start: auto;
+  text-align: end;
 }
 .library-quiz-row {
   display: grid;
@@ -603,7 +605,7 @@ summary:focus-visible {
 }
 .mode-options {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
   width: 100%;
 }
@@ -1342,7 +1344,7 @@ summary:focus-visible {
     padding: 24px 16px 36px;
   }
   .app-header.ant-layout-header {
-    padding: 10px 12px;
+    padding: 8px 16px;
   }
   .app-header-inner {
     grid-template-columns: minmax(0, 1fr) 44px auto 44px;
@@ -1353,6 +1355,8 @@ summary:focus-visible {
   .app-brand {
     grid-column: 1;
     grid-row: 1;
+    justify-self: start;
+    justify-content: flex-start;
     font-size: 16px;
     gap: 6px;
     min-height: 44px;
@@ -1380,7 +1384,7 @@ summary:focus-visible {
   .app-nav {
     grid-column: 1 / 4;
     grid-row: 2;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
   }
   .app-nav .ant-btn {
@@ -1415,24 +1419,27 @@ summary:focus-visible {
   .featured-quiz .quiz-title-link {
     text-align: center;
   }
-  .featured-section > h2.ant-typography {
-    text-align: center;
+  .library-quiz-row .library-row-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
-  .library-row-heading {
-    justify-content: center;
+  .library-quiz-row .exam-code {
+    justify-self: start;
   }
-  .library-quiz-row {
-    text-align: center;
+  .library-quiz-row h4.ant-typography {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
-  .library-quiz-row .quiz-title-link {
-    text-align: center;
+  .library-quiz-row .library-row-heading .ant-tag {
+    grid-column: 2;
+    grid-row: 1;
   }
   .library-quiz-row .library-quiz-actions {
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .section-heading {
-    justify-content: center;
-    text-align: center;
+  .library-quiz-row .library-quiz-actions .ant-btn-link {
+    grid-column: 1 / -1;
   }
   .continue-learning {
     justify-content: center;
@@ -1449,7 +1456,6 @@ summary:focus-visible {
   }
   .provider-group > summary {
     font-size: 18px;
-    justify-content: center;
     gap: 8px;
   }
   .quiz-overview-identity {
@@ -1457,6 +1463,11 @@ summary:focus-visible {
   }
   .quiz-overview-identity .provider-identity {
     justify-content: center;
+  }
+  .quiz-overview-identity > .ant-btn,
+  .study-heading > div > .ant-btn {
+    display: flex;
+    width: fit-content;
   }
   .provider-jumps .ant-btn {
     min-height: 44px;
@@ -1470,7 +1481,7 @@ summary:focus-visible {
   .study-heading {
     flex-direction: column;
     gap: 16px;
-    align-items: center;
+    align-items: stretch;
     text-align: center;
   }
   .study-heading h1.ant-typography {
@@ -1523,19 +1534,32 @@ summary:focus-visible {
     justify-content: space-between;
     gap: 16px;
     width: 100%;
+    max-width: none;
+    margin-inline: 0;
   }
   .exam-timer .ant-statistic-content {
     font-size: 22px;
   }
   .exam-score {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     padding: 20px 16px;
     gap: 20px;
+    text-align: center;
   }
   .score-stats {
-    gap: 20px;
+    gap: 12px;
   }
   .exam-score > .ant-space {
-    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .exam-score .ant-space-item {
+    flex: 1 1 150px;
+  }
+  .exam-score .ant-btn {
+    width: 100%;
   }
   .review-filters .ant-radio-button-wrapper {
     min-height: 44px;
@@ -1572,15 +1596,13 @@ summary:focus-visible {
     min-height: 44px;
   }
 }
-@media (max-width: 420px) {
+@media (max-width: 360px) {
   .app-header-inner {
     grid-template-columns: minmax(44px, 1fr) 44px auto 44px;
   }
   .app-brand {
-    justify-self: center;
-    justify-content: center;
     width: 44px;
-    font-size: 24px;
+    font-size: 22px;
   }
   .app-brand > span:not(.anticon) {
     display: none;
