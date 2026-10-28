@@ -1,4 +1,5 @@
 import { normalizeProgress } from '../utils/quizProgress.js';
+import { canonicalQuizId } from '../data/quizAliases.js';
 
 // One store per mounted App. Request/session tokens prevent old reads and writes
 // from replacing a newer checkpoint or another account's state.
@@ -7,14 +8,17 @@ export function createQuizProgressStore(service, now = Date.now) {
   let session = 0;
   let readRequest = 0;
   const listeners = new Set();
-  const publish = patch => {
+  const publish = (patch) => {
     state = { ...state, ...patch };
-    listeners.forEach(listener => listener());
+    listeners.forEach((listener) => listener());
   };
-  const changedSession = () => Object.assign(new Error('Your account changed. Please retry.'), { code: 'SESSION_CHANGED' });
+  const changedSession = () =>
+    Object.assign(new Error('Your account changed. Please retry.'), { code: 'SESSION_CHANGED' });
 
   async function reload() {
-    const uid = state.uid, started = session, request = ++readRequest;
+    const uid = state.uid,
+      started = session,
+      request = ++readRequest;
     if (!uid) return;
     publish({ loading: true, error: null });
     try {
@@ -22,22 +26,37 @@ export function createQuizProgressStore(service, now = Date.now) {
       if (started === session && request === readRequest) publish({ progress, loading: false });
     } catch {
       if (started === session && request === readRequest) {
-        publish({ loading: false, error: 'Could not load saved progress. Retry to check your checkpoints.' });
+        publish({
+          loading: false,
+          error: 'Could not load saved progress. Retry to check your checkpoints.',
+        });
       }
     }
   }
 
   async function update(quizId, checkpoint) {
-    const uid = state.uid, started = session;
+    quizId = canonicalQuizId(quizId);
+    const uid = state.uid,
+      started = session;
     if (!uid) throw new Error('Please login to save your progress.');
     if (state.pendingQuiz) throw new Error('Please wait for the current progress update.');
     publish({ pendingQuiz: quizId });
     try {
       const result = checkpoint
-        ? await service.saveQuizProgress(uid, quizId, checkpoint.questionIndex, checkpoint.questionId)
+        ? await service.saveQuizProgress(
+            uid,
+            quizId,
+            checkpoint.questionIndex,
+            checkpoint.questionId
+          )
         : await service.clearQuizProgress(uid, quizId);
       if (started !== session) throw changedSession();
-      if (!result?.success) throw new Error(checkpoint ? 'Could not save progress. Please retry.' : 'Could not remove saved progress. Please retry.');
+      if (!result?.success)
+        throw new Error(
+          checkpoint
+            ? 'Could not save progress. Please retry.'
+            : 'Could not remove saved progress. Please retry.'
+        );
       // A read started before this confirmed write must not overwrite it.
       readRequest++;
       const progress = { ...state.progress };
@@ -51,7 +70,10 @@ export function createQuizProgressStore(service, now = Date.now) {
 
   return {
     getSnapshot: () => state,
-    subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
     setUser(uid) {
       session++;
       readRequest++;
@@ -60,6 +82,6 @@ export function createQuizProgressStore(service, now = Date.now) {
     },
     reload,
     save: (quizId, questionIndex, questionId) => update(quizId, { questionIndex, questionId }),
-    remove: quizId => update(quizId, null)
+    remove: (quizId) => update(quizId, null),
   };
 }

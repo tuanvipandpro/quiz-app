@@ -1,765 +1,343 @@
-// components/ExamMode.jsx
-import React, { useState, useEffect } from 'react';
-import { Progress, Space, Typography, Card, Result, Badge, Statistic, Modal, Row, Col } from 'antd';
-import { 
-  ArrowLeftOutlined, 
-  ArrowRightOutlined, 
-  CheckOutlined, 
-  HomeOutlined, 
-  ClockCircleOutlined, 
-  QuestionCircleOutlined, 
-  ExclamationCircleOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  FlagOutlined,
+import React, { useEffect, useMemo, useState } from 'react';
+import { Alert, Button, Card, Empty, Modal, Radio, Space, Statistic, Typography } from 'antd';
+import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  ClockCircleOutlined,
   FlagFilled,
-  EyeOutlined
+  FlagOutlined,
+  QuestionCircleOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
 import Question from './Question';
-import QuizActionButton from './QuizActionButton';
-import { useExplanation } from '../hooks/useExplanation';
+import QuestionNavigator from './QuestionNavigator';
 import ExplanationDialogs from './ExplanationDialogs';
+import { useExplanation } from '../hooks/useExplanation';
+import { useStudySession } from '../hooks/useStudySession';
 import { useAuth } from '../hooks/useAuth';
-import { emptyAnswer, isAnswerComplete, isAnswerCorrect as checkAnswer, isStructuredQuestion, formatAnswerLines, shuffleQuestionOptions } from '../utils/questionModel';
+import { useLanguage } from '../contexts/LanguageContext';
+import { createExamSession, examStats, finishExam, sessionKey } from '../utils/studySession';
+import { isAnswerComplete, isAnswerCorrect } from '../utils/questionModel';
 import { scrollToTop } from '../utils/scroll';
-import 'antd/dist/reset.css';
 
 const { Title, Text, Paragraph } = Typography;
-const { Countdown } = Statistic;
-const { confirm } = Modal;
 
-function ExamMode({ questions, onExit, examTimeMinutes, examQuestionCount = 50 }) {
+export default function ExamMode({
+  questions,
+  quizId,
+  quizName,
+  onExit,
+  onRestart,
+  onRunningChange,
+  examTimeMinutes,
+  examQuestionCount = 50,
+  fresh,
+}) {
   const { user } = useAuth();
-  // Select 50 random questions for the exam
-  const [examQuestions, setExamQuestions] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
-  const [examSubmitted, setExamSubmitted] = useState(false);
-  const [score, setScore] = useState(0);
-  const [examEndTime, setExamEndTime] = useState(0);
-  const [timeExpired, setTimeExpired] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [flaggedQuestions, setFlaggedQuestions] = useState([]);
-  const [reviewModalVisible, setReviewModalVisible] = useState(false);
-  
-  const ai = useExplanation(examQuestions[currentIndex], user?.uid);
-
-  const shuffleArray = (items) => {
-    const copied = [...items];
-    for (let i = copied.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copied[i], copied[j]] = [copied[j], copied[i]];
-    }
-    return copied;
+  const { t } = useLanguage();
+  const [session, setSession, draftSaved] = useStudySession(
+    sessionKey(user?.uid, quizId, 'exam'),
+    questions,
+    'exam',
+    () => createExamSession(questions, examQuestionCount, examTimeMinutes),
+    { fresh }
+  );
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const [filter, setFilter] = useState('all');
+  const stats = useMemo(() => examStats(session), [session]);
+  const question = session.questions[session.index];
+  const ai = useExplanation(question, user?.uid);
+  const finish = (expired) => {
+    setSubmitOpen(false);
+    setSession((previous) => finishExam(previous, Date.now(), !expired));
   };
-
-  // Initialize exam with selected random questions and set up timer
   useEffect(() => {
-    const shuffled = shuffleArray(questions);
-    const requestedQuestionCount = Number.isFinite(examQuestionCount) ? examQuestionCount : 50;
-    const examSize = Math.min(Math.max(1, requestedQuestionCount), questions.length);
-    const selected = shuffled
-      .slice(0, examSize)
-      .map(question => shuffleQuestionOptions(question));
-    setExamQuestions(selected);
-    
-    // Initialize answers array with null for single-answer questions and empty arrays for multiple-answer questions
-    const initialAnswers = selected.map(emptyAnswer);
-    setAnswers(initialAnswers);
-    
-    // Set exam end time
-    const deadline = Date.now() + (examTimeMinutes * 60 * 1000);
-    setExamEndTime(deadline);
-  }, [questions, examTimeMinutes, examQuestionCount]);
-  
-  // Update time left counter each second
+    onRunningChange(!session.submitted);
+    return () => onRunningChange(false);
+  }, [session.submitted, onRunningChange]);
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = Date.now();
-      const timeRemaining = Math.max(0, examEndTime - now);
-      
-      if (timeRemaining > 0) {
-        // Calculate hours, minutes, seconds
-        const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-        
-        setTimeLeft({ hours, minutes, seconds });
-      } else {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        clearInterval(timer);
-      }
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [examEndTime]);
-  
-  // Handle time expiration
-  const handleTimeExpire = () => {
-    setTimeExpired(true);
-    handleSubmit();
-  };
-  
-  // Calculate how many questions have been answered
-  const getAnsweredQuestions = () => {
-    return answers.filter((a, i) => {
-      const q = examQuestions[i];
-      return isAnswerComplete(q, a);
-    }).length;
-  };
-  
-  // Handle exit confirmation
-  const handleExitClick = () => {
-    const answeredCount = getAnsweredQuestions();
-    const unansweredCount = examQuestions.length - answeredCount;
-    
-    // Format time remaining for display
-    const { hours, minutes, seconds } = timeLeft;
-    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    onExit();
-    // confirm({
-    //   title: 'Do you want to exit the exam?',
-    //   icon: <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />,
-    //   content: (
-    //     <div style={{ marginTop: '20px' }}>
-    //       <Paragraph>
-    //         Your progress will be lost and you will not receive a score.
-    //       </Paragraph>
-          
-    //       <Row gutter={[0, 16]} style={{ marginTop: '20px' }}>
-    //         <Col span={24}>
-    //           <Card size="small">
-    //             <Row align="middle">
-    //               <Col span={16}>
-    //                 <Space>
-    //                   <CheckCircleOutlined style={{ color: '#52c41a' }} />
-    //                   <Text strong>Questions Answered:</Text>
-    //                 </Space>
-    //               </Col>
-    //               <Col span={8} style={{ textAlign: 'right' }}>
-    //                 <Text strong>{answeredCount} of {examQuestions.length}</Text>
-    //               </Col>
-    //             </Row>
-    //           </Card>
-    //         </Col>
-            
-    //         <Col span={24}>
-    //           <Card size="small">
-    //             <Row align="middle">
-    //               <Col span={16}>
-    //                 <Space>
-    //                   <CloseCircleOutlined style={{ color: '#ff4d4f' }} />
-    //                   <Text strong>Questions Unanswered:</Text>
-    //                 </Space>
-    //               </Col>
-    //               <Col span={8} style={{ textAlign: 'right' }}>
-    //                 <Text strong>{unansweredCount}</Text>
-    //               </Col>
-    //             </Row>
-    //           </Card>
-    //         </Col>
-            
-    //         <Col span={24}>
-    //           <Card size="small">
-    //             <Row align="middle">
-    //               <Col span={16}>
-    //                 <Space>
-    //                   <ClockCircleOutlined style={{ color: '#1890ff' }} />
-    //                   <Text strong>Time Remaining:</Text>
-    //                 </Space>
-    //               </Col>
-    //               <Col span={8} style={{ textAlign: 'right' }}>
-    //                 <Text strong>{timeString}</Text>
-    //               </Col>
-    //             </Row>
-    //           </Card>
-    //         </Col>
-    //       </Row>
-    //     </div>
-    //   ),
-    //   okText: 'Yes, Exit',
-    //   okType: 'danger',
-    //   cancelText: 'No, Continue',
-    //   onOk() {
-    //     onExit();
-    //   },
-    //   width: 500,
-    // });
-  };
-  
-  if (examQuestions.length === 0) {
-    return <div>Loading exam questions...</div>;
-  }
-  
-  const currentQuestion = examQuestions[currentIndex];
-  
-  // Calculate progress with 2 decimal places
-  const progressValue = ((currentIndex + 1) / examQuestions.length) * 100;
-  const progress = parseFloat(progressValue.toFixed(2));
-  
-  const handleAnswer = (answer) => {
-    const newAnswers = [...answers];
-    newAnswers[currentIndex] = answer;
-    setAnswers(newAnswers);
-  };
-  
-  const toggleFlag = (questionIndex) => {
-    setFlaggedQuestions(prev => {
-      if (prev.includes(questionIndex)) {
-        return prev.filter(idx => idx !== questionIndex);
-      } else {
-        return [...prev, questionIndex];
-      }
-    });
-  };
-  
-  const goToQuestion = (questionIndex) => {
-    setCurrentIndex(questionIndex);
-    scrollToTop();
-    setReviewModalVisible(false);
-  };
-  
-  const goToNextQuestion = () => {
-    if (currentIndex < examQuestions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      scrollToTop();
+    if (session.submitted) {
+      setSubmitOpen(false);
+      return;
     }
-  };
-  
-  const goToPreviousQuestion = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      scrollToTop();
-    }
-  };
-  
-  const handleExplainClick = ai.explain;
-
-  const isQuestionAnswered = (questionIndex) => {
-    const question = examQuestions[questionIndex];
-    const answer = answers[questionIndex];
-
-    if (!question) {
-      return false;
-    }
-
-    return isAnswerComplete(question, answer);
-  };
-
-  const formatSelectedAnswers = (questionIndex) => {
-    const question = examQuestions[questionIndex];
-    const answer = answers[questionIndex];
-
-    if (!question) {
-      return [];
-    }
-
-    return formatAnswerLines(question, answer);
-  };
-
-  const getReviewCardStyle = (questionIndex) => {
-    const answered = isQuestionAnswered(questionIndex);
-    const correct = isAnswerCorrect(questionIndex);
-    const isCurrent = questionIndex === currentIndex;
-
-    if (isCurrent) {
-      return {
-        backgroundColor: 'var(--app-primary-bg)',
-        borderColor: 'var(--app-primary-bg)',
-        borderWidth: '2px'
-      };
-    }
-
-    if (!answered) {
-      return {
-        backgroundColor: 'var(--app-surface)',
-        borderColor: 'var(--app-card-border)'
-      };
-    }
-
-    if (correct) {
-      return {
-        backgroundColor: 'var(--app-success-bg)',
-        borderColor: 'var(--app-success-border)'
-      };
-    }
-
-    return {
-      backgroundColor: 'var(--app-danger-bg)',
-      borderColor: 'var(--app-danger-border)'
+    const check = () => {
+      if (Date.now() >= session.deadline) setSession((previous) => finishExam(previous));
     };
-  };
-  
-  // Check if an answer is correct
-  const isAnswerCorrect = (questionIndex) => {
-    const question = examQuestions[questionIndex];
-    const answer = answers[questionIndex];
-    
-    return checkAnswer(question, answer);
-  };
-  
-  const handleSubmit = () => {
-    const answeredCount = getAnsweredQuestions();
-    const unansweredCount = examQuestions.length - answeredCount;
-    const flaggedCount = flaggedQuestions.length;
-    
-    confirm({
-      title: 'Submit Exam?',
-      icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
-      content: (
-        <div style={{ marginTop: '20px' }}>
-          <Paragraph>
-            Are you sure you want to submit your exam? You will not be able to change your answers after submission.
-          </Paragraph>
-          
-          <Row gutter={[0, 16]} style={{ marginTop: '20px' }}>
-            <Col span={24}>
-              <Card size="small">
-                <Row align="middle">
-                  <Col span={16}>
-                    <Space>
-                      <QuestionCircleOutlined style={{ color: '#1890ff' }} />
-                      <Text strong>Total Questions:</Text>
-                    </Space>
-                  </Col>
-                  <Col span={8} style={{ textAlign: 'right' }}>
-                    <Text strong>{examQuestions.length}</Text>
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-            
-            <Col span={24}>
-              <Card size="small">
-                <Row align="middle">
-                  <Col span={16}>
-                    <Space>
-                      <CheckCircleOutlined style={{ color: '#52c41a' }} />
-                      <Text strong>Questions Answered:</Text>
-                    </Space>
-                  </Col>
-                  <Col span={8} style={{ textAlign: 'right' }}>
-                    <Text strong style={{ color: '#52c41a' }}>{answeredCount}</Text>
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-            
-            <Col span={24}>
-              <Card size="small">
-                <Row align="middle">
-                  <Col span={16}>
-                    <Space>
-                      <CloseCircleOutlined style={{ color: '#ff4d4f' }} />
-                      <Text strong>Questions Unanswered:</Text>
-                    </Space>
-                  </Col>
-                  <Col span={8} style={{ textAlign: 'right' }}>
-                    <Text strong style={{ color: '#ff4d4f' }}>{unansweredCount}</Text>
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-            
-            {flaggedCount > 0 && (
-              <Col span={24}>
-                <Card size="small">
-                  <Row align="middle">
-                    <Col span={16}>
-                      <Space>
-                        <FlagOutlined style={{ color: '#faad14' }} />
-                        <Text strong>Flagged Questions:</Text>
-                      </Space>
-                    </Col>
-                    <Col span={8} style={{ textAlign: 'right' }}>
-                      <Text strong style={{ color: '#faad14' }}>{flaggedCount}</Text>
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
-            )}
-            
-            <Col span={24}>
-              <Card size="small">
-                <Row align="middle">
-                  <Col span={16}>
-                    <Space>
-                      <ClockCircleOutlined style={{ color: '#1890ff' }} />
-                      <Text strong>Time Remaining:</Text>
-                    </Space>
-                  </Col>
-                  <Col span={8} style={{ textAlign: 'right' }}>
-                    <Countdown 
-                      value={examEndTime}
-                      format="HH:mm:ss"
-                      valueStyle={{ fontSize: '14px', fontWeight: 'bold' }}
-                    />
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-          </Row>
-          
-          {unansweredCount > 0 && (
-            <Paragraph type="warning" style={{ marginTop: '20px', marginBottom: 0 }}>
-              <ExclamationCircleOutlined /> You still have {unansweredCount} unanswered question{unansweredCount > 1 ? 's' : ''}. These will be marked as incorrect.
-            </Paragraph>
-          )}
-        </div>
-      ),
-      okText: 'Yes, Submit',
-      okType: 'primary',
-      cancelText: 'No, Continue',
-      onOk() {
-        // Calculate score
-        let correctCount = 0;
-        for (let i = 0; i < examQuestions.length; i++) {
-          if (isAnswerCorrect(i)) {
-            correctCount++;
-          }
-        }
-        
-        setScore(correctCount);
-        setExamSubmitted(true);
-      },
-      width: 500,
-    });
-  };
-  
-  // Check if all questions are answered (either with a string value or non-empty array)
-  const allAnswered = answers.every((answer, index) => {
-    const question = examQuestions[index];
-    return isAnswerComplete(question, answer);
-  });
-  
-  if (examSubmitted) {
-    const incorrectCount = examQuestions.length - score;
-    const reviewedQuestion = examQuestions[currentIndex];
-    const selectedAnswers = formatSelectedAnswers(currentIndex);
-    const questionCorrect = isAnswerCorrect(currentIndex);
-    const scorePercentage = (score / examQuestions.length) * 100;
-    const isPassed = scorePercentage > 80;
-
+    check();
+    const timer = setInterval(check, 1000);
+    return () => clearInterval(timer);
+  }, [session.deadline, session.submitted, setSession]);
+  const matches = (index, type) => {
+    const answered = isAnswerComplete(session.questions[index], session.answers[index]);
+    const correct = isAnswerCorrect(session.questions[index], session.answers[index]);
     return (
-      <div className="quiz-mode quiz-exam-review">
-        <Result
-          status={isPassed ? 'success' : 'error'}
-          title={timeExpired ? "Time's Up!" : "Exam Completed!"}
-          subTitle={`Your score: ${score}/${examQuestions.length} (${scorePercentage.toFixed(2)}%). Passing requires more than 80%.`}
-        />
-
-        <Paragraph strong type={isPassed ? 'success' : 'danger'} style={{ textAlign: 'center', marginTop: '-12px', marginBottom: '20px' }}>
-          {isPassed ? 'Result: PASS' : 'Result: FAIL'}
-        </Paragraph>
-
-        <Row className="exam-result-stats" gutter={[12, 12]} style={{ marginBottom: '24px' }}>
-          <Col xs={8} sm={8}>
-            <Card size="small">
-              <Statistic
-                title="Correct"
-                value={score}
-                prefix={<CheckCircleOutlined />}
-                valueStyle={{ color: '#52c41a' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={8} sm={8}>
-            <Card size="small">
-              <Statistic
-                title="Incorrect"
-                value={incorrectCount}
-                prefix={<CloseCircleOutlined />}
-                valueStyle={{ color: '#ff4d4f' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={8} sm={8}>
-            <Card size="small">
-              <Statistic
-                title="Answered"
-                value={getAnsweredQuestions()}
-                prefix={<QuestionCircleOutlined />}
-                valueStyle={{ color: '#1890ff' }}
-              />
-            </Card>
-          </Col>
-        </Row>
-
-        <Card
-          className="quiz-question-shell quiz-review-question"
-          title={`Review Question ${currentIndex + 1} of ${examQuestions.length}`}
-          extra={
-            <Text strong type={questionCorrect ? 'success' : 'danger'}>
-              {questionCorrect ? 'Correct' : 'Incorrect'}
-            </Text>
-          }
-          style={{ marginBottom: '20px' }}
-        >
-          <Question
-            data={reviewedQuestion}
-            question={reviewedQuestion.question}
-            imageUrl={reviewedQuestion.imageUrl}
-            options={reviewedQuestion.options}
-            selectedAnswer={answers[currentIndex]}
-            onSelectAnswer={() => {}}
-            showFeedback={true}
-            isCorrect={questionCorrect}
-            correctOptions={reviewedQuestion.answer}
-            readOnly={true}
-            showOptionKey={false}
-            sortOptions={false}
-          />
-
-          {!isStructuredQuestion(reviewedQuestion) && <div className="selected-answer-panel" style={{ marginTop: '16px', padding: '16px', borderRadius: '8px' }}>
-            <Title level={5} style={{ marginTop: 0 }}>Selected Answer{selectedAnswers.length > 1 ? 's' : ''}</Title>
-            {selectedAnswers.length > 0 ? (
-              selectedAnswers.map((line, index) => (
-                <div key={index} style={{ marginBottom: '6px' }}>
-                  <Text>
-                    {line}
-                  </Text>
-                </div>
-              ))
-            ) : (
-              <Text type="secondary">No answer selected.</Text>
-            )}
-          </div>}
-        </Card>
-
-        <div className="quiz-review-legend">
-          <Badge color="#52c41a" text="Correct" />
-          <Badge color="#ff4d4f" text="Incorrect" />
-          <Badge color="#d9d9d9" text="Unanswered" />
-        </div>
-        <div className="quiz-action-bar quiz-action-bar-review" role="group" aria-label="Exam review actions">
-          <div className="quiz-action-group">
-            <QuizActionButton label="Previous question" type="primary" icon={<ArrowLeftOutlined />}
-              onClick={goToPreviousQuestion} disabled={currentIndex === 0}>Previous</QuizActionButton>
-            <QuizActionButton label="Next question" type="primary" icon={<ArrowRightOutlined />}
-              onClick={goToNextQuestion} disabled={currentIndex === examQuestions.length - 1}>Next</QuizActionButton>
-          </div>
-          <div className="quiz-action-group">
-            <QuizActionButton label="Explain with AI" icon={<QuestionCircleOutlined />} onClick={handleExplainClick} />
-            <QuizActionButton label="Return to Menu" icon={<HomeOutlined />} onClick={onExit} />
-          </div>
-        </div>
-        <ExplanationDialogs question={currentQuestion} state={ai} />
-
-        <Card title="Jump To Question">
-          <Row gutter={[8, 8]}>
-            {examQuestions.map((question, index) => {
-              const cardStyle = getReviewCardStyle(index);
-              const isCurrent = index === currentIndex;
-
-              return (
-                <Col xs={6} sm={4} md={3} lg={2} key={index}>
-                  <Card
-                    hoverable
-                    size="small"
-                    onClick={() => setCurrentIndex(index)}
-                    style={{
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                      ...cardStyle
-                    }}
-                  >
-                    <Text strong style={{ color: isCurrent ? '#fff' : 'var(--app-text)' }}>
-                      {index + 1}
-                    </Text>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-        </Card>
-      </div>
+      type === 'all' ||
+      (type === 'missed' && !correct) ||
+      (type === 'correct' && correct) ||
+      (type === 'incorrect' && answered && !correct) ||
+      (type === 'unanswered' && !answered) ||
+      (type === 'flagged' && session.flags.includes(index))
     );
-  }
-
+  };
+  const indexes = session.questions
+    .map((_, index) => index)
+    .filter((index) => !session.submitted || matches(index, filter));
+  const go = (index) => {
+    if (session.submitted && !matches(index, filter)) setFilter('all');
+    setSession((previous) => ({ ...previous, index }));
+    scrollToTop();
+  };
+  const selectFilter = (value) => {
+    setFilter(value);
+    const first = session.questions.findIndex((_, index) => matches(index, value));
+    if (first >= 0) setSession((previous) => ({ ...previous, index: first }));
+  };
+  const position = indexes.indexOf(session.index);
+  const answer = (value) =>
+    setSession((previous) =>
+      previous.submitted
+        ? previous
+        : Date.now() >= previous.deadline
+          ? { ...previous, submitted: true, timeExpired: true }
+          : {
+              ...previous,
+              answers: previous.answers.map((item, index) =>
+                index === previous.index ? value : item
+              ),
+            }
+    );
+  const toggleFlag = () =>
+    setSession((previous) => ({
+      ...previous,
+      flags: previous.flags.includes(previous.index)
+        ? previous.flags.filter((index) => index !== previous.index)
+        : [...previous.flags, previous.index],
+    }));
+  const score = (stats.correct / session.questions.length) * 100;
   return (
-    <div className="quiz-mode quiz-exam-mode">
-      <div className="quiz-mode-header">
-        <Title level={2}>Exam Mode</Title>
-        
-        {/* Timer display */}
-        <Badge.Ribbon text="Time Remaining" color="blue">
-          <Card className="exam-timer-card">
-            <Space>
-              <ClockCircleOutlined />
-              <Countdown 
-                value={examEndTime}
-                format="HH:mm:ss"
-                onFinish={handleTimeExpire}
-              />
+    <div className="study-page exam-page">
+      <div className="study-heading">
+        <div>
+          <Button type="text" icon={<ArrowLeftOutlined aria-hidden="true" />} onClick={onExit}>
+            {t('Back to quiz overview')}
+          </Button>
+          <Title level={1}>{t(session.submitted ? 'Exam results' : 'Mock exam')}</Title>
+          <Text type="secondary">{quizName}</Text>
+        </div>
+      </div>
+      {!session.submitted && (
+        <div className="exam-timer exam-timer-sticky" role="timer" aria-label={t('Time remaining')}>
+          <Text type="secondary">
+            <ClockCircleOutlined aria-hidden="true" /> {t('Time remaining')}
+          </Text>
+          <Statistic.Timer
+            type="countdown"
+            value={session.deadline}
+            format="HH:mm:ss"
+            onFinish={() => finish(true)}
+          />
+        </div>
+      )}
+      {session.submitted && (
+        <>
+          {session.timeExpired && <Alert type="info" showIcon message={t('Time is up')} />}
+          <section className="exam-score">
+            <div>
+              <Text type="secondary">{t('Score')}</Text>
+              <div className="score-number">
+                {stats.correct}
+                <small> / {session.questions.length}</small>
+              </div>
+              <Text strong>
+                {score.toFixed(1)}% · {t(score > 80 ? 'Pass' : 'Not passed')}
+              </Text>
+              <Paragraph type="secondary">{t('Passing requires more than 80%.')}</Paragraph>
+            </div>
+            <div className="score-stats">
+              <div>
+                <strong>{stats.correct}</strong>
+                <span>{t('Correct')}</span>
+              </div>
+              <div>
+                <strong>{stats.incorrect}</strong>
+                <span>{t('Incorrect')}</span>
+              </div>
+              <div>
+                <strong>{stats.unanswered}</strong>
+                <span>{t('Unanswered')}</span>
+              </div>
+            </div>
+            <Space wrap>
+              <Button type="primary" onClick={() => selectFilter('missed')}>
+                {t('Review missed questions')}
+              </Button>
+              <Button icon={<ReloadOutlined aria-hidden="true" />} onClick={onRestart}>
+                {t('Start a new exam')}
+              </Button>
             </Space>
-          </Card>
-        </Badge.Ribbon>
-      </div>
-      
-      {/* Display current question number out of total */}
-      <div style={{ marginBottom: '10px', marginTop: '20px' }}>
-        <Text strong>Question {currentIndex + 1} of {examQuestions.length}</Text>
-      </div>
-      
-      {/* Display progress with format prop to show decimal places */}
-      <Progress 
-        percent={progress} 
-        status="active" 
-        format={percent => `${percent.toFixed(2)}%`}
-      />
-      
-      <Card className="quiz-question-shell">
-        <Question 
-          data={currentQuestion}
-          question={currentQuestion.question}
-          imageUrl={currentQuestion.imageUrl}
-          options={currentQuestion.options}
-          selectedAnswer={answers[currentIndex]}
-          onSelectAnswer={handleAnswer}
-          showFeedback={false}
-          correctOptions={currentQuestion.answer}
-          showOptionKey={false}
-          sortOptions={false}
-        />
-      </Card>
-      
-      <div className="quiz-action-bar" role="group" aria-label="Exam actions">
-        <div className="quiz-action-group">
-          <QuizActionButton label="Previous question" type="primary" icon={<ArrowLeftOutlined />}
-            onClick={goToPreviousQuestion} disabled={currentIndex === 0}>Previous</QuizActionButton>
-          <QuizActionButton label="Next question" type="primary" icon={<ArrowRightOutlined />}
-            onClick={goToNextQuestion} disabled={currentIndex === examQuestions.length - 1}>Next</QuizActionButton>
-          <QuizActionButton label={flaggedQuestions.includes(currentIndex) ? 'Unflag question' : 'Flag question'}
-            aria-pressed={flaggedQuestions.includes(currentIndex)}
-            icon={flaggedQuestions.includes(currentIndex) ? <FlagFilled /> : <FlagOutlined />}
-            onClick={() => toggleFlag(currentIndex)}
-            style={{ color: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined,
-              borderColor: flaggedQuestions.includes(currentIndex) ? '#ff4d4f' : undefined }}>
-            {flaggedQuestions.includes(currentIndex) ? 'Unflag' : 'Flag'}
-          </QuizActionButton>
-        </div>
-        <div className="quiz-action-group">
-          <QuizActionButton label="Review questions" icon={<EyeOutlined />} onClick={() => setReviewModalVisible(true)}>Review</QuizActionButton>
-          <QuizActionButton label="Finish Exam" type="primary" danger icon={<CheckOutlined />} onClick={handleSubmit} />
-        </div>
-      </div>
-
-      {/* Display question completion stats */}
-      <div style={{ marginTop: '20px' }}>
-        <Text>
-          {getAnsweredQuestions()} of {examQuestions.length} questions answered
-        </Text>
-      </div>
-      
-      <ExplanationDialogs question={currentQuestion} state={ai} />
-      
-      {/* Review Modal */}
-      <Modal
-        className="exam-review-dialog"
-        title="Review Questions"
-        open={reviewModalVisible}
-        onCancel={() => setReviewModalVisible(false)}
-        footer={[
-          <QuizActionButton key="close" label="Close review" icon={<CloseCircleOutlined />} onClick={() => setReviewModalVisible(false)}>Close</QuizActionButton>
-        ]}
-        width={800}
-      >
-        <div style={{ marginBottom: '20px' }}>
-          <Row gutter={[16, 16]}>
-            <Col xs={12} sm={6}>
-              <Card size="small">
-                <Statistic
-                  title="Total"
-                  value={examQuestions.length}
-                  prefix={<QuestionCircleOutlined />}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={6}>
-              <Card size="small">
-                <Statistic
-                  title="Answered"
-                  value={getAnsweredQuestions()}
-                  prefix={<CheckCircleOutlined />}
-                  valueStyle={{ color: '#52c41a' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={6}>
-              <Card size="small">
-                <Statistic
-                  title="Unanswered"
-                  value={examQuestions.length - getAnsweredQuestions()}
-                  prefix={<CloseCircleOutlined />}
-                  valueStyle={{ color: '#ff4d4f' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={6}>
-              <Card size="small">
-                <Statistic
-                  title="Flagged"
-                  value={flaggedQuestions.length}
-                  prefix={<FlagOutlined />}
-                  valueStyle={{ color: '#faad14' }}
-                />
-              </Card>
-            </Col>
-          </Row>
-        </div>
-        
-        <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-          <Row gutter={[8, 8]}>
-            {examQuestions.map((question, index) => {
-              const isAnswered = isAnswerComplete(question, answers[index]);
-              const isFlagged = flaggedQuestions.includes(index);
-              const isCurrent = index === currentIndex;
-              
-              return (
-                <Col xs={6} sm={4} key={index}>
-                  <Badge.Ribbon 
-                    text={isFlagged ? <FlagFilled /> : null} 
-                    color="red"
-                    style={{ display: isFlagged ? 'block' : 'none' }}
+          </section>
+          <Radio.Group
+            role="radiogroup"
+            className="review-filters"
+            value={filter}
+            onChange={(event) => selectFilter(event.target.value)}
+            aria-label={t('Exam results')}
+          >
+            {[
+              ['all', 'All questions'],
+              ['missed', 'Missed questions'],
+              ['correct', 'Correct'],
+              ['incorrect', 'Incorrect'],
+              ['unanswered', 'Unanswered'],
+              ['flagged', 'Flagged'],
+            ].map(([value, label]) => (
+              <Radio.Button key={value} value={value}>
+                {t(label)}
+              </Radio.Button>
+            ))}
+          </Radio.Group>
+        </>
+      )}
+      <div className="study-workspace">
+        <div className="study-main">
+          {indexes.length ? (
+            <>
+              <div className="study-position">
+                <Text strong>
+                  {t('Question {number} of {total}', {
+                    number: session.index + 1,
+                    total: session.questions.length,
+                  })}
+                </Text>
+                <Text type="secondary">
+                  {t('{count} of {total} answered', {
+                    count: stats.answered,
+                    total: session.questions.length,
+                  })}
+                </Text>
+              </div>
+              <Question
+                data={question}
+                question={question.question}
+                imageUrl={question.imageUrl}
+                options={question.options}
+                selectedAnswer={session.answers[session.index]}
+                onSelectAnswer={answer}
+                showFeedback={session.submitted}
+                isCorrect={isAnswerCorrect(question, session.answers[session.index])}
+                correctOptions={question.answer}
+                readOnly={session.submitted}
+                showOptionKey={false}
+                sortOptions={false}
+              />
+              <div className="study-secondary-actions">
+                {session.submitted ? (
+                  <Button
+                    icon={<QuestionCircleOutlined aria-hidden="true" />}
+                    onClick={() => ai.explain()}
                   >
-                    <Card
-                      hoverable
-                      size="small"
-                      onClick={() => goToQuestion(index)}
-                      style={{
-                        textAlign: 'center',
-                        backgroundColor: isCurrent ? 'var(--app-primary-bg)' : (isAnswered ? 'var(--app-success-bg)' : 'var(--app-surface)'),
-                        borderColor: isCurrent ? 'var(--app-primary-bg)' : (isAnswered ? 'var(--app-success-border)' : 'var(--app-card-border)'),
-                        borderWidth: isCurrent ? '2px' : '1px',
-                        cursor: 'pointer'
-                      }}
+                    {t('Explain')}
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      icon={
+                        session.flags.includes(session.index) ? (
+                          <FlagFilled aria-hidden="true" />
+                        ) : (
+                          <FlagOutlined aria-hidden="true" />
+                        )
+                      }
+                      aria-pressed={session.flags.includes(session.index)}
+                      onClick={toggleFlag}
                     >
-                      <Text strong style={{ color: isCurrent ? '#fff' : 'var(--app-text)' }}>
-                        {index + 1}
-                      </Text>
-                      {isAnswered && !isCurrent && (
-                        <CheckCircleOutlined style={{ color: '#52c41a', marginLeft: '5px' }} />
-                      )}
-                    </Card>
-                  </Badge.Ribbon>
-                </Col>
-              );
+                      {t(session.flags.includes(session.index) ? 'Unflag' : 'Flag')}
+                    </Button>
+                    <Button type="primary" onClick={() => setSubmitOpen(true)}>
+                      {t('Submit exam')}
+                    </Button>
+                  </>
+                )}
+              </div>
+              {session.submitted && <ExplanationDialogs question={question} state={ai} inline />}
+              <div
+                className="study-navigation-bar"
+                role="group"
+                aria-label={t(session.submitted ? 'Exam results' : 'Mock exam')}
+              >
+                <Button
+                  icon={<ArrowLeftOutlined aria-hidden="true" />}
+                  disabled={position <= 0}
+                  onClick={() => go(indexes[position - 1])}
+                >
+                  {t('Previous')}
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<ArrowRightOutlined aria-hidden="true" />}
+                  disabled={position < 0 || position === indexes.length - 1}
+                  onClick={() => go(indexes[position + 1])}
+                >
+                  {t('Next question')}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <Empty description={t('No questions match this filter.')} />
+          )}
+          <div className="draft-status">
+            <Text type="secondary" role="status">
+              {t(
+                draftSaved
+                  ? 'Draft saved in this tab'
+                  : 'Draft storage is unavailable in this browser.'
+              )}
+            </Text>
+          </div>
+        </div>
+        <QuestionNavigator
+          questions={session.questions}
+          answers={session.answers}
+          index={session.index}
+          onNavigate={go}
+          flags={session.flags}
+          review={session.submitted}
+          indexes={indexes}
+        />
+      </div>
+      <Modal
+        title={t('Review before submitting')}
+        open={submitOpen && !session.submitted}
+        onCancel={() => setSubmitOpen(false)}
+        onOk={() => finish(false)}
+        okText={t('Submit and view results')}
+        cancelText={t('Continue exam')}
+      >
+        <div className="submit-stats">
+          <div>
+            <strong>{stats.answered}</strong>
+            <span>{t('Answered')}</span>
+          </div>
+          <div>
+            <strong>{stats.unanswered}</strong>
+            <span>{t('Unanswered')}</span>
+          </div>
+          <div>
+            <strong>{session.flags.length}</strong>
+            <span>{t('Flagged')}</span>
+          </div>
+        </div>
+        <Paragraph>{t('Answers are locked after submission.')}</Paragraph>
+        {stats.unanswered > 0 && (
+          <Alert
+            type="warning"
+            showIcon
+            message={t('You have {count} unanswered questions. They receive no points.', {
+              count: stats.unanswered,
             })}
-          </Row>
-        </div>
-        
-        <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #f0f0f0' }}>
-          <Space wrap>
-            <Badge color="#1890ff" text="Current Question" />
-            <Badge color="#52c41a" text="Answered" />
-            <Badge color="#d9d9d9" text="Unanswered" />
-            <Badge color="#ff4d4f" text="Flagged" />
-          </Space>
-        </div>
+          />
+        )}
       </Modal>
-
     </div>
   );
 }
-
-export default ExamMode;

@@ -1,0 +1,197 @@
+.sign-in-modal .ant-modal-content {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-lg);
+}
+.sign-in-modal .ant-modal-header {
+  height: 0;
+  margin: 0;
+}
+.sign-in-modal .ant-modal-body {
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+}
+.sign-in-modal .ant-modal-close {
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  color: var(--app-muted);
+}
+.sign-in-content {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 36px;
+}
+.sign-in-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 24px;
+}
+.sign-in-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--app-info-bg);
+  color: var(--app-primary);
+  font-size: 24px;
+}
+.sign-in-brand strong {
+  display: block;
+  color: var(--app-text);
+  font-size: 16px;
+  letter-spacing: -0.3px;
+}
+.sign-in-brand .ant-typography {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+}
+.sign-in-intro h2.ant-typography {
+  margin: 0 0 12px;
+  font-size: 30px;
+  line-height: 1.22;
+  letter-spacing: -0.9px;
+  text-wrap: balance;
+}
+.sign-in-intro .ant-typography-secondary {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.sign-in-providers {
+  display: grid;
+  gap: 10px;
+}
+.provider-sign-in.ant-btn {
+  min-height: 52px;
+  border-color: var(--app-control-border);
+  border-radius: 10px;
+  color: var(--app-text);
+  background: var(--app-surface);
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: var(--app-shadow-sm);
+}
+.google-sign-in.ant-btn:not(:disabled):hover {
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+  background: var(--app-info-bg);
+}
+.provider-sign-in .anticon {
+  font-size: 20px;
+}
+.sign-in-logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+.provider-sign-in.ant-btn:disabled {
+  color: var(--app-muted);
+  background: var(--app-surface-subtle);
+  border-color: var(--app-border);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.sign-in-unavailable {
+  margin-inline-start: auto;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--app-code-bg);
+  color: var(--app-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.sign-in-provider-label {
+  text-align: start;
+}
+.sign-in-benefits {
+  display: grid;
+  gap: 14px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sign-in-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--app-muted);
+  line-height: 1.6;
+}
+.sign-in-benefits .anticon {
+  flex-shrink: 0;
+  margin-top: 3px;
+  font-size: 17px;
+  color: var(--app-primary);
+}
+.sign-in-guest {
+  border-top: 1px solid var(--app-border);
+  padding-top: 18px;
+  text-align: center;
+}
+.sign-in-guest > .ant-typography {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.sign-in-guest .ant-btn {
+  min-height: 44px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+.sign-in-content .ant-alert {
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .sign-in-content {
+    padding: 28px 20px 20px;
+    gap: 18px;
+    text-align: center;
+  }
+  .sign-in-brand {
+    justify-content: center;
+    padding: 0;
+  }
+  .sign-in-benefits {
+    text-align: start;
+    gap: 10px;
+  }
+  .sign-in-intro h2.ant-typography {
+    font-size: 25px;
+  }
+  .sign-in-intro .ant-typography-secondary {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .provider-sign-in.ant-btn {
+    min-height: 48px;
+    padding-inline: 12px;
+    font-size: 14px;
+    gap: 8px;
+  }
+}
+@media (max-height: 650px) {
+  .sign-in-content {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    gap: 16px;
+  }
+  .sign-in-intro h2.ant-typography {
+    font-size: 25px;
+  }
+  .sign-in-benefits {
+    gap: 10px;
+  }
+}

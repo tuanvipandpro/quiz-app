@@ -30,28 +30,44 @@ CI installs with `yarn install --frozen-lockfile`. A production build writes to 
 
 ## Quiz library
 
-The app includes **21 quiz sets**, grouped by category and searchable by name. Counts below describe the files in this repository.
+The app opens directly to **20 unique quiz sets**, grouped by provider and searchable by name or exam code. AWS AIP-C01 and Anthropic CCAR-P are pinned as featured exams. Counts below describe the files in this repository and are checked against the catalog by automated tests.
 
 | Category | Quiz sets and question counts |
 | --- | --- |
-| Anthropic | Architect Foundations (CCA-F, 175), Architect Professional (CCAR-P, 126), Associate Foundations (CCAO-F, 119), Developer Foundations (CCDV-F, 53) |
-| AWS | Cloud Practitioner (302), Solutions Architect Associate (529), Developer Associate (557), Data Engineer Associate (227), Generative AI Developer Professional (AIP-C01, 136) |
+| Anthropic | Architect Foundations (CCAR-F, 201), Architect Professional (CCAR-P, 157), Associate Foundations (CCAO-F, 151), Developer Foundations (CCDV-F, 96) |
+| AWS | Solutions Architect Associate (SAA-C03, 529), Developer Associate (DVA-C02, 557), Data Engineer Associate (DEA-C01, 227), Generative AI Developer Professional (AIP-C01, 136) |
 | Microsoft | Azure Fundamentals (AZ-900, 472), GitHub Copilot (GH-300, 115), Agentic AI Business Solutions Architect Expert (AB-100, 111), Azure AI Apps and Agents Developer Associate (AI-103, 117) |
-| Google Cloud | Associate Cloud Engineer (302), Professional Cloud Architect (279), Professional Cloud Developer (359), Professional Data Engineer (139), Generative AI Leader (56) |
-| ISTQB | Foundation Level v4.0 (240), AI Testing (118), Advanced Test Analyst v4.0 (42) |
+| Google Cloud | Associate Cloud Engineer (ACE, 302), Professional Cloud Architect (PCA, 279), Professional Cloud Developer (PCD, 359), Professional Data Engineer (PDE, 139), Generative AI Leader (GAL, 56) |
+| ISTQB | Foundation Level v4.0 (CTFL, 240), AI Testing (CT-AI, 118), Advanced Test Analyst v4.0 (CTAL-TA, 42) |
 
-Load a library quiz or upload a custom JSON file. The quiz overview shows the quiz name, question count and available modes. Selecting Exam reveals its count and duration settings. On phones, action buttons use icons with accessible names and tooltips; Practice and Exam keep their main actions in a bottom toolbar.
+Display codes were checked against provider sources on 2026-10-28; the [catalog audit](docs/catalog-code-audit-2026-10-28.json) records every entry and reference. Google Cloud labels are name abbreviations, and ISTQB syllabus versions remain separate from certification codes. The legacy `anthropic-cca-f` and `gcp-pcde` keys remain stable.
+
+The former `aws-ace` entry was an exact copy of Google ACE, not a Cloud Practitioner bank. It is no longer listed under AWS. Old quiz links resolve to `gcp-ace` with their mode and query parameters intact. Cloud reads select the newest valid ACE checkpoint (canonical wins ties); the next save or removal clears both old/new fields atomically. Account-scoped tab drafts restore from the legacy key when needed; if both exam drafts exist, the newer start token wins without changing its shuffle or deadline. Existing canonical Practice drafts take priority. The duplicate static file remains for old direct download URLs, but is never used by the catalog.
+
+Start Practice directly from a quiz card, open its overview, or select Mock exam to configure the count and duration. Provider sections can be expanded/collapsed and have quick-jump buttons. Returning to the library keeps the search and section state. Featured cards and provider rows use the same quiz ID and checkpoint.
+
+Provider identities use locally bundled vendor icons alongside their names and separate light/dark accent tokens. Brand accents are scoped to catalog cards, provider navigation and overview identity. Icon sources are recorded in [public/providers/README.md](public/providers/README.md); missing icons fall back to text.
+
+The **VN / EN** toggle changes interface labels without translating question/guide content or restarting an active session. English is the default on a first visit; an explicit language choice and light/dark appearance are remembered in this browser. Primary question navigation retains visible text on phones and respects the safe area. Quiz screens have hash URLs such as `/quiz-app/#/quiz/aws-aip-c01/practice`, so refresh and browser Back/Forward work on GitHub Pages.
+
+**My quizzes** retains JSON upload with validation and a preview before use: 1–100 questions, up to 1 MiB per file. The active upload is stored in this tab, with its owner, and survives refresh when browser session storage is available. Keep the original file for other devices. Per-user Firestore storage, a three-quiz quota and cloud management are tracked separately in [issue #42](https://github.com/tuanvipandpro/quiz-app/issues/42).
+
+The question-format guide is displayed directly on My quizzes, with complete single-choice, multi-select, yes/no, row-dropdown and inline-dropdown examples, field explanations, Copy JSON and example downloads. All examples run through the same strict validator in automated tests. Sign-in shows branded Google, GitHub and Microsoft options. Google remains active; GitHub and Microsoft are disabled and labelled unavailable. Phones use centered, compact upload controls and show the preview after file selection.
+
+AI Settings is available in the signed-in account menu. A divider separates it from Sign out, which opens a confirmation dialog. Cancel preserves the session; confirming signs out and returns to the library. An active exam receives an explicit warning about clearing its tab draft. Failed sign-out attempts leave the account signed in and allow retry.
 
 ### Practice
 
-- Work through questions sequentially, navigate back/forward or jump to a question number.
+- Work through questions sequentially, navigate back/forward or jump with the paged question navigator. Answers remain selected when revisiting a question.
 - Get feedback after answering a single-choice question, reaching the required multi-select count or completing every dropdown/yes-no part.
 - Change an answer and see the updated result. Multi-select controls prevent choosing more than the required number of options.
 - Copy the question, image reference, instructions and choices for use elsewhere. Copy does not add the marked-answer mapping.
 - Request an AI explanation when signed in and a provider key is configured.
-- Save a manual checkpoint for each library quiz when signed in, then Resume or Start from beginning from the quiz picker.
+- Save a manual checkpoint for each library quiz when signed in, then Resume from its card or overview.
 
 A checkpoint saves the current position, not selected answers. Saving is manual, and starting from the beginning keeps the existing checkpoint. Uploaded quizzes have no library quiz ID, so saving a checkpoint is disabled for them. Read/write failures show feedback and retry controls.
+
+An independent session draft in browser `sessionStorage` keeps the question position and selected answers through refresh. Resetting Practice clears that draft while preserving the cloud checkpoint. Drafts are scoped to account, quiz and mode; changed quiz content invalidates them. The UI reports when draft storage is unavailable. Answered counts measure completed answers, not the position currently being viewed.
 
 ### Exam
 
@@ -61,6 +77,9 @@ A checkpoint saves the current position, not selected answers. Saving is manual,
 - Keep selections while navigating, flag questions and review progress before submitting.
 - Review selected, missing and correct answers after submission, with answer controls locked.
 - Request AI explanations from the answer review.
+- Keep the exact shuffled questions/options, answers, flags and absolute deadline in a tab draft. Resuming never resets the timer. Expiry submits once without a confirmation dialog.
+- Confirm before leaving an active exam through navigation or browser Back. Reload/close uses the browser's native warning.
+- Filter results by correct, incorrect, unanswered or flagged questions. Incorrect and unanswered counts are displayed separately; answer controls stay locked.
 
 **App scoring:** one point per question, with no partial credit. Every required choice/part must be correct to earn the point; only fully completed questions count as answered. A pass requires a score **greater than 80%**.
 
@@ -70,8 +89,8 @@ Four Anthropic quizzes and the AWS AIP-C01 quiz have prepared Vietnamese guides,
 
 | Guide | Reviewed source |
 | --- | --- |
-| [CCA-F](public/summaries/anthropic-cca-f/vi.md) | 175 questions |
-| [CCAR-P](public/summaries/anthropic-ccar-p/vi.md) | Original 63-question revision; the current bank has 126 questions and displays a review warning |
+| [CCAR-F](public/summaries/anthropic-cca-f/vi.md) | 175 questions |
+| [CCAR-P](public/summaries/anthropic-ccar-p/vi.md) | Original 63-question revision; the current bank has 157 questions and displays a review warning |
 | [CCAO-F](public/summaries/anthropic-ccao-f/vi.md) | 119 questions |
 | [CCDV-F](public/summaries/anthropic-ccdv-f/vi.md) | 53 questions |
 | [AIP-C01](public/summaries/aws-aip-c01/vi.md) | 136 questions |
@@ -112,6 +131,9 @@ Closing an explanation, changing the question/account or leaving the mode cancel
 | Signed-in provider keys | `users/{uid}` document, under `llmProviders.{gemini|groq}.apiKey`; active-user credentials are cached in memory |
 | Guest provider keys | Browser localStorage under `quiz_llm_guest_keys`; cleared when signing in/out |
 | Generated explanations | Memory only in the current tab; not written to Firestore |
+| Language and appearance | Browser localStorage (`quiz-app-language`, `quiz-app-theme`) |
+| Practice and Exam drafts | Browser sessionStorage, scoped by account/quiz/mode; no AI keys; cleared for the previous account on account changes |
+| Active custom upload | Browser sessionStorage for this tab, scoped to its owner; no Firestore quiz writes |
 
 Saving one checkpoint preserves other quizzes and profile fields. Resume follows the saved question ID after reordering, with a safe fallback for removed questions and older index-only checkpoints. Existing Gemini-only `geminiApiKey` fields remain readable and migrate when the Gemini key is saved or cleared. Signing out keeps profile keys in Firestore while clearing local session credentials and explanations.
 
@@ -206,8 +228,11 @@ public/
   summaries/<quizId>/           meta.json and vi.md per guide
   sample-quiz.json               Downloadable custom-quiz example
 src/
-  App.jsx                       Library selection and mode orchestration
+  App.jsx                       Application shell, hash routes and quiz loading
   components/
+    QuizLibrary.jsx             Featured exams, provider groups and search
+    MyQuizzes.jsx               Local upload, validation and preview
+    QuestionNavigator.jsx       Paged question navigation and status
     PracticeMode.jsx            Practice, Copy and manual checkpoints
     ExamMode.jsx                Timer, submission, scoring and review
     Question.jsx                Multiple-choice rendering
@@ -217,8 +242,10 @@ src/
     ExplanationDialogs.jsx      AI explanation and marked-answer UI
     SettingsModal.jsx           Gemini/Groq key management
   data/quickSummaries.js         Published-guide registry
+  data/quizzes.js                Quiz catalog and ordered featured IDs
   config/firebase.js            Firebase client initialization
   contexts/AuthContext.jsx      Authentication and session lifecycle
+  contexts/LanguageContext.jsx  VN/EN interface preference
   hooks/                        Auth, progress and explanation hooks
   services/
     llm/                        Credentials, router, providers and cache
@@ -226,10 +253,12 @@ src/
     quizProgressStore.js        Per-user/per-quiz progress state
     userService.js              Firestore profile and checkpoint operations
   utils/                        Question model, merging, checkpoints and scrolling
+    studySession.js             Draft validation, exam deadlines and result statistics
 scripts/                        Reviewed quiz import tooling
 tests/                          Native Node.js test suites
 docs/                           Format/authoring guides and import audit
 .github/workflows/deploy.yml    GitHub Pages build/publication
+.github/workflows/test.yml      Unit tests and production build on pull requests
 ```
 
 The app uses React 19, Vite 6, Ant Design 5, Firebase 12 and React Markdown. Explanations sanitize supported HTML; Quick Summary ignores raw HTML and uses ordinary Markdown without GFM tables.

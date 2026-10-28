@@ -1,0 +1,198 @@
+.format-guide {
+  margin-top: var(--app-space-7);
+  padding: var(--app-space-6);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  scroll-margin-top: 12px;
+}
+.format-guide-heading h2.ant-typography {
+  margin: 8px 0;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+}
+.format-guide-heading .ant-typography-secondary {
+  max-width: 640px;
+  margin-bottom: 24px;
+}
+.format-guide-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: var(--app-space-6);
+  align-items: start;
+}
+.format-examples,
+.format-reference {
+  min-width: 0;
+}
+.format-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.format-selector .ant-radio-button-wrapper {
+  height: auto;
+  min-height: 44px;
+  padding: 10px 13px;
+  line-height: 1.4;
+  border: 1px solid var(--app-control-border);
+  border-radius: 8px !important;
+  font-size: 13px;
+}
+.format-selector .ant-radio-button-wrapper::before {
+  display: none;
+}
+.format-selector .ant-radio-button-wrapper-checked {
+  color: var(--app-primary);
+  background: var(--app-info-bg);
+  border-color: var(--app-primary);
+}
+.format-example-heading {
+  margin: 20px 0 16px;
+}
+.format-example-heading > .ant-typography {
+  font-size: 14px;
+  min-height: 44px;
+}
+.format-example-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.format-example-actions .ant-btn {
+  min-height: 44px;
+}
+.format-code {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  background: var(--app-code-bg);
+  color: var(--app-text);
+  font:
+    13px/1.75 'SFMono-Regular',
+    Consolas,
+    'Liberation Mono',
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+.format-code code {
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+.format-reference {
+  border-left: 1px solid var(--app-border);
+  padding-left: 24px;
+}
+.format-reference h3.ant-typography {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+.format-checklist {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  margin: 0 0 28px;
+  padding: 0;
+  font-size: 13px;
+  color: var(--app-muted);
+}
+.format-checklist li {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+.format-checklist .anticon {
+  color: var(--app-primary);
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.format-fields {
+  margin: 0;
+}
+.format-fields > div {
+  margin-bottom: 16px;
+}
+.format-fields dt {
+  margin-bottom: 5px;
+}
+.format-fields dd {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.format-reference code {
+  font-size: 12px;
+  color: var(--app-text);
+  background: var(--app-code-inline-bg);
+  padding: 3px 5px;
+  border-radius: 4px;
+}
+.format-optional {
+  display: block;
+  margin-top: 20px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+@media (max-width: 900px) {
+  .format-guide-layout {
+    grid-template-columns: 1fr;
+  }
+  .format-reference {
+    border-left: 0;
+    border-top: 1px solid var(--app-border);
+    padding: 24px 0 0;
+  }
+  .format-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+  }
+}
+@media (max-width: 600px) {
+  .format-guide {
+    padding: 20px 16px;
+    margin-top: 32px;
+  }
+  .format-guide-heading h2.ant-typography {
+    font-size: 22px;
+  }
+  .format-guide-heading,
+  .format-example-heading {
+    text-align: center;
+  }
+  .format-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .format-example-actions {
+    justify-content: center;
+  }
+  .format-selector .ant-radio-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    text-align: center;
+    white-space: normal;
+  }
+  .format-selector .ant-radio-button-wrapper:last-child {
+    grid-column: 1 / -1;
+  }
+  .format-example-heading > .ant-typography {
+    min-height: 0;
+  }
+  .format-example-actions .ant-btn {
+    flex: 1 1 130px;
+  }
+  .format-code {
+    padding: 14px;
+  }
+  .format-fields {
+    grid-template-columns: 1fr;
+  }
+}

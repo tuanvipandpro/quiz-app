@@ -1,235 +1,277 @@
-// components/PracticeMode.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import { Button, Progress, Typography, Card, Modal, Spin, InputNumber, Tooltip, message, Alert } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, HomeOutlined, EnterOutlined, QuestionCircleOutlined, BookFilled, BookOutlined, CopyOutlined, ReloadOutlined } from '@ant-design/icons';
+import React, { useMemo, useRef, useState } from 'react';
+import { Alert, Button, Modal, Space, Spin, Typography, message } from 'antd';
+import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  BookFilled,
+  BookOutlined,
+  CopyOutlined,
+  QuestionCircleOutlined,
+  ReloadOutlined,
+} from '@ant-design/icons';
 import Question from './Question';
-import QuizActionButton from './QuizActionButton';
-import { useExplanation } from '../hooks/useExplanation';
+import QuestionNavigator from './QuestionNavigator';
 import ExplanationDialogs from './ExplanationDialogs';
+import { useExplanation } from '../hooks/useExplanation';
+import { useStudySession } from '../hooks/useStudySession';
 import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../contexts/LanguageContext';
+import {
+  emptyAnswer,
+  isAnswerComplete,
+  isAnswerCorrect,
+  formatQuestionText,
+} from '../utils/questionModel';
+import { questionFingerprint, sessionKey } from '../utils/studySession';
 import { resolveCheckpoint } from '../utils/quizProgress';
-import { emptyAnswer, isAnswerComplete, isAnswerCorrect, formatQuestionText } from '../utils/questionModel';
 import { scrollToTop } from '../utils/scroll';
 
 const { Title, Text, Paragraph } = Typography;
 
-function PracticeMode({ questions, onExit, initialQuestionIndex = 0, quizId = null, progressState }) {
-  const { isAuthenticated, user } = useAuth();
-  const [currentIndex, setCurrentIndex] = useState(initialQuestionIndex);
-  const [selectedAnswer, setSelectedAnswer] = useState(() => emptyAnswer(questions[initialQuestionIndex]));
-  const [answered, setAnswered] = useState(false);
-  const [jumpToQuestion, setJumpToQuestion] = useState(null);
-  const [isCopying, setIsCopying] = useState(false);
-
-
-  const savedCheckpoint = progressState.progress[quizId];
-  const savedPosition = resolveCheckpoint(questions, savedCheckpoint);
-  const checkpointNeedsUpdate = savedPosition?.adjusted && savedPosition.reason !== 'moved';
-  const markedIndex = checkpointNeedsUpdate ? null : savedPosition?.index ?? null;
-  const isMarking = !!progressState.pendingQuiz;
-  const [progressAction, setProgressAction] = useState(null);
-  const [progressActionError, setProgressActionError] = useState(null);
-  const [messageApi, messageContextHolder] = message.useMessage();
-  const progressRevision = useRef(0);
-  useEffect(() => {
-    progressRevision.current++;
-    return () => { progressRevision.current++; };
-  }, [user?.uid, quizId]);
-
-  const currentQuestion = questions[currentIndex];
-  const ai = useExplanation(currentQuestion, user?.uid);
-  
-  // Calculate progress with 2 decimal places
-  const progressValue = ((currentIndex + 1) / questions.length) * 100;
-  const progress = parseFloat(progressValue.toFixed(2));
-  
-  const correctAnswers = currentQuestion.answer;
-  
-  const handleAnswer = (answer) => {
-    setSelectedAnswer(answer);
-    setAnswered(isAnswerComplete(currentQuestion, answer));
+export default function PracticeMode({
+  questions,
+  quizId,
+  sessionId,
+  quizName,
+  initialQuestionIndex = null,
+  fresh,
+  entryToken,
+  adjustedCheckpoint,
+  progressState,
+  onExit,
+  onBackToSummary,
+  onSignIn,
+}) {
+  const { user, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
+  const signature = useMemo(() => questionFingerprint(questions), [questions]);
+  const create = () => ({ signature, answers: questions.map(emptyAnswer), index: 0 });
+  const [session, setSession, draftSaved] = useStudySession(
+    sessionKey(user?.uid, sessionId, 'practice'),
+    questions,
+    'practice',
+    create,
+    { fresh, initialIndex: initialQuestionIndex, entryToken }
+  );
+  const [messageApi, holder] = message.useMessage();
+  const [modal, modalHolder] = Modal.useModal();
+  const [saveAction, setSaveAction] = useState(null);
+  const [saveError, setSaveError] = useState(null);
+  const [copying, setCopying] = useState(false);
+  const account = useRef(user?.uid);
+  account.current = user?.uid;
+  const question = questions[session.index];
+  const answer = session.answers[session.index];
+  const complete = isAnswerComplete(question, answer);
+  const ai = useExplanation(question, user?.uid);
+  const saved = resolveCheckpoint(questions, progressState.progress[quizId]);
+  const isSaved = saved?.index === session.index && !saved.adjusted;
+  const answeredCount = session.answers.filter((value, index) =>
+    isAnswerComplete(questions[index], value)
+  ).length;
+  const go = (index) => {
+    setSession((previous) => ({ ...previous, index }));
+    scrollToTop();
   };
-  
-  // Check if the selected answers are correct
-  const checkIfCorrect = () => {
-    return isAnswerCorrect(currentQuestion, selectedAnswer);
-  };
-
-  // Check if enough options are selected for multiple choice questions
-  const hasEnoughSelections = () => {
-    return isAnswerComplete(currentQuestion, selectedAnswer);
-  };
-  
-  const goToNextQuestion = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      scrollToTop();
-      // Initialize the answer for the next question
-      const nextQuestion = questions[currentIndex + 1];
-      setSelectedAnswer(emptyAnswer(nextQuestion));
-      setAnswered(false);
-    }
-  };
-  
-  const goToPreviousQuestion = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      scrollToTop();
-      // Initialize the answer for the previous question
-      const prevQuestion = questions[currentIndex - 1];
-      setSelectedAnswer(emptyAnswer(prevQuestion));
-      setAnswered(false);
-    }
-  };
-  
-  // Handle navigation to a specific question number
-  const handleJumpToQuestion = () => {
-    if (jumpToQuestion && jumpToQuestion >= 1 && jumpToQuestion <= questions.length) {
-      // Convert from 1-based (user-facing) to 0-based (internal) indexing
-      const newIndex = jumpToQuestion - 1;
-      setCurrentIndex(newIndex);
-      scrollToTop();
-      const targetQuestion = questions[newIndex];
-      setSelectedAnswer(emptyAnswer(targetQuestion));
-      setAnswered(false);
-      setJumpToQuestion(null); // Clear the input after jumping
-    }
-  };
-
-  const handleExplainClick = () => {
-    if (!isAuthenticated) {
-      messageApi.warning('Please login to use the Explain feature');
-      return;
-    }
-    return ai.explain();
-  };
-
-  const handleCopyQuestion = async () => {
-    setIsCopying(true);
+  const copy = async () => {
+    setCopying(true);
     try {
-      await navigator.clipboard.writeText(formatQuestionText(currentQuestion));
-      messageApi.success('Question copied!');
+      await navigator.clipboard.writeText(formatQuestionText(question));
+      messageApi.success(t('Question copied!'));
     } catch {
-      messageApi.error('Could not copy. Please select and copy the question manually.');
+      messageApi.error(t('Could not copy. Please select and copy the question manually.'));
     } finally {
-      setIsCopying(false);
+      setCopying(false);
     }
   };
-
-  const handleSaveProgress = () => {
-    if (!isAuthenticated || !quizId || isMarking || progressState.loading || progressState.error) return;
-    if (markedIndex === currentIndex) return;
-    setProgressActionError(null);
-    setProgressAction({ index: currentIndex, questionId: currentQuestion.id, revision: progressRevision.current });
-  };
-
-  const handleConfirmProgress = async () => {
-    const action = progressAction;
-    if (!action || isMarking || progressRevision.current !== action.revision) return;
-    setProgressActionError(null);
+  const save = async () => {
+    if (!saveAction || account.current !== saveAction.uid) return;
+    setSaveError(null);
     try {
-      await progressState.save(quizId, action.index, action.questionId);
-      if (progressRevision.current === action.revision) {
-        setProgressAction(null);
-        messageApi.success('Question ' + (action.index + 1) + ' saved!');
+      await progressState.save(quizId, saveAction.index, saveAction.questionId);
+      if (account.current === saveAction.uid) {
+        setSaveAction(null);
+        messageApi.success(t('Position saved'));
       }
     } catch (error) {
-      if (progressRevision.current === action.revision && error.code !== 'SESSION_CHANGED') {
-        setProgressActionError(error.message);
-      }
+      if (account.current === saveAction.uid && error.code !== 'SESSION_CHANGED')
+        setSaveError(t('Could not save progress. Please retry.'));
     }
   };
-
   return (
-    <div className="quiz-mode quiz-practice-mode">
-      {messageContextHolder}
-      <div className="quiz-mode-header">
-        <Title level={2}>Practice Mode</Title>
-        <QuizActionButton label="Exit to Menu" icon={<HomeOutlined />} onClick={onExit} />
-      </div>
-      {quizId && isAuthenticated && progressState.loading && <Paragraph><Spin size="small" /> Checking saved progress...</Paragraph>}
-      {quizId && isAuthenticated && progressState.error && <Alert type="error" showIcon style={{ marginBottom: 16 }}
-        message={progressState.error} action={<QuizActionButton label="Retry saved progress" icon={<ReloadOutlined />} size="small" onClick={progressState.reload}>Retry</QuizActionButton>} />}
-      {quizId && isAuthenticated && checkpointNeedsUpdate && <Alert type="warning" showIcon style={{ marginBottom: 16 }}
-        message="Your saved question is no longer available. Save progress to set a new checkpoint." />}
-      
-      <div className="practice-position-row">
-        <div className="practice-position">
-          <Text strong>Question {currentIndex + 1} of {questions.length}</Text>
-          {markedIndex !== null && <Tooltip title={'Progress saved at question ' + (markedIndex + 1)}>
-            <span className="saved-question-indicator"><BookFilled /> Q{markedIndex + 1} saved</span>
-          </Tooltip>}
+    <div className="study-page">
+      {holder}
+      {modalHolder}
+      <div className="study-heading">
+        <div>
+          <Button type="text" icon={<ArrowLeftOutlined aria-hidden="true" />} onClick={onExit}>
+            {t('Back to quiz overview')}
+          </Button>
+          <Title level={1}>{t('Practice')}</Title>
+          <Text type="secondary">{quizName}</Text>
         </div>
-        <div className="practice-jump">
-          <Text className="practice-jump-label">Go to question:</Text>
-          <InputNumber aria-label="Question number" placeholder="Q#" min={1} max={questions.length}
-            value={jumpToQuestion} onChange={setJumpToQuestion} style={{ width: '70px' }}
-            onPressEnter={handleJumpToQuestion} />
-          <Tooltip title="Jump to question">
-            <Button className="quiz-action-button" aria-label="Jump to question" icon={<EnterOutlined />}
-              onClick={handleJumpToQuestion} disabled={!jumpToQuestion || jumpToQuestion < 1 || jumpToQuestion > questions.length} />
-          </Tooltip>
-        </div>
+        {onBackToSummary && <Button onClick={onBackToSummary}>{t('Back to summary')}</Button>}
       </div>
-
-      {/* Display progress with format prop to show decimal places */}
-      <Progress 
-        percent={progress} 
-        status="active" 
-        format={percent => `${percent.toFixed(2)}%`}
-      />
-      
-      <Card className="quiz-question-shell">
-        <Question 
-          data={currentQuestion}
-          question={currentQuestion.question}
-          imageUrl={currentQuestion.imageUrl}
-          options={currentQuestion.options}
-          selectedAnswer={selectedAnswer}
-          onSelectAnswer={handleAnswer}
-          showFeedback={answered}
-          isCorrect={answered && hasEnoughSelections() && checkIfCorrect()}
-          correctOptions={correctAnswers}
+      {adjustedCheckpoint && (
+        <Alert
+          type="info"
+          showIcon
+          message={t('Quiz content changed. Your saved position has been adjusted.')}
         />
-      </Card>
-      
-      <div className="quiz-action-bar" role="group" aria-label="Practice actions">
-        <div className="quiz-action-group">
-          <QuizActionButton label="Previous question" type="primary" icon={<ArrowLeftOutlined />}
-            onClick={goToPreviousQuestion} disabled={currentIndex === 0}>Previous</QuizActionButton>
-          <QuizActionButton label="Next question" type="primary" icon={<ArrowRightOutlined />}
-            onClick={goToNextQuestion} disabled={currentIndex === questions.length - 1}>Next</QuizActionButton>
+      )}
+      {progressState.error && quizId && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t('Could not load saved progress.')}
+          action={<Button onClick={progressState.reload}>{t('Retry')}</Button>}
+        />
+      )}
+      <div className="study-workspace">
+        <div className="study-main">
+          <div className="study-position">
+            <Text strong>
+              {t('Question {number} of {total}', {
+                number: session.index + 1,
+                total: questions.length,
+              })}
+            </Text>
+            <Text type="secondary">
+              {t('{count} of {total} answered', { count: answeredCount, total: questions.length })}
+            </Text>
+          </div>
+          <Question
+            data={question}
+            question={question.question}
+            imageUrl={question.imageUrl}
+            options={question.options}
+            selectedAnswer={answer}
+            onSelectAnswer={(value) =>
+              setSession((previous) => ({
+                ...previous,
+                answers: previous.answers.map((item, index) =>
+                  index === previous.index ? value : item
+                ),
+              }))
+            }
+            showFeedback={complete}
+            isCorrect={isAnswerCorrect(question, answer)}
+            correctOptions={question.answer}
+          />
+          <div className="study-secondary-actions">
+            <Button
+              icon={<QuestionCircleOutlined aria-hidden="true" />}
+              onClick={() => (isAuthenticated ? ai.explain() : onSignIn?.())}
+            >
+              {t('Explain')}
+            </Button>
+            <Button icon={<CopyOutlined aria-hidden="true" />} onClick={copy} loading={copying}>
+              {t('Copy')}
+            </Button>
+            <Button
+              icon={
+                isSaved ? <BookFilled aria-hidden="true" /> : <BookOutlined aria-hidden="true" />
+              }
+              disabled={
+                !isAuthenticated ||
+                !quizId ||
+                isSaved ||
+                progressState.loading ||
+                !!progressState.error ||
+                !!progressState.pendingQuiz
+              }
+              onClick={() => {
+                setSaveError(null);
+                setSaveAction({ uid: user.uid, index: session.index, questionId: question.id });
+              }}
+            >
+              {t(isSaved ? 'Position saved' : 'Save position')}
+            </Button>
+          </div>
+          {!isAuthenticated && (
+            <Paragraph type="secondary" className="study-hint">
+              {t('Sign in to save a cloud checkpoint.')}
+            </Paragraph>
+          )}
+          {isAuthenticated && !quizId && (
+            <Paragraph type="secondary" className="study-hint">
+              {t('Cloud checkpoints are available for library quizzes.')}
+            </Paragraph>
+          )}
+          <ExplanationDialogs question={question} state={ai} inline />
+          <div className="study-navigation-bar" role="group" aria-label={t('Practice')}>
+            <Button
+              icon={<ArrowLeftOutlined aria-hidden="true" />}
+              disabled={session.index === 0}
+              onClick={() => go(session.index - 1)}
+            >
+              {t('Previous')}
+            </Button>
+            <Button
+              type="primary"
+              icon={<ArrowRightOutlined aria-hidden="true" />}
+              disabled={session.index === questions.length - 1}
+              onClick={() => go(session.index + 1)}
+            >
+              {t('Next question')}
+            </Button>
+          </div>
+          <div className="draft-status">
+            <Text type="secondary" role="status">
+              {t(
+                draftSaved
+                  ? 'Draft saved in this tab'
+                  : 'Draft storage is unavailable in this browser.'
+              )}
+            </Text>
+            <Button
+              type="text"
+              icon={<ReloadOutlined aria-hidden="true" />}
+              onClick={() =>
+                modal.confirm({
+                  title: t('Reset this practice session?'),
+                  content: t('Your cloud checkpoint is kept.'),
+                  okText: t('Start practice'),
+                  cancelText: t('Cancel'),
+                  onOk: () => {
+                    setSession((previous) => ({
+                      ...create(),
+                      freshToken: previous.freshToken,
+                      entryToken: previous.entryToken,
+                    }));
+                    scrollToTop();
+                  },
+                })
+              }
+            >
+              {t('Start a new practice session')}
+            </Button>
+          </div>
         </div>
-        <div className="quiz-action-group">
-          <QuizActionButton label="Explain" icon={<QuestionCircleOutlined />} type="primary"
-            tooltip={isAuthenticated ? 'Explain this question' : 'Please login to use this feature'}
-            onClick={handleExplainClick} disabled={!isAuthenticated}
-            style={isAuthenticated ? { backgroundColor: '#722ed1', borderColor: '#722ed1' } : {}} />
-          <QuizActionButton label="Copy" tooltip="Copy question and answer choices" icon={<CopyOutlined />}
-            onClick={handleCopyQuestion} loading={isCopying} />
-          <QuizActionButton label={markedIndex === currentIndex ? 'Saved progress' : 'Save progress'}
-            tooltip={!isAuthenticated ? 'Please login to save your progress' : !quizId ? 'Save is only available for demo quizzes'
-              : markedIndex === currentIndex ? 'Progress is saved at this question' : 'Save this question as your resume checkpoint'}
-            icon={markedIndex === currentIndex ? <BookFilled /> : <BookOutlined />} onClick={handleSaveProgress}
-            loading={isMarking} disabled={!isAuthenticated || !quizId || isMarking || progressState.loading || !!progressState.error || markedIndex === currentIndex}
-            style={markedIndex === currentIndex ? { backgroundColor: '#fa8c16', borderColor: '#fa8c16', color: '#fff' } : {}}>
-            {markedIndex === currentIndex ? 'Saved' : 'Save progress'}
-          </QuizActionButton>
-        </div>
+        <QuestionNavigator
+          questions={questions}
+          answers={session.answers}
+          index={session.index}
+          onNavigate={go}
+        />
       </div>
-
-      <Modal title="Save progress?"
-        open={!!progressAction} onOk={handleConfirmProgress} confirmLoading={isMarking}
-        okText="Save"
-        cancelButtonProps={{ disabled: isMarking }} closable={!isMarking} maskClosable={!isMarking}
-        onCancel={() => { if (!isMarking) setProgressAction(null); }}>
-        <Paragraph>{'Save Question ' + ((progressAction?.index ?? 0) + 1) + ' as the checkpoint for this quiz? Your other quiz checkpoints will be kept.'}</Paragraph>
-        {progressActionError && <Alert type="error" showIcon message={progressActionError} />}
+      <Modal
+        title={t('Save position?')}
+        open={!!saveAction}
+        onOk={save}
+        onCancel={() => setSaveAction(null)}
+        confirmLoading={!!progressState.pendingQuiz}
+        okText={t('Save')}
+        cancelText={t('Cancel')}
+      >
+        <Paragraph>
+          {t('Save question {number} as your cloud checkpoint?', {
+            number: (saveAction?.index ?? 0) + 1,
+          })}
+        </Paragraph>
+        <Paragraph type="secondary">{t('Other quiz checkpoints are kept.')}</Paragraph>
+        {saveError && <Alert type="error" showIcon message={saveError} />}
       </Modal>
-      <ExplanationDialogs question={currentQuestion} state={ai} />
-
     </div>
   );
 }
-
-export default PracticeMode;

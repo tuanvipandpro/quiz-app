@@ -1,0 +1,78 @@
+{
+  "checkedAt": "2026-10-28",
+  "scope": "Display names and codes for 20 unique catalog entries. The mislabeled AWS ACE entry has been retired and aliased to Google ACE after content verification. This does not assert that a community question bank covers every current exam objective.",
+  "retiredEntries": [
+    {
+      "id": "aws-ace",
+      "canonicalId": "gcp-ace",
+      "incorrectLabel": "Cloud Practitioner (CLF-C02)",
+      "legacyFile": "quiz/AWS/AWS-ACE.json",
+      "canonicalFile": "quiz/Google/GCP-ACE.json",
+      "sha256": "509b3980d9e104170db206ffa19bdcc70f28da7f012e7d482b0f6258cec997d0",
+      "reason": "Both files are byte-identical and contain 302 Google Cloud ACE questions. The legacy file remains only for old direct asset URLs; the active catalog loads the Google file. Routes, cloud checkpoints and tab drafts resolve the legacy ID to gcp-ace. No genuine CLF-C02 bank is available in this repository."
+    }
+  ],
+  "notes": [
+    "Google Cloud labels are app abbreviations of certification names, not AWS-style versioned exam identifiers. Professional Data Engineer is abbreviated PDE; the former PCDE label remains searchable.",
+    "ISTQB CTFL and CTAL-TA are certification abbreviations. v4.0 remains in the title as a syllabus version, separate from the code. CT-AI belongs to the Specialist stream; this audit does not upgrade its question bank to syllabus v2.0.",
+    "AWS Developer Associate remains labelled DVA-C02 for the existing bank. Do not silently relabel its content DVA-C03 when a successor exam is announced.",
+    "Anthropic Architect Foundations now displays CCAR-F according to the exam delivery provider. The legacy CCA-F abbreviation remains searchable and the stable ID remains anthropic-cca-f."
+  ],
+  "sources": {
+    "anthropic": "https://www.pearsonvue.com/us/en/anthropic.html",
+    "aws": "https://docs.aws.amazon.com/aws-certification/latest/examguides/",
+    "aws-developer": "https://aws.amazon.com/certification/certified-developer-associate/",
+    "gcp-ace": "https://cloud.google.com/learn/certification/cloud-engineer",
+    "gcp-pca": "https://cloud.google.com/learn/certification/cloud-architect",
+    "gcp-pcd": "https://cloud.google.com/learn/certification/cloud-developer",
+    "gcp-pde": "https://cloud.google.com/learn/certification/data-engineer",
+    "gcp-gal": "https://cloud.google.com/learn/certification/generative-ai-leader",
+    "az-900": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-900",
+    "gh-300": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/gh-300",
+    "ab-100": "https://learn.microsoft.com/en-us/credentials/certifications/exams/ab-100/",
+    "ai-103": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-103",
+    "ctfl": "https://istqb.org/certifications/certified-tester-foundation-level-ctfl-v4-0/",
+    "ct-ai": "https://istqb.org/certifications/certified-tester-ai-testing-ct-ai/",
+    "ctal-ta": "https://istqb.org/istqb-certified-tester-advanced-level-test-analyst-ctal-ta-v4-0-press-release/"
+  },
+  "entries": [
+    { "id": "anthropic-cca-f", "code": "CCAR-F", "previousCode": "CCA-F", "source": "anthropic" },
+    { "id": "anthropic-ccar-p", "code": "CCAR-P", "source": "anthropic" },
+    { "id": "anthropic-ccao-f", "code": "CCAO-F", "source": "anthropic" },
+    { "id": "anthropic-ccdv-f", "code": "CCDV-F", "source": "anthropic" },
+    { "id": "gcp-ace", "code": "ACE", "kind": "abbreviation", "source": "gcp-ace" },
+    { "id": "gcp-pca", "code": "PCA", "kind": "abbreviation", "source": "gcp-pca" },
+    { "id": "gcp-pcd", "code": "PCD", "kind": "abbreviation", "source": "gcp-pcd" },
+    {
+      "id": "gcp-pcde",
+      "code": "PDE",
+      "previousCode": "PCDE",
+      "kind": "abbreviation",
+      "source": "gcp-pde"
+    },
+    { "id": "gcp-gal", "code": "GAL", "kind": "abbreviation", "source": "gcp-gal" },
+    { "id": "az-900", "code": "AZ-900", "source": "az-900" },
+    { "id": "gh-300", "code": "GH-300", "source": "gh-300" },
+    { "id": "ab-100", "code": "AB-100", "source": "ab-100" },
+    { "id": "ai-103", "code": "AI-103", "source": "ai-103" },
+    { "id": "aws-saa", "code": "SAA-C03", "previousCode": "SAA", "source": "aws" },
+    { "id": "aws-dva", "code": "DVA-C02", "previousCode": "DVA", "source": "aws" },
+    { "id": "aws-dea", "code": "DEA-C01", "previousCode": "DEA", "source": "aws" },
+    { "id": "aws-aip-c01", "code": "AIP-C01", "source": "aws" },
+    {
+      "id": "istqb-ctfl-v4-0",
+      "code": "CTFL",
+      "previousCode": "CTFL v4.0",
+      "syllabusVersion": "4.0",
+      "source": "ctfl"
+    },
+    { "id": "istqb-ct-ai", "code": "CT-AI", "source": "ct-ai" },
+    {
+      "id": "istqb-ctal-ta-v4-0",
+      "code": "CTAL-TA",
+      "previousCode": "CTAL-TA v4.0",
+      "syllabusVersion": "4.0",
+      "source": "ctal-ta"
+    }
+  ]
+}

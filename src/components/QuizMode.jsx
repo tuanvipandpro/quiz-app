@@ -1,94 +1,150 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, Radio, Select, Tag } from 'antd';
+import { Alert, Button, Card, Radio, Select, Typography } from 'antd';
 import { PlayCircleOutlined, FormOutlined, ReadOutlined } from '@ant-design/icons';
-import QuizActionButton from './QuizActionButton';
+import { useLanguage } from '../contexts/LanguageContext';
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
-function QuizMode({ onSelectMode, totalQuestions, quickSummary = null }) {
-  const availableQuestionCount = Math.max(1, totalQuestions || 1);
-  const examQuestionOptions = [50, 60, 70, 80];
-  const [selectedMode, setSelectedMode] = useState('practice');
-  const [examTime, setExamTime] = useState(60);
-  const [examQuestionCount, setExamQuestionCount] = useState(Math.min(50, availableQuestionCount));
-
+export default function QuizMode({
+  onSelectMode,
+  onModeChange,
+  totalQuestions,
+  quickSummary = null,
+  initialMode = 'practice',
+  hasExamDraft = false,
+  examDraftCount = null,
+}) {
+  const { t } = useLanguage();
+  const [selectedMode, setSelectedMode] = useState(initialMode);
   useEffect(() => {
-    setExamQuestionCount(Math.min(50, availableQuestionCount));
-  }, [availableQuestionCount]);
-
-  const questionCounts = availableQuestionCount < 50
-    ? [availableQuestionCount, ...examQuestionOptions]
-    : examQuestionOptions;
-  const isExam = selectedMode === 'exam';
-  const isSummary = selectedMode === 'summary' && !!quickSummary;
-
-  const handleStart = () => {
-    if (isSummary) onSelectMode('summary');
-    else if (isExam) onSelectMode('exam', examTime, examQuestionCount);
-    else onSelectMode('practice');
-  };
-
+    setSelectedMode(initialMode === 'summary' && !quickSummary ? 'practice' : initialMode);
+  }, [initialMode, quickSummary]);
+  const [time, setTime] = useState(60);
+  const [count, setCount] = useState(Math.min(50, totalQuestions));
+  const counts =
+    totalQuestions < 50
+      ? [totalQuestions]
+      : [50, 60, 70, 80].filter((value) => value <= totalQuestions);
+  const modes = [
+    {
+      id: 'practice',
+      label: 'Practice',
+      description: 'Learn with instant feedback.',
+      icon: <PlayCircleOutlined aria-hidden="true" />,
+    },
+    {
+      id: 'exam',
+      label: 'Mock exam',
+      description: 'Answer random questions against the clock.',
+      icon: <FormOutlined aria-hidden="true" />,
+    },
+    ...(quickSummary
+      ? [
+          {
+            id: 'summary',
+            label: 'Quick Summary',
+            description: 'Review key concepts and common traps.',
+            icon: <ReadOutlined aria-hidden="true" />,
+          },
+        ]
+      : []),
+  ];
   return (
     <Card className="quiz-mode-picker">
-      <Title level={3} className="quiz-mode-picker-title">Choose your mode</Title>
-      <Radio.Group className="quiz-mode-options" role="radiogroup" aria-label="Quiz mode"
-        value={selectedMode} onChange={event => setSelectedMode(event.target.value)}>
-        <Radio.Button value="summary" disabled={!quickSummary} className="quiz-mode-summary">
-          <ReadOutlined className="quiz-mode-option-icon" />
-          <span className="quiz-mode-option-copy">
-            <span className="quiz-mode-option-title">Quick Summary <Tag color={quickSummary ? 'blue' : undefined}>{quickSummary ? 'Available' : 'Coming soon'}</Tag></span>
-            <span className="quiz-mode-option-description">Exam guide, key concepts &amp; memory tips</span>
-          </span>
-        </Radio.Button>
-        <Radio.Button value="practice">
-          <PlayCircleOutlined className="quiz-mode-option-icon" />
-          <span className="quiz-mode-option-copy">
-            <span className="quiz-mode-option-title">Practice</span>
-            <span className="quiz-mode-option-description">Learn at your own pace</span>
-          </span>
-        </Radio.Button>
-        <Radio.Button value="exam">
-          <FormOutlined className="quiz-mode-option-icon" />
-          <span className="quiz-mode-option-copy">
-            <span className="quiz-mode-option-title">Exam</span>
-            <span className="quiz-mode-option-description">Take a timed mock test</span>
-          </span>
-        </Radio.Button>
+      <Title level={2}>{t('Choose how to study')}</Title>
+      <Radio.Group
+        role="radiogroup"
+        value={selectedMode}
+        onChange={(event) => {
+          setSelectedMode(event.target.value);
+          onModeChange?.(event.target.value);
+        }}
+        className="mode-options"
+        aria-label={t('Choose how to study')}
+      >
+        {modes.map((mode) => (
+          <Radio.Button key={mode.id} value={mode.id}>
+            {mode.icon}
+            <span>
+              <strong>{t(mode.label)}</strong>
+              <small>{t(mode.description)}</small>
+            </span>
+          </Radio.Button>
+        ))}
       </Radio.Group>
-
-      <div className="quiz-mode-details">
-        <Paragraph className="quiz-mode-description">
-          {isSummary ? 'Review key concepts, answer-selection tips, and common traps for this quiz.'
-            : isExam ? 'Answer random questions and see your score at the end.'
-            : 'Answer questions in sequence with instant feedback after each answer.'}
-        </Paragraph>
-        {isExam && <div className="quiz-exam-fields">
-          <div className="quiz-exam-field">
-            <label htmlFor="exam-question-count">Questions</label>
-            <Select id="exam-question-count" value={examQuestionCount} onChange={setExamQuestionCount}
-              options={questionCounts.map(count => ({
-                value: count, label: `${count} questions`, disabled: count > availableQuestionCount,
-              }))} />
+      {selectedMode === 'exam' && (
+        <>
+          <div className="quiz-exam-fields">
+            <label>
+              {t('Questions')}
+              <Select
+                aria-label={t('Questions')}
+                value={count}
+                onChange={setCount}
+                options={counts.map((value) => ({
+                  value,
+                  label: t('{count} questions', { count: value }),
+                }))}
+              />
+            </label>
+            <label>
+              {t('Time limit')}
+              <Select
+                aria-label={t('Time limit')}
+                value={time}
+                onChange={setTime}
+                options={[60, 120].map((value) => ({
+                  value,
+                  label: t('{count} minutes', { count: value }),
+                }))}
+              />
+            </label>
           </div>
-          <div className="quiz-exam-field">
-            <label htmlFor="exam-time">Time limit</label>
-            <Select id="exam-time" value={examTime} onChange={setExamTime}
-              options={[{ value: 60, label: '1 hour' }, { value: 120, label: '2 hours' }]} />
-          </div>
-          {availableQuestionCount < 80 && <Text type="secondary" className="quiz-exam-limit">
-            Up to {availableQuestionCount} questions available.
-          </Text>}
-        </div>}
-        <div className="quiz-mode-start">
-          <Text type="secondary">{isSummary ? 'Tiếng Việt · Ôn nhanh theo chủ đề' : isExam
-            ? `${examQuestionCount} questions · ${examTime === 60 ? '1 hour' : '2 hours'}`
-            : `${availableQuestionCount} questions · No time limit`}</Text>
-          <QuizActionButton label={isSummary ? 'Read Quick Summary' : isExam ? 'Start Exam' : 'Start Practice'}
-            icon={isSummary ? <ReadOutlined /> : isExam ? <FormOutlined /> : <PlayCircleOutlined />} type="primary" size="large" onClick={handleStart} />
+          {hasExamDraft && (
+            <Alert
+              type="info"
+              showIcon
+              message={t('Existing draft: {count} questions. The timer keeps running.', {
+                count: examDraftCount,
+              })}
+            />
+          )}
+        </>
+      )}
+      <div className="quiz-mode-start">
+        <Text type="secondary">
+          {selectedMode === 'exam'
+            ? t('{count} questions', { count }) + ' · ' + t('{count} minutes', { count: time })
+            : t('{count} questions', { count: totalQuestions })}
+        </Text>
+        <div className="quiz-action-group">
+          {selectedMode === 'exam' && hasExamDraft && (
+            <Button onClick={() => onSelectMode('exam', time, count, true)}>
+              {t('Start a new exam')}
+            </Button>
+          )}
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => onSelectMode(selectedMode, time, count)}
+          >
+            {t(
+              selectedMode === 'summary'
+                ? 'Read Quick Summary'
+                : selectedMode === 'exam'
+                  ? hasExamDraft
+                    ? 'Resume'
+                    : 'Start mock exam'
+                  : 'Start practice'
+            )}
+          </Button>
         </div>
       </div>
+      {!quickSummary && (
+        <Paragraph type="secondary" className="mode-guide-notice">
+          {t('No guide published yet')}
+        </Paragraph>
+      )}
     </Card>
   );
 }
-
-export default QuizMode;
