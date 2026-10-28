@@ -1,0 +1,16 @@
+[
+  {
+    "id": "q1",
+    "type": "multiple_choice",
+    "question": "Which numbers are even? Choose two.",
+    "options": {
+      "A": "2",
+      "B": "3",
+      "C": "4"
+    },
+    "answer": [
+      "A",
+      "C"
+    ]
+  }
+]
