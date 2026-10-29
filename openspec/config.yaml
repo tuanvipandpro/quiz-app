@@ -1,0 +1,29 @@
+schema: spec-driven
+context: |
+  Read AGENTS.md for the authoritative product, UI/UX, architecture and verification rules.
+  Write explanatory prose in Vietnamese; preserve required OpenSpec headings and SHALL/WHEN/THEN keywords.
+  Default: one feature/change in one PR. The initial SDD infrastructure setup is a separate PR only for bootstrapping.
+  Issue #42 implementation is not authorized by the setup PR. Planning artifacts being complete does not mean the feature is complete.
+  The Firestore baseline was supplied by the user as the deployed rules; it has not been independently exported through the management API.
+  Never deploy Firebase Rules or change production data during setup/tests. Emulator execution must use a demo project and loopback hosts.
+rules:
+  proposal:
+    - State current behavior, target behavior, scope and exclusions. Link the issue.
+    - Separate infrastructure completed in setup from pending feature implementation.
+  specs:
+    - Give each requirement a stable CQ identifier and concrete WHEN/THEN scenarios, including failure and concurrency cases.
+    - Distinguish client validation from enforceable Firestore Rules constraints.
+  design:
+    - Cover identity/version, stale requests, account isolation, mobile states, test strategy and rollout/rollback.
+    - Label proposed defaults and unresolved decisions; preserve current bank behavior and profile access.
+  tasks:
+    - Reference requirement IDs and planned tests. Check off only work with actual evidence.
+    - Keep all #42 feature implementation tasks open in the setup PR.
+operations:
+  apply:
+    guidance:
+      - Follow the user's authorized scope; do not treat setup/planning approval as feature implementation approval.
+      - Update the requirement-to-test matrix and report actual verification results.
+  archive:
+    guidance:
+      - Archive and close the feature issue only after acceptance evidence and rollout status are explicit.

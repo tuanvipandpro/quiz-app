@@ -30,4 +30,8 @@ dist-ssr
 test-results
 playwright-report
 artifacts
+.firebase
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
 extension

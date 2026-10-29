@@ -66,6 +66,16 @@
 - CI deploys the verified build only after unit, catalog, build and browser checks succeed on master.
 - Before completion, review the changed files against the rules above and the PR checklist. State which UI states/viewports and tests were actually checked, any tradeoff, and any unverified requirement. These instructions and manual evidence complement CI; lint/test success alone does not prove good UX or architecture.
 
+## Spec-driven work
+
+- OpenSpec is pinned in devDependencies. Use `yarn sdd <command>` instead of an unpinned/global CLI; the wrapper disables telemetry and update checks. Generated Codex workflows live in `.agents/skills/`; preserve AGENTS.md as the shared project policy.
+- For a feature, read its proposal/spec/design/tasks before implementation. Default to one feature PR; the initial setup PR is a bootstrap exception, not a two-PR requirement for every change.
+- Current change: `openspec/changes/custom-quizzes-42/`. Its artifacts describe planned behavior; all implementation tasks remain pending until the user requests feature implementation. Do not archive or close #42 on setup completion.
+- Every requirement needs scenario/test evidence. `sdd:validate` proves structure only; `sdd:status` planning completion is not acceptance completion. Update the verification matrix when implementing.
+- `firebase/firestore.rules` is the user-supplied deployed baseline, not an API-exported confirmation. Preserve its provenance; recheck drift before a future rollout. No Firebase production deployment is part of setup.
+- `yarn test:rules` starts Firestore on loopback with `demo-quiz-app`, requires Java 21+, and tests the baseline through client SDK contexts. Never point tests at the real project; the emulator runner refuses project/config overrides.
+- Run `yarn verify` (includes SDD validation); run `yarn test:rules` when rules/emulator plumbing changes. `yarn verify:all` includes baseline rules and browser tests.
+
 ## Useful task prompts
 
 - Feature: define user outcome, acceptance criteria, affected flows and exclusions; demonstrate each implemented criterion.

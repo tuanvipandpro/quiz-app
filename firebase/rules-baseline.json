@@ -1,0 +1,8 @@
+{
+  "source": "user-supplied-deployed-rules",
+  "reportedProjectId": "quiz-app-f70d5",
+  "managementApiVerified": false,
+  "productionDeploymentPerformed": false,
+  "sha256Lf": "7e100086b629a03a6a9a90d9c6089bb1ebc5c39be388ee00c2a2b22fb4902a81",
+  "notes": "Supplied directly by the user during SDD setup. Tested locally against a demo project. Recheck the published rules before future production rollout."
+}

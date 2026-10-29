@@ -7,3 +7,4 @@ artifacts/
 public/
 .env*
 yarn.lock
+.agents/skills/

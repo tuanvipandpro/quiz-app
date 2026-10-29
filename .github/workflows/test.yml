@@ -24,15 +24,22 @@ jobs:
       - run: npm install --global yarn@1.22.22
       - run: yarn install --frozen-lockfile
       - run: yarn verify
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: yarn test:rules
       - run: yarn playwright install --with-deps chromium
       - run: yarn test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: browser-failure-details
+          name: test-failure-details
           path: |
             playwright-report/
             test-results/
+            firebase-debug.log
+            firestore-debug.log
           retention-days: 7
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4

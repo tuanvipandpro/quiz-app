@@ -24,19 +24,21 @@ Untracking `.env` does not remove previous commits. Rotate provider keys that we
 
 ## Commands
 
-| Command                                     | Purpose                                                                     |
-| ------------------------------------------- | --------------------------------------------------------------------------- |
-| `yarn doctor`                               | Check Node, installed tooling, lockfile and environment tracking            |
-| `yarn lint`                                 | ESLint checks across application, scripts and tests                         |
-| `yarn format` / `yarn format:check`         | Apply/check the formatting baseline; excludes banks and generated files     |
-| `yarn test`                                 | Node unit/integration tests, with isolated Firebase/AI boundaries           |
-| `yarn check:catalog`                        | Validate counts/schema/duplicates; report guides needing review             |
-| `yarn check:guides`                         | Same check, failing while guide review is outstanding                       |
-| `yarn build` / `yarn check:build`           | Build production and ensure no E2E auth/profile fixtures leak into it       |
-| `yarn verify`                               | Doctor, lint, format, Node tests, catalog, build and build isolation checks |
-| `yarn test:e2e`                             | Playwright desktop and phone flows                                          |
-| `yarn test:e2e:headed` / `yarn test:e2e:ui` | Inspect browser tests interactively                                         |
-| `yarn verify:all`                           | All standard checks plus browser tests                                      |
+| Command                                     | Purpose                                                                                         |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `yarn doctor`                               | Check Node, installed tooling, lockfile and environment tracking                                |
+| `yarn lint`                                 | ESLint checks across application, scripts and tests                                             |
+| `yarn format` / `yarn format:check`         | Apply/check the formatting baseline; excludes banks and generated files                         |
+| `yarn test`                                 | Node unit/integration tests, with isolated Firebase/AI boundaries                               |
+| `yarn check:catalog`                        | Validate counts/schema/duplicates; report guides needing review                                 |
+| `yarn check:guides`                         | Same check, failing while guide review is outstanding                                           |
+| `yarn build` / `yarn check:build`           | Build production and ensure no E2E auth/profile fixtures leak into it                           |
+| `yarn test:e2e`                             | Playwright desktop and phone flows                                                              |
+| `yarn test:e2e:headed` / `yarn test:e2e:ui` | Inspect browser tests interactively                                                             |
+| `yarn sdd:validate` / `yarn sdd:status`     | Validate SDD structure / inspect planning artifacts                                             |
+| `yarn test:rules` / `yarn emulators:start`  | Test or inspect the local Firestore baseline (Java 21+)                                         |
+| `yarn verify`                               | Doctor, lint, format, Node tests, SDD/catalog validation, production build and isolation checks |
+| `yarn verify:all`                           | All standard checks, Firestore baseline tests and browser tests (Java 21+)                      |
 
 Install the test browser once:
 
@@ -46,6 +48,40 @@ yarn test:e2e
 ```
 
 Browser tests render the actual app using test-only auth/profile services selected by `vite.e2e.config.js`. They cover the library, aliases, checkpoint resume, JSON validation/formats, answer restoration, sign-out confirmation and exam lifecycle. External requests are blocked; tests never sign into a real account or call a paid AI API. This is not a substitute for deployed Firestore Rules tests or physical iOS/Android checks.
+
+## SDD setup for issue #42
+
+OpenSpec **1.15.0** is pinned locally. Its Codex workflows are generated in `.agents/skills/`; reopen the agent/IDE if new skills are not discovered immediately. Use the pinned wrapper, which disables telemetry/update checks:
+
+```sh
+yarn sdd list
+yarn sdd:status
+yarn sdd:validate
+yarn sdd instructions apply --change custom-quizzes-42 --json
+```
+
+Read [proposal](openspec/changes/custom-quizzes-42/proposal.md), [requirements](openspec/changes/custom-quizzes-42/specs/custom-quizzes/spec.md), [design](openspec/changes/custom-quizzes-42/design.md), [tasks](openspec/changes/custom-quizzes-42/tasks.md) and the [acceptance matrix](openspec/changes/custom-quizzes-42/verification.md). This setup PR prepares the feature; it does **not** implement cloud custom quizzes. All feature tasks remain open. `planningComplete` and successful structural validation do not mean #42 is finished. Do not apply/archive the feature until implementation is requested.
+
+The default workflow is one feature/change in one PR, with specs and implementation evolving together. The separate setup PR is the one-time bootstrap. Existing project rules remain in AGENTS.md, and OpenSpec config references them rather than creating another competing rule set.
+
+### Firestore baseline and local tests
+
+`firebase/firestore.rules` is the baseline supplied by the user as the published rules for `quiz-app-f70d5`; provenance and its LF-normalized hash are in `firebase/rules-baseline.json`. It was not independently exported through the management API. It permits the owner profile document, denies guests/other users, and grants no custom-quiz subcollection access. Recheck the current published revision before future rollout.
+
+Install **Java 21+**, set `JAVA_HOME`, and put its `bin` directory on PATH. No Firebase login or production credentials are needed for these tests:
+
+```sh
+yarn test:rules
+yarn emulators:start
+```
+
+The runner tries JAVA_HOME, PATH, then an optional portable JDK under ignored `artifacts/tools/java21/`. The setup on this machine used a checksum-verified Temurin 21 archive there without changing system settings. That archive is not committed; fresh clones/CI must provide Java. `yarn doctor:sdd` checks availability without starting an emulator.
+
+The runner uses only project `demo-quiz-app`, binds Firestore to `127.0.0.1:8080` (hub 4400, logging 4500), and refuses project/config override arguments. `test:rules` starts the emulator, executes the client-SDK baseline suite, then stops it. Direct test execution without the expected emulator environment fails closed. Auth contexts are mocked by the Rules test library; rules-disabled contexts only seed fixtures.
+
+The local Firebase config is deliberately named `firebase.emulator.json`; no production alias, deploy command or Firebase deploy CI job is added. CI installs Java 21 and runs these baseline tests before browser tests and website deployment. `verify` now includes SDD structural validation; `verify:all` also requires Java and runs rules/E2E tests.
+
+The seven baseline tests prove the supplied policy locally, not quota or cloud management. Those acceptance tests are planned in the feature matrix and must be implemented alongside the feature. Firebase Tools is pinned to 15.34.2; Rules Unit Testing 5.0.0 is pinned for compatibility with the existing Firebase 12 client.
 
 On failure, inspect `playwright-report/` and `test-results/` for screenshots and traces. CI retains them for seven days. No automatic retries hide a failing test. To run one project: `yarn test:e2e --project=phone`.
 
@@ -78,8 +114,12 @@ public/
 tests/
   *.test.js                Node tests
   e2e/                     Playwright scenarios
+  firestore/               Client-SDK baseline Rules tests (demo emulator only)
   fixtures/                Isolated auth/profile service doubles
-scripts/                   Diagnostics, catalog/build checks and reviewed imports
+scripts/                   Diagnostics, SDD/emulator runners, checks and imports
+openspec/                  Accepted baseline specs and the pending #42 change
+.agents/skills/            Generated OpenSpec workflows for Codex
+firebase/                  User-supplied rules baseline and provenance
 ```
 
 The removed `docs/`, Copilot instructions and old manual harnesses are not required to build or test. Development guidance lives in this README and `AGENTS.md`; public study guides are app content and remain published.
@@ -109,7 +149,7 @@ The production base is `/quiz-app/`; assets use `import.meta.env.BASE_URL`. Opti
 
 ## Next setup increments
 
-- **Issue #42:** retrieve/review deployed Firestore Rules, version rules/config, add Emulator ownership/quota/concurrency tests, then implement the three-slot custom-quiz service and management UI. Preserve existing profile/checkpoint access; do not replace production rules with guessed defaults.
+- **Issue #42:** implement the reviewed change plan, custom-quiz Rules/service/UI, and quota/concurrency acceptance tests. Baseline profile tests are now available; recheck published Rules/indexes for drift before an explicitly authorized rollout.
 - Review the four published guides above against their expanded banks; this cleanup does not certify their new coverage.
 - Continue extracting App orchestration only around well-tested feature boundaries. Header extraction and stylesheet separation are the first step.
 - Add WebKit/real-device smoke coverage and selected visual baselines after the initial browser suite is stable.
