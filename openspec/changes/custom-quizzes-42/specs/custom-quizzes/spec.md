@@ -8,7 +8,7 @@ Cho phép người dùng lưu và quản lý quiz cá nhân riêng tư, tiếp t
 
 ### Requirement: CQ-01 Private account ownership
 
-The system SHALL require sign-in for cloud save/management and SHALL restrict each saved quiz to its owner, including direct client SDK requests.
+The system SHALL require sign-in through the existing Google flow for cloud save/management and SHALL restrict each saved quiz to its owner, including direct client SDK requests.
 
 #### Scenario: Guest or another account accesses a quiz
 
