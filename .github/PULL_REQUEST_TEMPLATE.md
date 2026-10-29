@@ -11,6 +11,7 @@ What problem does this solve, and what does the user see now?
 ## Verification
 
 - Commands and results:
+- UI skill queries/results, applied guidance or justified fallback, if applicable:
 - UI evidence (viewport, theme, language), if applicable:
 - Data/checkpoint compatibility, if applicable:
 
@@ -23,7 +24,7 @@ Risks, configuration changes and recovery steps. Do not mark an issue complete w
 Check an item only after verifying it. Explain any item that does not apply.
 
 - [ ] Root cause/outcome, affected flows and direct/indirect UI impact assessed.
-- [ ] UI-facing work consulted the pinned UI/UX Pro Max reference, or recorded why only the local baseline could be used.
+- [ ] UI-facing work used the local UI/UX Pro Max skill and recorded relevant queries/results and applied guidance, or explained a reference-only fallback.
 - [ ] Changed UI checked on 320/390/412px phones and 768/1280px layouts, both VN/EN and light/dark, with relevant interaction/failure states and visual evidence.
 - [ ] Responsibilities, reuse and extension points reviewed; shared rules/configuration are not duplicated or scattered as hardcoded values.
 - [ ] Accessibility, navigation, data compatibility and async/error handling reviewed where affected.

@@ -10,4 +10,8 @@
 /yarn.lock text eol=lf
 /firebase/** text eol=lf
 /openspec/** text eol=lf
+/docs/** text eol=lf
 /.agents/** text eol=lf
+
+# Preserve exact upstream bytes for the UI skill provenance check.
+/.agents/skills/ui-ux-pro-max/** -text

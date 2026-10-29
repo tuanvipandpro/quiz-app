@@ -7,4 +7,6 @@ artifacts/
 public/
 .env*
 yarn.lock
+
+# Preserve generated OpenSpec workflows and the pinned upstream UI/UX skill payload.
 .agents/skills/

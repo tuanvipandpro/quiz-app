@@ -6,6 +6,10 @@ Practice certification questions, take timed mock exams and read curated study g
 
 Every change follows the mandatory UI/UX and maintainability rules in `AGENTS.md`: assess user-facing impact, apply the reviewed UI/UX Pro Max guidance for UI work, check mobile/language/theme states, keep module responsibilities clear and centralize shared configuration. The PR checklist records evidence; CI enforces the automated checks, while visual and architectural judgment still require review.
 
+## Local UI/UX skill
+
+UI/UX Pro Max is installed in [.agents/skills/ui-ux-pro-max](.agents/skills/ui-ux-pro-max/SKILL.md), pinned to the reviewed upstream commit with scripts, data, references and license included. For UI work, use `$ui-ux-pro-max` and follow `AGENTS.md`; record the guidance applied and browser evidence. See [setup, search commands and update procedure](docs/ui-ux-skill.md). Search needs Python 3; `yarn check:ui-skill` checks payload integrity offline without Python and is included in `yarn verify`.
+
 ## Run locally
 
 Use **Node 24 LTS** (`.nvmrc`) and **Yarn 1.22.22** (`packageManager`). Install Yarn using your Node manager/Corepack, or `npm install --global yarn@1.22.22`.
@@ -24,21 +28,22 @@ Untracking `.env` does not remove previous commits. Rotate provider keys that we
 
 ## Commands
 
-| Command                                     | Purpose                                                                                         |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `yarn doctor`                               | Check Node, installed tooling, lockfile and environment tracking                                |
-| `yarn lint`                                 | ESLint checks across application, scripts and tests                                             |
-| `yarn format` / `yarn format:check`         | Apply/check the formatting baseline; excludes banks and generated files                         |
-| `yarn test`                                 | Node unit/integration tests, with isolated Firebase/AI boundaries                               |
-| `yarn check:catalog`                        | Validate counts/schema/duplicates; report guides needing review                                 |
-| `yarn check:guides`                         | Same check, failing while guide review is outstanding                                           |
-| `yarn build` / `yarn check:build`           | Build production and ensure no E2E auth/profile fixtures leak into it                           |
-| `yarn test:e2e`                             | Playwright desktop and phone flows                                                              |
-| `yarn test:e2e:headed` / `yarn test:e2e:ui` | Inspect browser tests interactively                                                             |
-| `yarn sdd:validate` / `yarn sdd:status`     | Validate SDD structure / inspect planning artifacts                                             |
-| `yarn test:rules` / `yarn emulators:start`  | Test or inspect the local Firestore baseline (Java 21+)                                         |
-| `yarn verify`                               | Doctor, lint, format, Node tests, SDD/catalog validation, production build and isolation checks |
-| `yarn verify:all`                           | All standard checks, Firestore baseline tests and browser tests (Java 21+)                      |
+| Command                                     | Purpose                                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `yarn doctor`                               | Check Node, installed tooling, lockfile and environment tracking                                  |
+| `yarn check:ui-skill`                       | Verify the pinned UI/UX skill payload and provenance offline                                      |
+| `yarn lint`                                 | ESLint checks across application, scripts and tests                                               |
+| `yarn format` / `yarn format:check`         | Apply/check the formatting baseline; excludes banks and generated files                           |
+| `yarn test`                                 | Node unit/integration tests, with isolated Firebase/AI boundaries                                 |
+| `yarn check:catalog`                        | Validate counts/schema/duplicates; report guides needing review                                   |
+| `yarn check:guides`                         | Same check, failing while guide review is outstanding                                             |
+| `yarn build` / `yarn check:build`           | Build production and ensure no E2E auth/profile fixtures leak into it                             |
+| `yarn test:e2e`                             | Playwright desktop and phone flows                                                                |
+| `yarn test:e2e:headed` / `yarn test:e2e:ui` | Inspect browser tests interactively                                                               |
+| `yarn sdd:validate` / `yarn sdd:status`     | Validate SDD structure / inspect planning artifacts                                               |
+| `yarn test:rules` / `yarn emulators:start`  | Test or inspect the local Firestore baseline (Java 21+)                                           |
+| `yarn verify`                               | Doctor, UI skill integrity, lint, format, Node tests, SDD/catalog validation, build and isolation |
+| `yarn verify:all`                           | All standard checks, Firestore baseline tests and browser tests (Java 21+)                        |
 
 Install the test browser once:
 
@@ -118,17 +123,17 @@ tests/
   fixtures/                Isolated auth/profile service doubles
 scripts/                   Diagnostics, SDD/emulator runners, checks and imports
 openspec/                  Accepted baseline specs and the pending #42 change
-.agents/skills/            Generated OpenSpec workflows for Codex
+.agents/skills/            OpenSpec workflows and the pinned local UI/UX skill
 firebase/                  User-supplied rules baseline and provenance
 ```
 
-The removed `docs/`, Copilot instructions and old manual harnesses are not required to build or test. Development guidance lives in this README and `AGENTS.md`; public study guides are app content and remain published.
+Legacy Copilot instructions and old manual harnesses are not required to build or test. Development guidance lives in this README, `AGENTS.md` and the local skill integration guide; public study guides are app content and remain published.
 
 ## Data changes and study-guide review
 
 Preserve IDs and marked answers unless a review explicitly authorizes a correction. Check the actual content against the provider/exam before changing metadata. Schema, count and duplicate checks do not prove exam alignment.
 
-The historical Anthropic importer remains available as `node scripts/import-anthropic-quizzes.mjs <snapshot-directory> --check`. Remove `--check` only for an intentional reviewed import; generated reports go to ignored `artifacts/imports/`, not a recreated docs folder.
+The historical Anthropic importer remains available as `node scripts/import-anthropic-quizzes.mjs <snapshot-directory> --check`. Remove `--check` only for an intentional reviewed import; generated reports go to ignored `artifacts/imports/`; keep them separate from development guidance.
 
 Four guides currently require content/coverage review:
 
