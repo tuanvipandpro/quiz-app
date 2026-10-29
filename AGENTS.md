@@ -28,6 +28,32 @@
 - Do not refresh a guide's reviewed hash until its content and question mappings have been reviewed. `yarn check:guides` exposes outstanding reviews.
 - Custom uploads currently stay in the tab. Firestore persistence and 3-quiz quota remain issue #42.
 
+## Required review before every change
+
+- Identify the root cause or requested outcome, affected flows, existing owners of the logic/configuration, and potential UI/UX impact before editing. Include indirect effects such as loading, errors, saved state and navigation.
+- For UI-facing changes, consult [UI/UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) and the relevant guidance in its [reviewed SKILL.md](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/28b3b8dee8c976df4fa3e94aed4e092ad43fcb03/.claude/skills/ui-ux-pro-max/SKILL.md). Reference revision: `28b3b8dee8c976df4fa3e94aed4e092ad43fcb03`. Apply guidance to React/Ant Design and the agreed product behavior; external recommendations never override the user's scope or alignment decisions.
+- The reference is not an installed project dependency. If it is inaccessible, use the baseline below and report that limitation; do not claim to have read/run unavailable material. Purely non-visual changes still require a UI-impact assessment, but not an invented redesign.
+- Choose the smallest maintainable correction. Refactor within the affected responsibility when needed; do not turn a focused fix into an unrelated architecture rewrite.
+
+## Mobile UI/UX acceptance criteria
+
+- Design affected layouts for phones first. Check widths 320, 390 and 412px, then 768 and 1280px; also inspect landscape when changing navigation, sticky controls or modals. Verify both VN/EN and light/dark on the changed flow, including the longest relevant labels/question content.
+- Keep content within the viewport, controls reachable and text readable. Use flexible layout and existing breakpoints; avoid device-name checks and per-phone positioning patches. Sticky UI must respect safe areas and leave room for focused inputs and the on-screen keyboard.
+- Phone controls need at least 44x44 CSS-pixel hit areas. Keep visible focus, meaningful labels for icon-only controls and actions usable without hover. Preserve text zoom; target at least 4.5:1 contrast for normal text and 3:1 for large text in both themes, and respect reduced motion.
+- Cover loading, empty, success, validation error, permission/network failure and disabled states where applicable. Prevent duplicate submissions, explain failures near the affected action, and preserve valid user input for retry.
+- Preserve predictable Back/Cancel/Resume behavior. Confirm destructive or session-ending actions and maintain keyboard focus through dialogs. Compact mobile labels must retain their meaning and accessible names.
+- Inspect the rendered result and attach relevant before/after evidence with viewport, language and theme. Automated geometry checks complement visual review; label browser emulation honestly and do not claim physical iPhone/Samsung testing without doing it.
+
+## Code structure and extensibility
+
+- Give each module a clear responsibility: components render UI, hooks orchestrate state, services own external IO, utilities hold testable domain logic, and data/config modules own shared definitions. Keep Firebase/provider calls out of presentation code.
+- Reuse existing components, validators, tokens and service contracts. Extract cohesive behavior when responsibilities mix or rules repeat; do not keep appending unrelated logic to App.jsx or create generic abstractions for hypothetical future features.
+- Keep dependencies explicit through props, function parameters or the existing service boundaries. Prefer pure helpers for validation/scoring/transforms so failure and edge cases can be tested without a browser or live service.
+- Put variable environment settings, provider/model metadata, routes, shared limits and repeated options in their appropriate existing configuration/registry. Use named constants for meaningful shared invariants. Do not scatter magic numbers, provider-specific branches or duplicated rules across components.
+- Use the translation catalog for user-facing UI strings and shared design tokens/styles for colors, spacing and typography. Do not add arbitrary inline style patches to repair one screen width. Local, obvious literals and intentional test fixtures are acceptable; avoiding hardcoding does not mean moving every value into configuration.
+- Add providers, quiz types or modes through the existing registries/contracts where applicable. Preserve stable IDs and data compatibility; document migration needs before changing persisted shapes. Never substitute demo data or fake success for missing production behavior.
+- Handle invalid/missing data, async races, cancellation, account changes and service errors at the boundary that owns them. Surface useful UI states without exposing secrets or losing the user's work.
+
 ## Implementation and verification
 
 - Reuse components/services and keep changes focused. No unrelated dependency upgrades or question-answer rewrites.
@@ -38,6 +64,7 @@
 - Add regression tests for meaningful behavior changes. For UI changes, inspect the relevant phone/desktop, language and theme states.
 - Run `yarn verify`; run `yarn test:e2e` for UI/auth/navigation changes. Report actual commands/results and limitations. Preserve failure screenshots/traces for diagnosis.
 - CI deploys the verified build only after unit, catalog, build and browser checks succeed on master.
+- Before completion, review the changed files against the rules above and the PR checklist. State which UI states/viewports and tests were actually checked, any tradeoff, and any unverified requirement. These instructions and manual evidence complement CI; lint/test success alone does not prove good UX or architecture.
 
 ## Useful task prompts
 

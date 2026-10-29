@@ -4,6 +4,8 @@ Practice certification questions, take timed mock exams and read curated study g
 
 [Live app](https://tuanvipandpro.github.io/quiz-app/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)
 
+Every change follows the mandatory UI/UX and maintainability rules in `AGENTS.md`: assess user-facing impact, apply the reviewed UI/UX Pro Max guidance for UI work, check mobile/language/theme states, keep module responsibilities clear and centralize shared configuration. The PR checklist records evidence; CI enforces the automated checks, while visual and architectural judgment still require review.
+
 ## Run locally
 
 Use **Node 24 LTS** (`.nvmrc`) and **Yarn 1.22.22** (`packageManager`). Install Yarn using your Node manager/Corepack, or `npm install --global yarn@1.22.22`.
