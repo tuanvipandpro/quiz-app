@@ -8,3 +8,6 @@
 /README.md text eol=lf
 /AGENTS.md text eol=lf
 /yarn.lock text eol=lf
+
+# Preserve exact upstream bytes for the UI skill provenance check.
+/.agents/skills/ui-ux-pro-max/** -text

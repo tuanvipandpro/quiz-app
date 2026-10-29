@@ -29,8 +29,9 @@
     "check:catalog": "node scripts/check-catalog.mjs",
     "check:guides": "node scripts/check-catalog.mjs --strict-guides",
     "check:build": "node scripts/check-build.mjs",
-    "verify": "yarn doctor && yarn lint && yarn format:check && yarn test && yarn check:catalog && yarn build && yarn check:build",
-    "verify:all": "yarn verify && yarn test:e2e"
+    "verify": "yarn doctor && yarn check:ui-skill && yarn lint && yarn format:check && yarn test && yarn check:catalog && yarn build && yarn check:build",
+    "verify:all": "yarn verify && yarn test:e2e",
+    "check:ui-skill": "node scripts/check-ui-skill.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10",
