@@ -1,10 +1,8 @@
 import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
-  Avatar,
   Button,
   ConfigProvider,
-  Dropdown,
   Layout,
   Modal,
   Space,
@@ -15,17 +13,7 @@ import {
 } from 'antd';
 import enUS from 'antd/locale/en_US';
 import viVN from 'antd/locale/vi_VN';
-import {
-  ArrowLeftOutlined,
-  BookOutlined,
-  GithubOutlined,
-  LoginOutlined,
-  LogoutOutlined,
-  MoonOutlined,
-  SettingOutlined,
-  SunOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { ArrowLeftOutlined, GithubOutlined } from '@ant-design/icons';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { useHashRoute } from './hooks/useHashRoute';
@@ -34,6 +22,7 @@ import QuizLibrary from './components/QuizLibrary';
 import MyQuizzes from './components/MyQuizzes';
 import QuizMode from './components/QuizMode';
 import SignInModal from './components/SignInModal';
+import AppHeader from './components/AppHeader';
 import ProviderIdentity from './components/ProviderIdentity';
 import { findQuiz } from './data/quizzes';
 import { getQuickSummary } from './data/quickSummaries';
@@ -45,7 +34,7 @@ import 'antd/dist/reset.css';
 import './App.css';
 import './markdown.css';
 
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 const { Title, Text } = Typography;
 const UPLOAD_KEY = 'quiz-tab-upload-v1';
 const PracticeMode = lazy(() => import('./components/PracticeMode'));
@@ -65,7 +54,7 @@ function initialDarkMode() {
 
 export default function App() {
   const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const uid = user?.uid || null;
   const progressState = useQuizProgress(uid);
   const [isDarkMode, setIsDarkMode] = useState(initialDarkMode);
@@ -587,111 +576,18 @@ export default function App() {
         >
           {language === 'vi' ? 'Đến nội dung chính' : 'Skip to content'}
         </a>
-        <Header ref={header} className="app-header">
-          <div className="app-header-inner">
-            <button className="app-brand" aria-label="Quiz App" onClick={() => go('#/library')}>
-              <BookOutlined aria-hidden="true" />
-              <span>Quiz App</span>
-            </button>
-            <nav
-              className="app-nav"
-              aria-label={language === 'vi' ? 'Điều hướng chính' : 'Main navigation'}
-            >
-              <Button
-                type="text"
-                aria-current={route.page !== 'my-quizzes' ? 'page' : undefined}
-                onClick={() => go('#/library')}
-              >
-                {t('Quiz Bank')}
-              </Button>
-              <Button
-                type="text"
-                aria-current={route.page === 'my-quizzes' ? 'page' : undefined}
-                onClick={() => go('#/my-quizzes')}
-              >
-                {t('My quizzes')}
-              </Button>
-            </nav>
-            <div className="header-actions">
-              <Button
-                type="text"
-                className="theme-toggle"
-                icon={
-                  isDarkMode ? (
-                    <SunOutlined aria-hidden="true" />
-                  ) : (
-                    <MoonOutlined aria-hidden="true" />
-                  )
-                }
-                aria-label={t(isDarkMode ? 'Switch to light mode' : 'Switch to dark mode')}
-                onClick={() => setIsDarkMode((value) => !value)}
-              />
-              <div className="language-toggle" role="group" aria-label={t('Language')}>
-                <button
-                  aria-label="Tiếng Việt"
-                  aria-pressed={language === 'vi'}
-                  onClick={() => setLanguage('vi')}
-                >
-                  VN
-                </button>
-                <button
-                  aria-label="English"
-                  aria-pressed={language === 'en'}
-                  onClick={() => setLanguage('en')}
-                >
-                  EN
-                </button>
-              </div>
-              {authLoading ? (
-                <Spin size="small" />
-              ) : user ? (
-                <Dropdown
-                  menu={{
-                    items: [
-                      { key: 'name', label: user.displayName || user.email, disabled: true },
-                      {
-                        key: 'settings',
-                        label: t('AI Settings'),
-                        icon: <SettingOutlined aria-hidden="true" />,
-                        onClick: () => setSettingsVisible(true),
-                      },
-                      { type: 'divider' },
-                      {
-                        key: 'logout',
-                        label: t('Sign out'),
-                        icon: <LogoutOutlined aria-hidden="true" />,
-                        onClick: logout,
-                        danger: true,
-                      },
-                    ],
-                  }}
-                >
-                  <Button
-                    type="text"
-                    className="profile-button"
-                    aria-label={user.displayName || user.email}
-                  >
-                    <Avatar
-                      size={28}
-                      src={user.photoURL}
-                      icon={<UserOutlined aria-hidden="true" />}
-                    />
-                  </Button>
-                </Dropdown>
-              ) : (
-                <Button
-                  type="text"
-                  aria-label={t('Sign in')}
-                  icon={<LoginOutlined aria-hidden="true" />}
-                  className="header-login"
-                  onClick={openLogin}
-                >
-                  <span>{t('Sign in')}</span>
-                </Button>
-              )}
-            </div>
-          </div>
-        </Header>
+        <AppHeader
+          headerRef={header}
+          page={route.page}
+          onNavigate={go}
+          isDarkMode={isDarkMode}
+          onToggleTheme={() => setIsDarkMode((value) => !value)}
+          authLoading={authLoading}
+          user={user}
+          onSettings={() => setSettingsVisible(true)}
+          onSignOut={logout}
+          onSignIn={openLogin}
+        />
         <Content id="main-content" tabIndex={-1}>
           <Suspense
             fallback={

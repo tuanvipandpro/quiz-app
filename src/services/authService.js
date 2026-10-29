@@ -1,10 +1,5 @@
 // services/authService.js
-import { 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  signOut,
-  onAuthStateChanged 
-} from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 /**
@@ -15,7 +10,7 @@ class AuthService {
     this.googleProvider = new GoogleAuthProvider();
     // Add custom parameters to reduce COOP warnings
     this.googleProvider.setCustomParameters({
-      prompt: 'select_account'
+      prompt: 'select_account',
     });
   }
 
@@ -26,11 +21,11 @@ class AuthService {
   async signInWithGoogle() {
     try {
       const result = await signInWithPopup(auth, this.googleProvider);
-      
+
       // Get user info
       const user = result.user;
       const credential = GoogleAuthProvider.credentialFromResult(result);
-      
+
       return {
         success: true,
         user: {
@@ -38,16 +33,16 @@ class AuthService {
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL,
-          emailVerified: user.emailVerified
+          emailVerified: user.emailVerified,
         },
-        credential
+        credential,
       };
     } catch (error) {
       console.error('Error signing in with Google:', error);
-      
+
       // Handle specific error codes
-      let errorMessage = 'Failed to sign in with Google';
-      
+      let errorMessage;
+
       switch (error.code) {
         case 'auth/popup-closed-by-user':
           errorMessage = 'Sign-in popup was closed';
@@ -64,11 +59,11 @@ class AuthService {
         default:
           errorMessage = error.message;
       }
-      
+
       return {
         success: false,
         error: errorMessage,
-        code: error.code
+        code: error.code,
       };
     }
   }
@@ -85,7 +80,7 @@ class AuthService {
       console.error('Error signing out:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -121,15 +116,15 @@ class AuthService {
    */
   getUserInfo() {
     const user = auth.currentUser;
-    
+
     if (!user) return null;
-    
+
     return {
       uid: user.uid,
       email: user.email,
       displayName: user.displayName,
       photoURL: user.photoURL,
-      emailVerified: user.emailVerified
+      emailVerified: user.emailVerified,
     };
   }
 }

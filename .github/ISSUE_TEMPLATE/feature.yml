@@ -1,0 +1,26 @@
+name: Feature or improvement
+description: Define a concrete outcome for implementation
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User outcome
+      description: What should the user be able to do? Include the current behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable conditions, including failure states.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and exclusions
+  - type: textarea
+    id: evidence
+    attributes:
+      label: UI or data references
+      description: Include viewport, theme, language, sample data and source revision as relevant.

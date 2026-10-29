@@ -1,0 +1,104 @@
+.uploaded-quiz {
+  margin-top: 20px;
+}
+.uploaded-quiz .section-heading {
+  margin: 0;
+}
+.uploaded-quiz h3.ant-typography {
+  margin: 0 0 6px;
+}
+.upload-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  align-items: start;
+  gap: 24px;
+  margin-top: 24px;
+}
+.upload-layout > div {
+  min-width: 0;
+}
+.upload-layout .ant-upload-drag {
+  padding: 32px 20px;
+  border-color: var(--app-control-border);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+}
+.upload-layout .ant-upload-drag h3.ant-typography {
+  font-size: 19px;
+}
+.upload-icon {
+  color: var(--app-primary);
+  font-size: 38px;
+}
+.upload-help {
+  display: flex;
+  margin: 16px 0;
+}
+.upload-preview label {
+  font-size: 14px;
+}
+.upload-preview.ant-card {
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-sm);
+}
+.upload-preview-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 8px 0;
+}
+.upload-preview-empty > .anticon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--app-info-bg);
+  color: var(--app-primary);
+  font-size: 24px;
+}
+.upload-preview-empty .ant-typography {
+  margin: 0;
+  font-size: 14px;
+}
+.upload-preview-empty > span:last-child {
+  font-size: 13px;
+}
+.upload-workflow {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0;
+  margin: 24px 0;
+}
+.upload-workflow li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--app-muted);
+  font-size: 14px;
+}
+.upload-workflow li > span {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--app-code-bg);
+  border-radius: 50%;
+  color: var(--app-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.upload-workflow li[aria-current='step'] {
+  color: var(--app-text);
+  font-weight: 600;
+}
+.upload-workflow li[aria-current='step'] > span {
+  color: var(--app-on-primary);
+  background: var(--app-primary-bg);
+}

@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Alert, Button, Modal, Space, Spin, Typography, message } from 'antd';
+import { Alert, Button, Modal, Typography, message } from 'antd';
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,

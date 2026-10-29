@@ -47,23 +47,23 @@ test('English is the default while an explicit saved VN/EN choice is respected',
     );
 });
 
-test('exam codes match the reviewed provider catalog without changing stored quiz identities', async () => {
-  const audit = JSON.parse(
-    await readFile(new URL('../docs/catalog-code-audit-2026-10-28.json', import.meta.url), 'utf8')
-  );
-  assert.equal(audit.entries.length, quizzes.length);
-  assert.equal(new Set(audit.entries.map((entry) => entry.id)).size, quizzes.length);
-  for (const entry of audit.entries) {
-    const quiz = quizzes.find((item) => item.id === entry.id);
-    assert.ok(quiz, entry.id);
-    assert.equal(quiz.code, entry.code, entry.id);
-    assert.ok(quiz.name.endsWith(`(${entry.code})`), entry.id);
-    assert.equal(new URL(audit.sources[entry.source]).protocol, 'https:');
-    assert.equal(parseRoute(quizUrl(entry.id, 'practice')).quizId, entry.id);
+test('canonical exam codes and legacy quiz identities remain stable', () => {
+  const expected = {
+    'anthropic-cca-f': 'CCAR-F',
+    'gcp-ace': 'ACE',
+    'gcp-pcde': 'PDE',
+    'aws-saa': 'SAA-C03',
+    'aws-dva': 'DVA-C02',
+    'aws-dea': 'DEA-C01',
+    'aws-aip-c01': 'AIP-C01',
+  };
+  for (const [id, code] of Object.entries(expected)) {
+    assert.equal(findQuiz(id).code, code);
+    assert.equal(parseRoute(quizUrl(id, 'practice')).quizId, id);
   }
   assert.equal(findQuiz('aws-ace').id, 'gcp-ace');
-  assert.ok(quizzes.find((quiz) => quiz.id === 'anthropic-cca-f').aliases.includes('CCA-F'));
-  assert.ok(quizzes.find((quiz) => quiz.id === 'gcp-pcde').aliases.includes('PCDE'));
+  assert.ok(findQuiz('anthropic-cca-f').aliases.includes('CCA-F'));
+  assert.ok(findQuiz('gcp-pcde').aliases.includes('PCDE'));
 });
 
 test('the catalog contains unique question banks and the mislabeled AWS copy only resolves as Google ACE', async () => {

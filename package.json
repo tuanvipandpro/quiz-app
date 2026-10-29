@@ -14,21 +14,38 @@
     "vite"
   ],
   "scripts": {
-    "test": "node --test tests/llm.test.js tests/userService.test.js tests/explanations.test.js tests/quizProgress.test.js tests/quickSummary.test.js tests/questionFormats.test.js tests/studySession.test.js tests/uiCatalog.test.js",
-    "dev": "vite",
+    "dev": "vite --port 5173 --strictPort",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "doctor": "node scripts/doctor.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test tests/*.test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "check:catalog": "node scripts/check-catalog.mjs",
+    "check:guides": "node scripts/check-catalog.mjs --strict-guides",
+    "check:build": "node scripts/check-build.mjs",
+    "verify": "yarn doctor && yarn lint && yarn format:check && yarn test && yarn check:catalog && yarn build && yarn check:build",
+    "verify:all": "yarn verify && yarn test:e2e"
   },
   "devDependencies": {
+    "@eslint/js": "10",
+    "@playwright/test": "^1.64.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "10",
+    "eslint-plugin-react": "7",
     "gh-pages": "^6.3.0",
+    "globals": "16",
+    "prettier": "3.6.2",
     "vite": "^6.2.0"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
-    "@google/generative-ai": "^0.24.0",
     "antd": "^5.27.0",
     "firebase": "^12.6.0",
     "react": "^19.1.0",
@@ -37,5 +54,8 @@
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "engines": {
+    "node": "24.x"
+  }
 }

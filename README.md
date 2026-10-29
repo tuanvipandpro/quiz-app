@@ -1,283 +1,118 @@
 # Quiz App
 
-A React certification quiz app for Cloud, AI and software testing. Practice questions, take timed mock exams, read curated Quick Summaries and request AI explanations with your own Gemini or Groq key.
+Practice certification questions, take timed mock exams and read curated study guides. React 19, Vite, Ant Design and Firebase.
 
-[Live demo](https://tuanvipandpro.github.io/quiz-app/) · [Question formats](docs/question-formats.md) · [Write a Quick Summary](docs/quick-summary-authoring.md)
+[Live app](https://tuanvipandpro.github.io/quiz-app/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)
 
-## Get started
+Every change follows the mandatory UI/UX and maintainability rules in `AGENTS.md`: assess user-facing impact, apply the reviewed UI/UX Pro Max guidance for UI work, check mobile/language/theme states, keep module responsibilities clear and centralize shared configuration. The PR checklist records evidence; CI enforces the automated checks, while visual and architectural judgment still require review.
 
-Use Node.js 20 or newer and Yarn Classic 1.x. The repository declares Yarn 1.22.22, includes a tracked `yarn.lock`, and its deployment workflow uses Node.js 20.
+## Run locally
 
-```bash
-git clone https://github.com/tuanvipandpro/quiz-app.git
-cd quiz-app
-yarn install
+Use **Node 24 LTS** (`.nvmrc`) and **Yarn 1.22.22** (`packageManager`). Install Yarn using your Node manager/Corepack, or `npm install --global yarn@1.22.22`.
+
+```sh
+yarn install --frozen-lockfile
+yarn doctor
 yarn dev
 ```
 
-Open the URL printed by Vite, normally `http://localhost:5173/quiz-app/`.
+Development runs at **http://localhost:5173/quiz-app/** with a strict port. E2E tests launch their own isolated server on **5174**; they never reuse the development server. `yarn preview` serves the production build separately.
 
-| Task | Yarn | npm equivalent |
-| --- | --- | --- |
-| Install dependencies | `yarn install` | `npm install` |
-| Development server | `yarn dev` | `npm run dev` |
-| Automated tests | `yarn test` | `npm test` |
-| Production build | `yarn build` | `npm run build` |
-| Preview production build | `yarn preview` | `npm run preview` |
-| Publish the built `dist/` directory | `yarn deploy` | `npm run deploy` |
+The committed `src/config/firebaseProject.json` contains the app's public Firebase web identifiers. To use another project, copy `.env.example` to `.env` and fill the optional overrides. `.env` is local and untracked. Gemini/Groq provider keys are entered in the signed-in **AI Settings** UI; do not put provider secrets in `VITE_*` variables or source control.
 
-CI installs with `yarn install --frozen-lockfile`. A production build writes to `dist/`; run the build before previewing or deploying it.
+Untracking `.env` does not remove previous commits. Rotate provider keys that were committed previously; Firebase's public web identifiers are a separate kind of configuration.
 
-## Quiz library
+## Commands
 
-The app opens directly to **20 unique quiz sets**, grouped by provider and searchable by name or exam code. AWS AIP-C01 and Anthropic CCAR-P are pinned as featured exams. Counts below describe the files in this repository and are checked against the catalog by automated tests.
+| Command                                     | Purpose                                                                     |
+| ------------------------------------------- | --------------------------------------------------------------------------- |
+| `yarn doctor`                               | Check Node, installed tooling, lockfile and environment tracking            |
+| `yarn lint`                                 | ESLint checks across application, scripts and tests                         |
+| `yarn format` / `yarn format:check`         | Apply/check the formatting baseline; excludes banks and generated files     |
+| `yarn test`                                 | Node unit/integration tests, with isolated Firebase/AI boundaries           |
+| `yarn check:catalog`                        | Validate counts/schema/duplicates; report guides needing review             |
+| `yarn check:guides`                         | Same check, failing while guide review is outstanding                       |
+| `yarn build` / `yarn check:build`           | Build production and ensure no E2E auth/profile fixtures leak into it       |
+| `yarn verify`                               | Doctor, lint, format, Node tests, catalog, build and build isolation checks |
+| `yarn test:e2e`                             | Playwright desktop and phone flows                                          |
+| `yarn test:e2e:headed` / `yarn test:e2e:ui` | Inspect browser tests interactively                                         |
+| `yarn verify:all`                           | All standard checks plus browser tests                                      |
 
-| Category | Quiz sets and question counts |
-| --- | --- |
-| Anthropic | Architect Foundations (CCAR-F, 201), Architect Professional (CCAR-P, 157), Associate Foundations (CCAO-F, 151), Developer Foundations (CCDV-F, 96) |
-| AWS | Solutions Architect Associate (SAA-C03, 529), Developer Associate (DVA-C02, 557), Data Engineer Associate (DEA-C01, 227), Generative AI Developer Professional (AIP-C01, 136) |
-| Microsoft | Azure Fundamentals (AZ-900, 472), GitHub Copilot (GH-300, 115), Agentic AI Business Solutions Architect Expert (AB-100, 111), Azure AI Apps and Agents Developer Associate (AI-103, 117) |
-| Google Cloud | Associate Cloud Engineer (ACE, 302), Professional Cloud Architect (PCA, 279), Professional Cloud Developer (PCD, 359), Professional Data Engineer (PDE, 139), Generative AI Leader (GAL, 56) |
-| ISTQB | Foundation Level v4.0 (CTFL, 240), AI Testing (CT-AI, 118), Advanced Test Analyst v4.0 (CTAL-TA, 42) |
+Install the test browser once:
 
-Display codes were checked against provider sources on 2026-10-28; the [catalog audit](docs/catalog-code-audit-2026-10-28.json) records every entry and reference. Google Cloud labels are name abbreviations, and ISTQB syllabus versions remain separate from certification codes. The legacy `anthropic-cca-f` and `gcp-pcde` keys remain stable.
-
-The former `aws-ace` entry was an exact copy of Google ACE, not a Cloud Practitioner bank. It is no longer listed under AWS. Old quiz links resolve to `gcp-ace` with their mode and query parameters intact. Cloud reads select the newest valid ACE checkpoint (canonical wins ties); the next save or removal clears both old/new fields atomically. Account-scoped tab drafts restore from the legacy key when needed; if both exam drafts exist, the newer start token wins without changing its shuffle or deadline. Existing canonical Practice drafts take priority. The duplicate static file remains for old direct download URLs, but is never used by the catalog.
-
-Start Practice directly from a quiz card, open its overview, or select Mock exam to configure the count and duration. Provider sections can be expanded/collapsed and have quick-jump buttons. Returning to the library keeps the search and section state. Featured cards and provider rows use the same quiz ID and checkpoint.
-
-Provider identities use locally bundled vendor icons alongside their names and separate light/dark accent tokens. Brand accents are scoped to catalog cards, provider navigation and overview identity. Icon sources are recorded in [public/providers/README.md](public/providers/README.md); missing icons fall back to text.
-
-The **VN / EN** toggle changes interface labels without translating question/guide content or restarting an active session. English is the default on a first visit; an explicit language choice and light/dark appearance are remembered in this browser. Primary question navigation retains visible text on phones and respects the safe area. Quiz screens have hash URLs such as `/quiz-app/#/quiz/aws-aip-c01/practice`, so refresh and browser Back/Forward work on GitHub Pages.
-
-**My quizzes** retains JSON upload with validation and a preview before use: 1–100 questions, up to 1 MiB per file. The active upload is stored in this tab, with its owner, and survives refresh when browser session storage is available. Keep the original file for other devices. Per-user Firestore storage, a three-quiz quota and cloud management are tracked separately in [issue #42](https://github.com/tuanvipandpro/quiz-app/issues/42).
-
-The question-format guide is displayed directly on My quizzes, with complete single-choice, multi-select, yes/no, row-dropdown and inline-dropdown examples, field explanations, Copy JSON and example downloads. All examples run through the same strict validator in automated tests. Sign-in shows branded Google, GitHub and Microsoft options. Google remains active; GitHub and Microsoft are disabled and labelled unavailable. Phones use centered, compact upload controls and show the preview after file selection.
-
-AI Settings is available in the signed-in account menu. A divider separates it from Sign out, which opens a confirmation dialog. Cancel preserves the session; confirming signs out and returns to the library. An active exam receives an explicit warning about clearing its tab draft. Failed sign-out attempts leave the account signed in and allow retry.
-
-### Practice
-
-- Work through questions sequentially, navigate back/forward or jump with the paged question navigator. Answers remain selected when revisiting a question.
-- Get feedback after answering a single-choice question, reaching the required multi-select count or completing every dropdown/yes-no part.
-- Change an answer and see the updated result. Multi-select controls prevent choosing more than the required number of options.
-- Copy the question, image reference, instructions and choices for use elsewhere. Copy does not add the marked-answer mapping.
-- Request an AI explanation when signed in and a provider key is configured.
-- Save a manual checkpoint for each library quiz when signed in, then Resume from its card or overview.
-
-A checkpoint saves the current position, not selected answers. Saving is manual, and starting from the beginning keeps the existing checkpoint. Uploaded quizzes have no library quiz ID, so saving a checkpoint is disabled for them. Read/write failures show feedback and retry controls.
-
-An independent session draft in browser `sessionStorage` keeps the question position and selected answers through refresh. Resetting Practice clears that draft while preserving the cloud checkpoint. Drafts are scoped to account, quiz and mode; changed quiz content invalidates them. The UI reports when draft storage is unavailable. Answered counts measure completed answers, not the position currently being viewed.
-
-### Exam
-
-- Randomly select 50, 60, 70 or 80 questions when the bank is large enough. Banks below 50 questions offer their full count.
-- Choose a 60-minute or 120-minute limit.
-- Shuffle multiple-choice options and the choices within each dropdown; yes/no order stays consistent.
-- Keep selections while navigating, flag questions and review progress before submitting.
-- Review selected, missing and correct answers after submission, with answer controls locked.
-- Request AI explanations from the answer review.
-- Keep the exact shuffled questions/options, answers, flags and absolute deadline in a tab draft. Resuming never resets the timer. Expiry submits once without a confirmation dialog.
-- Confirm before leaving an active exam through navigation or browser Back. Reload/close uses the browser's native warning.
-- Filter results by correct, incorrect, unanswered or flagged questions. Incorrect and unanswered counts are displayed separately; answer controls stay locked.
-
-**App scoring:** one point per question, with no partial credit. Every required choice/part must be correct to earn the point; only fully completed questions count as answered. A pass requires a score **greater than 80%**.
-
-## Quick Summary
-
-Four Anthropic quizzes and the AWS AIP-C01 quiz have prepared Vietnamese guides, each with **eight topics** and an estimated **eight-minute** reading time. Topics contain core knowledge, scenario cues, wrong-answer traps, memory aids, primary references and links into Practice.
-
-| Guide | Reviewed source |
-| --- | --- |
-| [CCAR-F](public/summaries/anthropic-cca-f/vi.md) | 175 questions |
-| [CCAR-P](public/summaries/anthropic-ccar-p/vi.md) | Original 63-question revision; the current bank has 157 questions and displays a review warning |
-| [CCAO-F](public/summaries/anthropic-ccao-f/vi.md) | 119 questions |
-| [CCDV-F](public/summaries/anthropic-ccdv-f/vi.md) | 53 questions |
-| [AIP-C01](public/summaries/aws-aip-c01/vi.md) | 136 questions |
-
-Desktop has a contents sidebar; phones/tablets use a collapsible contents menu. Related-question buttons resolve stable question IDs to their current Practice positions without changing saved checkpoints. Loading failures offer Retry and Back.
-
-Guides are authored separately as Markdown plus JSON metadata under `public/summaries/`, then published through [the guide registry](src/data/quickSummaries.js). Reading works without a login or AI key and makes no model request. A source fingerprint flags a guide for review when question content changes. Other quizzes and custom uploads keep the option disabled until a guide is published.
-
-The guides follow the app's question banks and include source references; they do not certify complete official exam coverage. See [Quick Summary authoring](docs/quick-summary-authoring.md) for content structure, publication, fingerprints and validation.
-
-## AI explanations
-
-Google Gemini and Groq are supported. Sign in with Google, open **AI Settings** from the profile menu, add either provider's key and choose **Save**. Keys stay masked while entering or editing them, with no visibility toggle. Each provider includes a step-by-step key setup guide and links to its key console and official documentation. **Test connection** sends a small generation request and consumes provider quota; it does not save the entered key.
-
-Practice's Explain action requires sign-in. Exam review can also open AI Settings for a guest session, whose keys are stored in that browser. Explanations use concise Vietnamese Markdown, identify the provider/model and ask the model to flag questionable marked answers or missing context. When a question has an included `explanation`, GenAI compares it with the question and choices to produce a combined explanation, identifying disagreements rather than assuming it is correct. The original text is also available in the **Included explanation** panel, even while GenAI is loading or reports an error.
-
-### Configured routing
-
-The configured fallback order is defined in [modelRegistry.js](src/services/llm/modelRegistry.js). Models are attempted only when their provider has a saved key.
-
-| Priority | Provider | Configured model IDs, in order |
-| --- | --- | --- |
-| 1 | Gemini | `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite` |
-| 2 | Groq | `openai/gpt-oss-120b`, `openai/gpt-oss-20b` |
-| 3 | Gemini | `gemini-3.8-flash`, `gemini-3.6-flash` |
-| 4 | Gemini / Gemma | `gemma-4-31b-it`, `gemma-4-26b-a4b-it` |
-
-These are application settings; access, availability and rate limits depend on the provider account. The router uses up to 20 seconds per attempt within a 60-second generation budget. Rate limits put a model on cooldown using the provider's retry guidance, with a 60-second default. Transient failures use a short cooldown; authentication failures skip the provider until its key/session is refreshed or a connection test succeeds. Invalid requests and content blocks stop fallback.
-
-Closing an explanation, changing the question/account or leaving the mode cancels pending work. Successful explanations stay in a per-tab memory cache for 30 minutes, up to 100 entries, keyed by account and full question/choice/marked-answer/included-explanation content. Concurrent identical requests share one call; errors are not cached. Key/account changes invalidate the relevant cache, and reloading clears it. **Regenerate** requests a fresh explanation and consumes provider quota.
-
-### Data and credentials
-
-| Data | Storage and behavior |
-| --- | --- |
-| Quiz banks and Quick Summaries | Static files tracked in Git |
-| Practice checkpoints | `users/{uid}` document, under `quizProgress.{quizId}`; stores quiz ID, zero-based index, question ID and timestamp |
-| Signed-in provider keys | `users/{uid}` document, under `llmProviders.{gemini|groq}.apiKey`; active-user credentials are cached in memory |
-| Guest provider keys | Browser localStorage under `quiz_llm_guest_keys`; cleared when signing in/out |
-| Generated explanations | Memory only in the current tab; not written to Firestore |
-| Language and appearance | Browser localStorage (`quiz-app-language`, `quiz-app-theme`) |
-| Practice and Exam drafts | Browser sessionStorage, scoped by account/quiz/mode; no AI keys; cleared for the previous account on account changes |
-| Active custom upload | Browser sessionStorage for this tab, scoped to its owner; no Firestore quiz writes |
-
-Saving one checkpoint preserves other quizzes and profile fields. Resume follows the saved question ID after reordering, with a safe fallback for removed questions and older index-only checkpoints. Existing Gemini-only `geminiApiKey` fields remain readable and migrate when the Gemini key is saved or cleared. Signing out keeps profile keys in Firestore while clearing local session credentials and explanations.
-
-Provider requests go directly from the browser to Gemini/Groq. Keep personal provider keys and service-account secrets out of source control.
-
-## Firebase and deployment configuration
-
-The app initializes Firebase from [src/config/firebase.js](src/config/firebase.js). For an independent deployment, configure your own Firebase project, enable Google Sign-In, allow the deployment domain and provision Firestore access for user profiles.
-
-Firestore rules are managed outside this repository. Restrict `users/{uid}` access to its owner and support the `quizProgress` and `llmProviders` fields. The client and its tests do not deploy or verify live security rules.
-
-### Base path
-
-[Vite configuration](vite.config.js) defaults to `/quiz-app/`. Set `VITE_BASE` to serve under a different path.
-
-PowerShell:
-
-```powershell
-$env:VITE_BASE = '/'
-yarn build
-yarn preview
+```sh
+yarn playwright install chromium
+yarn test:e2e
 ```
 
-Bash:
+Browser tests render the actual app using test-only auth/profile services selected by `vite.e2e.config.js`. They cover the library, aliases, checkpoint resume, JSON validation/formats, answer restoration, sign-out confirmation and exam lifecycle. External requests are blocked; tests never sign into a real account or call a paid AI API. This is not a substitute for deployed Firestore Rules tests or physical iOS/Android checks.
 
-```bash
-VITE_BASE=/ yarn build
-VITE_BASE=/ yarn preview
-```
+On failure, inspect `playwright-report/` and `test-results/` for screenshots and traces. CI retains them for seven days. No automatic retries hide a failing test. To run one project: `yarn test:e2e --project=phone`.
 
-Use the matching base when starting a preview or development server as well. Runtime quiz/summary paths use `import.meta.env.BASE_URL`.
+## Product behavior
 
-### GitHub Pages
-
-A push to `master` runs [deploy.yml](.github/workflows/deploy.yml): Node.js 20, frozen Yarn install, production build, then `yarn deploy`. The deploy script uses `gh-pages -d dist`, publishing the built directory to the `gh-pages` branch. Configure the repository's Pages publishing source to match that branch and its root directory.
-
-For manual publication:
-
-```bash
-yarn build
-yarn deploy
-```
-
-Personal AI keys are supplied through AI Settings. The active router reads profile/browser credentials rather than a shared build-time provider key.
-
-## Question JSON and content imports
-
-A quiz is a non-empty JSON array with unique question IDs. Required fields are `id`, `question`, `options` and `answer`.
-
-| Format | Type | Answer shape |
-| --- | --- | --- |
-| Single/multiple choice | `multiple_choice`, or omitted | Array of correct option keys |
-| Yes/no statements | `yes_no` | Object mapping each statement ID to its correct choice key |
-| Row/inline dropdowns | `dropdown` | Object mapping each slot ID to its correct choice key |
-
-Example single-choice question:
-
-```json
-[
-  {
-    "id": "q1",
-    "question": "Which option is correct?",
-    "options": { "A": "First option", "B": "Correct option" },
-    "answer": ["B"],
-    "imageUrl": ""
-  }
-]
-```
-
-For multi-select, use an array such as `"answer": ["A", "C"]`. Dropdowns define `slots` and per-slot options; yes/no defines `statements` and shared Yes/No options. An inline dropdown template includes each `{{slotId}}` exactly once. See [question-formats.md](docs/question-formats.md) for complete examples and behavior.
-
-The optional `explanation` field supplies reference material for AI explanations and can be read separately in the explanation dialog. It does not change marked answers or scoring. New imports/uploads validate strictly; historical incomplete/image demo questions retain their basic compatibility.
-
-### Reviewed Anthropic import
-
-The [October 26, 2026 audit](docs/imports/anthropic-2026-10-26.json) records the CCAR-P update and new CCAO-F/CCDV-F banks: 63 equivalent CCAR-P questions skipped, 63 added, and all original records/IDs/positions retained. New ID collisions receive suffixes, and differing marked-answer text is recorded while preserving the original answer.
-
-Replay that reviewed revision:
-
-```bash
-node scripts/import-anthropic-quizzes.mjs "path/to/source-files"
-node scripts/import-anthropic-quizzes.mjs "path/to/source-files" --check
-```
-
-Replace `path/to/source-files` with the directory containing `CCAR_P.json`, `CCAO_F.json` and `CCDV_F.json`. Normal mode writes banks and an audit; `--check` verifies zero new additions without writing files. The CCAR-P mapping is gated by source-file and original-bank hashes, so a different revision needs a new equivalence review.
+- The catalog has **20 unique banks**, grouped by provider. AWS AIP-C01 and Anthropic CCAR-P are featured.
+- EN is the first-visit default. The VN/EN toggle changes UI labels, not question/guide content. Light/dark preferences persist.
+- **My quizzes** validates and previews a JSON file with 1–100 questions, up to 1 MiB. The upload and study drafts stay in this browser tab. **Firestore persistence and a three-quiz quota are not implemented**; they are issue #42.
+- Practice gives feedback and supports manual cloud checkpoints for bank quizzes. Exam preserves its shuffled questions, answers, flags and absolute deadline across refresh.
+- AI Settings lives in the account menu. Sign-out requires confirmation and clears tab drafts; cloud checkpoints and saved profile keys remain.
+- `aws-ace` is a legacy alias for **Google ACE**, not a Cloud Practitioner bank. Its retired static JSON remains only for old asset URLs. Links and account-scoped progress/drafts resolve to `gcp-ace`.
+- Multiple-choice `answer` values are arrays; yes/no and dropdown values are mappings. The authoritative validator is `src/utils/questionModel.js`. Complete examples and format help appear on My quizzes and in `public/examples/`.
 
 ## Source layout
 
 ```text
-public/
-  quiz/                         Built-in question banks
-  summaries/<quizId>/           meta.json and vi.md per guide
-  sample-quiz.json               Downloadable custom-quiz example
 src/
-  App.jsx                       Application shell, hash routes and quiz loading
-  components/
-    QuizLibrary.jsx             Featured exams, provider groups and search
-    MyQuizzes.jsx               Local upload, validation and preview
-    QuestionNavigator.jsx       Paged question navigation and status
-    PracticeMode.jsx            Practice, Copy and manual checkpoints
-    ExamMode.jsx                Timer, submission, scoring and review
-    Question.jsx                Multiple-choice rendering
-    StructuredQuestion.jsx      Dropdown and yes/no rendering
-    QuizMode.jsx                Compact mode selector
-    QuickSummaryMode.jsx        Guide reader and related-question links
-    ExplanationDialogs.jsx      AI explanation and marked-answer UI
-    SettingsModal.jsx           Gemini/Groq key management
-  data/quickSummaries.js         Published-guide registry
-  data/quizzes.js                Quiz catalog and ordered featured IDs
-  config/firebase.js            Firebase client initialization
-  contexts/AuthContext.jsx      Authentication and session lifecycle
-  contexts/LanguageContext.jsx  VN/EN interface preference
-  hooks/                        Auth, progress and explanation hooks
-  services/
-    llm/                        Credentials, router, providers and cache
-    quickSummary.js             Guide loading, validation and fingerprints
-    quizProgressStore.js        Per-user/per-quiz progress state
-    userService.js              Firestore profile and checkpoint operations
-  utils/                        Question model, merging, checkpoints and scrolling
-    studySession.js             Draft validation, exam deadlines and result statistics
-scripts/                        Reviewed quiz import tooling
-tests/                          Native Node.js test suites
-docs/                           Format/authoring guides and import audit
-.github/workflows/deploy.yml    GitHub Pages build/publication
-.github/workflows/test.yml      Unit tests and production build on pull requests
+  App.jsx                  Routes, quiz loading, study orchestration
+  components/              Header, library, upload, study and account UI
+  styles/                  Tokens, shell, library, study and upload styles
+  contexts/ + hooks/       Auth, language, navigation and session state
+  data/ + i18n/            Catalog, aliases, brands, formats and messages
+  services/                Firebase boundaries and guide loading
+    llm/                   Credentials, explanation cache and Gemini/Groq routing
+  utils/                   Validation, scoring, importing and draft/progress helpers
+public/
+  quiz/                    Static question banks
+  summaries/               Published meta.json + Vietnamese study content
+  examples/ + providers/   Sample uploads and branded assets
+tests/
+  *.test.js                Node tests
+  e2e/                     Playwright scenarios
+  fixtures/                Isolated auth/profile service doubles
+scripts/                   Diagnostics, catalog/build checks and reviewed imports
 ```
 
-The app uses React 19, Vite 6, Ant Design 5, Firebase 12 and React Markdown. Explanations sanitize supported HTML; Quick Summary ignores raw HTML and uses ordinary Markdown without GFM tables.
+The removed `docs/`, Copilot instructions and old manual harnesses are not required to build or test. Development guidance lives in this README and `AGENTS.md`; public study guides are app content and remain published.
 
-## Validation and contributions
+## Data changes and study-guide review
 
-Tests use the native Node.js test runner and isolate provider/Firebase boundaries. They cover routing, credential/session behavior, explanation caching, checkpoints, answer formats, imports and published-guide assets. They require no live provider key.
+Preserve IDs and marked answers unless a review explicitly authorizes a correction. Check the actual content against the provider/exam before changing metadata. Schema, count and duplicate checks do not prove exam alignment.
 
-Before submitting a change:
+The historical Anthropic importer remains available as `node scripts/import-anthropic-quizzes.mjs <snapshot-directory> --check`. Remove `--check` only for an intentional reviewed import; generated reports go to ignored `artifacts/imports/`, not a recreated docs folder.
 
-```bash
-yarn test
-yarn build
-```
+Four guides currently require content/coverage review:
 
-Create a focused `feature/`, `fix/` or `chore/` branch from `master`, then open a pull request targeting `master`. Include the resulting behavior, validation and relevant limitations.
+| Guide  | Reviewed questions | Current bank |
+| ------ | -----------------: | -----------: |
+| CCAR-F |                175 |          201 |
+| CCAR-P |                 63 |          157 |
+| CCAO-F |                119 |          151 |
+| CCDV-F |                 53 |           96 |
 
-For quiz content, preserve existing IDs, validate marked keys/mappings, review duplicates and keep source context. For guides, update content before refreshing the reviewed fingerprint and extend the asset tests. For UI changes, manually check Practice/Exam and guide navigation on phones (including 320px), tablet and desktop, plus any changed save/resume or error states.
+AIP-C01's reviewed fingerprint matches its 136-question bank. Existing guide warnings are intentional. Review the Markdown, concepts, primary references and topic-to-question mappings before updating `sourceQuestionCount`/`sourceQuizHash`. Do not relabel a stale guide as reviewed merely to make a check green.
 
-## License
+## Delivery
 
-The package declares the [MIT license](https://opensource.org/licenses/MIT).
+Pull requests run lint, formatting, Node tests, catalog checks, production build isolation and Playwright. Successful master builds upload a verified artifact; the dependent deploy job publishes that exact artifact to the existing `gh-pages` branch. Deployment cannot run ahead of failed tests. No build-time Gemini key is required.
+
+The production base is `/quiz-app/`; assets use `import.meta.env.BASE_URL`. Optional `VITE_BASE` overrides must be supplied consistently for development/build/preview.
+
+## Next setup increments
+
+- **Issue #42:** retrieve/review deployed Firestore Rules, version rules/config, add Emulator ownership/quota/concurrency tests, then implement the three-slot custom-quiz service and management UI. Preserve existing profile/checkpoint access; do not replace production rules with guessed defaults.
+- Review the four published guides above against their expanded banks; this cleanup does not certify their new coverage.
+- Continue extracting App orchestration only around well-tested feature boundaries. Header extraction and stylesheet separation are the first step.
+- Add WebKit/real-device smoke coverage and selected visual baselines after the initial browser suite is stable.
+- Keep PR acceptance criteria mapped to evidence and mark partial work explicitly. Issue templates and the PR template capture this information.
+
+Local `.vite/`, `dist/`, `artifacts/` and test reports are disposable outputs. Keep useful test logic in `tests/`, not in copied app files under a cache directory.

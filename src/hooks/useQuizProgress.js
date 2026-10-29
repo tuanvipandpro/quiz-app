@@ -7,7 +7,9 @@ export function useQuizProgress(uid) {
   const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot);
   useEffect(() => {
     store.setUser(uid);
-    return () => { store.setUser(null); };
+    return () => {
+      store.setUser(null);
+    };
   }, [store, uid]);
   const current = snapshot.uid === (uid || null);
   return {
@@ -17,6 +19,6 @@ export function useQuizProgress(uid) {
     pendingQuiz: current ? snapshot.pendingQuiz : null,
     reload: store.reload,
     save: store.save,
-    remove: store.remove
+    remove: store.remove,
   };
 }

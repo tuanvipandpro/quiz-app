@@ -1,4 +1,4 @@
-name: Validate app
+name: Validate and deploy
 
 on:
   pull_request:
@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: quiz-app-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
@@ -16,8 +20,50 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: corepack enable
+          node-version-file: .nvmrc
+      - run: npm install --global yarn@1.22.22
       - run: yarn install --frozen-lockfile
-      - run: yarn test
-      - run: yarn build
+      - run: yarn verify
+      - run: yarn playwright install --with-deps chromium
+      - run: yarn test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failure-details
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: verified-site
+          path: dist/
+          retention-days: 1
+
+  deploy:
+    needs: test-and-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm install --global yarn@1.22.22
+      - run: yarn install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-site
+          path: dist/
+      - name: Publish verified build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
+          yarn deploy

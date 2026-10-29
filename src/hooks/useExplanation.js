@@ -41,13 +41,30 @@ export function useExplanation(question, uid) {
         setSettingsVisible(true);
         return;
       }
-      const result = await generateExplanation(question, { uid, signal: controller.signal, forceRefresh });
-      if (!controller.signal.aborted) setExplanation(`${result.text}\n\n---\n*${result.provider === 'groq' ? 'Groq' : 'Google Gemini'} · ${result.model}${result.cached ? ' · saved explanation' : ''}*`);
+      const result = await generateExplanation(question, {
+        uid,
+        signal: controller.signal,
+        forceRefresh,
+      });
+      if (!controller.signal.aborted)
+        setExplanation(
+          `${result.text}\n\n---\n*${result.provider === 'groq' ? 'Groq' : 'Google Gemini'} · ${result.model}${result.cached ? ' · saved explanation' : ''}*`
+        );
     } catch (err) {
-      if (!controller.signal.aborted) setError(err.message || 'Could not generate an explanation. Please retry.');
+      if (!controller.signal.aborted)
+        setError(err.message || 'Could not generate an explanation. Please retry.');
     } finally {
       if (request.current === controller) setLoading(false);
     }
   };
-  return { explanation, error, visible, loading, explain, close, settingsVisible, setSettingsVisible };
+  return {
+    explanation,
+    error,
+    visible,
+    loading,
+    explain,
+    close,
+    settingsVisible,
+    setSettingsVisible,
+  };
 }

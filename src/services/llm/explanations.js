@@ -3,7 +3,13 @@ import { LlmError, cancelled } from './errors.js';
 
 // Cache successful explanations in memory only. Account, full prompt, and current
 // credentials define reuse; question IDs alone are not unique across quiz banks.
-export function createExplanationService({ credentials, router, now = Date.now, ttlMs = 30 * 60_000, maxEntries = 100 }) {
+export function createExplanationService({
+  credentials,
+  router,
+  now = Date.now,
+  ttlMs = 30 * 60_000,
+  maxEntries = 100,
+}) {
   const cache = new Map();
   const pending = new Map();
   const accounts = new Map();
@@ -44,8 +50,8 @@ export function createExplanationService({ credentials, router, now = Date.now, 
       signal?.addEventListener('abort', abort, { once: true });
       if (signal?.aborted) abort();
       job.promise.then(
-        result => settle(resolve, { ...result, cached: false }),
-        error => settle(reject, error)
+        (result) => settle(resolve, { ...result, cached: false }),
+        (error) => settle(reject, error)
       );
     });
   }
@@ -65,7 +71,8 @@ export function createExplanationService({ credentials, router, now = Date.now, 
       if (signal?.aborted || started !== generation) throw cancelled();
       const account = JSON.stringify(uid);
       const state = accountState(account, keys);
-      if (!Object.values(keys).some(Boolean)) throw new LlmError('NO_API_KEY', 'Add a Gemini or Groq API key in AI settings.');
+      if (!Object.values(keys).some(Boolean))
+        throw new LlmError('NO_API_KEY', 'Add a Gemini or Groq API key in AI settings.');
       const prompt = explanationPrompt(question);
       const key = JSON.stringify([uid, prompt]);
       const entry = cache.get(key);
@@ -81,19 +88,27 @@ export function createExplanationService({ credentials, router, now = Date.now, 
       if (!job) {
         job = { key, account, controller: new AbortController(), waiters: 0, complete: false };
         pending.set(key, job);
-        job.promise = Promise.resolve().then(() => router.generate({ keys, uid, prompt, signal: job.controller.signal }))
-          .then(result => {
-            if (job.controller.signal.aborted || started !== generation || accounts.get(account) !== state) throw cancelled();
-            if (!result.text?.trim()) throw new LlmError('EMPTY_RESPONSE', 'The model returned no explanation.');
+        job.promise = Promise.resolve()
+          .then(() => router.generate({ keys, uid, prompt, signal: job.controller.signal }))
+          .then((result) => {
+            if (
+              job.controller.signal.aborted ||
+              started !== generation ||
+              accounts.get(account) !== state
+            )
+              throw cancelled();
+            if (!result.text?.trim())
+              throw new LlmError('EMPTY_RESPONSE', 'The model returned no explanation.');
             cache.set(key, { account, result: { ...result }, expiresAt: now() + ttlMs });
             while (cache.size > maxEntries) cache.delete(cache.keys().next().value);
             return result;
-          }).finally(() => {
+          })
+          .finally(() => {
             job.complete = true;
             if (pending.get(key) === job) pending.delete(key);
           });
       }
       return subscribe(job, signal);
-    }
+    },
   };
 }

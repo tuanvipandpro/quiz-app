@@ -12,7 +12,7 @@ const AuthContext = createContext({
   signInWithGoogle: async () => {},
   signOut: async () => {},
   isAuthenticated: false,
-  refreshUserProfile: async () => {}
+  refreshUserProfile: async () => {},
 });
 
 /**
@@ -36,13 +36,17 @@ export function AuthProvider({ children }) {
         email: firebaseUser.email,
         displayName: firebaseUser.displayName,
         photoURL: firebaseUser.photoURL,
-        emailVerified: firebaseUser.emailVerified
+        emailVerified: firebaseUser.emailVerified,
       };
 
       // Initialize or update user in Firestore
       const result = await userService.initializeUser(userData);
-      
-      if (result.success && activeUid.current === userData.uid && authRevision.current === revision) {
+
+      if (
+        result.success &&
+        activeUid.current === userData.uid &&
+        authRevision.current === revision
+      ) {
         setUserProfile(result.user);
         credentials.prime(userData.uid, result.user);
       }
@@ -66,11 +70,11 @@ export function AuthProvider({ children }) {
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
           photoURL: firebaseUser.photoURL,
-          emailVerified: firebaseUser.emailVerified
+          emailVerified: firebaseUser.emailVerified,
         };
-        
+
         setUser(userData);
-        
+
         // Initialize user in Firestore and get profile
         await initializeUserInFirestore(firebaseUser, revision);
       } else {
@@ -78,12 +82,17 @@ export function AuthProvider({ children }) {
         setUser(null);
         setUserProfile(null);
       }
-      
+
       if (authRevision.current === revision) setLoading(false);
     });
 
     // Cleanup subscription on unmount
-    return () => { authRevision.current++; activeUid.current = null; unsubscribe(); clearLlmSession(); };
+    return () => {
+      authRevision.current++;
+      activeUid.current = null;
+      unsubscribe();
+      clearLlmSession();
+    };
   }, []);
 
   /**
@@ -118,7 +127,7 @@ export function AuthProvider({ children }) {
       authRevision.current++;
       activeUid.current = null;
       clearLlmSession({ clearGuest: true });
-      
+
       setUser(null);
       setUserProfile(null);
     }
@@ -133,14 +142,10 @@ export function AuthProvider({ children }) {
     signInWithGoogle,
     signOut,
     isAuthenticated: !!user,
-    refreshUserProfile
+    refreshUserProfile,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 /**
@@ -149,11 +154,11 @@ export function AuthProvider({ children }) {
  */
 export function useAuth() {
   const context = useContext(AuthContext);
-  
+
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  
+
   return context;
 }
 
