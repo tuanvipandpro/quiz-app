@@ -21,8 +21,10 @@ async function signIn(page) {
 
 async function requestSignOut(page) {
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await expect(page.getByRole('separator')).toBeVisible();
-  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  const menu = page.getByRole('menu');
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole('separator')).toBeVisible();
+  await menu.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toBeVisible();
   return dialog;
@@ -163,10 +165,14 @@ test('exam preserves deadline on refresh and requires confirmation before leavin
     )
   ).toBe(deadline);
   await page.getByRole('button', { name: 'Quiz Bank', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue exam', exact: true }).click();
+  const leaveDialog = page.getByRole('dialog').filter({ hasText: 'Leave this exam?' });
+  await expect(leaveDialog).toBeVisible();
+  await leaveDialog.getByRole('button', { name: 'Continue exam', exact: true }).click();
+  await expect(leaveDialog).toBeHidden();
   const dialog = await requestSignOut(page);
   await expect(dialog).toContainText('end this exam');
   await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(dialog).toBeHidden();
   await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
   await page.getByRole('button', { name: 'Submit and view results', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Exam results', exact: true })).toBeVisible();

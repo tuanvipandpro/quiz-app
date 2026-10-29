@@ -7,6 +7,8 @@ for (const file of [
   'yarn.lock',
   'node_modules/vite/package.json',
   'node_modules/@playwright/test/package.json',
+  'node_modules/@fission-ai/openspec/package.json',
+  'node_modules/firebase-tools/package.json',
 ])
   if (!fs.existsSync(file)) throw new Error(`Missing ${file}; run yarn install --frozen-lockfile.`);
 const tracked = execFileSync('git', ['ls-files', '.env'], { encoding: 'utf8' }).trim();

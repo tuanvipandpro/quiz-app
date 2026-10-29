@@ -8,5 +8,5 @@ public/
 .env*
 yarn.lock
 
-# Preserve the pinned upstream skill payload.
-.agents/skills/ui-ux-pro-max/
+# Preserve generated OpenSpec workflows and the pinned upstream UI/UX skill payload.
+.agents/skills/
