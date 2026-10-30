@@ -65,13 +65,13 @@ yarn sdd:validate
 yarn sdd instructions apply --change custom-quizzes-42 --json
 ```
 
-Read [proposal](openspec/changes/custom-quizzes-42/proposal.md), [requirements](openspec/changes/custom-quizzes-42/specs/custom-quizzes/spec.md), [design](openspec/changes/custom-quizzes-42/design.md), [tasks](openspec/changes/custom-quizzes-42/tasks.md) and the [acceptance matrix](openspec/changes/custom-quizzes-42/verification.md). This setup PR prepares the feature; it does **not** implement cloud custom quizzes. All feature tasks remain open. `planningComplete` and successful structural validation do not mean #42 is finished. Do not apply/archive the feature until implementation is requested.
+Read [proposal](openspec/changes/custom-quizzes-42/proposal.md), [requirements](openspec/changes/custom-quizzes-42/specs/custom-quizzes/spec.md), [design](openspec/changes/custom-quizzes-42/design.md), [tasks](openspec/changes/custom-quizzes-42/tasks.md) and the [acceptance matrix](openspec/changes/custom-quizzes-42/verification.md). Implementation and production rollout have separate evidence; `planningComplete` or a successful build does not mean #42 is deployed. Review the [Rules/indexes release procedure](firebase/README.md) before merging/enabling persistent uploads.
 
 The default workflow is one feature/change in one PR, with specs and implementation evolving together. The separate setup PR is the one-time bootstrap. Existing project rules remain in AGENTS.md, and OpenSpec config references them rather than creating another competing rule set.
 
 ### Firestore baseline and local tests
 
-`firebase/firestore.rules` is the baseline supplied by the user as the published rules for `quiz-app-f70d5`; provenance and its LF-normalized hash are in `firebase/rules-baseline.json`. It was not independently exported through the management API. It permits the owner profile document, denies guests/other users, and grants no custom-quiz subcollection access. Recheck the current published revision before future rollout.
+`firebase/baseline/firestore.rules` preserves the baseline supplied by the user as published rules for `quiz-app-f70d5`; provenance and its LF-normalized hash are in `firebase/rules-baseline.json`. It was not independently exported through the management API. `firebase/firestore.rules` is the candidate policy adding three private custom-quiz slots while preserving profile access. Recheck the published Rules and complete indexes before rollout; no production deployment is implied by these files.
 
 Install **Java 21+**, set `JAVA_HOME`, and put its `bin` directory on PATH. No Firebase login or production credentials are needed for these tests:
 
@@ -86,7 +86,7 @@ The runner uses only project `demo-quiz-app`, binds Firestore to `127.0.0.1:8080
 
 The local Firebase config is deliberately named `firebase.emulator.json`; no production alias, deploy command or Firebase deploy CI job is added. CI installs Java 21 and runs these baseline tests before browser tests and website deployment. `verify` now includes SDD structural validation; `verify:all` also requires Java and runs rules/E2E tests.
 
-The seven baseline tests prove the supplied policy locally, not quota or cloud management. Those acceptance tests are planned in the feature matrix and must be implemented alongside the feature. Firebase Tools is pinned to 15.34.2; Rules Unit Testing 5.0.0 is pinned for compatibility with the existing Firebase 12 client.
+The seven historical baseline tests prove the supplied policy locally. Candidate Rules and real-SDK transaction tests cover custom ownership, quotas, concurrency, stale revisions and checkpoint resets. Browser tests replace the custom-quiz service as well as auth/profile; they complement the real Emulator tests. Firebase Tools is pinned to 15.34.2; Rules Unit Testing 5.0.0 remains compatible with Firebase 12.
 
 On failure, inspect `playwright-report/` and `test-results/` for screenshots and traces. CI retains them for seven days. No automatic retries hide a failing test. To run one project: `yarn test:e2e --project=phone`.
 
@@ -94,7 +94,7 @@ On failure, inspect `playwright-report/` and `test-results/` for screenshots and
 
 - The catalog has **20 unique banks**, grouped by provider. AWS AIP-C01 and Anthropic CCAR-P are featured.
 - EN is the first-visit default. The VN/EN toggle changes UI labels, not question/guide content. Light/dark preferences persist.
-- **My quizzes** validates and previews a JSON file with 1–100 questions, up to 1 MiB. The upload and study drafts stay in this browser tab. **Firestore persistence and a three-quiz quota are not implemented**; they are issue #42.
+- **My quizzes** validates and previews JSON with 1–100 questions, up to 1 MiB per file. Guest uploads stay in the tab. Signed-in users explicitly save up to **3 private cloud quizzes**, with rename, JSON replacement, delete and custom checkpoints. Cloud document saves use a conservative **750 KiB** serialized envelope budget; valid raw files may still be too large to save. Errors retain the preview for retry. Compatible Firestore Rules must be deployed and verified before the client is enabled in production (see #42 rollout status).
 - Practice gives feedback and supports manual cloud checkpoints for bank quizzes. Mock exam defaults to **Standard exam**, which reveals answers after submission or expiry. **Learning exam** shows feedback once each question is fully answered; answers stay editable until the exam ends and the score uses the final answers. Both modes preserve shuffled questions, answers, flags, mode and the absolute deadline across refresh.
 - Exam setup shows the saved draft's mode. **Resume** keeps that draft's settings; changed selections apply to **Start a new exam**, with confirmation before replacing a running draft. Legacy drafts/links default to Standard. Switching accounts during an exam returns to setup without creating a draft for the next account.
 - AI Settings lives in the account menu. Sign-out requires confirmation and clears tab drafts; cloud checkpoints and saved profile keys remain.
@@ -155,7 +155,7 @@ The production base is `/quiz-app/`; assets use `import.meta.env.BASE_URL`. Opti
 
 ## Next setup increments
 
-- **Issue #42:** implement the reviewed change plan, custom-quiz Rules/service/UI, and quota/concurrency acceptance tests. Baseline profile tests are now available; recheck published Rules/indexes for drift before an explicitly authorized rollout.
+- **Issue #42 rollout:** review the feature evidence, compare current published Rules/indexes with the preserved baseline, authorize and verify compatible Rules before merging/enabling the client, then smoke test production. The repository does not automatically deploy Firebase configuration.
 - Review the four published guides above against their expanded banks; this cleanup does not certify their new coverage.
 - Continue extracting App orchestration only around well-tested feature boundaries. Header extraction and stylesheet separation are the first step.
 - Add WebKit/real-device smoke coverage and selected visual baselines after the initial browser suite is stable.

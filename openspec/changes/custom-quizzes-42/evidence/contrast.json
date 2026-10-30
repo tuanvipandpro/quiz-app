@@ -1,0 +1,176 @@
+[
+  {
+    "language": "en",
+    "theme": "light",
+    "width": 320,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "en",
+    "theme": "light",
+    "width": 320,
+    "confirmationContrast": 7.196540023985674
+  },
+  {
+    "language": "en",
+    "theme": "light",
+    "width": 390,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "en",
+    "theme": "light",
+    "width": 412,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "en",
+    "theme": "light",
+    "width": 768,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "en",
+    "theme": "light",
+    "width": 1280,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "en",
+    "theme": "light",
+    "width": 844,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "en",
+    "theme": "dark",
+    "width": 320,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "en",
+    "theme": "dark",
+    "width": 320,
+    "confirmationContrast": 9.265718900561943
+  },
+  {
+    "language": "en",
+    "theme": "dark",
+    "width": 390,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "en",
+    "theme": "dark",
+    "width": 412,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "en",
+    "theme": "dark",
+    "width": 768,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "en",
+    "theme": "dark",
+    "width": 1280,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "en",
+    "theme": "dark",
+    "width": 844,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "vi",
+    "theme": "light",
+    "width": 320,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "vi",
+    "theme": "light",
+    "width": 320,
+    "confirmationContrast": 7.196540023985674
+  },
+  {
+    "language": "vi",
+    "theme": "light",
+    "width": 390,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "vi",
+    "theme": "light",
+    "width": 412,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "vi",
+    "theme": "light",
+    "width": 768,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "vi",
+    "theme": "light",
+    "width": 1280,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "vi",
+    "theme": "light",
+    "width": 844,
+    "cardContrast": 7.196540023985674
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 320,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 320,
+    "confirmationContrast": 9.265718900561943
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 390,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 412,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 768,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 1280,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 844,
+    "cardContrast": 8.98540170970293
+  },
+  {
+    "language": "vi",
+    "theme": "dark",
+    "width": 844,
+    "confirmationContrast": 9.265718900561943
+  }
+]

@@ -18,6 +18,13 @@ import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useQuizProgress } from './hooks/useQuizProgress';
+import { useCustomQuizzes, customQuizProgress } from './hooks/useCustomQuizzes';
+import {
+  parseCloudQuizId,
+  customDraftId,
+  CUSTOM_QUIZ_MESSAGES,
+  validateCustomQuestions,
+} from './utils/customQuizModel';
 import QuizLibrary from './components/QuizLibrary';
 import MyQuizzes from './components/MyQuizzes';
 import QuizMode from './components/QuizMode';
@@ -93,6 +100,8 @@ export default function App() {
       '\n' +
       t('Your draft will remain in this tab. The timer keeps running.'),
   });
+  const cloudRoute = parseCloudQuizId(route.quizId);
+  const cloud = useCustomQuizzes(uid, route.page === 'my-quizzes' || !!cloudRoute);
   const [query, setQuery] = useState('');
   const [expanded, setExpanded] = useState({});
   const [loaded, setLoaded] = useState(null);
@@ -155,7 +164,7 @@ export default function App() {
       } catch {
         /* Optional local drafts. */
       }
-      if (route.quizId === 'custom') navigate('#/library', true);
+      if (route.quizId === 'custom' || parseCloudQuizId(route.quizId)) navigate('#/library', true);
       else if (route.page === 'quiz' && route.mode === 'exam')
         navigate(quizUrl(route.quizId, 'overview', { mode: 'exam' }), true);
     }
@@ -170,8 +179,8 @@ export default function App() {
         typeof saved.name === 'string' &&
         saved.name.trim()
       ) {
-        validateQuizQuestions(saved.questions);
-        if (saved.questions.length <= 100) next = saved;
+        validateCustomQuestions(saved.questions);
+        next = saved;
       }
       if (!next) sessionStorage.removeItem(UPLOAD_KEY);
     } catch {
@@ -187,6 +196,12 @@ export default function App() {
       return;
     }
     const id = route.quizId;
+    if (parseCloudQuizId(id)) {
+      setLoaded(null);
+      setLoading(false);
+      setLoadError(null);
+      return;
+    }
     if (id === 'custom' && !uploadReady) return;
     const controller = new AbortController();
     let current = true;
@@ -196,7 +211,7 @@ export default function App() {
       try {
         if (id === 'custom') {
           if (!upload) throw new Error('This quiz is no longer available.');
-          if (current) setLoaded(upload);
+          if (current) setLoaded({ ...upload, kind: 'tab-upload' });
           return;
         }
         const quiz = findQuiz(id);
@@ -211,7 +226,7 @@ export default function App() {
           validateQuizQuestions(questions, { allowLegacyIncomplete: true });
           cache.current.set(id, questions);
         }
-        if (current) setLoaded({ ...quiz, questions });
+        if (current) setLoaded({ ...quiz, questions, kind: 'bank' });
       } catch (error) {
         if (current && error.name !== 'AbortError') setLoadError(error.message);
       } finally {
@@ -247,7 +262,42 @@ export default function App() {
         : {};
     go(quizUrl(quiz.id, mode, params));
   };
-  const active = resolveLoadedQuiz(loaded, route.quizId, uid);
+  const active = resolveLoadedQuiz(
+    cloudRoute ? cloud.quizzes.find((quiz) => quiz.id === route.quizId) : loaded,
+    route.quizId,
+    uid
+  );
+  const studyProgress = cloudRoute ? customQuizProgress(active, cloud) : progressState;
+  const studyId = active && cloudRoute ? customDraftId(active) : active?.id;
+  const cloudError =
+    !cloudRoute || authLoading || studyOwner !== uid || cloud.loading
+      ? null
+      : cloud.error
+        ? CUSTOM_QUIZ_MESSAGES[cloud.error.code] || CUSTOM_QUIZ_MESSAGES.CUSTOM_NETWORK
+        : !active
+          ? 'This saved quiz is no longer available. Open My quizzes to reload your list.'
+          : active.invalid
+            ? 'Saved content is invalid. Replace its JSON or delete this quiz.'
+            : route.params.has('version') &&
+                route.params.get('version') !== String(active.contentVersion)
+              ? 'This quiz’s content has changed. Open My quizzes to start with the latest version.'
+              : null;
+  const screenError = cloudRoute ? cloudError : loadError;
+  const activeQuizUrl = (mode = 'overview', params = {}) =>
+    quizUrl(active.id, mode, {
+      ...(cloudRoute ? { version: String(active.contentVersion) } : {}),
+      ...params,
+    });
+  useEffect(() => {
+    if (cloudRoute && active && !active.invalid && !cloud.loading && !route.params.has('version')) {
+      replace(
+        quizUrl(active.id, route.mode, {
+          ...Object.fromEntries(route.params),
+          version: String(active.contentVersion),
+        })
+      );
+    }
+  }, [hash, active?.id, active?.contentVersion, cloud.loading]);
   const guide = getQuickSummary(route.quizId);
   useEffect(() => {
     document.title =
@@ -262,7 +312,7 @@ export default function App() {
     try {
       examDraft = readStudySession(
         sessionStorage,
-        sessionKey(uid, active.id, 'exam'),
+        sessionKey(uid, studyId, 'exam'),
         active.questions,
         'exam'
       );
@@ -274,8 +324,7 @@ export default function App() {
   const selectMode = (mode, { time, count, feedbackMode, fresh = false }) => {
     const start = () =>
       go(
-        quizUrl(
-          active.id,
+        activeQuizUrl(
           mode,
           mode === 'exam'
             ? {
@@ -300,7 +349,7 @@ export default function App() {
     else start();
   };
   const useUpload = (next) => {
-    const value = { ...next, owner: uid };
+    const value = { ...next, owner: uid, kind: 'tab-upload' };
     try {
       sessionStorage.setItem(UPLOAD_KEY, JSON.stringify(value));
       for (const mode of ['practice', 'exam'])
@@ -390,29 +439,56 @@ export default function App() {
         onUse={useUpload}
         onOpen={(mode) => go(quizUrl('custom', mode, mode === 'overview' ? { mode: 'exam' } : {}))}
         onRemove={removeUpload}
+        cloud={cloud}
+        signedIn={!!uid}
+        onSignIn={openLogin}
+        onOpenCloud={(quiz, mode, resume = false) =>
+          go(
+            quizUrl(quiz.id, mode, {
+              version: String(quiz.contentVersion),
+              ...(mode === 'overview' ? { mode: 'exam' } : {}),
+              ...(resume ? { resume: '1', entry: String(Date.now()) } : {}),
+            })
+          )
+        }
       />
     );
-  else if (loadError)
+  else if (cloudRoute && !authLoading && !uid)
+    screen = (
+      <div className="load-state">
+        <Alert type="info" showIcon message={t('Sign in to open your saved quiz.')} />
+        <Button onClick={openLogin}>{t('Sign in')}</Button>
+      </div>
+    );
+  else if (screenError)
     screen = (
       <div className="load-state">
         <Alert
           type="error"
           showIcon
-          message={t(loadError)}
+          message={t(screenError)}
           description={t('Please retry or return to the library.')}
         />
         <Space wrap>
-          <Button onClick={() => setLoadRevision((value) => value + 1)}>{t('Retry')}</Button>
-          <Button onClick={() => go('#/library')}>{t('Back to library')}</Button>
+          <Button
+            onClick={() => (cloudRoute ? cloud.reload() : setLoadRevision((value) => value + 1))}
+          >
+            {t('Retry')}
+          </Button>
+          <Button onClick={() => go(cloudRoute ? '#/my-quizzes' : '#/library')}>
+            {t(cloudRoute ? 'My quizzes' : 'Back to library')}
+          </Button>
         </Space>
       </div>
     );
   else if (
     loading ||
+    (cloudRoute && cloud.loading && !active) ||
+    (cloudRoute && !route.params.has('version')) ||
     !active ||
     authLoading ||
     studyOwner !== uid ||
-    (route.params.get('resume') === '1' && progressState.loading)
+    (route.params.get('resume') === '1' && studyProgress.loading)
   )
     screen = (
       <div className="load-state" role="status">
@@ -428,16 +504,16 @@ export default function App() {
         : active.questions.findIndex((question) => String(question.id) === questionId);
     const checkpoint =
       route.params.get('resume') === '1'
-        ? resolveCheckpoint(active.questions, progressState.progress[active.id])
+        ? resolveCheckpoint(active.questions, studyProgress.progress[active.id])
         : null;
     screen = (
       <PracticeMode
-        key={`${active.id}:${uid || 'guest'}:${route.params.get('fresh') || ''}:${questionId || ''}:${route.params.get('entry') || ''}`}
+        key={`${studyId}:${uid || 'guest'}:${route.params.get('fresh') || ''}:${questionId || ''}:${route.params.get('entry') || ''}`}
         questions={active.questions}
         quizId={active.id === 'custom' ? null : active.id}
-        sessionId={active.id}
+        sessionId={studyId}
         quizName={active.name}
-        progressState={progressState}
+        progressState={studyProgress}
         initialQuestionIndex={
           relatedIndex >= 0 && relatedIndex !== null ? relatedIndex : (checkpoint?.index ?? null)
         }
@@ -445,7 +521,7 @@ export default function App() {
         fresh={route.params.get('fresh')}
         entryToken={hash}
         onSignIn={openLogin}
-        onExit={() => go(quizUrl(active.id))}
+        onExit={() => go(activeQuizUrl())}
         onBackToSummary={
           route.params.get('from') === 'summary' ? () => go(quizUrl(active.id, 'summary')) : null
         }
@@ -454,9 +530,9 @@ export default function App() {
   } else if (route.mode === 'exam')
     screen = (
       <ExamMode
-        key={`${active.id}:${uid || 'guest'}:${route.params.get('fresh') || ''}`}
+        key={`${studyId}:${uid || 'guest'}:${route.params.get('fresh') || ''}`}
         questions={active.questions}
-        quizId={active.id}
+        quizId={studyId}
         quizName={active.name}
         examTimeMinutes={Number(route.params.get('time')) === 120 ? 120 : 60}
         feedbackMode={route.params.get('feedback')}
@@ -467,8 +543,8 @@ export default function App() {
         }
         fresh={route.params.get('fresh')}
         onRunningChange={setExamActive}
-        onExit={() => go(quizUrl(active.id, 'overview', { mode: 'exam' }))}
-        onRestart={() => go(quizUrl(active.id, 'overview', { mode: 'exam' }))}
+        onExit={() => go(activeQuizUrl('overview', { mode: 'exam' }))}
+        onRestart={() => go(activeQuizUrl('overview', { mode: 'exam' }))}
       />
     );
   else if (route.mode === 'summary' && guide)
@@ -499,7 +575,7 @@ export default function App() {
             <Button
               type="text"
               icon={<ArrowLeftOutlined aria-hidden="true" />}
-              onClick={() => go(active.id === 'custom' ? '#/my-quizzes' : '#/library')}
+              onClick={() => go(active.kind === 'bank' ? '#/library' : '#/my-quizzes')}
             >
               {t('Back to library')}
             </Button>
@@ -519,7 +595,7 @@ export default function App() {
         <QuizMode
           key={`${active.id}:${uid || 'guest'}`}
           onSelectMode={selectMode}
-          onModeChange={(mode) => replace(quizUrl(active.id, 'overview', { mode }))}
+          onModeChange={(mode) => replace(activeQuizUrl('overview', { mode }))}
           totalQuestions={active.questions.length}
           quickSummary={guide}
           initialMode={
@@ -531,16 +607,16 @@ export default function App() {
           examDraftCount={examDraft?.questions.length}
           examDraftFeedbackMode={examDraft?.feedbackMode}
         />
-        {progressState.progress[active.id] && (
+        {studyProgress.progress[active.id] && (
           <Button
             className="overview-resume"
             onClick={() =>
-              go(quizUrl(active.id, 'practice', { resume: '1', entry: String(Date.now()) }))
+              go(activeQuizUrl('practice', { resume: '1', entry: String(Date.now()) }))
             }
           >
-            {Number.isInteger(progressState.progress[active.id].questionIndex)
+            {Number.isInteger(studyProgress.progress[active.id].questionIndex)
               ? t('Saved at question {number}', {
-                  number: progressState.progress[active.id].questionIndex + 1,
+                  number: studyProgress.progress[active.id].questionIndex + 1,
                 })
               : t('Saved position')}{' '}
             · {t('Resume')}

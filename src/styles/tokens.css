@@ -28,6 +28,7 @@
   --app-danger-bg: #fff1f1;
   --app-danger-border: #e6a7ad;
   --app-danger-text: #a12b38;
+  --app-on-danger: #fff;
   --app-info-bg: #eaf2ff;
   --app-info-border: #a8c7ee;
   --app-card-border: #dce4ee;
@@ -58,6 +59,7 @@ html[data-theme='dark'] {
   --app-danger-bg: #44232d;
   --app-danger-border: #92525c;
   --app-danger-text: #ffb4bd;
+  --app-on-danger: #102441;
   --app-info-bg: #223d5d;
   --app-info-border: #476a96;
   --app-card-border: #38485c;

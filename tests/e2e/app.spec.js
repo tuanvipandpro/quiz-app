@@ -20,6 +20,7 @@ async function signIn(page) {
 }
 
 async function requestSignOut(page) {
+  await expect(page.locator('.ant-modal-mask:visible')).toHaveCount(0);
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
   const menu = page.getByRole('menu');
   await expect(menu).toBeVisible();

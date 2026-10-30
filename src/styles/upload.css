@@ -1,6 +1,103 @@
 .uploaded-quiz {
   margin-top: 20px;
 }
+.cloud-quiz-library {
+  margin: 24px 0;
+}
+.cloud-quiz-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cloud-quiz-heading-copy {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: 8px 12px;
+}
+.cloud-quiz-library h2.ant-typography {
+  margin: 0;
+  font-size: 22px;
+  scroll-margin-top: calc(var(--app-header-height) + 16px);
+}
+.cloud-quiz-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+}
+.cloud-quiz-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.cloud-quiz-card h3.ant-typography {
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+}
+.cloud-quiz-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.cloud-quiz-actions .ant-btn {
+  min-height: 44px;
+  flex: 1 1 auto;
+}
+.cloud-quiz-checkpoint.ant-typography {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+.cloud-name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+}
+.custom-upload-heading {
+  scroll-margin-top: calc(var(--app-header-height) + 16px);
+}
+.custom-upload-heading.ant-typography {
+  margin: 28px 0 16px;
+  font-size: 22px;
+}
+.cloud-name-field .ant-input,
+.cloud-quiz-modal .ant-btn,
+.cloud-quiz-library .ant-btn,
+.upload-preview .ant-btn {
+  min-height: 44px;
+  min-width: 44px;
+}
+.cloud-quiz-modal .ant-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cloud-quiz-modal .ant-modal-footer .ant-btn + .ant-btn {
+  margin-inline-start: 0;
+}
+.cloud-quiz-card .ant-btn-dangerous:not(:disabled),
+.cloud-quiz-card .ant-btn-dangerous:not(:disabled):hover {
+  color: var(--app-danger-text);
+  border-color: var(--app-danger-text);
+}
+.cloud-quiz-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled),
+.cloud-quiz-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled):hover,
+.cloud-quiz-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled):active {
+  color: var(--app-on-danger);
+  background: var(--app-danger-text);
+  border-color: var(--app-danger-text);
+}
+.cloud-dialog-quiz-name {
+  overflow-wrap: anywhere;
+}
 .uploaded-quiz .section-heading {
   margin: 0;
 }

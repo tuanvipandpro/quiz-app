@@ -32,7 +32,7 @@ const profile = {
 
 before(async () => {
   const rules = await fs.readFile(
-    new URL('../../firebase/firestore.rules', import.meta.url),
+    new URL('../../firebase/baseline/firestore.rules', import.meta.url),
     'utf8'
   );
   const provenance = JSON.parse(
