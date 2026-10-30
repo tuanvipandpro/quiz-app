@@ -11,7 +11,7 @@
 ## 3. Integrated acceptance
 
 - [x] 3.1 Hoàn thiện responsive/accessibility và translations; kiểm tra 320/390/412/768/1280px, landscape, VN/EN và light/dark, focus/keyboard, lưu before/after evidence và regression geometry cho control mới (CQ48-06).
-- [ ] 3.2 Chạy yarn verify và yarn test:e2e, review diff/PR checklist, cập nhật verification matrix và README với kết quả thực tế; mở PR có evidence/limitations, chưa merge hoặc archive (tất cả requirements).
+- [x] 3.2 Chạy yarn verify và yarn test:e2e, review diff/PR checklist, cập nhật verification matrix và README với kết quả thực tế; mở PR có evidence/limitations, chưa merge hoặc archive (tất cả requirements).
 
 ## Workflow follow-up
 

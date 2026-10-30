@@ -2,6 +2,8 @@
 
 Kiểm tra local ngày 2026-10-30. Feature đã có bằng chứng acceptance dưới đây; production rollout vẫn pending cho tới khi PR được merge/deploy.
 
+PR review: [#49 — Add Standard and Learning modes to mock exams](https://github.com/tuanvipandpro/quiz-app/pull/49). Đã mở, chưa merge/archive. Task completion là implementation/local acceptance, không phải xác nhận production rollout.
+
 | Requirement | Evidence                                                                                                                                                                                     | Status                          |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
 | CQ48-01     | `studySession.test.js`: new exams default to Standard; E2E upload và bank chọn hai mode                                                                                                      | Passed                          |
