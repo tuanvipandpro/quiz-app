@@ -4,7 +4,7 @@
 
 Xem proposal.md và capability delta để biết mục tiêu. MyQuizzes hiện chỉ giữ một upload trong sessionStorage; App dùng ID `custom` và bank checkpoint nằm trong `users/{uid}.quizProgress`. Validator đã hỗ trợ multiple choice, yes/no, dropdown rows/inline. Browser tests hiện thay thế auth/profile service; chưa kiểm chứng Rules thật.
 
-Baseline `firebase/firestore.rules` do người dùng cung cấp chỉ allow profile document của chính UID. Không có recursive allow hoặc quyền customQuizzes; emulator sẽ kiểm chứng trạng thái đó. Nguồn là bản người dùng xác nhận đang publish, không phải bản export qua management API.
+Baseline do người dùng cung cấp được giữ nguyên tại `firebase/baseline/firestore.rules` và kiểm tra hash gốc. Nó chỉ allow profile của chính UID, không có quyền customQuizzes. `firebase/firestore.rules` hiện là candidate policy cho feature, không phải xác nhận đang deploy. Nguồn baseline là bản người dùng xác nhận publish, chưa phải management API export.
 
 ## Goals / Non-Goals
 
@@ -35,6 +35,8 @@ Tái sử dụng slot tạo UUID mới và checkpoint null. Không dùng slot ID
 
 Create transaction đọc ba slot, trả về instance đã tồn tại cho cùng operation/instance ID khi retry, hoặc ghi một slot trống. UUID không tạo bên trong callback transaction. Hai ứng viên khác nhau tranh slot cuối phải được retry theo Firestore và một bên nhận quota/conflict.
 
+Nếu cùng operation ID nhưng title/content đã khác lần commit trước, service trả conflict thay vì báo đã lưu nội dung mới. Cùng một candidate giữ UUID qua lỗi/retry; chọn tệp mới tạo operation mới.
+
 Rename/replace/delete nhận expected instanceId + revision, đọc slot trong transaction rồi so sánh trước khi mutate. Checkpoint save so instanceId + contentVersion để rename không làm mất tiến trình. Rules giữ instanceId bất biến trên update và kiểm tra field/type/version transitions; delete stale được bảo vệ bằng transaction read precondition. Quyền owner xóa quiz bằng SDK là quyền có chủ ý, không phải cơ chế chống client độc hại tự xóa dữ liệu của họ.
 
 ### D4 — Validation and size budget
@@ -48,6 +50,8 @@ Default kỹ thuật đề xuất: `MAX_CUSTOM_QUIZ_BYTES = 750 * 1024` cho JSON
 Thêm custom-quiz service và hook/store có account/request generation giống quizProgressStore. Component chỉ nhận state/actions. Cache theo UID + instanceId + contentVersion; hủy/bỏ qua request cũ khi account đổi. Chỉ tải custom docs khi mở My quizzes hoặc custom deep link; trang bank không phụ thuộc request này.
 
 Route/loaded-quiz identity cần discriminator `bank`, `tab-upload`, `cloud-custom` và mapping tới slot/instance; draft key bao gồm UID, instanceId, contentVersion, mode. Trước khi mount study, kiểm tra instance/version của slot. Giữ endpoint/ID bank hiện tại. Không viết checkpoint cloud custom vào map checkpoint bank.
+
+Route cloud dùng ID `cloud:<slotId>:<instanceId>` với `version` trong query. Link thiếu version được canonicalize theo bản server trước khi mount study. Hook chỉ tải trên personal routes, dùng server reads cùng listener bỏ qua cached snapshots, bỏ response cũ theo UID/request generation và làm mới khi quay lại tab. Mutation từ tab khác vô hiệu draft của đúng instance; metadata rename không reset draft.
 
 Rename chỉ cập nhật title/revision. Replace atomically ghi questions/count, tăng revision/contentVersion và đặt checkpoint null; local draft cũ bị vô hiệu theo version. Delete xóa cùng checkpoint và dọn cache/draft của đúng instance. Tab khác kiểm tra lại slot/version trước khi save/resume, không tin snapshot cũ.
 

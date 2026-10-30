@@ -5,6 +5,57 @@ service cloud.firestore {
     // Users collection - mỗi user chỉ có thể đọc/ghi profile của chính mình
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /customQuizzes/{slotId} {
+        function owner() {
+          return request.auth != null && request.auth.uid == userId;
+        }
+        function validSlot() {
+          return slotId in ['slot-1', 'slot-2', 'slot-3'];
+        }
+        function validCheckpoint(d) {
+          let c = d.checkpoint;
+          return c == null || (c is map
+            && c.keys().hasAll(['instanceId', 'contentVersion', 'questionId', 'questionIndex', 'savedAt'])
+            && c.keys().hasOnly(['instanceId', 'contentVersion', 'questionId', 'questionIndex', 'savedAt'])
+            && c.instanceId == d.instanceId && c.contentVersion == d.contentVersion
+            && c.questionId is string && c.questionId.size() > 0
+            && c.questionIndex is int && c.questionIndex >= 0 && c.questionIndex < d.questionCount
+            && c.savedAt is timestamp && c.savedAt <= request.time);
+        }
+        function validQuiz(d) {
+          return d.keys().hasAll(['instanceId', 'title', 'questions', 'questionCount', 'contentVersion', 'revision', 'createdAt', 'updatedAt', 'checkpoint'])
+            && d.keys().hasOnly(['instanceId', 'title', 'questions', 'questionCount', 'contentVersion', 'revision', 'createdAt', 'updatedAt', 'checkpoint'])
+            && d.instanceId is string && d.instanceId.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
+            && d.title is string && d.title.size() >= 1 && d.title.size() <= 160
+            && d.questions is list && d.questions.size() >= 1 && d.questions.size() <= 100
+            && d.questionCount is int && d.questionCount == d.questions.size()
+            && d.contentVersion is int && d.contentVersion >= 1
+            && d.revision is int && d.revision >= d.contentVersion
+            && d.createdAt is timestamp && d.updatedAt == request.time
+            && validCheckpoint(d);
+        }
+        function validUpdate(d, old) {
+          let changed = d.diff(old).affectedKeys();
+          return d.instanceId == old.instanceId && d.createdAt == old.createdAt && (
+            (changed.hasOnly(['title', 'revision', 'updatedAt'])
+              && d.revision == old.revision + 1)
+            || (changed.hasOnly(['title', 'questions', 'questionCount', 'contentVersion', 'revision', 'updatedAt', 'checkpoint'])
+              && d.revision == old.revision + 1
+              && d.contentVersion == old.contentVersion + 1 && d.checkpoint == null)
+            || (changed.hasOnly(['checkpoint', 'updatedAt'])
+              && (d.checkpoint == null || d.checkpoint.savedAt == request.time))
+          );
+        }
+        // Profile ownership alone does not grant access: this explicit child rule does.
+        allow read: if owner();
+        allow create: if owner() && validSlot() && validQuiz(request.resource.data)
+          && request.resource.data.revision == 1 && request.resource.data.contentVersion == 1
+          && request.resource.data.createdAt == request.time && request.resource.data.checkpoint == null;
+        allow update: if owner() && validSlot() && validQuiz(request.resource.data)
+          && validUpdate(request.resource.data, resource.data);
+        allow delete: if owner() && validSlot();
+      }
     }
   }
 }

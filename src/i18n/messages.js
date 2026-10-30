@@ -1,4 +1,65 @@
 export const vi = {
+  'Preview stays in this tab until you save it to your account.':
+    'Bản xem trước ở trong tab này cho đến khi bạn chọn lưu vào tài khoản.',
+  'Cloud save limit: {limit} KiB. Larger quizzes can be used in this tab.':
+    'Giới hạn lưu cloud: {limit} KiB. Quiz lớn hơn có thể dùng trong tab này.',
+  'The server rejected this quiz. Check its format and reduce its size, then retry.':
+    'Máy chủ từ chối quiz này. Kiểm tra định dạng, giảm kích thước rồi thử lại.',
+  'Saved quizzes': 'Quiz đã lưu',
+  '{count}/{limit} saved quizzes': 'Đã lưu {count}/{limit} quiz',
+  'Sign in to save and manage your private quizzes.':
+    'Đăng nhập để lưu và quản lý quiz riêng tư của bạn.',
+  'Guest uploads stay in this tab. Saving to your account is always your choice.':
+    'Quiz chưa lưu chỉ dùng trong tab này. Bạn chủ động chọn lưu vào tài khoản.',
+  'Loading saved quizzes…': 'Đang tải quiz đã lưu…',
+  'No saved quizzes yet. Upload a file below to get started.':
+    'Chưa có quiz đã lưu. Tải tệp lên bên dưới để bắt đầu.',
+  'All 3 quiz slots are used. Replace or delete a saved quiz to make room.':
+    'Bạn đã lưu đủ 3 quiz. Thay nội dung hoặc xóa một quiz để có chỗ trống.',
+  'Saved content is invalid. Replace its JSON or delete this quiz.':
+    'Nội dung đã lưu không hợp lệ. Hãy thay tệp JSON hoặc xóa quiz này.',
+  'Study {name}': 'Học {name}',
+  'Manage {name}': 'Quản lý {name}',
+  Rename: 'Đổi tên',
+  'Replace JSON': 'Thay JSON',
+  Delete: 'Xóa',
+  'Rename quiz': 'Đổi tên quiz',
+  'Delete this quiz?': 'Xóa quiz này?',
+  'Save name': 'Lưu tên',
+  'This deletes the quiz and its saved progress. Other quizzes are kept.':
+    'Thao tác này xóa quiz và tiến trình đã lưu của quiz đó. Các quiz khác được giữ lại.',
+  'Upload a quiz': 'Tải quiz lên',
+  'Quiz saved. Available on your signed-in devices.':
+    'Đã lưu quiz. Bạn có thể học trên các thiết bị đã đăng nhập.',
+  'Replacing {name}': 'Đang thay nội dung {name}',
+  'Choose a JSON file below, then confirm the replacement. Saved progress will reset.':
+    'Chọn tệp JSON bên dưới rồi xác nhận thay nội dung. Tiến trình đã lưu sẽ được đặt lại.',
+  'Reload saved quizzes': 'Tải lại quiz đã lưu',
+  'Replace quiz': 'Thay nội dung quiz',
+  'Save to my quizzes': 'Lưu vào quiz của tôi',
+  'Sign in to save': 'Đăng nhập để lưu',
+  'Replace this quiz?': 'Thay nội dung quiz này?',
+  'This replaces the questions and resets this quiz’s saved progress and local drafts. Other quizzes are kept.':
+    'Thao tác này thay các câu hỏi, đặt lại tiến trình và bản nháp của quiz này. Các quiz khác được giữ lại.',
+  'This quiz changed in another tab. Reload your saved quizzes and try again.':
+    'Quiz đã thay đổi ở tab khác. Hãy tải lại danh sách rồi thử lại.',
+  'This quiz is too large to save. Reduce its content to under 750 KiB and retry.':
+    'Quiz quá lớn để lưu. Giảm nội dung xuống dưới 750 KiB rồi thử lại.',
+  'Saving is not permitted. Check your account or contact the app owner, then retry.':
+    'Không có quyền lưu. Kiểm tra tài khoản hoặc liên hệ chủ ứng dụng rồi thử lại.',
+  'Could not reach your saved quizzes. Check your connection and retry.':
+    'Không thể tải quiz đã lưu. Kiểm tra kết nối rồi thử lại.',
+  'Please wait for the current quiz update.': 'Vui lòng chờ cập nhật quiz hiện tại.',
+  'Your account changed. Please retry.': 'Tài khoản đã thay đổi. Vui lòng thử lại.',
+  'This quiz is invalid. Check the file and retry.': 'Quiz không hợp lệ. Kiểm tra tệp rồi thử lại.',
+  'The file is not valid JSON. Check its syntax and try again.':
+    'Tệp JSON không hợp lệ. Kiểm tra cú pháp rồi thử lại.',
+  'Enter a quiz name with 1–160 characters.': 'Nhập tên quiz dài từ 1–160 ký tự.',
+  'Sign in to open your saved quiz.': 'Đăng nhập để mở quiz đã lưu.',
+  'This saved quiz is no longer available. Open My quizzes to reload your list.':
+    'Quiz đã lưu không còn khả dụng. Mở Quiz của tôi để tải lại danh sách.',
+  'This quiz’s content has changed. Open My quizzes to start with the latest version.':
+    'Nội dung quiz đã thay đổi. Mở Quiz của tôi để bắt đầu với phiên bản mới nhất.',
   'Certification practice': 'Luyện thi chứng chỉ',
   Providers: 'Nhà cung cấp',
   'Personal workspace': 'Không gian cá nhân',

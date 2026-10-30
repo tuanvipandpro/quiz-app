@@ -37,6 +37,7 @@ export function quizUrl(id, mode = 'overview', params = {}) {
 
 export function resolveLoadedQuiz(loaded, quizId, uid) {
   if (!loaded || loaded.id !== quizId) return null;
-  if (loaded.id === 'custom' && loaded.owner !== uid) return null;
+  if ((loaded.id === 'custom' || loaded.kind === 'cloud-custom') && loaded.owner !== uid)
+    return null;
   return loaded;
 }
