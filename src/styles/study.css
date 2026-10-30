@@ -72,6 +72,72 @@
   flex-direction: column;
   gap: 8px;
 }
+.exam-feedback-picker {
+  min-width: 0;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
+}
+.exam-feedback-picker > legend {
+  float: none;
+  width: auto;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.exam-feedback-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.exam-feedback-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 16px;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  cursor: pointer;
+  line-height: 1.5;
+}
+.exam-feedback-option.is-selected {
+  border-color: var(--app-primary);
+  background: var(--app-info-bg);
+}
+.exam-feedback-option:has(input:focus-visible) {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 3px;
+}
+.exam-feedback-option input {
+  flex: 0 0 auto;
+  margin: 4px 0 0;
+  accent-color: var(--app-primary);
+}
+.exam-feedback-option > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.exam-feedback-option strong,
+.exam-feedback-option small {
+  display: block;
+}
+.exam-feedback-option small {
+  margin-top: 4px;
+  color: var(--app-muted);
+  font-size: 14px;
+}
+.exam-mode-label.ant-typography {
+  margin: 12px 0 0;
+  color: var(--app-muted);
+  font-size: 14px;
+}
+@media (max-width: 700px) {
+  .exam-feedback-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .quiz-mode-start {
   display: flex;
   align-items: center;

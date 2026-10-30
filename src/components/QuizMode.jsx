@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Button, Card, Radio, Select, Typography } from 'antd';
 import { PlayCircleOutlined, FormOutlined, ReadOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { EXAM_FEEDBACK_MODES, getExamFeedbackMode } from '../data/examModes';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -13,6 +14,7 @@ export default function QuizMode({
   initialMode = 'practice',
   hasExamDraft = false,
   examDraftCount = null,
+  examDraftFeedbackMode,
 }) {
   const { t } = useLanguage();
   const [selectedMode, setSelectedMode] = useState(initialMode);
@@ -21,6 +23,7 @@ export default function QuizMode({
   }, [initialMode, quickSummary]);
   const [time, setTime] = useState(60);
   const [count, setCount] = useState(Math.min(50, totalQuestions));
+  const [feedbackMode, setFeedbackMode] = useState(() => getExamFeedbackMode().id);
   const counts =
     totalQuestions < 50
       ? [totalQuestions]
@@ -100,13 +103,48 @@ export default function QuizMode({
               />
             </label>
           </div>
+          <fieldset
+            className="exam-feedback-picker"
+            role="radiogroup"
+            aria-labelledby="exam-feedback-label"
+          >
+            <legend id="exam-feedback-label">{t('Exam mode')}</legend>
+            <div className="exam-feedback-options">
+              {EXAM_FEEDBACK_MODES.map((mode) => (
+                <label
+                  key={mode.id}
+                  className={
+                    'exam-feedback-option' + (feedbackMode === mode.id ? ' is-selected' : '')
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="exam-feedback"
+                    value={mode.id}
+                    checked={feedbackMode === mode.id}
+                    onChange={() => setFeedbackMode(mode.id)}
+                    aria-labelledby={`exam-feedback-${mode.id}-label`}
+                    aria-describedby={`exam-feedback-${mode.id}-hint`}
+                  />
+                  <span>
+                    <strong id={`exam-feedback-${mode.id}-label`}>{t(mode.label)}</strong>
+                    <small id={`exam-feedback-${mode.id}-hint`}>{t(mode.description)}</small>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
           {hasExamDraft && (
             <Alert
               type="info"
               showIcon
-              message={t('Existing draft: {count} questions. The timer keeps running.', {
+              message={t('Saved exam: {mode} · {count} questions. The timer keeps running.', {
+                mode: t(getExamFeedbackMode(examDraftFeedbackMode).label),
                 count: examDraftCount,
               })}
+              description={t(
+                'Resume keeps your saved settings. These choices apply to a new exam.'
+              )}
             />
           )}
         </>
@@ -119,14 +157,16 @@ export default function QuizMode({
         </Text>
         <div className="quiz-action-group">
           {selectedMode === 'exam' && hasExamDraft && (
-            <Button onClick={() => onSelectMode('exam', time, count, true)}>
+            <Button
+              onClick={() => onSelectMode('exam', { time, count, feedbackMode, fresh: true })}
+            >
               {t('Start a new exam')}
             </Button>
           )}
           <Button
             type="primary"
             size="large"
-            onClick={() => onSelectMode(selectedMode, time, count)}
+            onClick={() => onSelectMode(selectedMode, { time, count, feedbackMode })}
           >
             {t(
               selectedMode === 'summary'

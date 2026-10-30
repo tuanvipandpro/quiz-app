@@ -1,0 +1,110 @@
+[
+  {
+    "theme": "light",
+    "fg": "app-text",
+    "bg": "app-surface",
+    "contrast": 13.74
+  },
+  {
+    "theme": "light",
+    "fg": "app-text",
+    "bg": "app-info-bg",
+    "contrast": 12.2
+  },
+  {
+    "theme": "light",
+    "fg": "app-text",
+    "bg": "app-bg",
+    "contrast": 12.81
+  },
+  {
+    "theme": "light",
+    "fg": "app-muted",
+    "bg": "app-surface",
+    "contrast": 5.47
+  },
+  {
+    "theme": "light",
+    "fg": "app-muted",
+    "bg": "app-info-bg",
+    "contrast": 4.85
+  },
+  {
+    "theme": "light",
+    "fg": "app-muted",
+    "bg": "app-bg",
+    "contrast": 5.1
+  },
+  {
+    "theme": "light",
+    "fg": "app-primary",
+    "bg": "app-surface",
+    "contrast": 6.36
+  },
+  {
+    "theme": "light",
+    "fg": "app-primary",
+    "bg": "app-info-bg",
+    "contrast": 5.65
+  },
+  {
+    "theme": "light",
+    "fg": "app-primary",
+    "bg": "app-bg",
+    "contrast": 5.93
+  },
+  {
+    "theme": "dark",
+    "fg": "app-text",
+    "bg": "app-surface",
+    "contrast": 13.39
+  },
+  {
+    "theme": "dark",
+    "fg": "app-text",
+    "bg": "app-info-bg",
+    "contrast": 9.85
+  },
+  {
+    "theme": "dark",
+    "fg": "app-text",
+    "bg": "app-bg",
+    "contrast": 15.68
+  },
+  {
+    "theme": "dark",
+    "fg": "app-muted",
+    "bg": "app-surface",
+    "contrast": 7.99
+  },
+  {
+    "theme": "dark",
+    "fg": "app-muted",
+    "bg": "app-info-bg",
+    "contrast": 5.88
+  },
+  {
+    "theme": "dark",
+    "fg": "app-muted",
+    "bg": "app-bg",
+    "contrast": 9.36
+  },
+  {
+    "theme": "dark",
+    "fg": "app-primary",
+    "bg": "app-surface",
+    "contrast": 7.97
+  },
+  {
+    "theme": "dark",
+    "fg": "app-primary",
+    "bg": "app-info-bg",
+    "contrast": 5.86
+  },
+  {
+    "theme": "dark",
+    "fg": "app-primary",
+    "bg": "app-bg",
+    "contrast": 9.33
+  }
+]

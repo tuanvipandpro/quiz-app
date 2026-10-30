@@ -19,6 +19,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { createExamSession, examStats, finishExam, sessionKey } from '../utils/studySession';
 import { isAnswerComplete, isAnswerCorrect } from '../utils/questionModel';
 import { scrollToTop } from '../utils/scroll';
+import { getExamFeedbackMode } from '../data/examModes';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -31,6 +32,7 @@ export default function ExamMode({
   onRunningChange,
   examTimeMinutes,
   examQuestionCount = 50,
+  feedbackMode,
   fresh,
 }) {
   const { user } = useAuth();
@@ -39,13 +41,17 @@ export default function ExamMode({
     sessionKey(user?.uid, quizId, 'exam'),
     questions,
     'exam',
-    () => createExamSession(questions, examQuestionCount, examTimeMinutes),
+    () => createExamSession(questions, examQuestionCount, examTimeMinutes, { feedbackMode }),
     { fresh }
   );
   const [submitOpen, setSubmitOpen] = useState(false);
   const [filter, setFilter] = useState('all');
   const stats = useMemo(() => examStats(session), [session]);
   const question = session.questions[session.index];
+  const feedback = getExamFeedbackMode(session.feedbackMode);
+  const showFeedback =
+    session.submitted ||
+    (feedback.perQuestion && isAnswerComplete(question, session.answers[session.index]));
   const ai = useExplanation(question, user?.uid);
   const finish = (expired) => {
     setSubmitOpen(false);
@@ -123,6 +129,9 @@ export default function ExamMode({
           </Button>
           <Title level={1}>{t(session.submitted ? 'Exam results' : 'Mock exam')}</Title>
           <Text type="secondary">{quizName}</Text>
+          <Paragraph className="exam-mode-label">
+            {t('Exam mode')}: <strong>{t(feedback.label)}</strong>
+          </Paragraph>
         </div>
       </div>
       {!session.submitted && (
@@ -152,6 +161,11 @@ export default function ExamMode({
                 {score.toFixed(1)}% · {t(score > 80 ? 'Pass' : 'Not passed')}
               </Text>
               <Paragraph type="secondary">{t('Passing requires more than 80%.')}</Paragraph>
+              {feedback.perQuestion && (
+                <Paragraph type="secondary">
+                  {t('Learning exam score uses your final answers.')}
+                </Paragraph>
+              )}
             </div>
             <div className="score-stats">
               <div>
@@ -223,7 +237,7 @@ export default function ExamMode({
                 options={question.options}
                 selectedAnswer={session.answers[session.index]}
                 onSelectAnswer={answer}
-                showFeedback={session.submitted}
+                showFeedback={showFeedback}
                 isCorrect={isAnswerCorrect(question, session.answers[session.index])}
                 correctOptions={question.answer}
                 readOnly={session.submitted}

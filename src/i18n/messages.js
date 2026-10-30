@@ -153,6 +153,18 @@ export const vi = {
   'Start from beginning': 'Bắt đầu từ đầu',
   Practice: 'Luyện tập',
   'Mock exam': 'Thi thử',
+  'Exam mode': 'Chế độ thi',
+  'Standard exam': 'Thi tiêu chuẩn',
+  'Learning exam': 'Thi có phản hồi',
+  'See answers after submitting or when time is up.': 'Xem đáp án sau khi nộp bài hoặc hết giờ.',
+  'See feedback after answering each question. The timer keeps running.':
+    'Xem đáp án khi trả lời đủ mỗi câu. Thời gian vẫn tiếp tục chạy.',
+  'Saved exam: {mode} · {count} questions. The timer keeps running.':
+    'Bài đã lưu: {mode} · {count} câu. Thời gian vẫn tiếp tục chạy.',
+  'Resume keeps your saved settings. These choices apply to a new exam.':
+    'Tiếp tục giữ thiết lập của bài đã lưu. Các lựa chọn này áp dụng cho bài thi mới.',
+  'Learning exam score uses your final answers.':
+    'Điểm thi có phản hồi được tính theo đáp án cuối cùng của bạn.',
   'Quick Summary': 'Ôn tập nhanh',
   'Read Quick Summary': 'Đọc tài liệu ôn tập',
   'Quiz overview': 'Thông tin quiz',
