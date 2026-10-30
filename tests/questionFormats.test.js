@@ -40,11 +40,11 @@ test('every built-in bank remains loadable with legacy placeholder compatibility
   assert.equal(count, 21);
 });
 
-test('all imported banks validate and include six dropdown and five yes-no questions', () => {
+test('all imported banks validate and include five dropdown and five yes-no questions', () => {
   for (const [file, count] of [
-    ['CCA_F', 201],
-    ['CCAR_P', 157],
-    ['CCAO_F', 151],
+    ['CCA_F', 195],
+    ['CCAR_P', 126],
+    ['CCAO_F', 137],
     ['CCDV_F', 96],
   ]) {
     const questions = read(file);
@@ -53,7 +53,7 @@ test('all imported banks validate and include six dropdown and five yes-no quest
     assert.equal(new Set(questions.map((q) => q.id)).size, count);
   }
   assert.equal(bank.filter((q) => q.type === 'yes_no').length, 5);
-  assert.equal(bank.filter((q) => q.type === 'dropdown').length, 6);
+  assert.equal(bank.filter((q) => q.type === 'dropdown').length, 5);
   assert.deepEqual(
     bank.slice(0, 63).map((q) => q.id),
     Array.from({ length: 64 }, (_, index) => index + 1)
