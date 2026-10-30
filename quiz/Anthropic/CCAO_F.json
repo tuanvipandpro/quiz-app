@@ -1624,14 +1624,14 @@
     "question": "You are a Claude associate evaluating a proposed Claude use case before approving it for your team. What is the correct sequence of assessment steps?\n\n1. Identify the audience, decision impact, and reversibility of the outputs.\n2. Identify the data types involved and whether sensitive data is implicated.\n3. Compare the use case with the organization’s policies and the relevant regulatory considerations.\n4. Decide whether the use case proceeds, needs modification, or is declined.\n5. Document the assessment outcome and rationale for traceability.",
     "options": {
       "A": "3, 1, 5, 4, 2",
-      "B": "1, 3, 5, 4, 2",
+      "B": "1, 2, 3, 4, 5",
       "C": "5, 3, 1, 4, 2",
       "D": "3, 5, 1, 4, 2"
     },
     "answer": [
       "B"
     ],
-    "explanation": "A sound use-case assessment must first scope what the use case actually is before it can be checked against anything else: identifying the audience, decision impact, and reversibility of the outputs (step 1) establishes the risk profile of the proposed use. Only with that risk profile in hand does it make sense to compare the use case against organizational policy and applicable regulatory considerations (step 3), since the relevant policies and regulations to check depend on who is affected and how consequential and reversible the outcome is. The assessment rationale is then written up for traceability (step 5) as the basis for the actual proceed/modify/decline determination (step 4), with the specific data types and sensitivity involved (step 2) treated as the final implementation-level check. Sequences that place the policy/regulatory comparison (step 3) or the documentation step (step 5) before the audience/impact/reversibility scoping (step 1) are incoherent, because they require checking a use case against policy or writing up its rationale before its risk profile has even been established.",
+    "explanation": "The appropriate order is 1, 2, 3, 4, 5: establish the audience, decision impact, and reversibility; identify the data types and sensitivity; assess the use case against organizational policy and applicable regulatory requirements; decide whether to proceed, modify, or decline; then document that outcome and its rationale. Data sensitivity is an input to the policy assessment and approval decision, not a final check after approval. The record of the assessment outcome follows the decision it records. This ordering is inferred from those dependencies; the sources support the assessment principles, rather than publishing an official answer key for this question.\n\nLearn more\n- Anthropic Usage Policy: https://www.anthropic.com/legal/aup\n- NIST AI RMF Playbook, Map: https://airc.nist.gov/airmf-resources/playbook/map/",
     "imageUrl": ""
   },
   {
@@ -1851,24 +1851,6 @@
     "imageUrl": ""
   },
   {
-    "id": "ccao-f-120",
-    "question": "A manager is deciding what changes to make while conducting a memory maintenance review for a long-running workflow. Which two actions best support memory quality over time? (Select two.)",
-    "options": {
-      "A": "Add new context entries as needed but leave existing entries unedited to preserve continuity.",
-      "B": "Identify and edit or delete entries that are stale, inaccurate, or no longer relevant, and add context Claude has not automatically captured but the workflow continues to need.",
-      "C": "Disable Memory entirely for the workflow to prevent any new entries from being created going forward.",
-      "D": "Export the current memories as a backup before making changes, so prior context can be restored if a maintenance edit unintentionally removes information the workflow still depends on.",
-      "E": "Delete all memories as the maintenance action to ensure a clean slate, then allow Claude to rebuild context organically through subsequent workflow runs."
-    },
-    "answer": [
-      "B",
-      "D"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
     "id": "ccao-f-121",
     "question": "You are a product manager asking Claude to produce an interactive prototype of a small landing-page mockup the team will iterate on and share. Which Claude feature is best suited to this output?",
     "options": {
@@ -1917,58 +1899,6 @@
     "type": "multiple_choice"
   },
   {
-    "id": "ccao-f-124",
-    "question": "You are organizing connected data sources for a team and must complete the planning steps before authorizing any connection. Which two planning steps must be completed BEFORE authorizing a new Connector? (Select two.)",
-    "options": {
-      "A": "Train every team member on the new Connector through formal training sessions.",
-      "B": "Confirm the data classification of the source and the team's permission to use it.",
-      "C": "Confirm which reports the organization wants to migrate onto the new Connector.",
-      "D": "Plan to decommission any unused legacy connectors that may still be authorized.",
-      "E": "Confirm the Connector is on the approved-vendor list maintained by IT."
-    },
-    "answer": [
-      "B",
-      "E"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-125",
-    "question": "An operations assistant is redesigning a recurring data processing workflow step to use Code Execution. Which two design choices best support reliable integration? (Select two.)",
-    "options": {
-      "A": "Embed the Code Execution step inside the workflow and document the fields it produces only in code comments, without a separate reference the rest of the team can consult.",
-      "B": "Define a brief output verification step in which the human reviewer confirms the computed result against an expected range or sanity check before the output advances to downstream consumers.",
-      "C": "Reduce the human review step to a brief final glance at the output before it advances to downstream consumers, treating Code Execution's internal checks as sufficient validation.",
-      "D": "Allow the input file format to vary from run to run based on whichever source system happens to supply the data that week, since the Code Execution step can adapt to differences automatically.",
-      "E": "Standardize the input file format the step expects, so each run of the Code Execution step receives consistent input and produces comparable, verifiable output across recurring weekly cycles."
-    },
-    "answer": [
-      "B",
-      "E"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-126",
-    "question": "A learning specialist is configuring a Claude Project for a recurring course-design workflow. Which configuration approach best leverages a Skill alongside other Project elements?",
-    "options": {
-      "A": "Configure the Project with custom instructions that describe a different workflow than the one the Skill documents.",
-      "B": "Add the relevant Skill to the Project, upload the supporting knowledge sources, and write custom instructions that reference both the Skill and the knowledge.",
-      "C": "Upload the supporting knowledge sources but leave the relevant Skill disabled, relying on custom instructions alone.",
-      "D": "Add the Skill and the supporting knowledge sources to the Project, but write custom instructions for a general use case unrelated to the recurring course-design workflow the Skill documents."
-    },
-    "answer": [
-      "B"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
     "id": "ccao-f-127",
     "question": "An analyst is working in a long Claude conversation. The conversation contains roughly 60 turns covering an initial requirements analysis, several rounds of data review, and a current drafting phase. Recent responses have started to drift from the agreed requirements. Which step most directly addresses the drift while preserving the analyst's progress?",
     "options": {
@@ -1979,24 +1909,6 @@
     },
     "answer": [
       "A"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-128",
-    "question": "The first output from Claude is partially useful but has tone and detail issues. Which two refinement actions are most likely to produce a meaningfully better output? (Select two.)",
-    "options": {
-      "A": "Ask Claude to elaborate further without adding any new tone descriptor, audience, or example to the prompt.",
-      "B": "Provide an example of an output that meets the desired standard.",
-      "C": "Increase the temperature setting to introduce more variation, without changing the tone, audience, or examples in the prompt.",
-      "D": "Resubmit the same prompt several times and select the best response.",
-      "E": "Add a specific tone descriptor and a concrete audience to the prompt."
-    },
-    "answer": [
-      "B",
-      "E"
     ],
     "explanation": "",
     "imageUrl": "",
@@ -2069,22 +1981,6 @@
     "type": "multiple_choice"
   },
   {
-    "id": "ccao-f-133",
-    "question": "You are a customer-success lead running an interactive workflow where each turn must respond quickly and the per-turn reasoning is light. Which selection best aligns to the requirements?",
-    "options": {
-      "A": "Choose Sonnet so quality headroom is available if occasional turns need deeper reasoning.",
-      "B": "Choose Haiku to keep latency low and to handle a light reasoning load efficiently at scale.",
-      "C": "Choose Opus because maximizing reasoning depth on every turn produces the most reliable interactive workflow.",
-      "D": "Choose Sonnet because its balanced profile better protects response quality across turns of varying difficulty."
-    },
-    "answer": [
-      "B"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
     "id": "ccao-f-134",
     "question": "A knowledge worker is defining what \"workflow optimization\" means at the Associate level for the team's recurring AI-supported workflow. Which description is most accurate?",
     "options": {
@@ -2119,38 +2015,6 @@
     "type": "multiple_choice"
   },
   {
-    "id": "ccao-f-136",
-    "question": "You are a project lead reviewing a teammate's habit of using the same prompt template for every task regardless of type. Which feedback is most warranted?",
-    "options": {
-      "A": "The prompting strategy should be adapted to each task type because one template does not produce equally strong outputs across all tasks.",
-      "B": "Task type has no effect on the appropriate prompting strategy, so a single template should perform equally well across every kind of task.",
-      "C": "The habit is reasonable because a proven template reduces prompt-writing time and most business tasks share the same structure.",
-      "D": "The prompting strategy should change only when the desired response length needs adjusting, since other differences between tasks rarely affect the appropriate approach."
-    },
-    "answer": [
-      "A"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-137",
-    "question": "You are an operations manager preparing a quick reference card for a team. Which description correctly characterizes the three Claude model tiers in general terms?",
-    "options": {
-      "A": "Haiku is fast and lightweight, Sonnet is the balanced default for most everyday work, and Opus is the most capable for complex reasoning at higher latency and cost.",
-      "B": "Sonnet is the fastest and cheapest tier, Haiku is the balanced middle option for everyday work, and Opus handles the most complex reasoning.",
-      "C": "All three models offer the same reasoning depth, with the lineup differing only in response speed and cost rather than capability.",
-      "D": "Haiku is the most capable model for the deepest reasoning, while Opus is the lightweight model for quick replies."
-    },
-    "answer": [
-      "A"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
     "id": "ccao-f-138",
     "question": "A knowledge worker notices that a Claude output may have repeated a confidential financial figure from an internal source the user was told to treat as restricted. The output has not yet been shared outside the user. Which immediate action is most appropriate?",
     "options": {
@@ -2174,38 +2038,6 @@
       "B": "Connect the data source and confirm the authentication is working as expected.",
       "C": "Use the Connector in a representative task to evaluate its real-world utility.",
       "D": "Confirm the Connector is approved and the data classification is appropriate."
-    },
-    "answer": [
-      "D"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-140",
-    "question": "Preparing an AI-assisted work product for external delivery, a senior manager is applying the AI Fluency Framework Diligence competency. Which step best reflects Diligence principles?",
-    "options": {
-      "A": "Place accountability for the AI-assisted work product with Claude itself, treating the tool as the responsible party for the deliverable.",
-      "B": "Identify the sections of the work product that read as inconsistent or unfamiliar and verify those sections, treating the smoothly written sections as reliable.",
-      "C": "Identify the elements of the work product that must be independently verified or corrected before delivery, and take ownership of those verifications as a professional accountability obligation.",
-      "D": "Deliver the work product, treating the AI assistance itself as sufficient assurance of accuracy for external delivery."
-    },
-    "answer": [
-      "C"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-141",
-    "question": "You are a knowledge worker summarizing common prompt failure patterns for the team. Which pattern most often produces vague or off-target output?",
-    "options": {
-      "A": "a prompt that names the task and required output format, but does not specify the intended audience",
-      "B": "a prompt that names the role, audience, and output format, but does not state the specific task",
-      "C": "a prompt that names the role, task, and audience, but does not specify the required output format",
-      "D": "a prompt that names a topic but does not state the task, audience, or required output structure"
     },
     "answer": [
       "D"
@@ -2263,22 +2095,6 @@
     "type": "multiple_choice"
   },
   {
-    "id": "ccao-f-145",
-    "question": "You are a Claude associate assessing a proposed Claude use case before approving it for your team. Which is the correct order of assessment steps?\n\n\n(1) Compare the use case against the organization's policies and the relevant regulatory considerations.\n\n\n(2) Document the assessment outcome and the rationale for traceability.\n\n\n(3) Identify the audience, decision impact, and reversibility of the outputs.\n\n\n(4) Decide whether the use case proceeds, requires modification, or is declined.\n\n\n(5) Identify the data types involved and whether sensitive data is implicated.",
-    "options": {
-      "A": "1, 3, 5, 4, 2",
-      "B": "5, 3, 1, 4, 2",
-      "C": "3, 1, 5, 4, 2",
-      "D": "3, 5, 1, 4, 2"
-    },
-    "answer": [
-      "D"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
     "id": "ccao-f-146",
     "question": "You are a knowledge worker evaluating which Claude feature matches each proposed use case. Which two feature-to-use-case matches are appropriate? (Select two.)",
     "options": {
@@ -2307,58 +2123,6 @@
     },
     "answer": [
       "B"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-148",
-    "question": "You are an operations lead sorting proposed Claude use cases by whether they are acceptable for your team to pursue. Which two proposed use cases are acceptable for the team to pursue with Claude? (Select two.)",
-    "options": {
-      "A": "drafting a preliminary symptom summary to support a clinician's diagnostic review",
-      "B": "drafting an internal training summary from approved internal documentation",
-      "C": "synthesizing themes across approved customer feedback under aggregation rules",
-      "D": "drafting a legal summary an attorney reviews before sharing with a client",
-      "E": "summarizing performance review notes to determine promotion decisions across a team"
-    },
-    "answer": [
-      "B",
-      "C"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-149",
-    "question": "You are using Claude to redesign an employee onboarding workflow and must complete the high-level decomposition steps before specifying detailed artifacts. Which two decomposition steps must be completed BEFORE specifying exact email content and the schedule? (Select two.)",
-    "options": {
-      "A": "Pilot the onboarding workflow with a small cohort of new hires.",
-      "B": "Define the overall objective of the onboarding experience.",
-      "C": "Negotiate the onboarding budget with the finance department.",
-      "D": "Roll out the onboarding workflow company-wide before it has been piloted.",
-      "E": "Identify the major phases of the onboarding experience."
-    },
-    "answer": [
-      "B",
-      "E"
-    ],
-    "explanation": "",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "ccao-f-150",
-    "question": "You are a knowledge worker reviewing a Claude-generated brief that asserts a \"well-known industry standard\" without naming any source. How should this assertion be handled?",
-    "options": {
-      "A": "Accept the assertion because the phrase \"well-known\" is reassuring, treating confident phrasing as a substitute for a cited source.",
-      "B": "Flag the assertion as unverified in an internal note, but publish the brief unchanged without sourcing or removing the claim.",
-      "C": "Strengthen the assertion by adding more confident wording and presenting it as established industry consensus.",
-      "D": "Treat the assertion as unverified, and either source it from an authoritative reference or remove it."
-    },
-    "answer": [
-      "D"
     ],
     "explanation": "",
     "imageUrl": "",
