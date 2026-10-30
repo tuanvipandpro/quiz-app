@@ -11,7 +11,7 @@ export const quizzes = [
     file: 'quiz/Anthropic/CCA_F.json',
     category: 'Anthropic',
     difficulty: 'Foundations',
-    totalQuestions: 201,
+    totalQuestions: 195,
     code: 'CCAR-F',
     aliases: ['CCA-F'],
   },
@@ -21,7 +21,7 @@ export const quizzes = [
     file: 'quiz/Anthropic/CCAR_P.json',
     category: 'Anthropic',
     difficulty: 'Professional',
-    totalQuestions: 157,
+    totalQuestions: 126,
     code: 'CCAR-P',
   },
   {
@@ -30,7 +30,7 @@ export const quizzes = [
     file: 'quiz/Anthropic/CCAO_F.json',
     category: 'Anthropic',
     difficulty: 'Foundations',
-    totalQuestions: 151,
+    totalQuestions: 137,
     code: 'CCAO-F',
   },
   {

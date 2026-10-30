@@ -1489,20 +1489,6 @@
     ]
   },
   {
-    "id": "102",
-    "question": "The coordinator agent has AgentFunctions configured for all four specialized subagents, each with appropriate descriptions and restrictions. During testing, you find the coordinator sometimes fails to delegate—it writes \"I'll ask the web search agent to find sources\" without actually invoking it. What is the most likely cause?",
-    "imageUrl": "",
-    "options": {
-      "D": "The coordinator's max_tokens setting is too low, causing the Task tool invocation to be truncated before the subagent parameter can be specified.",
-      "A": "The AgentFunctions are configured correctly, but the coordinator's system prompt includes a statement that prevents it from knowing the available subagent types.",
-      "B": "Subagent context limit descriptions from the coordinator don't provide enough context; you need to configure explicit context content between coordinator and tool descriptions.",
-      "C": "The coordinator's allowed Tools configuration doesn't include \"Task\", so while it can describe delegation, it cannot actually invoke the tool required to spawn subagents."
-    },
-    "answer": [
-      "C"
-    ]
-  },
-  {
     "id": "103",
     "question": "When researching \"renewable energy adoption,\" the web search agent returns recent statistics (2024: 35% adoption) while the document analysis agent extracts data from internal reports (2022: 18% adoption). The synthesis agent incorrectly flags these as contradictory sources rather than recognizing the data shows growth over time. What change would best enable the synthesis agent to correctly interpret such temporal differences?",
     "imageUrl": "",
@@ -1881,20 +1867,6 @@
     ]
   },
   {
-    "id": "130",
-    "question": "Production logs reveal inconsistent error handling: when tool_code fails, the agent sometimes retries 5 times (even if the tool_id doesn't exist), sometimes escalates immediately (premature for temporary network issues), and sometimes adds user-friendly explanation (inappropriate when the issue is a backend permission error). Investigation shows four MCP tool returns uniform error responses: {\"status\": \"error\", \"content\": \"{\"type\": \"Error\", \"message\": \"Operation failed.\"}\"}. The agent learns different types. What's the most effective improvement?",
-    "imageUrl": "",
-    "options": {
-      "B": "Create an analyze_error MCP tool the agent calls after any failure to determine the error category and recommended action.",
-      "A": "Implement retry logic with exponential backoff in your MCP server for all errors, returning to the agent only after retries are exhausted.",
-      "D": "Enhance error responses with structured metadata. Include error_category (transient/retriable/permission), reason, and a description of what caused the failure.",
-      "C": "Add a few-shot examples to the system prompt demonstrating how to interpret error message patterns and select appropriate responses for each."
-    },
-    "answer": [
-      "D"
-    ]
-  },
-  {
     "id": "131",
     "question": "Your code review prompts include both implementation changes and the corresponding test file, but the LLM's review comments fail to point out untested code paths. Analysis reveals the model correctly flags functions that have no tests at all, but fails to identify when conditional branches or error-handling paths within tested functions that have no tests at all, but fails to identify when conditional branches or error-handling paths within tested functio lack coverage. What's the most effective way to improve detection of branch-level coverage gaps without overcomplicating the pipeline?",
     "imageUrl": "",
@@ -1906,20 +1878,6 @@
     },
     "answer": [
       "B"
-    ]
-  },
-  {
-    "id": "132",
-    "question": "Your pipeline uses a tool called extract_metadata with a JSON schema for paper details. You've also defined lookup_citations and verify_doi tools for enrichment. During testing, you notice that when users include requests like \"extract the metadata and tell me how cited it is,\" Claude sometimes calls lookup_citations first, which fails because it needs the DOI that extract_metadata would provide. What's the most effective way to ensure structured metadata extraction happens first?",
-    "imageUrl": "",
-    "options": {
-      "D": "Set tool_choice to {\"type\": \"tool\", \"name\": \"extract_metadata\"} for every API call in the pipeline, ensuring Claude always extracts metadata before any enrichment can occur.",
-      "C": "Set tool_choice to {\"type\": \"tool\", \"name\": \"extract_metadata\"} and process the enrichment requests in subsequent turns after receiving the extracted metadata.",
-      "B": "Set tool_choice to \"auto\" and reorder the tool definitions so extract_metadata appears first in the tools array, since Claude prioritizes earlier-listed tools.",
-      "A": "Set tool_choice to \"any\" so Claude must use a tool, combined with system prompt instructions prioritizing extract_metadata."
-    },
-    "answer": [
-      "C"
     ]
   },
   {
@@ -2497,20 +2455,6 @@
     ]
   },
   {
-    "id": "174",
-    "question": "Your development team is using Claude Code to automate test generation across a large codebase. However, developers are frequently rejecting the generated test suites because Claude creates a high volume of trivial assertions or tests that merely maximize line coverage without validating meaningful behavioral logic or edge cases. You want to guide Claude to generate high-quality, production-ready tests directly without introducing high latency or modifying the core pipeline script. Which strategy best ensures that high-quality, meaningful tests are generated in the first place?",
-    "imageUrl": "",
-    "options": {
-      "B": "Add post-generation coverage analysis that automatically filters out any generated test that doesn't increase line coverage beyond what existing tests provide.",
-      "D": "Implement a two-phase generation where a second Claude call scores each test against quality criteria, filtering out low-scoring tests before presenting results to developers.",
-      "A": "Restrict test generation to directories where historical quality metrics show higher acceptance rates, disabling it for areas where generated tests consistently require heavy editing.",
-      "C": "Document testing standards in CLAUDE.md including valuable test criteria, available fixtures with intended use cases, and examples distinguishing meaningful behavioral tests from trivial assertions."
-    },
-    "answer": [
-      "C"
-    ]
-  },
-  {
     "id": "175",
     "question": "Your music discovery assistant should consistently maintain an enthusiastic tone, explain its reasoning for each recommendation, and ask clarifying questions to better understand user preferences. You want this behavior to persist reliably across all user interactions. Where should you define these behavioral guidelines?",
     "imageUrl": "",
@@ -2537,22 +2481,6 @@
       "A"
     ],
     "explanation": "Multi-agent hợp lý khi: (1) subtasks độc lập, chạy song song được, và (2) tổng context cần thiết vượt quá khả năng một context window — cho phép context isolation giữa các subagent.\n\n**The research tasks decompose into independent subtasks that can run in parallel and would collectively accumulate more context than a single window can hold:** Đúng. Đây là hai lý do chính đáng nhất cho multi-agent: (1) tasks độc lập có thể chạy song song → giảm latency thực sự, và (2) context isolation cho phép tổng lượng thông tin xử lý vượt quá một context window đơn lẻ — mỗi subagent chỉ giữ phần context liên quan đến việc của nó.\n\n**The team wants to reduce total token consumption, since multiple smaller agents always cost less than one large agent:** Sai. Nhiều agent nhỏ KHÔNG tự động rẻ hơn — mỗi subagent vẫn cần system prompt, tool definitions, và context riêng, có thể dẫn đến tổng token tiêu thụ NHIỀU hơn do trùng lặp overhead.\n\n**The tasks require strictly sequential steps where each step depends entirely on the previous step's output:** Sai. Đây thực ra là lý do ủng hộ SEQUENTIAL execution (có thể vẫn multi-agent nhưng không chạy song song được) — không phải lý do đặc trưng để chọn multi-agent over single-agent. Nếu mọi bước phụ thuộc chặt vào nhau, một agent tuần tự đơn giản có thể xử lý tốt.\n\n**The system needs faster responses, and adding more agents reliably reduces end-to-end latency:** Sai. 'Adding more agents reliably reduces latency' là khẳng định sai — chỉ đúng khi các tác vụ ĐỘC LẬP và chạy song song. Nếu tasks phụ thuộc tuần tự, thêm agent không giảm latency mà còn tăng overhead giao tiếp.",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "177",
-    "question": "Production logs show that when the agent handles complex billing disputes requiring 6+ tool calls, it sometimes exhausts its max_turns limit after gathering data but before completing resolution or escalating. The team's goal is to guarantee that every customer interaction ends with resolution or a human handoff, regardless of how the agent loop terminates. Which approach achieves this guarantee?",
-    "options": {
-      "A": "Add system prompt instructions telling the agent to call escalate_to_human with a summary of its findings within its remaining actions",
-      "B": "Split the workflow into two sequential agent invocations — a first agent gathers information, a second handles process_refund or escalate_to_human, each with separate turn budgets",
-      "C": "Add orchestration-layer code that checks the agent's outcome after each loop termination — if the loop ends without resolution or escalation, programmatically call escalate_to_human with the accumulated conversation context",
-      "D": "Implement a pre-tool-use hook that counts tool invocations and terminates the loop with an automatic escalation when approaching the limit"
-    },
-    "answer": [
-      "C"
-    ],
-    "explanation": "Khi cần 'guarantee' (đảm bảo tuyệt đối), phải dùng deterministic/programmatic enforcement ở tầng orchestration — không thể chỉ dựa vào prompt instructions vì luôn có tỷ lệ lỗi khác 0.\n\n**Add system prompt instructions telling the agent to call escalate_to_human with a summary of its findings within its remaining actions:** Sai. Đây là prompt-based guidance (hướng dẫn qua system prompt) — không đảm bảo (guarantee) 100%, vì model vẫn có thể không tuân theo trong một số trường hợp (non-zero failure rate). Yêu cầu đề bài là 'guarantee', đòi hỏi deterministic enforcement.\n\n**Split the workflow into two sequential agent invocations — a first agent gathers information, a second handles process_refund or escalate_to_human, each with separate turn budgets:** Sai. Tách thành 2 lần gọi tuần tự với turn budget riêng vẫn không đảm bảo: agent thứ hai vẫn có thể exhaust turn limit của chính nó trước khi resolve/escalate — vấn đề gốc (không có safety net cuối cùng) chưa được giải quyết.\n\n**Add orchestration-layer code that checks the agent's outcome after each loop termination — if the loop ends without resolution or escalation, programmatically call escalate_to_human with the accumulated conversation context:** Đúng. Đây là deterministic enforcement ở tầng orchestration (không phải model): code kiểm tra kết quả SAU MỖI lần loop kết thúc — nếu không có resolution/escalation, code TỰ ĐỘNG (programmatic) gọi escalate_to_human. Đây chính xác là 'programmatic enforcement' đối lập với 'prompt-based guidance' — đảm bảo guarantee tuyệt đối vì không phụ thuộc vào quyết định của model.\n\n**Implement a pre-tool-use hook that counts tool invocations and terminates the loop with an automatic escalation when approaching the limit:** Sai. Pre-tool-use hook chỉ chặn TRƯỚC khi gọi tool, không phải cơ chế đảm bảo escalation SAU KHI loop đã kết thúc mà chưa resolve — không đúng thời điểm can thiệp cần thiết.",
     "imageUrl": "",
     "type": "multiple_choice"
   },
@@ -2921,21 +2849,6 @@
       "B"
     ],
     "explanation": "Đây là 'lost in the middle' effect — thông tin/constraint quan trọng nêu sớm trong conversation dài dễ bị pha loãng. Giải pháp: định kỳ tái xuất hiện constraint đang hiệu lực trong structured summary gần đầu/cuối context, không dựa vào model tự nhớ từ giữa transcript.\n\n**This indicates a bug in the API's message handling and should be reported rather than addressed in the application:** Sai. Đây KHÔNG phải bug của API — đây là hiện tượng ĐÃ ĐƯỢC BIẾT ĐẾN và có tên gọi cụ thể ('lost in the middle' effect) về cách model chú ý đến các phần khác nhau của context dài; có giải pháp ứng dụng cụ thể, không cần 'report bug'.\n\n**Important constraints stated early can become diluted amid dozens of subsequent turns; the mitigation is to have the system periodically re-surface active constraints in a structured summary near the top of context or just before the current turn, rather than relying on the model to recall them unaided from deep in the transcript:** Đúng. Đây chính là 'lost in the middle' effect: thông tin quan trọng (constraint) nêu SỚM trong conversation dài dễ bị 'pha loãng' (diluted) khi có nhiều turn tiếp theo — model chú ý mạnh nhất ở ĐẦU và CUỐI, kém nhất ở GIỮA. Giải pháp đúng là hệ thống ĐỊNH KỲ TÁI XUẤT HIỆN (re-surface) các constraint ĐANG HIỆU LỰC trong một structured summary GẦN ĐẦU context hoặc NGAY TRƯỚC turn hiện tại — không dựa vào việc model 'tự nhớ' từ sâu trong transcript.\n\n**The context window has a strict recency-only attention mechanism that makes early-turn information permanently inaccessible after 10 turns:** Sai. Không có 'cơ chế attention chỉ theo recency tuyệt đối' làm thông tin sớm 'vĩnh viễn không truy cập được sau 10 turn' — đây là khẳng định quá cứng nhắc/sai về cách attention hoạt động; hiệu ứng là DẦN DẦN (gradual), không phải một ngưỡng cứng.\n\n**The only reliable fix is to end the conversation and start a new one every 10 turns to prevent constraint loss:** Sai. Kết thúc và bắt đầu conversation MỚI mỗi 10 turn quá cực đoan — sẽ làm MẤT continuity của cuộc trò chuyện thực sự, và không phải giải pháp thực tế/hiệu quả nhất so với việc re-surface constraint có cấu trúc.",
-    "imageUrl": "",
-    "type": "multiple_choice"
-  },
-  {
-    "id": "201",
-    "question": "Your automated reviewer uses a single prompt covering security issues, API design, and business logic correctness. Your evaluation suite shows strong recall for API design findings (82%) but poor recall for business logic edge cases in quiz scoring (34%). When you add few-shot examples of logic bugs to the prompt, logic recall improves to 41% but API design recall drops to 68%. How should you address this trade- off to improve detection across both categories?",
-    "options": {
-      "A": "Split the review into separate focused prompts — one for security and API design, another for business logic — each with dedicated examples, then consolidate findings before posting.",
-      "B": "Replace the few-shot examples with a detailed checklist of specific logic edge cases to verify, such as division-by-zero In score calculations and boundary conditions in grading thresholds.",
-      "C": "Upgrade to a more capable model tier, since its stronger reasoning will handle both concern types in a single prompt and eliminate the recall trade-off."
-    },
-    "answer": [
-      "A"
-    ],
-    "explanation": "The correct choice is A: Split the review into separate focused prompts — one for security and API design, another for business logic — each with dedicated examples, then consolidate findings before posting. This directly addresses the scenario described in the question.",
     "imageUrl": "",
     "type": "multiple_choice"
   }
