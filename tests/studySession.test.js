@@ -87,7 +87,7 @@ test('aliased exam links keep the newest draft, exact shuffle, answers, flags an
   const legacyKey = 'quiz-study-v1:alice:aws-ace:exam';
   const key = sessionKey('alice', 'gcp-ace', 'exam');
   const legacy = {
-    ...createExamSession(questions, 3, 60, 2000, () => 0.25),
+    ...createExamSession(questions, 3, 60, { now: 2000, random: () => 0.25 }),
     freshToken: '2000',
     index: 1,
     flags: [1],
@@ -96,7 +96,7 @@ test('aliased exam links keep the newest draft, exact shuffle, answers, flags an
   store.setItem(legacyKey, JSON.stringify(legacy));
   store.setItem(
     key,
-    JSON.stringify({ ...createExamSession(questions, 2, 60, 1000), freshToken: '1000' })
+    JSON.stringify({ ...createExamSession(questions, 2, 60, { now: 1000 }), freshToken: '1000' })
   );
   const neverCreate = () => {
     throw new Error('Must not restart the timer or reshuffle');
@@ -147,7 +147,7 @@ test('an old resume URL does not reset a continued practice draft to its earlier
 test('reopening a new-exam URL restores the exact order, choices, answers and deadline', () => {
   const store = storage();
   const key = sessionKey('alice', 'bank', 'exam');
-  const make = () => createExamSession(questions, 3, 60, 1000, () => 0.25);
+  const make = () => createExamSession(questions, 3, 60, { now: 1000, random: () => 0.25 });
   const first = initialStudySession(store, key, questions, 'exam', make, { fresh: 'new-exam-1' });
   first.index = 1;
   first.answers[1] = ['A'];
@@ -173,7 +173,7 @@ test('reopening a new-exam URL restores the exact order, choices, answers and de
 test('returning to an older exam link cannot reset a newer running exam', () => {
   const store = storage();
   const key = sessionKey('alice', 'bank', 'exam');
-  const make = () => createExamSession(questions, 3, 60, 1000);
+  const make = () => createExamSession(questions, 3, 60, { now: 1000 });
   const running = initialStudySession(store, key, questions, 'exam', make, { fresh: '2000' });
   running.answers[0] = 'A';
   store.setItem(key, JSON.stringify(running));
@@ -223,7 +223,7 @@ test('cloud resume sets a position once; refreshing keeps the subsequent local p
 test('content changes, corrupted storage and invalid sessions never restore a different quiz', () => {
   const store = storage();
   const key = sessionKey(null, 'bank', 'exam');
-  const session = createExamSession(questions, 80, 60, 1000);
+  const session = createExamSession(questions, 80, 60, { now: 1000 });
   store.setItem(key, JSON.stringify(session));
   assert.equal(session.questions.length, questions.length);
   const changed = questions.map((question, index) =>
@@ -256,7 +256,7 @@ test('content changes, corrupted storage and invalid sessions never restore a di
 });
 
 test('expiry and manual submission lock the same exam once, without extending its deadline', () => {
-  const session = createExamSession(questions, 2, 60, 1000);
+  const session = createExamSession(questions, 2, 60, { now: 1000 });
   assert.equal(finishExam(session, session.deadline - 1), session);
   const expired = finishExam(session, session.deadline);
   assert.equal(expired.submitted, true);
@@ -295,4 +295,103 @@ test('account changes clear only that account’s drafts and preserve unrelated 
   assert.equal(store.getItem(alice), null);
   assert.equal(store.getItem(bob), '{}');
   assert.equal(store.getItem('quiz-app-language'), 'vi');
+});
+
+test('new exams default to Standard unless Learning is explicitly recognized', () => {
+  for (const feedbackMode of [undefined, null, '', 'unknown', 'constructor', {}, ['learning']]) {
+    const session = createExamSession(questions, 2, 60, { now: 1000, feedbackMode });
+    assert.equal(session.feedbackMode, 'standard');
+    assert.equal(session.deadline, 3601000);
+  }
+  assert.equal(
+    createExamSession(questions, 2, 60, { feedbackMode: 'learning' }).feedbackMode,
+    'learning'
+  );
+});
+
+test('legacy and invalid feedback values keep a valid draft as Standard without resetting it', () => {
+  const store = storage();
+  const key = sessionKey('alice', 'bank', 'exam');
+  const draft = {
+    ...createExamSession(questions, 3, 60, { now: 1000 }),
+    index: 1,
+    flags: [1],
+    freshToken: '1000',
+  };
+  draft.answers[0] = 'B';
+  for (const feedbackMode of [undefined, null, 'invalid', {}, ['learning']]) {
+    store.setItem(key, JSON.stringify({ ...draft, feedbackMode }));
+    assert.deepEqual(readStudySession(store, key, questions, 'exam'), draft);
+  }
+});
+
+test('resume keeps the stored feedback mode and only a new exam uses changed settings', () => {
+  for (const feedbackMode of ['standard', 'learning']) {
+    const store = storage();
+    const key = sessionKey('alice', 'bank', 'exam');
+    const create = (value) => () =>
+      createExamSession(questions, 3, 60, { now: 1000, feedbackMode: value });
+    const draft = initialStudySession(store, key, questions, 'exam', create(feedbackMode), {
+      fresh: '2000',
+    });
+    draft.index = 1;
+    draft.flags = [1];
+    draft.answers[0] = 'B';
+    store.setItem(key, JSON.stringify(draft));
+    const otherMode = feedbackMode === 'standard' ? 'learning' : 'standard';
+    for (const fresh of [null, '2000', '1000']) {
+      assert.deepEqual(
+        initialStudySession(store, key, questions, 'exam', create(otherMode), { fresh }),
+        draft
+      );
+    }
+    const next = initialStudySession(store, key, questions, 'exam', create(otherMode), {
+      fresh: '3000',
+    });
+    assert.equal(next.feedbackMode, otherMode);
+    assert.equal(next.index, 0);
+    assert.deepEqual(next.flags, []);
+    assert.deepEqual(next.answers, next.questions.map(emptyAnswer));
+  }
+});
+
+test('learning drafts never cross quiz or account boundaries and logout clears their state', () => {
+  const store = storage();
+  const key = sessionKey('alice', 'one-bank', 'exam');
+  store.setItem(
+    key,
+    JSON.stringify(createExamSession(questions, 3, 60, { feedbackMode: 'learning' }))
+  );
+  for (const otherKey of [
+    sessionKey('bob', 'one-bank', 'exam'),
+    sessionKey(null, 'one-bank', 'exam'),
+    sessionKey('alice', 'another-bank', 'exam'),
+    sessionKey('alice', 'custom', 'exam'),
+  ]) {
+    const next = initialStudySession(store, otherKey, questions, 'exam', () =>
+      createExamSession(questions, 3, 60)
+    );
+    assert.equal(next.feedbackMode, 'standard');
+    assert.deepEqual(next.answers, next.questions.map(emptyAnswer));
+  }
+  clearStudySessions(store, 'alice');
+  assert.equal(store.getItem(key), null);
+});
+
+test('both feedback modes retain final answers, mode and deadline after submit or expiry', () => {
+  for (const feedbackMode of ['standard', 'learning']) {
+    const session = createExamSession([questions[0]], 1, 60, { now: 1000, feedbackMode });
+    session.answers[0] = 'B';
+    assert.equal(examStats(session).incorrect, 1);
+    session.answers[0] = 'A';
+    for (const finished of [
+      finishExam(session, 2000, true),
+      finishExam(session, session.deadline),
+    ]) {
+      assert.equal(finished.feedbackMode, feedbackMode);
+      assert.equal(finished.deadline, session.deadline);
+      assert.equal(examStats(finished).correct, 1);
+      assert.equal(finishExam(finished, session.deadline + 1000), finished);
+    }
+  }
 });

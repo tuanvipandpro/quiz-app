@@ -26,6 +26,7 @@ import AppHeader from './components/AppHeader';
 import ProviderIdentity from './components/ProviderIdentity';
 import { findQuiz } from './data/quizzes';
 import { getQuickSummary } from './data/quickSummaries';
+import { getExamFeedbackMode } from './data/examModes';
 import { resolveCheckpoint } from './utils/quizProgress';
 import { validateQuizQuestions } from './utils/questionModel';
 import { clearStudySessions, readStudySession, sessionKey } from './utils/studySession';
@@ -106,7 +107,8 @@ export default function App() {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const cache = useRef(new Map());
   const scrollPositions = useRef(new Map());
-  const previousUid = useRef(uid);
+  // Keep study components unmounted until the account transition has been handled.
+  const [studyOwner, setStudyOwner] = useState(undefined);
   const header = useRef(null);
 
   useEffect(() => {
@@ -146,16 +148,18 @@ export default function App() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (previousUid.current !== uid) {
+    if (studyOwner !== undefined && studyOwner !== uid) {
       setLoaded((previous) => (previous?.id === 'custom' ? null : previous));
       try {
-        clearStudySessions(sessionStorage, previousUid.current);
+        clearStudySessions(sessionStorage, studyOwner);
       } catch {
         /* Optional local drafts. */
       }
       if (route.quizId === 'custom') navigate('#/library', true);
-      previousUid.current = uid;
+      else if (route.page === 'quiz' && route.mode === 'exam')
+        navigate(quizUrl(route.quizId, 'overview', { mode: 'exam' }), true);
     }
+    setStudyOwner(uid);
     let next = null;
     try {
       const saved = JSON.parse(sessionStorage.getItem(UPLOAD_KEY));
@@ -175,7 +179,7 @@ export default function App() {
     }
     setUpload(next);
     setUploadReady(true);
-  }, [uid, authLoading]);
+  }, [uid, authLoading, studyOwner]);
 
   useEffect(() => {
     if (route.page !== 'quiz') {
@@ -267,7 +271,7 @@ export default function App() {
     }
   }
   const hasExamDraft = !!examDraft && !examDraft.submitted;
-  const selectMode = (mode, time, count, fresh = false) => {
+  const selectMode = (mode, { time, count, feedbackMode, fresh = false }) => {
     const start = () =>
       go(
         quizUrl(
@@ -277,6 +281,9 @@ export default function App() {
             ? {
                 time: String(time),
                 count: String(count),
+                feedback: getExamFeedbackMode(
+                  hasExamDraft && !fresh ? examDraft.feedbackMode : feedbackMode
+                ).id,
                 ...(fresh || !hasExamDraft ? { fresh: String(Date.now()) } : {}),
               }
             : {}
@@ -404,6 +411,7 @@ export default function App() {
     loading ||
     !active ||
     authLoading ||
+    studyOwner !== uid ||
     (route.params.get('resume') === '1' && progressState.loading)
   )
     screen = (
@@ -451,6 +459,7 @@ export default function App() {
         quizId={active.id}
         quizName={active.name}
         examTimeMinutes={Number(route.params.get('time')) === 120 ? 120 : 60}
+        feedbackMode={route.params.get('feedback')}
         examQuestionCount={
           [50, 60, 70, 80].includes(Number(route.params.get('count')))
             ? Number(route.params.get('count'))
@@ -508,7 +517,7 @@ export default function App() {
           </div>
         </div>
         <QuizMode
-          key={active.id}
+          key={`${active.id}:${uid || 'guest'}`}
           onSelectMode={selectMode}
           onModeChange={(mode) => replace(quizUrl(active.id, 'overview', { mode }))}
           totalQuestions={active.questions.length}
@@ -520,6 +529,7 @@ export default function App() {
           }
           hasExamDraft={hasExamDraft}
           examDraftCount={examDraft?.questions.length}
+          examDraftFeedbackMode={examDraft?.feedbackMode}
         />
         {progressState.progress[active.id] && (
           <Button

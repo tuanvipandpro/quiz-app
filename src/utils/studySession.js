@@ -7,6 +7,7 @@ import {
 } from './questionModel.js';
 import { canonicalQuizId, QUIZ_ID_ALIASES } from '../data/quizAliases.js';
 import { canonicalQuizHash } from './navigation.js';
+import { getExamFeedbackMode } from '../data/examModes.js';
 
 export const SESSION_PREFIX = 'quiz-study-v1:';
 
@@ -26,8 +27,7 @@ export function createExamSession(
   questions,
   count,
   minutes,
-  now = Date.now(),
-  random = Math.random
+  { now = Date.now(), random = Math.random, feedbackMode } = {}
 ) {
   if (!questions.length) throw new Error('An exam needs at least one question.');
   const pool = [...questions];
@@ -48,6 +48,7 @@ export function createExamSession(
     deadline: now + minutes * 60000,
     submitted: false,
     timeExpired: false,
+    feedbackMode: getExamFeedbackMode(feedbackMode).id,
   };
 }
 
@@ -141,7 +142,8 @@ function readStoredStudySession(storage, key, questions, mode) {
     const ids = new Set(questions.map((question) => String(question.id)));
     if (!saved.questions.every((question) => ids.has(String(question.id)))) return null;
     validateQuizQuestions(saved.questions, { allowLegacyIncomplete: true });
-    return saved;
+    // Additive migration: retain the old draft and deadline, defaulting to Standard.
+    return { ...saved, feedbackMode: getExamFeedbackMode(saved.feedbackMode).id };
   } catch {
     return null;
   }
