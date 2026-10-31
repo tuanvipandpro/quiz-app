@@ -11,6 +11,7 @@
 /firebase/** text eol=lf
 /openspec/** text eol=lf
 /docs/** text eol=lf
+/docs/evidence/**/*.png binary
 /.agents/** text eol=lf
 
 # Preserve exact upstream bytes for the UI skill provenance check.
