@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { selectMenuItem } from './motion';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -25,7 +26,7 @@ async function requestSignOut(page) {
   const menu = page.getByRole('menu');
   await expect(menu).toBeVisible();
   await expect(menu.getByRole('separator')).toBeVisible();
-  await menu.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await selectMenuItem(page, 'Sign out');
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toBeVisible();
   return dialog;

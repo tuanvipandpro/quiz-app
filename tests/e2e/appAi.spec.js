@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { selectMenuItem } from './motion';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
@@ -67,7 +68,7 @@ test('logout while a result is in flight discards the private explanation', asyn
   await explain(page);
   await ready;
   await page.getByRole('button', { name: 'AI tester', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await selectMenuItem(page, 'Sign out');
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await dialog.getByRole('button', { name: 'Sign out', exact: true }).click();
   release();

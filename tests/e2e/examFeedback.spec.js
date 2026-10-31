@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { selectMenuItem } from './motion';
 import { fileURLToPath } from 'node:url';
 
 const example = (format) =>
@@ -231,7 +232,7 @@ test('sign-out clears Learning drafts and the next guest exam starts as Standard
   await expect(page.locator('.exam-mode-label')).toContainText('Learning exam');
   await page.getByRole('button', { name: 'Flag', exact: true }).click();
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await selectMenuItem(page, 'Sign out');
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toContainText('end this exam');
   await dialog.getByRole('button', { name: 'Sign out', exact: true }).click();

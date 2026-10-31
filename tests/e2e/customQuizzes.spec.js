@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { selectMenuItem, settleMotion } from './motion';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
@@ -361,7 +362,7 @@ test('logout and another account cannot display a private quiz through its old d
   await card(page, 'Alice private').getByRole('button', { name: 'Practice', exact: true }).click();
   const url = page.url();
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await selectMenuItem(page, 'Sign out');
   await confirm(page, 'Sign out?', 'Sign out');
   await page.goto(url);
   await expect(page.getByText('Sign in to open your saved quiz.', { exact: true })).toBeVisible();
@@ -437,6 +438,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           name: language === 'en' ? 'Delete' : 'Xóa',
           exact: true,
         });
+        await settleMotion(deleteAction);
         const cardContrast = await contrastRatio(deleteAction);
         expect(cardContrast).toBeGreaterThanOrEqual(4.5);
         contrastEvidence.push({ language, theme, width, cardContrast });
