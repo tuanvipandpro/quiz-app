@@ -2,12 +2,12 @@ import React from 'react';
 import { Alert, Button, Modal, Typography } from 'antd';
 import {
   ArrowRightOutlined,
-  BookOutlined,
   CloudSyncOutlined,
   GithubOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { appBrand } from '../data/appBrand';
 import './SignInModal.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -26,11 +26,16 @@ export default function SignInModal({ open, onClose, onSignIn, busy, error }) {
     >
       <div className="sign-in-content">
         <div className="sign-in-brand">
-          <span className="sign-in-brand-mark">
-            <BookOutlined aria-hidden="true" />
-          </span>
+          <img
+            className="sign-in-brand-mark"
+            src={import.meta.env.BASE_URL + appBrand.logo}
+            alt=""
+            aria-hidden="true"
+            width="44"
+            height="44"
+          />
           <div>
-            <strong>Quiz App</strong>
+            <strong>{appBrand.name}</strong>
             <Text type="secondary">{t('Your study space')}</Text>
           </div>
         </div>

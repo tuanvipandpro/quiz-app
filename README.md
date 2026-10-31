@@ -1,4 +1,4 @@
-# Quiz App
+# QuizMos
 
 Practice certification questions, take timed mock exams and read curated study guides. React 19, Vite, Ant Design and Firebase.
 
