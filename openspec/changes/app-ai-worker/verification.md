@@ -39,6 +39,14 @@ Worker integration executes the actual fetch handler with signed test tokens and
 
 ## UI evidence and skill use
 
+### CI reduced-motion regression
+
+[CI run 41227218604](https://github.com/tuanvipandpro/quiz-app/actions/runs/41227218604) trên `da186ca` passed 147 Node, 14 Worker/auth và 17 Rules tests nhưng chỉ 123/126 browser tests. Ba cases đều fail khi đóng Help dưới reduced motion: desktop EN/dark, desktop VN/light và phone VN/dark. Log giữ modal ở `ant-zoom-leave-active` sau 8 giây; đây không phải lỗi selector của lần local trước và không được coi là CI xanh.
+
+Code review đối chiếu `src/App.css` với rc-dialog/rc-motion và `ConfigProvider/MotionWrapper` của phiên bản đang cài: CSS zero-duration không đồng bộ trạng thái motion của thư viện, nên lifecycle đóng modal có thể chờ một end event đã bỏ lỡ. `useReducedMotion` đưa media preference vào token `motion` của Ant Design và cập nhật trực tiếp khi preference đổi. Khởi tạo với motion disabled giữ MotionProvider mounted từ đầu, tránh mất form state khi chuyển preference; các controls vẫn dùng motion bình thường khi người dùng không yêu cầu giảm chuyển động.
+
+UI skill query `reduced motion animation` khớp **Animation / Reduced Motion**, áp dụng media preference qua API thư viện. Bộ BYOK sau sửa có **14/14 passed**: giữ nguyên 3 assertions CI đã fail, thêm startup preference/live changes khi Help đang mở, giữ key draft, đóng Help/Sign in/Settings và trả focus. Không tăng timeout, hạ assertion, force click hoặc retry. Full CI của commit sửa được ghi riêng trên PR; các pass local không thay thế CI của đúng head.
+
 ### BYOK simplification follow-up — 2026-11-01
 
 User yêu cầu giảm thông tin thường trực và đồng nhất đăng nhập. Settings trước đây render hai provider cards cùng mô tả/hướng dẫn lặp lại; nút Sign in gọi OAuth trực tiếp. Bản sửa dùng một editor theo provider, giữ draft của từng key khi đổi provider, Help dialog cho setup/storage/quota và lỗi/kết quả ngay gần input. Save/Test và nút xóa 44px giữ thao tác chính gọn; xóa cần xác nhận. Provider tabs chỉ chọn key đang chỉnh sửa, không đổi model routing.

@@ -18,6 +18,7 @@ Giữ boundary component/hook/service, chia sẻ validator/prompt; một Worker 
 - Source preference account-scoped, guest bắt buộc BYOK. Nếu chưa có public API URL thì App AI unavailable, BYOK tiếp tục hoạt động. Settings hiển thị source + quota; modal dùng error recovery/disabled guidance từ UI skill. Snapshot/late request guards ở hook; không copy credential.
 - BYOK cache/prompt nhận language và registry label; standard/learning gating vẫn do study flow hiện hữu kiểm soát.
 - BYOK settings chỉ hiện một form key theo provider đang chọn; việc đổi provider không đổi thứ tự model routing và không làm mất input chưa lưu. Hướng dẫn lấy/lưu/test key nằm trong dialog trợ giúp, lỗi và kết quả thao tác vẫn hiện gần input. Nút Sign in mở cùng `SignInModal` và cùng hook xử lý đăng nhập như header; đóng dialog đăng nhập trả về form hiện tại, không tự gọi OAuth từ nút Sign in.
+- Reduced-motion preference được đưa vào `ConfigProvider` qua token `motion`, cập nhật khi media query thay đổi. Khởi tạo không motion trước khi đọc preference để Ant Design giữ MotionProvider ổn định, tránh remount form khi preference thay đổi. CSS reduced-motion vẫn áp dụng cho phần tự viết, nhưng modal không còn phụ thuộc sự kiện kết thúc animation 0s để đóng.
 
 ## Risks / Trade-offs
 

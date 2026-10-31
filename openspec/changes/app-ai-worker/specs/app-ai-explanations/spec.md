@@ -78,3 +78,8 @@ The system SHALL provide meaningful loading, remaining quota, reset, unavailable
 
 - **WHEN** a guest selects Sign in from AI settings
 - **THEN** the app opens its shared provider sign-in dialog without starting OAuth until Continue with Google is selected, and cancelling returns focus to settings without losing typed keys
+
+#### Scenario: Reduced motion and preference changes
+
+- **WHEN** reduced motion is enabled before loading the app or the preference changes with settings/help open
+- **THEN** modal close actions complete, keyboard focus returns to the opener and unsaved provider keys are preserved

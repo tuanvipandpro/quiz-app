@@ -17,6 +17,7 @@ import { ArrowLeftOutlined, GithubOutlined } from '@ant-design/icons';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { useSignIn } from './hooks/useSignIn';
+import { useReducedMotion } from './hooks/useReducedMotion';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useQuizProgress } from './hooks/useQuizProgress';
 import { useCustomQuizzes, customQuizProgress } from './hooks/useCustomQuizzes';
@@ -64,6 +65,7 @@ function initialDarkMode() {
 export default function App() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { language, t } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const uid = user?.uid || null;
   const progressState = useQuizProgress(uid);
   const [isDarkMode, setIsDarkMode] = useState(initialDarkMode);
@@ -613,6 +615,7 @@ export default function App() {
       theme={{
         algorithm: isDarkMode ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
+          motion: !reducedMotion,
           colorPrimary: isDarkMode ? '#91bfff' : '#245db4',
           colorLink: isDarkMode ? '#a8ceff' : '#245db4',
           colorBgContainer: isDarkMode ? '#1c2736' : '#ffffff',

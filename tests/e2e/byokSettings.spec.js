@@ -225,6 +225,7 @@ for (const language of ['en', 'vi'])
       await expect(signIn).toBeFocused();
       await expect(input).toHaveValue('second-fixture-key');
       await page.emulateMedia({ reducedMotion: 'reduce' });
+      await expect(input).toHaveValue('second-fixture-key');
       await helpButton.click();
       const reducedHelp = page.getByRole('dialog', {
         name: language === 'vi' ? 'Cách lấy API key Groq' : 'How to get a Groq API key',
@@ -236,6 +237,40 @@ for (const language of ['en', 'vi'])
       await expect(helpButton).toBeFocused();
     });
   }
+
+test('reduced motion at startup and live preference changes preserve the key editor and close dialogs', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const settings = await openSettings(page);
+  const input = settings.getByLabel('Google Gemini API key', { exact: true });
+  await input.fill('motion-fixture-draft');
+  const helpButton = settings.getByRole('button', { name: 'API key help', exact: true });
+  const help = page.getByRole('dialog', {
+    name: 'How to get a Google Gemini API key',
+    exact: true,
+  });
+  for (const preference of ['no-preference', 'reduce']) {
+    await helpButton.click();
+    await expect(help).toBeVisible();
+    await page.emulateMedia({ reducedMotion: preference });
+    await expect(help).toBeVisible();
+    await clickDialogButton(help, 'Done');
+    await expect(help).toBeHidden();
+    await expect(helpButton).toBeFocused();
+    await expect(input).toHaveValue('motion-fixture-draft');
+  }
+  const signInButton = settings.getByRole('button', { name: 'Sign in', exact: true });
+  await signInButton.click();
+  const signIn = page.getByRole('dialog', { name: 'Sign in', exact: true });
+  await clickDialogButton(signIn, 'Continue as guest');
+  await expect(signIn).toBeHidden();
+  await expect(signInButton).toBeFocused();
+  await expect(input).toHaveValue('motion-fixture-draft');
+  await clickDialogButton(settings, 'Done');
+  await expect(settings).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Explain', exact: true })).toBeFocused();
+});
 
 test('settings sign-in uses the shared provider dialog; cancel and failure preserve typed key', async ({
   page,
