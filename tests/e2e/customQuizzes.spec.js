@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { selectMenuItem, settleMotion } from './motion';
+import { selectMenuItem, settleMotion, clickDialogButton } from './motion';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
@@ -43,7 +43,7 @@ async function confirm(page, name, action) {
       ? page.getByRole('dialog').filter({ hasText: name })
       : page.getByRole('dialog', { name, exact: true });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: action, exact: true }).click();
+  await clickDialogButton(dialog, action);
   await expect(dialog).toBeHidden();
 }
 
@@ -464,6 +464,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           exact: true,
         });
         await expect(dialog).toBeVisible();
+        await settleMotion(dialog);
         const input = dialog.getByRole('textbox');
         await expect(input).toHaveValue(longName);
         await expect(input).toHaveCSS('min-height', '44px');
@@ -492,6 +493,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
             exact: true,
           });
           await expect(deletion.getByText(longName, { exact: true })).toBeVisible();
+          await settleMotion(deletion);
           const confirmationContrast = await contrastRatio(
             deletion.getByRole('button', {
               name: language === 'en' ? 'Delete' : 'Xóa',

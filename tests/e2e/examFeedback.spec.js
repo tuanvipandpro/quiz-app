@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { selectMenuItem } from './motion';
+import { selectMenuItem, clickDialogButton } from './motion';
 import { fileURLToPath } from 'node:url';
 
 const example = (format) =>
@@ -34,7 +34,7 @@ async function submitExam(page) {
   await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Review before submitting', exact: true });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: 'Submit and view results', exact: true }).click();
+  await clickDialogButton(dialog, 'Submit and view results');
   await expect(page.getByRole('heading', { name: 'Exam results', exact: true })).toBeVisible();
 }
 
@@ -42,7 +42,7 @@ async function leaveToSetup(page) {
   await page.getByRole('button', { name: 'Back to quiz overview', exact: true }).click();
   const dialog = page.getByRole('dialog').filter({ hasText: 'Leave this exam?' });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: 'Leave exam', exact: true }).click();
+  await clickDialogButton(dialog, 'Leave exam');
   await expect(dialog).toBeHidden();
   await expect(page.getByRole('radiogroup', { name: 'Exam mode', exact: true })).toBeVisible();
 }
@@ -158,12 +158,12 @@ for (const mode of ['standard', 'learning']) {
     await page.getByRole('radio', { name: modeLabel(other), exact: true }).check();
     await page.getByRole('button', { name: 'Start a new exam', exact: true }).click();
     const dialog = page.getByRole('dialog').filter({ hasText: 'Start a new exam?' });
-    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await clickDialogButton(dialog, 'Cancel');
     await expect(dialog).toBeHidden();
     await expect(page.getByRole('button', { name: 'Start a new exam', exact: true })).toBeFocused();
     expect(await readDraft(page, 'aws-aip-c01')).toEqual(draft);
     await page.getByRole('button', { name: 'Start a new exam', exact: true }).click();
-    await dialog.getByRole('button', { name: 'Start mock exam', exact: true }).click();
+    await clickDialogButton(dialog, 'Start mock exam');
     await expect(page.locator('.exam-mode-label')).toContainText(modeLabel(other));
     const fresh = await readDraft(page, 'aws-aip-c01');
     expect(fresh.feedbackMode).toBe(other);
@@ -235,7 +235,7 @@ test('sign-out clears Learning drafts and the next guest exam starts as Standard
   await selectMenuItem(page, 'Sign out');
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toContainText('end this exam');
-  await dialog.getByRole('button', { name: 'Sign out', exact: true }).click();
+  await clickDialogButton(dialog, 'Sign out');
   await expect(dialog).toBeHidden();
   await expect(page).toHaveURL(/#\/library$/);
   expect(await readDraft(page, 'aws-aip-c01', 'test-alice')).toBeNull();

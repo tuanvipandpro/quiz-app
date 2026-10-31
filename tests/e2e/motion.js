@@ -27,3 +27,9 @@ export async function selectMenuItem(page, name) {
   await settleMotion(item);
   await item.click();
 }
+
+export async function clickDialogButton(dialog, name) {
+  await expect(dialog).toBeVisible();
+  await settleMotion(dialog);
+  await dialog.getByRole('button', { name, exact: true }).click();
+}
