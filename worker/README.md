@@ -20,7 +20,13 @@ Khi làm việc qua remote, dùng `yarn wrangler login --device --browser=false`
 
 ## Môi trường thử riêng
 
-`wrangler.staging.jsonc` dành cho Worker và D1 `quiz-app-ai-staging`, chỉ cho phép origin local 5173. Account đã được xác minh Workers Free trên Dashboard; staging được bật riêng để smoke test bằng tài khoản user chỉ định. Không dùng database production cho benchmark. Giữ production disabled cho đến khi kết quả quality/CPU/usage và smoke auth được review. Model catalog có sẵn và `default_usage_model=standard` không phải bằng chứng account đang dùng Free.
+`wrangler.staging.jsonc` dành cho Worker và D1 `quiz-app-ai-staging`, chỉ cho phép origins local 5173 và 5177. Account đã được xác minh Workers Free trên Dashboard; staging được bật riêng để smoke test bằng tài khoản user chỉ định. Không dùng database production cho benchmark. Giữ production disabled cho đến khi kết quả quality/CPU/usage và smoke auth được review. Model catalog có sẵn và `default_usage_model=standard` không phải bằng chứng account đang dùng Free.
+
+## Chạy nhiều session song song
+
+Mỗi session làm code ở worktree riêng. Giữ dev server chính ở 5173; worktree App AI có thể chạy `yarn dev --host 127.0.0.1 --port 5177`. Port 5174/5176 dành cho browser tests/API fixture, không dùng để preview dữ liệu thật. Không đổi branch trong checkout đang được session khác sử dụng.
+
+Tạo `.env.development.local` (ignored) trong worktree với `VITE_APP_AI_URL=https://quiz-app-ai-staging.tuanvipandpro.workers.dev`. Staging cho phép cả `localhost` và `127.0.0.1` ở 5177; phải deploy lại config staging khi thay đổi allowlist. Cổng khác tạo browser origin khác nên có thể cần đăng nhập lại. Production config không thay đổi theo cổng dev.
 
 ## Quota và lỗi
 
