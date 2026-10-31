@@ -9,6 +9,7 @@
 /AGENTS.md text eol=lf
 /yarn.lock text eol=lf
 /firebase/** text eol=lf
+/worker/** text eol=lf
 /openspec/** text eol=lf
 /docs/** text eol=lf
 /.agents/** text eol=lf
