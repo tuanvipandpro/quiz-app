@@ -4,6 +4,10 @@ import { generateKeyPair, SignJWT } from 'jose';
 import { createWorker } from '../../worker/index.js';
 import { createFirebaseVerifier } from '../../worker/auth.js';
 
+export const modelResult = (text, finishReason = 'stop') => ({
+  choices: [{ message: { role: 'assistant', content: text }, finish_reason: finishReason }],
+});
+
 export async function workerHarness({ now = Date.now, ai, timeoutMs } = {}) {
   const mf = new Miniflare({
     modules: true,
@@ -48,11 +52,11 @@ export async function workerHarness({ now = Date.now, ai, timeoutMs } = {}) {
         calls++;
         return ai
           ? ai(model, input)
-          : {
-              response: input.messages[0].content.includes('tiếng Anh')
+          : modelResult(
+              input.messages[0].content.includes('Respond only in English')
                 ? 'The correct answer follows from the stated conditions.'
-                : 'Đáp án phù hợp với điều kiện trong câu hỏi.',
-            };
+                : 'Đáp án phù hợp với điều kiện trong câu hỏi.'
+            );
       },
     },
   };

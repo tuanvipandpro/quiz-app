@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { workerHarness } from '../fixtures/workerHarness.mjs';
+import { workerHarness, modelResult } from '../fixtures/workerHarness.mjs';
 import { AI_POLICY, utcDay } from '../../worker/config.js';
 import { createUsageRepository } from '../../worker/repository.js';
 
@@ -65,7 +65,7 @@ test('server validation, byte cap, model allowlist and VN/EN prompt', async (t) 
     now: () => stamp,
     ai: async (model, payload) => {
       observed.push({ model, payload });
-      return { response: 'valid explanation' };
+      return modelResult('valid explanation');
     },
   });
   t.after(h.dispose);
@@ -82,7 +82,9 @@ test('server validation, byte cap, model allowlist and VN/EN prompt', async (t) 
     assert.equal((await call(h, { ...input(), language })).status, 200);
   assert.equal(observed[0].model, AI_POLICY.model);
   assert.equal(observed[0].payload.max_tokens, 600);
-  assert.match(observed[0].payload.messages[0].content, /tiếng Anh/);
+  assert.equal(observed[0].payload.messages[0].role, 'system');
+  assert.match(observed[0].payload.messages[0].content, /Respond only in English/);
+  assert.match(observed[0].payload.messages[1].content, /Question and choices/);
   assert.match(observed[1].payload.messages[0].content, /tiếng Việt/);
 });
 test('all supported formats cross the real Worker and D1 boundary', async (t) => {
@@ -151,7 +153,7 @@ test('pending duplicates and separate requests do not call model twice', async (
   await begun;
   assert.equal((await call(h, body)).data.error, 'PENDING');
   assert.equal((await call(h, input())).data.error, 'BUSY');
-  release({ response: 'finished' });
+  release(modelResult('finished'));
   assert.equal((await pending).status, 200);
   assert.equal(h.calls(), 1);
 });
@@ -209,4 +211,27 @@ test('timed-out inference is charged once and never dispatched again on retry', 
   assert.equal((await call(h, body)).data.error, 'TIMEOUT');
   assert.equal((await call(h, body)).data.error, 'TIMEOUT');
   assert.equal(h.calls(), 1);
+});
+
+test('chat completion parsing rejects empty, truncated and tool-only responses', async (t) => {
+  const outputs = [
+    modelResult(''),
+    modelResult('unfinished answer', 'length'),
+    {
+      choices: [
+        {
+          finish_reason: 'stop',
+          message: { content: 'tool response', tool_calls: [{ id: 'unexpected' }] },
+        },
+      ],
+    },
+  ];
+  const h = await workerHarness({ now: () => stamp, ai: async () => outputs.shift() });
+  t.after(h.dispose);
+  for (let i = 0; i < 3; i++) {
+    const response = await call(h, input());
+    assert.equal(response.status, 503);
+    assert.equal(response.data.error, 'UNAVAILABLE');
+    assert.equal(response.data.usage.remaining, 4 - i);
+  }
 });

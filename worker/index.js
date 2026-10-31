@@ -1,5 +1,8 @@
 import { validateQuizQuestions } from '../src/utils/questionModel.js';
-import { explanationPrompt } from '../src/services/llm/explanationPrompt.js';
+import {
+  explanationPrompt,
+  explanationSystemPrompt,
+} from '../src/services/llm/explanationPrompt.js';
 import { AI_POLICY, ApiError, utcDay } from './config.js';
 import { createFirebaseVerifier } from './auth.js';
 import { createUsageRepository } from './repository.js';
@@ -73,7 +76,8 @@ function validateInput(input, now) {
     throw new ApiError('INVALID');
   }
   const prompt = explanationPrompt(input.question, { language: input.language, compact: true });
-  if (bytes(prompt) > AI_POLICY.maxPromptBytes) throw new ApiError('TOO_LARGE', 413);
+  if (bytes(prompt) + bytes(explanationSystemPrompt(input.language)) > AI_POLICY.maxPromptBytes)
+    throw new ApiError('TOO_LARGE', 413);
   return prompt;
 }
 function priorResult(row, hash) {
@@ -138,20 +142,27 @@ export function createWorker({
         try {
           const output = await Promise.race([
             env.AI.run(AI_POLICY.model, {
-              messages: [{ role: 'user', content: prompt }],
+              messages: [
+                { role: 'system', content: explanationSystemPrompt(input.language) },
+                { role: 'user', content: prompt },
+              ],
               max_tokens: AI_POLICY.maxOutputTokens,
             }),
             new Promise((_, reject) => {
               timer = setTimeout(() => reject(new ApiError('TIMEOUT', 503)), timeoutMs);
             }),
           ]);
+          const choice = output?.choices?.[0];
+          const text = choice?.message?.content;
           if (
-            typeof output?.response !== 'string' ||
-            !output.response.trim() ||
-            bytes(output.response) > 32 * 1024
+            choice?.finish_reason !== 'stop' ||
+            choice.message?.tool_calls?.length ||
+            typeof text !== 'string' ||
+            !text.trim() ||
+            bytes(text) > 32 * 1024
           )
             throw new ApiError('UNAVAILABLE', 503);
-          const result = { text: output.response, model: AI_POLICY.model, provider: 'app' };
+          const result = { text: text.trim(), model: AI_POLICY.model, provider: 'app' };
           await repo.finish(uid, input.requestId, result);
           return json({ ...result, cached: false, usage: await repo.usage(uid, now()) });
         } catch (error) {

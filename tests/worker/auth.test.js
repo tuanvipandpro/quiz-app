@@ -1,23 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createCertificateResolver } from '../../worker/auth.js';
+import { generateKeyPair, exportJWK, SignJWT } from 'jose';
+import { createSigningKeyResolver, createFirebaseVerifier } from '../../worker/auth.js';
 
-test('certificate cache coalesces fetch/import and refreshes rotated keys after TTL', async () => {
+test('signing-key cache coalesces fetch/import and refreshes rotated keys after TTL', async () => {
   let now = 0,
     fetches = 0,
     imports = 0;
-  const resolve = createCertificateResolver(
+  const resolve = createSigningKeyResolver(
     async () => {
       fetches++;
       return Response.json(
-        fetches === 1 ? { first: 'certificate-a' } : { second: 'certificate-b' },
+        { keys: [{ kid: fetches === 1 ? 'first' : 'second', kty: 'RSA', alg: 'RS256' }] },
         { headers: { 'cache-control': 'max-age=10' } }
       );
     },
     () => now,
-    async (cert) => {
+    async (key) => {
       imports++;
-      return { cert };
+      return { kid: key.kid };
     }
   );
   const keys = await Promise.all([resolve('first'), resolve('first')]);
@@ -27,13 +28,41 @@ test('certificate cache coalesces fetch/import and refreshes rotated keys after 
   await assert.rejects(resolve('unknown'), { code: 'AUTH' });
   assert.equal(fetches, 1);
   now = 10001;
-  assert.deepEqual(await resolve('second'), { cert: 'certificate-b' });
+  assert.deepEqual(await resolve('second'), { kid: 'second' });
   await assert.rejects(resolve('first'), { code: 'AUTH' });
   assert.equal(fetches, 2);
 });
-test('certificate network outage is retryable and never treated as an accepted identity', async () => {
-  const resolve = createCertificateResolver(async () => {
+test('signing-key network outage is retryable and never treated as an accepted identity', async () => {
+  const resolve = createSigningKeyResolver(async () => {
     throw new Error('offline');
   });
   await assert.rejects(resolve('key'), { code: 'AUTH_UNAVAILABLE', status: 503 });
+});
+
+test('published JWKS format verifies a real signed token and rejects a non-signing key', async () => {
+  const { privateKey, publicKey } = await generateKeyPair('RS256', { extractable: true });
+  const key = { ...(await exportJWK(publicKey)), kid: 'real-key', alg: 'RS256', use: 'sig' };
+  const resolver = createSigningKeyResolver(async () =>
+    Response.json({ keys: [key, { ...key, kid: 'encryption', use: 'enc' }] })
+  );
+  const now = Math.floor(Date.now() / 1000);
+  const token = await new SignJWT({
+    auth_time: now - 1,
+    firebase: { sign_in_provider: 'google.com' },
+  })
+    .setProtectedHeader({ alg: 'RS256', kid: 'real-key' })
+    .setIssuer('https://securetoken.google.com/demo-quiz-app')
+    .setAudience('demo-quiz-app')
+    .setSubject('alice')
+    .setIssuedAt(now - 1)
+    .setExpirationTime(now + 60)
+    .sign(privateKey);
+  assert.equal(
+    await createFirebaseVerifier(resolver)(
+      new Request('https://worker.test', { headers: { Authorization: `Bearer ${token}` } }),
+      'demo-quiz-app'
+    ),
+    'alice'
+  );
+  await assert.rejects(resolver('encryption'), { code: 'AUTH' });
 });

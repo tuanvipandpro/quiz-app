@@ -1,9 +1,10 @@
-import { decodeProtectedHeader, importX509, jwtVerify } from 'jose';
+import { decodeProtectedHeader, importJWK, jwtVerify } from 'jose';
 import { ApiError } from './config.js';
 
-const CERTS =
-  'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
-export function createCertificateResolver(fetchImpl = fetch, now = Date.now, parse = importX509) {
+// Published by Firebase's OIDC discovery document; avoids PEM/ASN.1 parsing on cold requests.
+const JWKS =
+  'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
+export function createSigningKeyResolver(fetchImpl = fetch, now = Date.now, parse = importJWK) {
   const imported = new Map();
   let cached = null,
     expires = 0,
@@ -13,16 +14,29 @@ export function createCertificateResolver(fetchImpl = fetch, now = Date.now, par
       loading ||= (async () => {
         let response;
         try {
-          response = await fetchImpl(CERTS);
+          response = await fetchImpl(JWKS);
         } catch {
           throw new ApiError('AUTH_UNAVAILABLE', 503);
         }
         if (!response.ok) throw new ApiError('AUTH_UNAVAILABLE', 503);
-        const certs = await response.json();
+        const document = await response.json();
+        if (!Array.isArray(document.keys) || !document.keys.length)
+          throw new ApiError('AUTH_UNAVAILABLE', 503);
+        const keys = new Map(
+          document.keys
+            .filter(
+              (key) =>
+                typeof key.kid === 'string' &&
+                key.kty === 'RSA' &&
+                (!key.alg || key.alg === 'RS256') &&
+                (!key.use || key.use === 'sig')
+            )
+            .map((key) => [key.kid, key])
+        );
         const ttl = Number(
           response.headers.get('cache-control')?.match(/max-age=(\d+)/)?.[1] || 300
         );
-        cached = certs;
+        cached = keys;
         imported.clear();
         expires = now() + Math.min(ttl, 3600) * 1000;
       })().finally(() => {
@@ -30,13 +44,13 @@ export function createCertificateResolver(fetchImpl = fetch, now = Date.now, par
       });
       await loading;
     }
-    if (!Object.hasOwn(cached, kid)) throw new ApiError('AUTH', 401);
-    if (!imported.has(kid)) imported.set(kid, parse(cached[kid], 'RS256'));
+    if (!cached.has(kid)) throw new ApiError('AUTH', 401);
+    if (!imported.has(kid)) imported.set(kid, parse(cached.get(kid), 'RS256'));
     return imported.get(kid);
   };
 }
 
-export function createFirebaseVerifier(resolveKey = createCertificateResolver()) {
+export function createFirebaseVerifier(resolveKey = createSigningKeyResolver()) {
   return async (request, projectId, now = Date.now()) => {
     const token = request.headers.get('authorization')?.match(/^Bearer ([^\s]+)$/)?.[1];
     if (!token || token.length > 8192 || !projectId) throw new ApiError('AUTH', 401);

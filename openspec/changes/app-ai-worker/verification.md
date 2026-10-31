@@ -2,30 +2,40 @@
 
 ## Scope and status
 
-Implementation dùng Worker + D1; guest BYOK, signed-in App AI/BYOK tự chọn. Chưa deploy Cloudflare và chưa gọi model thật. `wrangler whoami` xác nhận máy chưa authenticated; user đã được báo bước đăng nhập và hướng dẫn trong `worker/README.md`. Server disabled mặc định và frontend không có URL thì App AI unavailable.
+Implementation dùng Worker + D1; guest BYOK, signed-in App AI/BYOK tự chọn. Đã xác minh Workers Free, đăng nhập Wrangler qua device flow/keyring, deploy staging riêng và nối app local vào staging. Hai lời giải live EN/VN bằng phiên user chỉ định đã thành công, dùng đúng hai lượt được cho phép. Production vẫn disabled và chưa cấu hình URL cho GitHub Pages. Xem [rollout evidence](rollout.md) cho model evaluation, CPU, quota và giới hạn của mẫu thử.
 
 ## Scenario evidence
 
-| Requirement | Local evidence                                                                                                                                                 | Production                               |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| CQ-AI-01    | Worker integration: RSA signature, foreign key, expired/future/null claims, wrong audience/issuer/project, guest deny; certificate cache/rotation/outage tests | Firebase live token + setup pending      |
-| CQ-AI-02    | Shared validator/all five formats, input cap, fixed model/output budget, VN/EN prompt, disabled rollout; Worker dry-run bundle                                 | Model quality, CPU and Free plan pending |
-| CQ-AI-03    | Actual Miniflare D1 triggers: user/global final slot concurrency, pending user guard, UTC reset and failure accounting                                         | Neuron/usage benchmark pending           |
-| CQ-AI-04    | Same-ID cached result, changed payload conflict, Bob isolation, failed/timeout retry without new inference, stale/expired ID cleanup                           | Live inference outcome pending           |
-| CQ-AI-05    | Browser guest BYOK round-trip with provider stub; signed-in HTTP Worker flow; explicit BYOK setting with no key fallback                                       | Provider/model live smoke pending        |
-| CQ-AI-06    | Client reset/late-response unit case; browser logout during held response; existing exam feedback tests                                                        | Live account smoke pending               |
-| CQ-AI-07    | Source/settings/usage/errors through phone+desktop browser tests, widths 320/390/412/768/1280 and 844x390, VN/EN + light/dark                                  | Physical devices not tested              |
+| Requirement | Local evidence                                                                                                                                         | Staging / remaining acceptance                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| CQ-AI-01    | Worker integration: RSA signature, foreign key, expired/future/null claims, wrong audience/issuer/project, guest deny; JWK cache/rotation/outage tests | Live Firebase token accepted; unauthenticated 401 and disallowed origin 403 verified       |
+| CQ-AI-02    | Shared validator/all five formats, input cap, fixed model/output budget, VN/EN prompt, disabled production; Worker dry-run bundle                      | Free verified; sampled quality/CPU measured, wider quality and boundary CPU review pending |
+| CQ-AI-03    | Actual Miniflare D1 triggers: user/global final slot concurrency, pending user guard, UTC reset and failure accounting                                 | Provider Neurons measured; live quota 5→4→3 and D1 2 done records; production pending      |
+| CQ-AI-04    | Same-ID cached result, changed payload conflict, Bob isolation, failed/timeout retry without new inference, stale/expired ID cleanup                   | Two live successful completions; failure/retry cases use local fixtures                    |
+| CQ-AI-05    | Browser guest BYOK round-trip with provider stub; signed-in HTTP Worker flow; explicit BYOK setting with no key fallback                               | App AI live EN/VN passed; no real BYOK key exercised                                       |
+| CQ-AI-06    | Client reset/late-response unit case; browser logout during held response; existing exam feedback tests                                                | Live smoke left question/progress unchanged; account-switch races remain fixture evidence  |
+| CQ-AI-07    | Source/settings/usage/errors through phone+desktop browser tests, widths 320/390/412/768/1280 and 844x390, VN/EN + light/dark                          | Physical devices not tested                                                                |
 
 Worker integration executes the actual fetch handler with signed test tokens and a real local Miniflare D1 database. AI inference is deterministic test data. Browser tests call this handler through a loopback HTTP fixture on 5176; neither the token endpoint nor test AI is deployed. Production bundle isolation checks reject these fixture endpoints.
 
-## Commands
+## Implementation verification before staging changes
 
 - `yarn verify`: passed 144 Node tests, OpenSpec 4/4, lint/format, catalog, production build and fixture isolation; one additional regeneration-cache regression test was then added and verified (145 total in the final run). Existing bundle-size warning and four guide-review warnings remain.
 - `yarn test:worker`: 10 handler/D1 tests plus 2 certificate-cache tests passed in local runs; combined CI command added.
 - `yarn worker:check`: dry-run bundle passed; no deploy or inference request.
 - Full browser run: 107/114 passed; seven existing scenarios hit loading/layout timeouts while concurrent native suites were using the machine. Traces show module requests taking up to 5.7 seconds with HTTP 200 and no JS error. All seven passed with `playwright test --last-failed --workers=1`, unchanged assertions/timeouts and retries=0. Artifacts remain under `artifacts/app-ai/full-run-failures/`.
 - Final App AI suite after dialog focus changes: 18/18 passed with two workers, covering both projects. CI runs the whole 114-test suite and is tracked separately in the PR.
-- Cloudflare login/Free verification, actual model quality/CPU/Neurons and production rollout are not complete. These are tracked separately in task 3.2; do not close #53 on local evidence alone.
+- CI on `7125b45641311dfdad12659d46e0362343191a06` subsequently passed **145 Node, 12 Worker/auth, 17 Rules and all 114 browser tests**, retries=0: [run 41184291943](https://github.com/tuanvipandpro/quiz-app/actions/runs/41184291943). This predates the staging model/prompt/JWK changes; fresh verification is recorded separately.
+- Production rollout remains incomplete in task 3.2; do not close #53 on local or staging evidence alone.
+
+## Staging follow-up verification
+
+- `yarn verify`: **147 Node tests**, lint/format, OpenSpec, catalog and production build/isolation passed after the localized prompt, SEA-LION adapter and JWK changes. The existing guide-review and bundle-size warnings remain.
+- `yarn test:worker`: **14/14 passed**, including real RSA/JWK verification, key rotation/outage and rejection of empty/truncated/tool-call completions. No live account or model was used by these tests.
+- `yarn worker:check`: production Worker dry-run passed with `APP_AI_ENABLED=false`; no deployment or inference.
+- `yarn test:e2e tests/e2e/appAi.spec.js --workers=2`: **18/18 passed**, retries=0, both phone and desktop with VN/EN and light/dark. Full-suite CI for the new commit is tracked on PR #54; the earlier 114-test CI pass is not attributed to these changes.
+- Production assets were checked to exclude the staging URL and fixture API. The real app on local 5173 returned HTTP 200 and remains connected to staging only through the ignored development env file.
+- Live staging used the two owner-authorized calls only. The [rollout record](rollout.md) separates actual model/account evidence from fixture tests and records pending production acceptance.
 
 ## UI evidence and skill use
 

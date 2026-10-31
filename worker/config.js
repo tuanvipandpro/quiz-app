@@ -1,6 +1,6 @@
 export const AI_POLICY = Object.freeze({
-  model: '@cf/meta/llama-3.2-3b-instruct',
-  promptVersion: '1',
+  model: '@cf/aisingapore/gemma-sea-lion-v4-27b-it',
+  promptVersion: '4',
   userLimit: 5,
   globalLimit: 100,
   maxOutputTokens: 600,

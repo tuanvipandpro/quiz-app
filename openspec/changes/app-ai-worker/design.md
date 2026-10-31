@@ -10,8 +10,8 @@ Giữ boundary component/hook/service, chia sẻ validator/prompt; một Worker 
 
 ## Decisions
 
-- Worker dùng jose/WebCrypto xác minh Firebase RS256 với cert cache từ endpoint chính thức; auth trước quota và inference. Test dùng RSA JWT thật với key resolver fixture, không auth bypass production.
-- `POST /v1/explanations` nhận requestId có UTC date + UUID, question và language. `GET /v1/usage` trả server quota/reset. Allowlist model miễn phí ban đầu `@cf/meta/llama-3.2-3b-instruct`; phải benchmark trước enable. Server disabled mặc định, không client-supplied prompt/model/UID/key.
+- Worker dùng jose/WebCrypto xác minh Firebase RS256 với JWK cache từ endpoint công bố trong Firebase OIDC discovery; auth trước quota và inference. Test dùng RSA JWT thật với key resolver fixture, không auth bypass production.
+- `POST /v1/explanations` nhận requestId có UTC date + UUID, question và language. `GET /v1/usage` trả server quota/reset. Allowlist hiện dùng `@cf/aisingapore/gemma-sea-lion-v4-27b-it`: benchmark live cho thấy Llama 3.2 3B không đạt ngôn ngữ/lập luận, còn SEA-LION cải thiện rõ. Prompt version 4 dùng system instruction và template riêng VN/EN, không ép câu đơn giản phải đủ số từ tối thiểu. Adapter đọc chat-completion và từ chối output rỗng/truncated/tool-call. Production disabled mặc định, không client-supplied prompt/model/UID/key.
 - D1 request ledger có primary key `(uid, request_id)`, fingerprint theo question/language/model/prompt version. SQLite BEFORE INSERT triggers kiểm tra user 5/global 100 và pending user bằng cùng một atomic statement. Mọi reservation đã dispatch tính một attempt, kể cả upstream failure; không refund tự động khi outcome không rõ. UI nói rõ quota attempt. ID có ngày để expired retry không tiêu tốn lượt mới; retention 2 ngày, stale pending chuyển failure, không tự dispatch lại.
 - Kết quả successful lưu theo request để retry response-loss; frontend memory cache theo account/source/prompt/language. Regenerate dùng UUID mới. Không share private explanation giữa accounts. Cleanup scheduled xóa ledger cũ; quay lại ID thuộc ngày cũ bị reject.
 - Body cap 16 KiB; prompt cap 12 KiB UTF-8; output 600 tokens, timeout 25s. CPU JWT/hash/validation cần đo dưới Worker Free 10ms; inference wait không phải local CPU. Model nhỏ có thể không đủ chất lượng chứng chỉ: chưa enable production khi chưa review.
@@ -31,4 +31,4 @@ Không migrate quiz/profile. Thêm dependency/config/tests, deploy Worker disabl
 
 ## Open Questions
 
-Cloudflare account/endpoint và kết quả quality/CPU benchmark sẽ ghi vào release evidence trước khi enable. UI/local integration không được ghi thành bằng chứng production.
+Cloudflare Free account, staging endpoint và kết quả quality/CPU mẫu đã ghi trong [rollout evidence](rollout.md). App AI dùng prompt v4 ngắn, tập trung lý do cốt lõi để giảm lỗi khi phân tích lựa chọn sai; BYOK giữ yêu cầu phân tích chi tiết. Review chất lượng rộng hơn, biên CPU và production rollout còn pending. UI/local/staging integration không được ghi thành bằng chứng production.
