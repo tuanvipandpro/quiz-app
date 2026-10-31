@@ -1,3 +1,4 @@
+export const AI_LABELS = { app: 'App AI', gemini: 'Google Gemini', groq: 'Groq' };
 export const PROVIDERS = [
   {
     id: 'gemini',

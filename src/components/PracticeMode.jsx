@@ -40,7 +40,6 @@ export default function PracticeMode({
   progressState,
   onExit,
   onBackToSummary,
-  onSignIn,
 }) {
   const { user, isAuthenticated } = useAuth();
   const { t } = useLanguage();
@@ -161,7 +160,8 @@ export default function PracticeMode({
           <div className="study-secondary-actions">
             <Button
               icon={<QuestionCircleOutlined aria-hidden="true" />}
-              onClick={() => (isAuthenticated ? ai.explain() : onSignIn?.())}
+              onClick={() => ai.explain()}
+              ref={ai.triggerRef}
             >
               {t('Explain')}
             </Button>

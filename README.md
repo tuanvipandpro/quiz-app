@@ -1,5 +1,7 @@
 # Quiz App
 
+Signed-in App AI is implemented behind an optional API URL and a disabled-by-default Worker. Guests use Gemini/Groq BYOK. See [Cloudflare Free setup and rollout](worker/README.md) and [App AI verification](openspec/changes/app-ai-worker/verification.md) for #53; local fixtures do not establish production/model readiness. Quiz persistence remains Firestore.
+
 Practice certification questions, take timed mock exams and read curated study guides. React 19, Vite, Ant Design and Firebase.
 
 [Live app](https://tuanvipandpro.github.io/quiz-app/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)

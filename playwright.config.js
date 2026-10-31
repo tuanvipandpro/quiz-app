@@ -30,11 +30,19 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command:
-      'node node_modules/vite/bin/vite.js --config vite.e2e.config.js --host 127.0.0.1 --port 5174 --strictPort',
-    url: 'http://127.0.0.1:5174/quiz-app/',
-    reuseExistingServer: false,
-    timeout: 30000,
-  },
+  webServer: [
+    {
+      command: 'node tests/fixtures/appAiServer.mjs',
+      url: 'http://127.0.0.1:5176/__test/health',
+      reuseExistingServer: false,
+      timeout: 30000,
+    },
+    {
+      command:
+        'node node_modules/vite/bin/vite.js --config vite.e2e.config.js --host 127.0.0.1 --port 5174 --strictPort',
+      url: 'http://127.0.0.1:5174/quiz-app/',
+      reuseExistingServer: false,
+      timeout: 30000,
+    },
+  ],
 });

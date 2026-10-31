@@ -30,4 +30,11 @@ export default {
     return { success: true };
   },
   getCurrentUser: readUser,
+  async getIdToken(uid) {
+    if (readUser()?.uid !== uid) throw new Error('Sign in to use App AI.');
+    const response = await fetch(
+      `http://127.0.0.1:5176/__test/token?uid=${encodeURIComponent(uid)}`
+    );
+    return (await response.json()).token;
+  },
 };

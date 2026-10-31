@@ -511,3 +511,40 @@
 .review-filters .ant-radio-button-wrapper::before {
   display: none;
 }
+
+.ai-source-control,
+.ai-usage {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ai-source-control {
+  margin-block: 12px 20px;
+}
+.ai-source-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ai-source-options .ant-radio-button-wrapper {
+  flex: 1 1 120px;
+  min-height: 44px;
+  height: auto;
+  padding: 10px 12px;
+  line-height: 1.4;
+  text-align: center;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+}
+.ai-source-options .ant-radio-button-wrapper::before {
+  display: none;
+}
+.ai-source-control .ant-btn,
+.ai-settings-modal .ant-btn,
+.ai-settings-modal .ant-input-affix-wrapper,
+.quiz-dialog-actions .ant-btn {
+  min-height: 44px;
+}

@@ -4,9 +4,9 @@ import {
   questionExplanation,
 } from '../../utils/questionModel.js';
 
-export function explanationPrompt(question) {
+export function explanationPrompt(question, { language = 'vi', compact = false } = {}) {
   const reference = questionExplanation(question);
-  return `Hãy giải thích câu hỏi trắc nghiệm sau bằng tiếng Việt, sử dụng Markdown rõ ràng và giữ nguyên thuật ngữ chuyên ngành quan trọng.
+  return `Hãy giải thích câu hỏi trắc nghiệm sau bằng ${language === 'en' ? 'tiếng Anh (English)' : 'tiếng Việt'}, sử dụng Markdown rõ ràng và giữ nguyên thuật ngữ chuyên ngành quan trọng.
 
 Câu hỏi và các lựa chọn:
 ${formatQuestionText(question)}
@@ -24,7 +24,7 @@ Hãy đối chiếu lời giải này với đề và từng lựa chọn để 
     : ''
 }
 
-Trình bày khoảng 200–350 từ, không lặp lại toàn bộ đề bài:
+Trình bày khoảng ${compact ? '120–180' : '200–350'} từ, không lặp lại toàn bộ đề bài:
 1. Kết luận đáp án phù hợp.
 2. Giải thích ngắn lý do đáp án đó đúng.
 3. Mỗi lựa chọn khác chỉ cần một câu giải thích vì sao không phù hợp.
