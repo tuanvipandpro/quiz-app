@@ -257,7 +257,7 @@
   "result": {
     "questions": 276,
     "images": 22,
-    "explanations": 275,
+    "explanations": 276,
     "addedIds": [
       "243",
       "244",
@@ -627,13 +627,7 @@
       "reason": "Same risk-response question and selected answer, with a different distractor A."
     }
   ],
-  "pendingAnswerReview": [
-    {
-      "id": "88",
-      "sourceId": "8",
-      "reason": "The expanded payment story does not establish all coverage details. The source D explanation ignores its rollback precondition. Keep existing A pending a complete original answer-key review."
-    }
-  ],
+  "pendingAnswerReview": [],
   "answerReview": [
     {
       "existingId": "88",
@@ -641,8 +635,8 @@
       "previous": ["A"],
       "source": ["D"],
       "final": ["A"],
-      "action": "retain_existing_answer_without_source_explanation",
-      "reason": "The expanded payment story does not establish all coverage details. The source D explanation ignores its rollback precondition. Keep existing A pending a complete original answer-key review."
+      "action": "retain_A_for_explicitly_clarified_practice_scenario",
+      "reason": "The original coverage summary was ambiguous. This adapted study question explicitly checks criteria 1–7 for both payment choices while leaving actual charge dates unchecked; A is unique under those stated assumptions. No official original-answer-key claim."
     },
     {
       "existingId": "20",
@@ -1069,5 +1063,43 @@
       "accessLimitations": "The search-index excerpts expose the full matching I-V list and all four choices. Direct ExamTopics access returned 403; direct PDF access returned 429 and was not retried. Technical correctness is assessed from the official syllabus, not either site's answer claim."
     }
   ],
-  "contextRecoveryProvenance": "The recovered question wording is reproduced by third-party sites, not authenticated by ISTQB. Matching was based on the stem, the I-V ordering and all four choice texts. The technical decisions were independently checked against the primary syllabus. Summaries above paraphrase the recovered lists. Restored wording is paraphrased while preserving the recovered I-V ordering and existing choices."
+  "contextRecoveryProvenance": "The recovered question wording is reproduced by third-party sites, not authenticated by ISTQB. Matching was based on the stem, the I-V ordering and all four choice texts. The technical decisions were independently checked against the primary syllabus. Summaries above paraphrase the recovered lists. Restored wording is paraphrased while preserving the recovered I-V ordering and existing choices.",
+  "editorialClarifications": [
+    {
+      "id": "88",
+      "sourceId": "8",
+      "reviewedOn": "2026-11-01",
+      "previousQuestionSha256": "3e1cc4fe74b8693b7c5d81f80b7faf0692476815835a9ed06aa09a8c030ae0a1",
+      "resolution": "clarified_practice_adaptation",
+      "correctKey": "A",
+      "officialAnswerKeyClaim": false,
+      "originalSourceStatus": "Ambiguous test-cycle coverage; no authenticated official answer key found. Successful monthly payments do not establish annual-option coverage or exact charge dates. Public reproductions also disagree between A and B.",
+      "editorialChanges": [
+        "Number the existing eight acceptance criteria without changing their meaning.",
+        "Explicitly state that both monthly and annual choices and registration criteria 1–7, including the full OTP flow, were checked.",
+        "Explicitly state that exact charge dates were not verified."
+      ],
+      "coverageByCriterion": {
+        "1": "explicitly checked",
+        "2": "explicitly checked",
+        "3": "explicitly checked",
+        "4": "both payment choices explicitly checked",
+        "5": "terms explicitly checked",
+        "6": "OTP delivery and entry explicitly checked",
+        "7": "OTP verification explicitly checked",
+        "8": "first-business-day charge timing not verified"
+      },
+      "primaryBasis": {
+        "url": "https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf",
+        "sections": ["4.5.2", "4.5.3"],
+        "reason": "Acceptance criteria and test examples must be unambiguous; resolve missing or ambiguous scenario details before defining the tests."
+      },
+      "comparisonSources": [
+        "https://examcademy.com/exams/istqb/ctfl-v4-0/q/8-chapter-4-test-analysis-and-design",
+        "https://www.examtopics.com/discussions/istqb/view/316480-exam-ctfl-v40-topic-1-question-144-discussion/",
+        "https://www.exam-hub.com/istqb/ctfl4/ISTQB.CTFL4.ExamTopics.2026-10-11.138q.vcex"
+      ],
+      "accessNotes": "ExamTopics full wording and A/B disagreement were visible in the search index; direct access returned 403. Repeated third-party A claims were not treated as an authenticated answer key."
+    }
+  ]
 }

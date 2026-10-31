@@ -63,7 +63,30 @@ test('reviewed answer corrections and retained source disagreements remain expli
   assert.deepEqual(question('265').answer, ['B']);
   assert.match(question('265').options.B, /risk level/i);
   assert.match(question('265').explanation, /risk level/i);
-  assert.equal(question('88').explanation, undefined);
+});
+
+test('CTFL 88 explicitly covers both payment choices and OTP while leaving the charge date unverified', () => {
+  const q = question('88');
+  assert.deepEqual(q.answer, ['A']);
+  assert.deepEqual(
+    [...q.question.matchAll(/^([1-8])\.\s+/gm)].map((match) => match[1]),
+    ['1', '2', '3', '4', '5', '6', '7', '8']
+  );
+  assert.match(q.question, /clarified practice scenario/);
+  assert.match(q.question, /Both the monthly and annual payment choices were tested/);
+  assert.match(
+    q.question,
+    /criteria 1 through 7, including the terms and conditions and the full OTP flow, were explicitly checked/
+  );
+  assert.match(q.question, /exact charge dates within each month were not verified/);
+  assert.match(q.explanation, /first business day/);
+  assert.equal(isAnswerCorrect(q, 'A'), true);
+  for (const alternative of ['B', 'C', 'D']) assert.equal(isAnswerCorrect(q, alternative), false);
+  assert.deepEqual(review.pendingAnswerReview, []);
+  assert.equal(
+    review.editorialClarifications.find((item) => item.id === '88').officialAnswerKeyClaim,
+    false
+  );
 });
 
 for (const { id, answer, sourceAnswer, selectedItems, topic } of [

@@ -39,6 +39,24 @@ test('CTFL cloud checkpoint resumes the restored question by its original ID', a
   await expect(correctAnswer).toBeChecked();
 });
 
+test('CTFL 88 explains the covered payment and OTP paths and scores the unchecked date criterion', async ({
+  page,
+}) => {
+  await resumeCheckpoint(page, '88');
+  const title = page.locator('.question-title');
+  await expect(title).toContainText('Both the monthly and annual payment choices were tested');
+  await expect(title).toContainText('full OTP flow, were explicitly checked');
+  await expect(title).toContainText('exact charge dates within each month were not verified');
+  await page.getByRole('radio', { name: /^B\.\s*Acceptance criteria 4/ }).check();
+  await expect(page.getByText('Review the correct answer below.', { exact: true })).toBeVisible();
+  const correctAnswer = page.getByRole('radio', { name: /^A\.\s*Acceptance criteria 8/ });
+  await correctAnswer.check();
+  await expect(page.getByText('Correct answer!', { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(title).toContainText('clarified practice scenario');
+  await expect(correctAnswer).toBeChecked();
+});
+
 for (const { id, task, answerName } of [
   {
     id: '121',
