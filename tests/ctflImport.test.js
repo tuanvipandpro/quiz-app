@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { createHash } from 'node:crypto';
 import { quizzes } from '../src/data/quizzes.js';
 import { validateQuizQuestions, isAnswerCorrect } from '../src/utils/questionModel.js';
 import { resolveCheckpoint } from '../src/utils/quizProgress.js';
@@ -67,15 +66,46 @@ test('reviewed answer corrections and retained source disagreements remain expli
   assert.equal(question('88').explanation, undefined);
 });
 
-test('missing source lists are not fabricated or given unsupported explanations', () => {
-  for (const pending of review.unchangedIncomplete) {
-    const digest = createHash('sha256')
-      .update(JSON.stringify(question(pending.id)))
-      .digest('hex');
-    assert.equal(digest, pending.sha256);
-    assert.equal(question(pending.id).explanation, undefined);
-  }
-});
+for (const { id, answer, sourceAnswer, selectedItems, topic } of [
+  {
+    id: '121',
+    answer: 'D',
+    sourceAnswer: 'C',
+    selectedItems: ['I', 'IV'],
+    topic: /acceptance testing\?$/,
+  },
+  {
+    id: '134',
+    answer: 'B',
+    sourceAnswer: 'D',
+    selectedItems: ['II', 'V'],
+    topic: /test management role\?$/,
+  },
+  {
+    id: '139',
+    answer: 'A',
+    sourceAnswer: 'C',
+    selectedItems: ['I', 'III', 'IV'],
+    topic: /static testing\?$/,
+  },
+]) {
+  test(`CTFL ${id} restores all five reviewed items and the actual task without changing answer meaning`, () => {
+    const q = question(id);
+    assert.deepEqual(
+      [...q.question.matchAll(/^(I|II|III|IV|V)\.\s+.+$/gm)].map((match) => match[1]),
+      ['I', 'II', 'III', 'IV', 'V']
+    );
+    assert.match(q.question, topic);
+    assert.deepEqual(q.answer, [answer]);
+    assert.deepEqual(q.options[answer].match(/\b(?:I|II|III|IV|V)\b/g), selectedItems);
+    assert.equal(isAnswerCorrect(q, answer), true);
+    assert.equal(isAnswerCorrect(q, sourceAnswer), false);
+    assert.match(q.explanation, /ISTQB CTFL v4\.0\.1/);
+    assert.ok(
+      review.restoredQuestionContext.some((item) => item.id === id && item.correctKey === answer)
+    );
+  });
+}
 
 test('CTFL uses the refreshed image set and renders decoded comparison operators', () => {
   const illustrated = bank.filter((q) => q.imageUrl);

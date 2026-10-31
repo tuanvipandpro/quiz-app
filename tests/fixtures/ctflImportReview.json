@@ -257,7 +257,7 @@
   "result": {
     "questions": 276,
     "images": 22,
-    "explanations": 272,
+    "explanations": 275,
     "addedIds": [
       "243",
       "244",
@@ -627,23 +627,6 @@
       "reason": "Same risk-response question and selected answer, with a different distractor A."
     }
   ],
-  "unchangedIncomplete": [
-    {
-      "id": "121",
-      "sourceId": "78",
-      "sha256": "d87cf80957c8ad055570294dda4f919c8ac3b1552591d9cf3e756f7b3fbc1488"
-    },
-    {
-      "id": "134",
-      "sourceId": "94",
-      "sha256": "465dc578e8bb08a11a217e9e9406f70cbb67da6b01947be6af8bf85511431152"
-    },
-    {
-      "id": "139",
-      "sourceId": "17",
-      "sha256": "51c3cdbd26680ea521f84e2f4061a96180ac027dbaab7d8acaacf1bfafc85b53"
-    }
-  ],
   "pendingAnswerReview": [
     {
       "id": "88",
@@ -685,8 +668,8 @@
       "previous": ["A"],
       "source": ["C"],
       "final": ["A"],
-      "action": "retain_existing_question_unchanged",
-      "reason": "Missing statements I-V; no reconstruction or new explanation invented."
+      "action": "retain_existing_answer_and_restore_reviewed_context",
+      "reason": "Syllabus 3.1.1 and 3.1.3 allow static examination of non-executable work products and direct defect detection. Measuring execution performance or observing runtime behavior belongs to dynamic testing. C includes II and omits III."
     },
     {
       "existingId": "165",
@@ -712,8 +695,8 @@
       "previous": ["D"],
       "source": ["C"],
       "final": ["D"],
-      "action": "retain_existing_question_unchanged",
-      "reason": "Missing statements I-V; no reconstruction or new explanation invented."
+      "action": "retain_existing_answer_and_restore_reviewed_context",
+      "reason": "Syllabus 2.2.1 describes validation, deployment readiness and intended users for acceptance testing. It associates harness support with component testing. Mandatory independent-team execution and a component-specification basis do not characterize acceptance testing."
     },
     {
       "existingId": "84",
@@ -730,8 +713,8 @@
       "previous": ["B"],
       "source": ["D"],
       "final": ["B"],
-      "action": "retain_existing_question_unchanged",
-      "reason": "Missing activities I-V; no reconstruction or new explanation invented."
+      "action": "retain_existing_answer_and_restore_reviewed_context",
+      "reason": "Syllabus 1.4.5 assigns planning, monitoring, control and completion primarily to test management. The other listed activities concern technical testing or a review role rather than that principal management focus. The source explanation incorrectly assumes the missing question asks about technical test preparation."
     },
     {
       "existingId": "82",
@@ -1039,5 +1022,52 @@
       }
     ]
   },
-  "reviewCompletedOn": "2026-11-01"
+  "reviewCompletedOn": "2026-11-01",
+  "restoredQuestionContext": [
+    {
+      "id": "121",
+      "sourceId": "78",
+      "restoredOn": "2026-11-01",
+      "previousContentHash": "d87cf80957c8ad055570294dda4f919c8ac3b1552591d9cf3e756f7b3fbc1488",
+      "correctKey": "D",
+      "selectedItems": ["I", "IV"],
+      "primarySections": ["2.2.1, page 29"],
+      "wordingRecoverySources": [
+        "https://i-quiz.vn/exam/detail/4355",
+        "https://www.dumpsmate.com/ctfl_syll_4-0-istqb-certified-tester-foundation-level-ctfl-v4-0-question.html"
+      ],
+      "reason": "Syllabus 2.2.1 describes validation, deployment readiness and intended users for acceptance testing. It associates harness support with component testing. Mandatory independent-team execution and a component-specification basis do not characterize acceptance testing.",
+      "choiceOrderWarning": "The i-quiz reproduction agrees with the app's D = I and IV. Another reproduction labels I and IV as C and swaps C/D. The supplied merged source still has C = II and V, so its marked C is incorrect for its own choices."
+    },
+    {
+      "id": "134",
+      "sourceId": "94",
+      "restoredOn": "2026-11-01",
+      "previousContentHash": "465dc578e8bb08a11a217e9e9406f70cbb67da6b01947be6af8bf85511431152",
+      "correctKey": "B",
+      "selectedItems": ["II", "V"],
+      "primarySections": ["1.4.5, page 21"],
+      "wordingRecoverySources": [
+        "https://www.certprep.io/isqi/ctfl-syll-4.0/questions",
+        "https://www.p2pexams.com/free-questions/isqi-ctfl-syll-4.0-dumps-by-finley.pdf"
+      ],
+      "reason": "Syllabus 1.4.5 assigns planning, monitoring, control and completion primarily to test management. The other listed activities concern technical testing or a review role rather than that principal management focus. The source explanation incorrectly assumes the missing question asks about technical test preparation."
+    },
+    {
+      "id": "139",
+      "sourceId": "17",
+      "restoredOn": "2026-11-01",
+      "previousContentHash": "51c3cdbd26680ea521f84e2f4061a96180ac027dbaab7d8acaacf1bfafc85b53",
+      "correctKey": "A",
+      "selectedItems": ["I", "III", "IV"],
+      "primarySections": ["3.1.1, page 33", "3.1.3, page 34"],
+      "wordingRecoverySources": [
+        "https://www.examtopics.com/discussions/istqb/view/334272-exam-ctfl-v4-0-topic-1-question-138-discussion/",
+        "https://www.freepdfdumps.com/ISTQB.ISTQB-CTFL.v2026-04-24.q192.pdf"
+      ],
+      "reason": "Syllabus 3.1.1 and 3.1.3 allow static examination of non-executable work products and direct defect detection. Measuring execution performance or observing runtime behavior belongs to dynamic testing. C includes II and omits III.",
+      "accessLimitations": "The search-index excerpts expose the full matching I-V list and all four choices. Direct ExamTopics access returned 403; direct PDF access returned 429 and was not retried. Technical correctness is assessed from the official syllabus, not either site's answer claim."
+    }
+  ],
+  "contextRecoveryProvenance": "The recovered question wording is reproduced by third-party sites, not authenticated by ISTQB. Matching was based on the stem, the I-V ordering and all four choice texts. The technical decisions were independently checked against the primary syllabus. Summaries above paraphrase the recovered lists. Restored wording is paraphrased while preserving the recovered I-V ordering and existing choices."
 }

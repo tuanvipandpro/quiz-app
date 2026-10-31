@@ -1797,7 +1797,8 @@
       "C": "Statements II and V",
       "D": "Statements I and IV"
     },
-    "question": "Consider the following statements about acceptance test levels (I to V):"
+    "question": "Consider the following statements about acceptance test levels (I to V):\n\nI. These test levels validate the system and demonstrate that it is ready for deployment.\nII. An independent test team must perform these test levels.\nIII. These test levels often need special support such as a test harness.\nIV. Ideally, the intended users carry out these test levels.\nV. The test basis for the system is its component specifications.\n\nWhich option BEST characterizes acceptance testing?",
+    "explanation": "D selects I and IV: acceptance testing validates business needs and deployment readiness, ideally with the intended users. An independent team is not mandatory. Harness support characterizes component testing; component specifications are not the acceptance-test basis. See ISTQB CTFL v4.0.1, section 2.2.1: https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf#page=29."
   },
   {
     "answer": [
@@ -1991,7 +1992,8 @@
       "C": "Activities I and V",
       "D": "Activities I, III, and IV"
     },
-    "question": "Consider the following list of activities (I to V):"
+    "question": "Consider the following list of activities (I to V):\n\nI. Test design\nII. Test planning\nIII. Reviewing the test basis\nIV. Facilitating a peer review\nV. Test monitoring and control\n\nWhich group lists the activities that are the MAIN focus of the test management role?",
+    "explanation": "B selects II and V. Test management mainly covers planning, monitoring, control and completion. Design is engineering work; reviewing the test basis and facilitating a peer review are not the principal management focus asked for here. See ISTQB CTFL v4.0.1, section 1.4.5: https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf#page=21."
   },
   {
     "answer": [
@@ -2065,7 +2067,8 @@
       "C": "Statements I, II, and IV",
       "D": "Statements II, III, and V"
     },
-    "question": "Consider the following statements (I to V) about software testing:"
+    "question": "Consider the following statements (I to V) about software testing:\n\nI. May be used to examine non-executable work products.\nII. Can measure performance efficiency.\nIII. May uncover defects.\nIV. Can identify a defect directly.\nV. Can reveal unexpected behavior caused by a possible defect.\n\nWhich option BEST describes static testing?",
+    "explanation": "A selects I, III and IV. Static testing examines non-executable work products and finds defects directly. Measuring execution performance and observing unexpected runtime behavior belong to dynamic testing. See ISTQB CTFL v4.0.1, sections 3.1.1 and 3.1.3: https://istqb.org/wp-content/uploads/2024/11/ISTQB_CTFL_Syllabus_v4.0.1.pdf#page=34."
   },
   {
     "answer": [
