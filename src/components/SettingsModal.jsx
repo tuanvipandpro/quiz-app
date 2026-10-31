@@ -1,14 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Modal, Card, Collapse, Space, Input, Typography, Alert, Spin, Button } from 'antd';
-import { SaveOutlined, ApiOutlined, DeleteOutlined } from '@ant-design/icons';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { Modal, Input, Typography, Alert, Spin, Button, Radio, Tooltip } from 'antd';
+import {
+  SaveOutlined,
+  ApiOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../contexts/LanguageContext';
 import { credentials, testConnection } from '../services/llm';
 import { PROVIDERS } from '../services/llm/modelRegistry';
+import AiSourceControl from './AiSourceControl';
+import { useAiSource } from '../hooks/useAiSource';
+import { useSignIn } from '../hooks/useSignIn';
+import SignInModal from './SignInModal';
+import ApiKeyHelp from './ApiKeyHelp';
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
-export default function SettingsModal({ visible, onClose }) {
+export default function SettingsModal({ visible, onClose, afterClose }) {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [keys, setKeys] = useState({ gemini: '', groq: '' });
@@ -16,38 +26,59 @@ export default function SettingsModal({ visible, onClose }) {
   const [busy, setBusy] = useState(null);
   const [notice, setNotice] = useState(null);
   const [statuses, setStatuses] = useState({});
+  const [selectedProvider, setSelectedProvider] = useState(PROVIDERS[0].id);
+  const [savedKeys, setSavedKeys] = useState({});
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [loadRevision, setLoadRevision] = useState(0);
+  const inputId = useId();
+  const signIn = useSignIn();
   const operation = useRef(0);
   const testRequest = useRef(null);
   const uid = user?.uid || null;
+  const { source } = useAiSource(uid);
+  const provider = PROVIDERS.find((item) => item.id === selectedProvider) || PROVIDERS[0];
+  const disabled = loading || loadFailed || !!busy;
   useEffect(() => {
     const id = ++operation.current;
     testRequest.current?.abort();
     setKeys({ gemini: '', groq: '' });
     setNotice(null);
     setStatuses({});
+    setSavedKeys({});
+    setLoadFailed(false);
+    setHelpOpen(false);
+    setClearOpen(false);
     setBusy(null);
-    if (visible) {
+    if (visible && source === 'byok') {
       setLoading(true);
       credentials
         .getKeys(uid)
         .then((value) => {
-          if (operation.current === id) setKeys(value);
+          if (operation.current === id) {
+            setKeys(value);
+            setSavedKeys(value);
+          }
         })
         .catch(() => {
-          if (operation.current === id)
+          if (operation.current === id) {
+            setLoadFailed(true);
             setNotice({ type: 'error', key: 'Could not load AI keys. Close settings and retry.' });
+          }
         })
         .finally(() => {
           if (operation.current === id) setLoading(false);
         });
-    }
+    } else setLoading(false);
     return () => {
       operation.current++;
       testRequest.current?.abort();
     };
-  }, [visible, uid]);
+  }, [visible, uid, source, loadRevision]);
   const run = async (provider, action) => {
     const id = operation.current;
+    if (disabled) return;
     setBusy(`${provider}:${action}`);
     setNotice(null);
     try {
@@ -61,9 +92,11 @@ export default function SettingsModal({ visible, onClose }) {
         await credentials.saveKey(provider, value, uid);
         if (operation.current !== id) return;
         setKeys((current) => ({ ...current, [provider]: value }));
+        setSavedKeys((current) => ({ ...current, [provider]: value }));
         setStatuses((current) => ({ ...current, [provider]: null }));
         setNotice({
           type: 'success',
+          provider,
           key:
             action === 'clear'
               ? 'API key removed.'
@@ -74,7 +107,7 @@ export default function SettingsModal({ visible, onClose }) {
       }
     } catch (error) {
       if (operation.current === id && error.code !== 'CANCELLED')
-        setNotice({ type: 'error', key: error.message });
+        setNotice({ type: 'error', key: error.message, provider });
     } finally {
       if (operation.current === id) setBusy(null);
     }
@@ -82,117 +115,150 @@ export default function SettingsModal({ visible, onClose }) {
   return (
     <Modal
       title={t('AI Settings')}
+      className="ai-settings-modal"
       open={visible}
       onCancel={onClose}
-      width={640}
+      afterClose={afterClose}
+      width={520}
       footer={<Button onClick={onClose}>{t('Done')}</Button>}
     >
       <Spin spinning={loading}>
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+        <div className="ai-settings-content">
           {uid && <Text>{t('Profile: {name}', { name: user.displayName || user.email })}</Text>}
-          <Paragraph type="secondary" className="ai-settings-intro">
-            {t('Add a key for Gemini or Groq to use AI explanations.')}{' '}
-            {t(
-              uid
-                ? 'Keys are saved in your profile. Signing out keeps your saved keys.'
-                : 'Guest keys stay in this browser and are cleared when your account changes.'
-            )}
-          </Paragraph>
-          {notice && <Alert showIcon type={notice.type} message={t(notice.key)} />}
-          {PROVIDERS.map((provider) => (
-            <Card
-              key={provider.id}
-              className="ai-provider-card"
-              title={provider.name}
-              size="small"
-              extra={
+          <AiSourceControl active={visible} onSignIn={signIn.show} />
+          {source === 'byok' && (
+            <section className="ai-provider-form" aria-label={t('Your API key')}>
+              <div className="ai-settings-row">
+                <Text strong>{t('Manage keys')}</Text>
+                <Button
+                  type="text"
+                  icon={<QuestionCircleOutlined aria-hidden="true" />}
+                  aria-label={t('API key help')}
+                  onClick={() => setHelpOpen(true)}
+                >
+                  {t('Help')}
+                </Button>
+              </div>
+              <Radio.Group
+                value={provider.id}
+                className="ai-provider-options"
+                aria-label={t('Key provider')}
+                disabled={!!busy}
+                onChange={(event) => setSelectedProvider(event.target.value)}
+              >
+                {PROVIDERS.map((item) => (
+                  <Radio.Button key={item.id} value={item.id} aria-label={item.name}>
+                    {item.shortName || item.name}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+              <div className="ai-settings-row ai-key-label">
+                <label htmlFor={inputId}>
+                  {t('{provider} API key', { provider: provider.name })}
+                </label>
                 <a href={provider.keyUrl} target="_blank" rel="noopener noreferrer">
                   {t('Get API key')}
                 </a>
-              }
-            >
-              <Space direction="vertical" style={{ width: '100%' }} size="middle">
-                <Input.Password
-                  aria-label={t('{provider} API key', { provider: provider.name })}
-                  placeholder={t('Enter your {provider} API key', { provider: provider.name })}
-                  value={keys[provider.id]}
-                  disabled={loading || !!busy}
-                  visibilityToggle={false}
-                  autoComplete="off"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  onChange={(event) => {
-                    setKeys((value) => ({ ...value, [provider.id]: event.target.value }));
-                    setStatuses((value) => ({ ...value, [provider.id]: null }));
-                  }}
-                />
-                <Space wrap>
-                  <Button
-                    icon={<SaveOutlined aria-hidden="true" />}
-                    type="primary"
-                    disabled={loading || !!busy || !keys[provider.id].trim()}
-                    loading={busy === `${provider.id}:save`}
-                    onClick={() => run(provider.id, 'save')}
-                  >
-                    {t('Save key')}
-                  </Button>
+              </div>
+              <Input.Password
+                id={inputId}
+                aria-label={t('{provider} API key', { provider: provider.name })}
+                placeholder={t('Enter your {provider} API key', { provider: provider.name })}
+                value={keys[provider.id]}
+                disabled={disabled}
+                visibilityToggle={false}
+                autoComplete="off"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                onChange={(event) => {
+                  setKeys((value) => ({ ...value, [provider.id]: event.target.value }));
+                  setStatuses((value) => ({ ...value, [provider.id]: null }));
+                  setNotice((value) => (value?.provider === provider.id ? null : value));
+                }}
+              />
+              <div className="ai-key-actions">
+                <Button
+                  icon={<SaveOutlined aria-hidden="true" />}
+                  aria-label={t('Save key')}
+                  type="primary"
+                  disabled={disabled || !keys[provider.id].trim()}
+                  loading={busy === `${provider.id}:save`}
+                  onClick={() => run(provider.id, 'save')}
+                >
+                  {t('Save')}
+                </Button>
+                <Tooltip title={t('Testing uses provider quota.')}>
                   <Button
                     icon={<ApiOutlined aria-hidden="true" />}
-                    disabled={loading || !!busy || !keys[provider.id].trim()}
+                    aria-label={t('Test connection')}
+                    disabled={disabled || !keys[provider.id].trim()}
                     loading={busy === `${provider.id}:test`}
                     onClick={() => run(provider.id, 'test')}
                   >
-                    {t('Test connection')}
+                    {t('Test')}
                   </Button>
+                </Tooltip>
+                <Tooltip title={t('Clear key')}>
                   <Button
                     icon={<DeleteOutlined aria-hidden="true" />}
                     danger
-                    disabled={loading || !!busy}
+                    aria-label={t('Clear key')}
+                    disabled={disabled || (!keys[provider.id].trim() && !savedKeys[provider.id])}
                     loading={busy === `${provider.id}:clear`}
-                    onClick={() => run(provider.id, 'clear')}
-                  >
-                    {t('Clear key')}
-                  </Button>
-                </Space>
-                <Text type="secondary">
-                  {t(
-                    'Testing sends a small request and uses provider quota. Save the key to use it for explanations.'
-                  )}
-                </Text>
-                <Collapse
-                  size="small"
-                  items={[
-                    {
-                      key: 'help',
-                      label: t('How to get a {provider} API key', { provider: provider.name }),
-                      children: (
-                        <>
-                          <ol>
-                            {provider.keySteps.map((step) => (
-                              <li key={step}>{t(step)}</li>
-                            ))}
-                          </ol>
-                          <a href={provider.keyHelpUrl} target="_blank" rel="noopener noreferrer">
-                            {t('Official setup guide')}
-                          </a>
-                        </>
-                      ),
-                    },
-                  ]}
-                />
-                {statuses[provider.id] && (
-                  <Alert
-                    type="success"
-                    showIcon
-                    message={t('Connected: {model}', { model: statuses[provider.id] })}
+                    onClick={() => setClearOpen(true)}
                   />
-                )}
-              </Space>
-            </Card>
-          ))}
-        </Space>
+                </Tooltip>
+              </div>
+              {notice && (!notice.provider || notice.provider === provider.id) && (
+                <Alert
+                  showIcon
+                  role={notice.type === 'error' ? 'alert' : 'status'}
+                  type={notice.type}
+                  message={t(notice.key)}
+                  action={
+                    loadFailed && (
+                      <Button onClick={() => setLoadRevision((value) => value + 1)}>
+                        {t('Retry')}
+                      </Button>
+                    )
+                  }
+                />
+              )}
+              {statuses[provider.id] && (
+                <Alert
+                  type="success"
+                  showIcon
+                  message={t('Connected: {model}', { model: statuses[provider.id] })}
+                />
+              )}
+            </section>
+          )}
+        </div>
       </Spin>
+      <ApiKeyHelp
+        open={visible && helpOpen}
+        onClose={() => setHelpOpen(false)}
+        provider={provider}
+        signedIn={!!uid}
+      />
+      <SignInModal {...signIn.modalProps} />
+      <Modal
+        open={visible && clearOpen}
+        title={t('Remove this API key?')}
+        className="ai-settings-modal"
+        width={400}
+        onCancel={() => setClearOpen(false)}
+        onOk={() => {
+          setClearOpen(false);
+          run(provider.id, 'clear');
+        }}
+        okText={t('Clear key')}
+        cancelText={t('Cancel')}
+        okButtonProps={{ danger: true }}
+      >
+        {t('You will need to enter it again to use this provider.')}
+      </Modal>
     </Modal>
   );
 }

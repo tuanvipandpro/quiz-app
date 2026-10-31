@@ -511,3 +511,114 @@
 .review-filters .ant-radio-button-wrapper::before {
   display: none;
 }
+
+.ai-source-control,
+.ai-usage {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ai-source-control {
+  margin-block: 12px 20px;
+}
+.ai-source-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ai-source-options .ant-radio-button-wrapper,
+.ai-provider-options .ant-radio-button-wrapper {
+  flex: 1 1 120px;
+  min-height: 44px;
+  height: auto;
+  padding: 10px 12px;
+  line-height: 1.4;
+  text-align: center;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+}
+.ai-source-options .ant-radio-button-wrapper::before,
+.ai-provider-options .ant-radio-button-wrapper::before {
+  display: none;
+}
+.ai-source-control .ant-btn,
+.ai-settings-modal .ant-btn,
+.ai-settings-modal .ant-input-affix-wrapper,
+.quiz-dialog-actions .ant-btn {
+  min-height: 44px;
+}
+
+.ai-settings-content,
+.ai-provider-form {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.ai-settings-content .ai-source-control {
+  margin: 0;
+}
+.ai-settings-row,
+.ai-sign-in-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ai-sign-in-prompt > .ant-typography {
+  flex: 1 1 110px;
+}
+.ai-provider-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.ai-provider-form {
+  gap: 12px;
+}
+.ai-key-label label {
+  font-weight: 600;
+}
+.ai-key-label a,
+.ai-key-help a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.ai-provider-form .ant-input {
+  font-size: 16px;
+}
+.ai-key-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) 44px;
+  gap: 8px;
+}
+.ai-key-actions .ant-btn {
+  padding-inline: 8px;
+}
+.ai-settings-modal .ant-modal-close {
+  width: 44px;
+  height: 44px;
+}
+.ai-settings-modal .ant-btn {
+  min-width: 44px;
+}
+.ai-settings-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled),
+.ai-settings-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled):hover,
+.ai-settings-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled):active {
+  color: var(--app-on-danger);
+  background: var(--app-danger-text);
+  border-color: var(--app-danger-text);
+}
+.ai-settings-modal .ant-modal-title {
+  padding-inline-end: 36px;
+}
+.ai-key-help ol {
+  padding-inline-start: 24px;
+}
+.ai-key-help li + li {
+  margin-top: 12px;
+}

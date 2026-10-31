@@ -12,6 +12,7 @@
 - `src/App.jsx`: routing, quiz loading and study orchestration.
 - `src/components/`: UI; `src/hooks/`: stateful behavior; `src/contexts/`: auth/language.
 - `src/services/`: Firebase and AI boundaries. `src/services/llm/`: credentials, caching and provider routing.
+- `worker/`: App AI API/auth/quota and D1 migrations. `yarn test:worker` uses local D1 and signed fixtures; `yarn worker:check` only bundles.
 - `src/data/`: catalog, stable IDs/aliases, brands and format examples.
 - `src/utils/questionModel.js`: validation/scoring contract. `public/quiz/`: static banks.
 - `public/summaries/`: published study content, not development documentation.
@@ -27,6 +28,7 @@
 - Verify actual quiz contents before changing provider/name/code. Count/schema/hash checks alone do not establish exam alignment.
 - Do not refresh a guide's reviewed hash until its content and question mappings have been reviewed. `yarn check:guides` exposes outstanding reviews.
 - Guest uploads stay in the tab. Cloud custom quizzes use 3 owner-only Firestore slots, 1–100 questions and instance/version-scoped drafts/checkpoints. Track production rollout in #42; do not enable the client before compatible Rules are published and verified.
+- Guest AI uses BYOK. App AI requires a verified non-anonymous Firebase user, explicit source choice and server quota. Keep Cloudflare on Free with an allowlisted model; never add paid fallback or silently use a user's BYOK credentials. Enable App AI only after Free-account, quality and CPU/usage verification in #53.
 
 ## Required review before every change
 

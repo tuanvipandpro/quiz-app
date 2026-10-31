@@ -1,4 +1,41 @@
 export const vi = {
+  'Could not reach App AI. Retry to check the same attempt.':
+    'Chưa kết nối được AI ứng dụng. Thử lại để kiểm tra cùng lượt đã gửi.',
+  'AI source': 'Nguồn AI',
+  'App AI': 'AI ứng dụng',
+  'Your API key': 'API key của bạn',
+  'Saved explanation': 'Lời giải đã lưu',
+  '{remaining}/{limit} App AI attempts left today':
+    'Còn {remaining}/{limit} lượt AI ứng dụng hôm nay',
+  'Resets at {time}': 'Đặt lại lúc {time}',
+  'Guests use their own API key. Sign in to access App AI.':
+    'Khách dùng API key riêng. Đăng nhập để dùng AI ứng dụng.',
+  'App AI is being set up. You can use your own API key.':
+    'AI ứng dụng đang được thiết lập. Bạn có thể dùng API key riêng.',
+  'New attempts use quota, including failed requests sent to the model. Saved results do not.':
+    'Lượt tạo mới được tính vào hạn mức, kể cả yêu cầu lỗi đã gửi đến model. Xem kết quả đã lưu không tốn lượt.',
+  'Regenerating uses a new App AI attempt.': 'Tạo lại sẽ dùng thêm một lượt AI ứng dụng.',
+  'Sign in again to use App AI.': 'Đăng nhập lại để dùng AI ứng dụng.',
+  'Could not verify your sign-in. Please retry.': 'Chưa xác minh được đăng nhập. Vui lòng thử lại.',
+  'This question cannot be sent to App AI. Check its format.':
+    'Không thể gửi câu hỏi này đến AI ứng dụng. Hãy kiểm tra định dạng.',
+  'This question is too long for App AI. You can choose your own API key.':
+    'Câu hỏi quá dài cho AI ứng dụng. Bạn có thể chọn API key riêng.',
+  'You have used your App AI allowance for today.': 'Bạn đã dùng hết lượt AI ứng dụng hôm nay.',
+  'App AI has reached its daily allowance. Please return after the reset.':
+    'AI ứng dụng đã hết hạn mức hôm nay. Vui lòng quay lại sau thời điểm đặt lại.',
+  'Another App AI request is still running for your account.':
+    'Tài khoản của bạn đang có một yêu cầu AI ứng dụng được xử lý.',
+  'This request is still running. Retry to check its result.':
+    'Yêu cầu vẫn đang được xử lý. Thử lại để kiểm tra kết quả.',
+  'This request changed. Select Regenerate to start a new attempt.':
+    'Yêu cầu đã thay đổi. Chọn Tạo lại để bắt đầu lượt mới.',
+  'This request has expired. Select Regenerate to start a new attempt.':
+    'Yêu cầu đã hết hạn. Chọn Tạo lại để bắt đầu lượt mới.',
+  'App AI is unavailable. You can choose your own API key.':
+    'AI ứng dụng chưa khả dụng. Bạn có thể chọn API key riêng.',
+  'This attempt timed out. Regenerate starts a new attempt and uses quota.':
+    'Yêu cầu quá thời gian chờ. Tạo lại sẽ bắt đầu và tính một lượt mới.',
   'Preview stays in this tab until you save it to your account.':
     'Bản xem trước ở trong tab này cho đến khi bạn chọn lưu vào tài khoản.',
   'Cloud save limit: {limit} KiB. Larger quizzes can be used in this tab.':
@@ -354,6 +391,17 @@ export const vi = {
     'Tạo lại sẽ gửi yêu cầu AI mới và sử dụng hạn mức của nhà cung cấp.',
   'Could not generate an explanation. Please retry.':
     'Không tạo được giải thích. Vui lòng thử lại.',
+  'Manage keys': 'Quản lý key',
+  'Key provider': 'Nhà cung cấp key',
+  'API key help': 'Hướng dẫn API key',
+  Help: 'Hướng dẫn',
+  Test: 'Kiểm tra',
+  'App AI, no API key needed.': 'App AI không cần key.',
+  'Save a key for one or both providers.': 'Bạn có thể lưu key của một hoặc cả hai nhà cung cấp.',
+  'Testing uses provider quota.': 'Kiểm tra sẽ dùng hạn mức của nhà cung cấp.',
+  'Remove this API key?': 'Xóa API key này?',
+  'You will need to enter it again to use this provider.':
+    'Bạn cần nhập lại key để dùng nhà cung cấp này.',
   'Add a key for Gemini or Groq to use AI explanations.':
     'Thêm API key Gemini hoặc Groq để sử dụng giải thích AI.',
   'Keys are saved in your profile. Signing out keeps your saved keys.':

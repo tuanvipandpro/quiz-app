@@ -26,6 +26,10 @@ jobs:
       - run: npm install --global yarn@1.22.22
       - run: yarn install --frozen-lockfile
       - run: yarn verify
+        env:
+          VITE_APP_AI_URL: ${{ vars.VITE_APP_AI_URL }}
+      - run: yarn test:worker
+      - run: yarn worker:check
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

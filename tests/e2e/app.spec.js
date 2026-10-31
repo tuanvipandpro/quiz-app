@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { selectMenuItem, clickDialogButton } from './motion';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -25,7 +26,7 @@ async function requestSignOut(page) {
   const menu = page.getByRole('menu');
   await expect(menu).toBeVisible();
   await expect(menu.getByRole('separator')).toBeVisible();
-  await menu.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await selectMenuItem(page, 'Sign out');
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toBeVisible();
   return dialog;
@@ -62,7 +63,9 @@ test('QuizMos branding loads under the configured base and keeps navigation acce
   await expect
     .poll(() => dialog.locator('.sign-in-brand-mark').evaluate((image) => image.naturalWidth))
     .toBeGreaterThan(0);
-  await dialog.getByRole('button', { name: 'Continue with Google', exact: true }).focus();
+  const googleSignIn = dialog.getByRole('button', { name: 'Continue with Google', exact: true });
+  await expect(googleSignIn).toBeEnabled();
+  await googleSignIn.focus();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(signIn).toBeFocused();
@@ -180,16 +183,16 @@ test('account menu confirms sign-out and handles cancel, failure and success', a
   await page.goto('./');
   await signIn(page);
   let dialog = await requestSignOut(page);
-  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await clickDialogButton(dialog, 'Cancel');
   await expect(dialog).toBeHidden();
   expect(await page.evaluate(() => sessionStorage.getItem('quiz-e2e-signout-count'))).toBeNull();
   await page.evaluate(() => sessionStorage.setItem('quiz-e2e-fail-signout', '1'));
   dialog = await requestSignOut(page);
-  await dialog.getByRole('button', { name: 'Sign out', exact: true }).click();
+  await clickDialogButton(dialog, 'Sign out');
   await expect(page.getByText('Could not sign out. Please retry.', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await page.evaluate(() => sessionStorage.removeItem('quiz-e2e-fail-signout'));
-  await dialog.getByRole('button', { name: 'Sign out', exact: true }).click();
+  await clickDialogButton(dialog, 'Sign out');
   await expect(dialog).toBeHidden();
   await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeVisible();
   await expect(page).toHaveURL(/#\/library$/);
@@ -215,14 +218,17 @@ test('exam preserves deadline on refresh and requires confirmation before leavin
   await page.getByRole('button', { name: 'Quiz Bank', exact: true }).click();
   const leaveDialog = page.getByRole('dialog').filter({ hasText: 'Leave this exam?' });
   await expect(leaveDialog).toBeVisible();
-  await leaveDialog.getByRole('button', { name: 'Continue exam', exact: true }).click();
+  await clickDialogButton(leaveDialog, 'Continue exam');
   await expect(leaveDialog).toBeHidden();
   const dialog = await requestSignOut(page);
   await expect(dialog).toContainText('end this exam');
-  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await clickDialogButton(dialog, 'Cancel');
   await expect(dialog).toBeHidden();
   await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
-  await page.getByRole('button', { name: 'Submit and view results', exact: true }).click();
+  await clickDialogButton(
+    page.getByRole('dialog', { name: 'Review before submitting', exact: true }),
+    'Submit and view results'
+  );
   await expect(page.getByRole('heading', { name: 'Exam results', exact: true })).toBeVisible();
   await expect(page.locator('.question-options input').first()).toBeDisabled();
 });

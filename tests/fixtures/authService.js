@@ -13,6 +13,11 @@ export default {
     return () => listeners.delete(listener);
   },
   async signInWithGoogle() {
+    sessionStorage.setItem(
+      'quiz-e2e-signin-count',
+      String(Number(sessionStorage.getItem('quiz-e2e-signin-count') || 0) + 1)
+    );
+    if (sessionStorage.getItem('quiz-e2e-fail-signin')) return { success: false };
     const user = {
       uid: 'test-alice',
       displayName: 'Test account',
@@ -30,4 +35,11 @@ export default {
     return { success: true };
   },
   getCurrentUser: readUser,
+  async getIdToken(uid) {
+    if (readUser()?.uid !== uid) throw new Error('Sign in to use App AI.');
+    const response = await fetch(
+      `http://127.0.0.1:5176/__test/token?uid=${encodeURIComponent(uid)}`
+    );
+    return (await response.json()).token;
+  },
 };

@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import SettingsModal from './SettingsModal';
+import { AiUsage } from './AiSourceControl';
 import { useLanguage } from '../contexts/LanguageContext';
 import { formatAnswerLines, formatQuestionText, questionExplanation } from '../utils/questionModel';
 
@@ -24,10 +25,18 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
       <Button
         icon={<ReloadOutlined aria-hidden="true" />}
         disabled={state.loading}
-        onClick={() => state.explain({ forceRefresh: true })}
+        onClick={() => state.explain({ forceRefresh: !state.error })}
       >
         {t(state.error ? 'Retry' : 'Regenerate')}
       </Button>
+      {state.error && state.source === 'app' && (
+        <Button
+          disabled={state.loading || state.usage?.remaining === 0}
+          onClick={() => state.explain({ forceRefresh: true })}
+        >
+          {t('Regenerate')}
+        </Button>
+      )}
       <Button icon={<CloseOutlined aria-hidden="true" />} onClick={state.close}>
         {t('Close')}
       </Button>
@@ -70,6 +79,8 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
         />
       )}
       <Title level={3}>{t('AI explanation')}</Title>
+      <Text type="secondary">{t(state.source === 'app' ? 'App AI' : 'Your API key')}</Text>
+      {state.source === 'app' && <AiUsage usage={state.usage} />}
       {state.loading ? (
         <div className="explanation-loading" role="status">
           <Spin />
@@ -78,6 +89,7 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
       ) : state.error ? (
         <Alert
           showIcon
+          role="alert"
           type="error"
           message={t('Could not generate an explanation. Please retry.')}
           description={t(state.error)}
@@ -90,7 +102,11 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
         </div>
       )}
       <Paragraph type="secondary" className="study-hint">
-        {t('Regenerating sends a new AI request using your provider quota.')}
+        {t(
+          state.source === 'app'
+            ? 'Regenerating uses a new App AI attempt.'
+            : 'Regenerating sends a new AI request using your provider quota.'
+        )}
       </Paragraph>
     </div>
   );
@@ -117,6 +133,7 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
       <SettingsModal
         visible={state.settingsVisible}
         onClose={() => state.setSettingsVisible(false)}
+        afterClose={() => state.triggerRef.current?.focus()}
       />
     </>
   );

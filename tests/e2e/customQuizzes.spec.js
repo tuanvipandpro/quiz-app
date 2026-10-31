@@ -1,4 +1,6 @@
+import { contrastRatio } from './contrast';
 import { test, expect } from '@playwright/test';
+import { selectMenuItem, settleMotion, clickDialogButton } from './motion';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
@@ -42,35 +44,8 @@ async function confirm(page, name, action) {
       ? page.getByRole('dialog').filter({ hasText: name })
       : page.getByRole('dialog', { name, exact: true });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: action, exact: true }).click();
+  await clickDialogButton(dialog, action);
   await expect(dialog).toBeHidden();
-}
-
-async function contrastRatio(locator) {
-  const { foreground, background } = await locator.evaluate((element) => {
-    let current = element,
-      background;
-    while (current) {
-      background = getComputedStyle(current).backgroundColor;
-      if (background !== 'rgba(0, 0, 0, 0)' && background !== 'transparent') break;
-      current = current.parentElement;
-    }
-    return { foreground: getComputedStyle(element).color, background };
-  });
-  const luminance = (color) => {
-    const rgb = color
-      .match(/[\d.]+/g)
-      .slice(0, 3)
-      .map(Number)
-      .map((v) => {
-        v /= 255;
-        return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-      });
-    return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
-  };
-  const a = luminance(foreground),
-    b = luminance(background);
-  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
 test('explicit cloud save survives reload and is available from a second client page', async ({
@@ -361,7 +336,7 @@ test('logout and another account cannot display a private quiz through its old d
   await card(page, 'Alice private').getByRole('button', { name: 'Practice', exact: true }).click();
   const url = page.url();
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await selectMenuItem(page, 'Sign out');
   await confirm(page, 'Sign out?', 'Sign out');
   await page.goto(url);
   await expect(page.getByText('Sign in to open your saved quiz.', { exact: true })).toBeVisible();
@@ -437,6 +412,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           name: language === 'en' ? 'Delete' : 'Xóa',
           exact: true,
         });
+        await settleMotion(deleteAction);
         const cardContrast = await contrastRatio(deleteAction);
         expect(cardContrast).toBeGreaterThanOrEqual(4.5);
         contrastEvidence.push({ language, theme, width, cardContrast });
@@ -462,6 +438,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           exact: true,
         });
         await expect(dialog).toBeVisible();
+        await settleMotion(dialog);
         const input = dialog.getByRole('textbox');
         await expect(input).toHaveValue(longName);
         await expect(input).toHaveCSS('min-height', '44px');
@@ -490,6 +467,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
             exact: true,
           });
           await expect(deletion.getByText(longName, { exact: true })).toBeVisible();
+          await settleMotion(deletion);
           const confirmationContrast = await contrastRatio(
             deletion.getByRole('button', {
               name: language === 'en' ? 'Delete' : 'Xóa',

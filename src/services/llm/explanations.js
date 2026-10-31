@@ -64,7 +64,7 @@ export function createExplanationService({
       for (const job of pending.values()) job.controller.abort();
       pending.clear();
     },
-    async generate(question, { uid = null, signal, forceRefresh = false } = {}) {
+    async generate(question, { uid = null, signal, forceRefresh = false, language = 'vi' } = {}) {
       if (signal?.aborted) throw cancelled();
       const started = generation;
       const keys = await credentials.getKeys(uid);
@@ -73,7 +73,7 @@ export function createExplanationService({
       const state = accountState(account, keys);
       if (!Object.values(keys).some(Boolean))
         throw new LlmError('NO_API_KEY', 'Add a Gemini or Groq API key in AI settings.');
-      const prompt = explanationPrompt(question);
+      const prompt = explanationPrompt(question, { language });
       const key = JSON.stringify([uid, prompt]);
       const entry = cache.get(key);
       if (!forceRefresh && entry && entry.expiresAt > now()) {
