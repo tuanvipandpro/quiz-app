@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Button, Modal, Typography } from 'antd';
 import {
   ArrowRightOutlined,
@@ -14,10 +14,15 @@ const { Title, Text, Paragraph } = Typography;
 
 export default function SignInModal({ open, onClose, onSignIn, busy, error }) {
   const { t } = useLanguage();
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (!open) setReady(false);
+  }, [open]);
   return (
     <Modal
       title={<span className="sr-only">{t('Sign in')}</span>}
       open={open}
+      afterOpenChange={setReady}
       onCancel={onClose}
       footer={null}
       centered
@@ -56,7 +61,7 @@ export default function SignInModal({ open, onClose, onSignIn, busy, error }) {
             }
             block
             loading={busy}
-            disabled={busy}
+            disabled={busy || !ready}
             onClick={onSignIn}
           >
             {t('Continue with Google')}
