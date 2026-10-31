@@ -22,6 +22,8 @@
   align-items: center;
   gap: 9px;
   padding: 0;
+  min-width: 44px;
+  min-height: 44px;
   color: var(--app-text);
   background: none;
   border: 0;
@@ -29,8 +31,11 @@
   font-weight: 700;
   white-space: nowrap;
 }
-.app-brand .anticon {
-  color: var(--app-primary);
+.app-brand-logo {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 }
 .app-nav,
 .header-actions {

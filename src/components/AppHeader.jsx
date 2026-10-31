@@ -1,7 +1,6 @@
 import React from 'react';
 import { Avatar, Button, Dropdown, Layout, Spin } from 'antd';
 import {
-  BookOutlined,
   LoginOutlined,
   LogoutOutlined,
   MoonOutlined,
@@ -10,6 +9,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { appBrand } from '../data/appBrand';
 const { Header } = Layout;
 export default function AppHeader({
   headerRef,
@@ -27,9 +27,20 @@ export default function AppHeader({
   return (
     <Header ref={headerRef} className="app-header">
       <div className="app-header-inner">
-        <button className="app-brand" aria-label="Quiz App" onClick={() => onNavigate('#/library')}>
-          <BookOutlined aria-hidden="true" />
-          <span>Quiz App</span>
+        <button
+          className="app-brand"
+          aria-label={appBrand.name}
+          onClick={() => onNavigate('#/library')}
+        >
+          <img
+            className="app-brand-logo"
+            src={import.meta.env.BASE_URL + appBrand.logo}
+            alt=""
+            aria-hidden="true"
+            width="32"
+            height="32"
+          />
+          <span>{appBrand.name}</span>
         </button>
         <nav
           className="app-nav"
