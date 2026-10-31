@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
-import { waitForUiMotion } from './uiMotion.js';
+import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
 
 const sample = (type = 'single') =>
   fileURLToPath(new URL(`../../public/examples/quiz-${type}.json`, import.meta.url));
@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
 async function login(page) {
   await page.goto('./');
   await page.getByRole('banner').getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await expect(page.getByText('0/3 saved quizzes', { exact: true })).toBeVisible();
@@ -43,7 +43,7 @@ async function confirm(page, name, action) {
       ? page.getByRole('dialog').filter({ hasText: name })
       : page.getByRole('dialog', { name, exact: true });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: action, exact: true }).click();
+  await clickAfterUiMotion(dialog.getByRole('button', { name: action, exact: true }));
   await expect(dialog).toBeHidden();
 }
 
@@ -158,6 +158,7 @@ test('rename preserves checkpoint and draft; replacement invalidates only that i
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await card(page, 'Original').getByRole('button', { name: 'Rename', exact: true }).click();
   const rename = page.getByRole('dialog', { name: 'Rename quiz', exact: true });
+  await waitForUiMotion(rename);
   await rename.getByRole('textbox', { name: 'Quiz name', exact: true }).fill('Renamed');
   await confirm(page, 'Rename quiz', 'Save name');
   await expect(card(page, 'Renamed')).toContainText('Saved at question 1');
@@ -327,7 +328,7 @@ test('private loading errors are recoverable and do not block bank navigation', 
   await page.addInitScript(() => sessionStorage.setItem('quiz-e2e-custom-fail-list', 'PERMISSION'));
   await page.goto('./');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await expect(
@@ -348,7 +349,7 @@ test('guest uploads remain local and login does not migrate a guest draft into s
   await page.getByRole('button', { name: 'Start practice', exact: true }).click();
   await page.getByRole('radio', { name: /Paris/ }).check();
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await expect(page.getByText('0/3 saved quizzes', { exact: true })).toBeVisible();
@@ -464,6 +465,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           exact: true,
         });
         await expect(dialog).toBeVisible();
+        await waitForUiMotion(dialog);
         const input = dialog.getByRole('textbox');
         await expect(input).toHaveValue(longName);
         await expect(input).toHaveCSS('min-height', '44px');

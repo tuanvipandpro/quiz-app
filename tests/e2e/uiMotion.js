@@ -18,3 +18,8 @@ export async function waitForUiMotion(locator) {
     }
   });
 }
+
+export async function clickAfterUiMotion(locator) {
+  await waitForUiMotion(locator);
+  await locator.click();
+}
