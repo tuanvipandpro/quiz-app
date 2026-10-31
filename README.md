@@ -2,7 +2,7 @@
 
 Practice certification questions, take timed mock exams and read curated study guides. React 19, Vite, Ant Design and Firebase.
 
-[Live app](https://tuanvipandpro.github.io/quiz-app/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)
+[Live app](https://quizmos.runs-at.dev/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)
 
 Every change follows the mandatory UI/UX and maintainability rules in `AGENTS.md`: assess user-facing impact, apply the reviewed UI/UX Pro Max guidance for UI work, check mobile/language/theme states, keep module responsibilities clear and centralize shared configuration. The PR checklist records evidence; CI enforces the automated checks, while visual and architectural judgment still require review.
 
@@ -151,7 +151,9 @@ AIP-C01's reviewed fingerprint matches its 136-question bank. Existing guide war
 
 Pull requests run lint, formatting, Node tests, catalog checks, production build isolation and Playwright. Successful master builds upload a verified artifact; the dependent deploy job publishes that exact artifact to the existing `gh-pages` branch. Deployment cannot run ahead of failed tests. No build-time Gemini key is required.
 
-The production base is `/quiz-app/`; assets use `import.meta.env.BASE_URL`. Optional `VITE_BASE` overrides must be supplied consistently for development/build/preview.
+Production runs at `https://quizmos.runs-at.dev/`. CI sets `VITE_BASE=/` for the verified build; assets and quiz data use `import.meta.env.BASE_URL`. Local development and the isolated E2E server keep `/quiz-app/`. Supply the same `VITE_BASE` when building and previewing an override locally. `public/CNAME` preserves the custom domain when `gh-pages` publishes `dist/`; the old GitHub Pages URL redirects to the custom domain.
+
+Before testing Google sign-in on the new origin, add `quizmos.runs-at.dev` to Firebase Authentication's authorized domains. Browser-only guest data remains scoped to the old origin; cloud data keeps its existing account and quiz IDs. To roll back to the default GitHub Pages address, remove the custom domain and `public/CNAME`, then build with `VITE_BASE=/quiz-app/`.
 
 ## Next setup increments
 

@@ -57,7 +57,7 @@
 ## Implementation and verification
 
 - Reuse components/services and keep changes focused. No unrelated dependency upgrades or question-answer rewrites.
-- Asset paths respect `import.meta.env.BASE_URL` (`/quiz-app/` in production).
+- Asset paths respect `import.meta.env.BASE_URL` (`/` on the production custom domain; `/quiz-app/` for local development and isolated E2E).
 - Never log or commit provider API keys. `.env` stays local; Firebase web configuration is public, not authorization.
 - Test auth/AI/Firebase through fixtures or emulators. Do not exercise real accounts or billable AI calls for routine tests.
 - `vite.e2e.config.js` is test-only and cannot build. Do not copy App.jsx into a harness; use the real app with replaced service boundaries.
