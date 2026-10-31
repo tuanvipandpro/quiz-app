@@ -34,16 +34,12 @@
   padding-right: 24px;
 }
 .sign-in-brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 44px;
   height: 44px;
   flex-shrink: 0;
   border-radius: 12px;
-  background: var(--app-info-bg);
-  color: var(--app-primary);
-  font-size: 24px;
+  object-fit: contain;
 }
 .sign-in-brand strong {
   display: block;

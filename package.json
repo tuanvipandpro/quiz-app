@@ -3,8 +3,8 @@
   "private": true,
   "version": "19.2.0",
   "type": "module",
-  "homepage": "https://tuanvipandpro.github.io/quiz-app",
-  "description": "A simple quiz application built with React and Ant Design.",
+  "homepage": "https://quizmos.runs-at.dev/",
+  "description": "QuizMos: certification quizzes, mock exams and study guides.",
   "author": "Tuanvipandpro",
   "license": "MIT",
   "keywords": [

@@ -166,7 +166,7 @@ export const quizzes = [
     file: 'quiz/ISTQB/CTFL_V4_0.json',
     category: 'ISTQB',
     difficulty: 'Foundation',
-    totalQuestions: 240,
+    totalQuestions: 276,
     code: 'CTFL',
   },
   {

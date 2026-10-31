@@ -36,6 +36,7 @@ import ProviderIdentity from './components/ProviderIdentity';
 import { findQuiz } from './data/quizzes';
 import { getQuickSummary } from './data/quickSummaries';
 import { getExamFeedbackMode } from './data/examModes';
+import { appBrand } from './data/appBrand';
 import { resolveCheckpoint } from './utils/quizProgress';
 import { validateQuizQuestions } from './utils/questionModel';
 import { clearStudySessions, readStudySession, sessionKey } from './utils/studySession';
@@ -309,7 +310,7 @@ export default function App() {
         ? t('Quiz Bank')
         : route.page === 'my-quizzes'
           ? t('My quizzes')
-          : active?.name || t('Quiz overview')) + ' · Quiz App';
+          : active?.name || t('Quiz overview')) + ` · ${appBrand.name}`;
   }, [route.page, active?.name, t]);
   let examDraft = null;
   if (active && route.mode === 'overview') {
@@ -672,7 +673,9 @@ export default function App() {
         </Content>
         {!studying && (
           <Footer className="app-footer">
-            <span>Quiz App · {t('Learn at your own pace.')}</span>
+            <span>
+              {appBrand.name} · {t('Learn at your own pace.')}
+            </span>
             <a
               href="https://github.com/tuanvipandpro/quiz-app"
               target="_blank"

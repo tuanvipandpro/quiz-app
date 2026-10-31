@@ -7,7 +7,7 @@
   "vars": {
     "APP_AI_ENABLED": "false",
     "FIREBASE_PROJECT_ID": "quiz-app-f70d5",
-    "ALLOWED_ORIGINS": "https://tuanvipandpro.github.io",
+    "ALLOWED_ORIGINS": "https://quizmos.runs-at.dev,https://tuanvipandpro.github.io",
   },
   "ai": { "binding": "AI" },
   "d1_databases": [

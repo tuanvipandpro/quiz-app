@@ -39,6 +39,16 @@ Worker integration executes the actual fetch handler with signed test tokens and
 
 ## UI evidence and skill use
 
+### Master integration — 2026-11-01
+
+Tích hợp `origin/master` tại `acf5fb5` (CTFL #55 và QuizMos domain/branding #56) vào branch App AI. Dữ liệu CTFL và catalog giữ nguyên byte-for-byte so với master; không sửa nội dung câu hỏi trong bước sync này.
+
+Conflict duy nhất ở `scripts/check-build.mjs`: giữ API kiểm tra base path/CNAME của master cùng guard App AI `__test/token` và `127.0.0.1:5176`. Bổ sung hai regression cases cho guard này; cả bảy build-artifact tests pass. Production Worker allowlist bổ sung `https://quizmos.runs-at.dev`, giữ GitHub origin cho rollback; `APP_AI_ENABLED=false` và database placeholder vẫn giữ nguyên, không deploy.
+
+`VITE_BASE=/ yarn verify` passed **154 Node tests** và production build/isolation; **14 Worker/auth tests** cùng Worker dry-run passed. Browser suite sau sync có 130 cases; kết quả full run và CI của merge commit được ghi trên PR. Test branding của master chờ nút Google enabled trước khi focus/Escape, tương thích với guard modal readiness của App AI.
+
+UI review giữ `appBrand` chung, logo QuizMos và asset paths theo BASE_URL. Query `consistent navigation branding` không cho kết quả đủ sát; query hẹp `decorative icon aria hidden` khớp **Guideline / icon-context-accessibility**. Giữ tên truy cập trên brand button và logo trang trí, không đổi thư viện icon. Các sửa BYOK, shared sign-in và reduced-motion lifecycle được giữ khi auto-merge.
+
 ### CI reduced-motion regression
 
 [CI run 41227218604](https://github.com/tuanvipandpro/quiz-app/actions/runs/41227218604) trên `da186ca` passed 147 Node, 14 Worker/auth và 17 Rules tests nhưng chỉ 123/126 browser tests. Ba cases đều fail khi đóng Help dưới reduced motion: desktop EN/dark, desktop VN/light và phone VN/dark. Log giữ modal ở `ant-zoom-leave-active` sau 8 giây; đây không phải lỗi selector của lần local trước và không được coi là CI xanh.

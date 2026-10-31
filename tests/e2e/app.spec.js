@@ -32,6 +32,55 @@ async function requestSignOut(page) {
   return dialog;
 }
 
+test('QuizMos branding loads under the configured base and keeps navigation accessible', async ({
+  page,
+}) => {
+  await page.goto('./');
+  await expect(page).toHaveTitle('Quiz Bank · QuizMos');
+  const brand = page.getByRole('button', { name: 'QuizMos', exact: true });
+  const logo = brand.locator('img');
+  await expect(logo).toHaveAttribute('alt', '');
+  await expect.poll(() => logo.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
+  const favicon = page.locator('link[rel="icon"]');
+  await expect(favicon).toHaveAttribute('href', '/quiz-app/quizmos.svg');
+  const iconResponse = await page.request.get(await favicon.getAttribute('href'));
+  expect(iconResponse.ok()).toBe(true);
+  expect(iconResponse.headers()['content-type']).toContain('image/svg+xml');
+  await expect(page.locator('.app-footer')).toContainText('QuizMos ·');
+
+  for (const width of [320, 390, 412, 768, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect(brand).toHaveAccessibleName('QuizMos');
+    const bounds = await brand.boundingBox();
+    expect(bounds.width).toBeGreaterThanOrEqual(44);
+    expect(bounds.height).toBeGreaterThanOrEqual(44);
+  }
+
+  const signIn = page.getByRole('button', { name: 'Sign in', exact: true });
+  await signIn.click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.locator('.sign-in-brand strong')).toHaveText('QuizMos');
+  await expect
+    .poll(() => dialog.locator('.sign-in-brand-mark').evaluate((image) => image.naturalWidth))
+    .toBeGreaterThan(0);
+  const googleSignIn = dialog.getByRole('button', { name: 'Continue with Google', exact: true });
+  await expect(googleSignIn).toBeEnabled();
+  await googleSignIn.focus();
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(signIn).toBeFocused();
+
+  await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
+  await expect(page).toHaveTitle('My quizzes · QuizMos');
+  await brand.click();
+  await expect(page).toHaveTitle('Quiz Bank · QuizMos');
+  await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
+  await expect(page).toHaveTitle('Thư viện quiz · QuizMos');
+  await page.goto('./#/quiz/aws-aip-c01/practice');
+  await expect(page.locator('.question-title')).toBeVisible();
+  await expect(page).toHaveTitle(/ · QuizMos$/);
+});
+
 test('bank, provider identities, language and theme work without overflow', async ({ page }) => {
   await page.goto('./');
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
