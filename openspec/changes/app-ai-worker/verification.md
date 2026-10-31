@@ -47,6 +47,10 @@ Conflict duy nhất ở `scripts/check-build.mjs`: giữ API kiểm tra base pat
 
 `VITE_BASE=/ yarn verify` passed **154 Node tests** và production build/isolation; **14 Worker/auth tests** cùng Worker dry-run passed. Browser suite sau sync có 130 cases; kết quả full run và CI của merge commit được ghi trên PR. Test branding của master chờ nút Google enabled trước khi focus/Escape, tương thích với guard modal readiness của App AI.
 
+Lượt local full run có 128/130 pass; hai case branding còn dùng test đã được nạp trước khi thêm readiness assertion. Trace có focus nhưng chưa có bước đợi enabled. Hai case chạy lại trên bản cập nhật đều pass.
+
+[CI merge commit 894e0ee](https://github.com/tuanvipandpro/quiz-app/actions/runs/41233214467) passed 154 Node, 14 Worker/auth, 17 Rules và 129/130 browser tests; case phone cloud-management đo overflow khoảng 10 ms sau resize 320→390. Trace ghi viewport metrics đang đổi; screenshot sau đó không cho thấy tràn ở vùng đang hiển thị. Assertion nay poll đúng điều kiện `scrollWidth <= clientWidth` sau resize, giữ nguyên timeout và không thêm CSS che overflow. Case chạy lại với `--repeat-each=2` ở cả desktop/phone đạt 4/4; full CI của commit tiếp theo được ghi riêng trên PR. Artifacts gốc giữ trong ignored `artifacts/master-sync/ci-responsive/`.
+
 UI review giữ `appBrand` chung, logo QuizMos và asset paths theo BASE_URL. Query `consistent navigation branding` không cho kết quả đủ sát; query hẹp `decorative icon aria hidden` khớp **Guideline / icon-context-accessibility**. Giữ tên truy cập trên brand button và logo trang trí, không đổi thư viện icon. Các sửa BYOK, shared sign-in và reduced-motion lifecycle được giữ khi auto-merge.
 
 ### CI reduced-motion regression

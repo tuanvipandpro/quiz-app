@@ -396,11 +396,17 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           .boundingBox();
         expect(reload.width).toBeGreaterThanOrEqual(44);
         expect(reload.height).toBeGreaterThanOrEqual(44);
-        expect(
-          await page.evaluate(
-            () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
+        await expect
+          .poll(
+            () =>
+              page.evaluate(
+                () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
+              ),
+            {
+              message: `Cloud quiz layout fits ${width}x${height} after resize (${language}/${theme})`,
+            }
           )
-        ).toBe(true);
+          .toBe(true);
         for (const button of await card(page, longName).getByRole('button').all()) {
           const box = await button.boundingBox();
           expect(box.width).toBeGreaterThanOrEqual(44);
