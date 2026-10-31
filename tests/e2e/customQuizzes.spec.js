@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
+import { waitForUiMotion } from './uiMotion.js';
 
 const sample = (type = 'single') =>
   fileURLToPath(new URL(`../../public/examples/quiz-${type}.json`, import.meta.url));
@@ -47,6 +48,7 @@ async function confirm(page, name, action) {
 }
 
 async function contrastRatio(locator) {
+  await waitForUiMotion(locator);
   const { foreground, background } = await locator.evaluate((element) => {
     let current = element,
       background;

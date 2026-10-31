@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { waitForUiMotion } from './uiMotion.js';
 import { fileURLToPath } from 'node:url';
 
 const example = (format) =>
@@ -41,6 +42,7 @@ async function leaveToSetup(page) {
   await page.getByRole('button', { name: 'Back to quiz overview', exact: true }).click();
   const dialog = page.getByRole('dialog').filter({ hasText: 'Leave this exam?' });
   await expect(dialog).toBeVisible();
+  await waitForUiMotion(dialog);
   await dialog.getByRole('button', { name: 'Leave exam', exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect(page.getByRole('radiogroup', { name: 'Exam mode', exact: true })).toBeVisible();
