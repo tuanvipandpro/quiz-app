@@ -68,3 +68,13 @@ The system SHALL provide meaningful loading, remaining quota, reset, unavailable
 
 - **WHEN** App AI fails on a phone
 - **THEN** the error and explicit BYOK choice remain readable, keyboard reachable and within the viewport
+
+#### Scenario: Compact BYOK setup and contextual help
+
+- **WHEN** a user switches the key provider or opens and closes setup help
+- **THEN** settings shows one labelled key editor, preserves unsaved provider inputs and keeps save/test/error states accessible on phones in both languages and themes
+
+#### Scenario: Consistent sign-in from AI settings
+
+- **WHEN** a guest selects Sign in from AI settings
+- **THEN** the app opens its shared provider sign-in dialog without starting OAuth until Continue with Google is selected, and cancelling returns focus to settings without losing typed keys

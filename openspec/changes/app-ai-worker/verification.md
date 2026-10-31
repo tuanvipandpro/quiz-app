@@ -39,6 +39,23 @@ Worker integration executes the actual fetch handler with signed test tokens and
 
 ## UI evidence and skill use
 
+### BYOK simplification follow-up — 2026-11-01
+
+User yêu cầu giảm thông tin thường trực và đồng nhất đăng nhập. Settings trước đây render hai provider cards cùng mô tả/hướng dẫn lặp lại; nút Sign in gọi OAuth trực tiếp. Bản sửa dùng một editor theo provider, giữ draft của từng key khi đổi provider, Help dialog cho setup/storage/quota và lỗi/kết quả ngay gần input. Save/Test và nút xóa 44px giữ thao tác chính gọn; xóa cần xác nhận. Provider tabs chỉ chọn key đang chỉnh sửa, không đổi model routing.
+
+Header và AI Settings dùng chung `SignInModal` cùng `useSignIn`; mở dialog chưa gọi OAuth. Cancel/failure giữ input và trả focus về Sign in, chỉ Continue with Google mới đăng nhập. Loading keys thất bại khóa thao tác ghi và cung cấp Retry. Không thay quota, dữ liệu quiz hoặc production Worker.
+
+- UI skill query `progressive disclosure form help` khớp **Accessibility / Consistent Help**, **Forms / Submit Feedback**, **Accessibility / Form Labels**. Áp dụng help ở vị trí cố định, label liên kết input, trạng thái lỗi/thành công tại form. `progressive-disclosure` lấy từ quick reference §8, không được mô tả thành kết quả search trực tiếp.
+- React query `preserve form state` khớp **State / Use useState for local state**; giữ draft theo provider. Không chuyển sang Actions/useActionState vì flow hiện hữu dùng service promises và cancellation. Python launcher không có interpreter; search chạy thành công bằng Python bundled, không cần cài thêm.
+- Matrix: 320/390/412/768/1280px và 844×390 landscape, VN/EN, light/dark cho BYOK, Help và Sign in; Escape/cancel/focus return, reduced-motion, provider draft preservation, save failure/retry, connection busy/success, clear cancel/confirm và sign-in failure/retry được kiểm tra bằng fixtures. Không gọi AI hay dùng credentials thật.
+- Text contrast trong mẫu đã đo: tối thiểu **6.36:1 light**, **5.96:1 dark**; icon xóa đạt ngưỡng 3:1. Các controls được kiểm tra 44×44px. Screenshot lấy sau khi finite animations kết thúc; không vô hiệu hóa motion để chụp.
+- Lần matrix đầu phát hiện nút xóa chỉ rộng 40px: CSS đã tăng minimum lên 44px, trace giữ trong ignored `artifacts/byok-settings/first-layout-failures/`.
+- Full browser run: **118/126 passed**, 8 matrix cases timeout vì selector `has` chứa lại ancestor dialog sau khi đổi nhãn Gemini. Selector đã sửa để click visible label; không tăng timeout, force click hoặc bật retry. Trace giữ trong `artifacts/byok-settings/full-run-selector-failures/`. Nhóm BYOK 12 cases chạy riêng sau sửa đã pass; kết quả final head/CI ghi trên PR.
+- Bổ sung matrix popup xóa và dùng danger tokens chung để giữ text contrast 4.5:1. Lượt mở rộng có 11/12 pass; một phép đo lấy height 41.98px khi modal đang chuyển động. Geometry checks chuyển sang poll cùng ngưỡng 44px như suite hiện hữu; case EN/light desktop chạy lại đã pass. Trace giữ trong `artifacts/byok-settings/clear-dialog-motion-failure/`. Không hạ ngưỡng hoặc dùng sleep để che lỗi.
+- Local tests dùng cấu hình tạm trong ignored artifacts để Vite chạy 5184, tránh server test của session khác. API fixture vẫn ở loopback 5176; `QUIZ_E2E_ORIGIN` chỉ nhận HTTP origin `127.0.0.1`, không thay service thật hoặc bypass Worker auth. Cấu hình CI mặc định vẫn là 5174/5176.
+
+Ảnh trước là reference từ commit trước trong `evidence/guest-setup-*`; ảnh mới được lưu với prefix `byok-`. Visual review gồm compact EN/light desktop, EN/dark và VN/dark 320px, Help VN/dark, Sign in EN/light và VN/dark, save error và testing states. Đây là Chromium emulation; thiết bị thật, Safari và bàn phím ảo thật chưa được kiểm tra.
+
 UI/UX Pro Max query `quota disabled feedback` matched **Interaction / Disabled States** and **AI Interaction / Feedback Loop**. Applied disabled state semantics, explicit regeneration, quota/reset text and error recovery. Haptic result was not relevant to this web task and was not applied. Used existing Ant Design components/tokens and preserved header alignment.
 
 Selected rendered screenshots were visually reviewed: 320px VN/dark settings, 1280px EN/light and VN/dark settings, guest BYOK setup. Other screenshots provide additional EN/phone and quota evidence. Browser tests check all stated widths, languages and themes; this is Chromium emulation, not physical iPhone/Samsung/Safari testing.

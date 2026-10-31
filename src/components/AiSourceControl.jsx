@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Radio, Typography } from 'antd';
+import { LoginOutlined } from '@ant-design/icons';
 import { useAuth } from '../hooks/useAuth';
 import { useAiSource } from '../hooks/useAiSource';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -29,14 +30,13 @@ export function AiUsage({ usage }) {
   );
 }
 
-export default function AiSourceControl({ active = true, usage: providedUsage }) {
-  const { user, signInWithGoogle } = useAuth();
+export default function AiSourceControl({ active = true, usage: providedUsage, onSignIn }) {
+  const { user } = useAuth();
   const uid = user?.uid;
   const { source, setSource, appAvailable } = useAiSource(uid);
   const { t } = useLanguage();
   const [quota, setQuota] = useState(null);
   const [error, setError] = useState(null);
-  const [busy, setBusy] = useState(false);
   useEffect(() => {
     const request = new AbortController();
     setQuota(null);
@@ -53,18 +53,6 @@ export default function AiSourceControl({ active = true, usage: providedUsage })
     }
     return () => request.abort();
   }, [active, appAvailable, source, uid]);
-  async function signIn() {
-    setBusy(true);
-    setError(null);
-    try {
-      const result = await signInWithGoogle();
-      if (!result.success) setError(result.error);
-    } catch {
-      setError('Could not sign in. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  }
   return (
     <section className="ai-source-control" aria-label={t('AI source')}>
       {uid ? (
@@ -98,14 +86,12 @@ export default function AiSourceControl({ active = true, usage: providedUsage })
           )}
         </>
       ) : (
-        <>
-          <Typography.Text>
-            {t('Guests use their own API key. Sign in to access App AI.')}
-          </Typography.Text>
-          <Button onClick={signIn} loading={busy}>
+        <div className="ai-sign-in-prompt">
+          <Typography.Text>{t('App AI, no API key needed.')}</Typography.Text>
+          <Button onClick={onSignIn} icon={<LoginOutlined aria-hidden="true" />}>
             {t('Sign in')}
           </Button>
-        </>
+        </div>
       )}
       {error && <Alert showIcon type="warning" role="alert" message={t(error)} />}
     </section>

@@ -13,6 +13,11 @@ export default {
     return () => listeners.delete(listener);
   },
   async signInWithGoogle() {
+    sessionStorage.setItem(
+      'quiz-e2e-signin-count',
+      String(Number(sessionStorage.getItem('quiz-e2e-signin-count') || 0) + 1)
+    );
+    if (sessionStorage.getItem('quiz-e2e-fail-signin')) return { success: false };
     const user = {
       uid: 'test-alice',
       displayName: 'Test account',

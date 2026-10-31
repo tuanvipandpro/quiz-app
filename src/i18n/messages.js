@@ -391,6 +391,17 @@ export const vi = {
     'Tạo lại sẽ gửi yêu cầu AI mới và sử dụng hạn mức của nhà cung cấp.',
   'Could not generate an explanation. Please retry.':
     'Không tạo được giải thích. Vui lòng thử lại.',
+  'Manage keys': 'Quản lý key',
+  'Key provider': 'Nhà cung cấp key',
+  'API key help': 'Hướng dẫn API key',
+  Help: 'Hướng dẫn',
+  Test: 'Kiểm tra',
+  'App AI, no API key needed.': 'App AI không cần key.',
+  'Save a key for one or both providers.': 'Bạn có thể lưu key của một hoặc cả hai nhà cung cấp.',
+  'Testing uses provider quota.': 'Kiểm tra sẽ dùng hạn mức của nhà cung cấp.',
+  'Remove this API key?': 'Xóa API key này?',
+  'You will need to enter it again to use this provider.':
+    'Bạn cần nhập lại key để dùng nhà cung cấp này.',
   'Add a key for Gemini or Groq to use AI explanations.':
     'Thêm API key Gemini hoặc Groq để sử dụng giải thích AI.',
   'Keys are saved in your profile. Signing out keeps your saved keys.':

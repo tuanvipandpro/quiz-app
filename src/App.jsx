@@ -16,6 +16,7 @@ import viVN from 'antd/locale/vi_VN';
 import { ArrowLeftOutlined, GithubOutlined } from '@ant-design/icons';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
+import { useSignIn } from './hooks/useSignIn';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useQuizProgress } from './hooks/useQuizProgress';
 import { useCustomQuizzes, customQuizProgress } from './hooks/useCustomQuizzes';
@@ -61,13 +62,17 @@ function initialDarkMode() {
 }
 
 export default function App() {
-  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const { language, t } = useLanguage();
   const uid = user?.uid || null;
   const progressState = useQuizProgress(uid);
   const [isDarkMode, setIsDarkMode] = useState(initialDarkMode);
   const [modal, modalHolder] = Modal.useModal();
   const [messageApi, messageHolder] = message.useMessage();
+  const signIn = useSignIn({
+    onSuccess: (account) =>
+      messageApi.success(t('Welcome, {name}!', { name: account.displayName || account.email })),
+  });
   const [examActive, setExamActive] = useState(false);
   const guardPending = useRef(false);
   const guard = useCallback(
@@ -110,9 +115,6 @@ export default function App() {
   const [loadRevision, setLoadRevision] = useState(0);
   const [upload, setUpload] = useState(null);
   const [uploadReady, setUploadReady] = useState(false);
-  const [loginVisible, setLoginVisible] = useState(false);
-  const [loginBusy, setLoginBusy] = useState(false);
-  const [loginError, setLoginError] = useState(null);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const cache = useRef(new Map());
   const scrollPositions = useRef(new Map());
@@ -370,28 +372,7 @@ export default function App() {
     }
     setUpload(null);
   };
-  const openLogin = () => {
-    setLoginError(null);
-    setLoginVisible(true);
-  };
-  const login = async () => {
-    if (loginBusy) return;
-    setLoginBusy(true);
-    setLoginError(null);
-    try {
-      const result = await signInWithGoogle();
-      if (result.success) {
-        setLoginVisible(false);
-        messageApi.success(
-          t('Welcome, {name}!', { name: result.user.displayName || result.user.email })
-        );
-      } else setLoginError('Could not sign in. Please retry.');
-    } catch {
-      setLoginError('Could not sign in. Please retry.');
-    } finally {
-      setLoginBusy(false);
-    }
-  };
+  const openLogin = signIn.show;
   const logout = () => {
     modal.confirm({
       title: t('Sign out?'),
@@ -699,16 +680,7 @@ export default function App() {
           </Footer>
         )}
       </Layout>
-      <SignInModal
-        open={loginVisible}
-        busy={loginBusy}
-        error={loginError}
-        onSignIn={login}
-        onClose={() => {
-          setLoginVisible(false);
-          setLoginError(null);
-        }}
-      />
+      <SignInModal {...signIn.modalProps} />
       {settingsVisible && (
         <Suspense fallback={null}>
           <SettingsModal visible onClose={() => setSettingsVisible(false)} />

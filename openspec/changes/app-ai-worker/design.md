@@ -17,6 +17,7 @@ Giữ boundary component/hook/service, chia sẻ validator/prompt; một Worker 
 - Body cap 16 KiB; prompt cap 12 KiB UTF-8; output 600 tokens, timeout 25s. CPU JWT/hash/validation cần đo dưới Worker Free 10ms; inference wait không phải local CPU. Model nhỏ có thể không đủ chất lượng chứng chỉ: chưa enable production khi chưa review.
 - Source preference account-scoped, guest bắt buộc BYOK. Nếu chưa có public API URL thì App AI unavailable, BYOK tiếp tục hoạt động. Settings hiển thị source + quota; modal dùng error recovery/disabled guidance từ UI skill. Snapshot/late request guards ở hook; không copy credential.
 - BYOK cache/prompt nhận language và registry label; standard/learning gating vẫn do study flow hiện hữu kiểm soát.
+- BYOK settings chỉ hiện một form key theo provider đang chọn; việc đổi provider không đổi thứ tự model routing và không làm mất input chưa lưu. Hướng dẫn lấy/lưu/test key nằm trong dialog trợ giúp, lỗi và kết quả thao tác vẫn hiện gần input. Nút Sign in mở cùng `SignInModal` và cùng hook xử lý đăng nhập như header; đóng dialog đăng nhập trả về form hiện tại, không tự gọi OAuth từ nút Sign in.
 
 ## Risks / Trade-offs
 

@@ -89,9 +89,7 @@ test('guest BYOK never calls App AI; key setup and sign-in option are visible', 
   const settings = page.getByRole('dialog', { name: 'AI Settings', exact: true });
   await expect(settings).toBeVisible();
   await settleMotion(settings);
-  await expect(
-    settings.getByText('Guests use their own API key. Sign in to access App AI.')
-  ).toBeVisible();
+  await expect(settings.getByText('App AI, no API key needed.')).toBeVisible();
   await expect(settings.getByLabel('Google Gemini API key', { exact: true })).toBeVisible();
   await expect(settings.getByRole('button', { name: 'Sign in', exact: true })).toBeVisible();
   expect(workerCalls).toBe(0);
@@ -102,7 +100,7 @@ test('guest BYOK never calls App AI; key setup and sign-in option are visible', 
       json: { candidates: [{ content: { parts: [{ text: 'BYOK fixture explanation' }] } }] },
     })
   );
-  const card = settings.locator('.ai-provider-card').filter({ hasText: 'Google Gemini' });
+  const card = settings.locator('.ai-provider-form');
   await card.getByLabel('Google Gemini API key', { exact: true }).fill('fixture-key');
   await card.getByRole('button', { name: 'Save key', exact: true }).click();
   await expect(settings.getByText('API key saved in this browser.')).toBeVisible();

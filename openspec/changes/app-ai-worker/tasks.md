@@ -10,6 +10,7 @@
 
 - [x] 2.1 Implement account-scoped source selection, HTTP adapter and cancellation/cache semantics (CQ-AI-05/06); verify unit tests and browser account/mode flows.
 - [x] 2.2 Implement quota/settings/error UI VN/EN (CQ-AI-07); verify phone/desktop/theme matrix, focus and selected rendered screenshots.
+- [x] 2.3 Simplify BYOK settings with one provider editor, on-demand help and the shared sign-in dialog; verify key preservation, errors, keyboard focus and responsive VN/EN themes.
 
 ## 3. Acceptance
 

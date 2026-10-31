@@ -5,12 +5,21 @@ import { decodeJwt } from 'jose';
 import { workerHarness } from './workerHarness.mjs';
 
 const harness = await workerHarness();
+// An isolated worktree can use a separate browser port; test access stays on loopback.
+const testOrigin = process.env.QUIZ_E2E_ORIGIN || 'http://127.0.0.1:5174';
+const originUrl = new URL(testOrigin);
+if (
+  originUrl.protocol !== 'http:' ||
+  originUrl.hostname !== '127.0.0.1' ||
+  originUrl.origin !== testOrigin
+)
+  throw new Error('The E2E origin must be an HTTP loopback origin.');
 const behavior = new Map();
 const server = http.createServer(async (incoming, outgoing) => {
   const url = new URL(incoming.url, 'http://127.0.0.1:5176');
   const headers = {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': 'http://127.0.0.1:5174',
+    'Access-Control-Allow-Origin': testOrigin,
   };
   try {
     if (url.pathname === '/__test/token') {
@@ -40,6 +49,7 @@ const server = http.createServer(async (incoming, outgoing) => {
     }
     const env = {
       ...harness.env,
+      ALLOWED_ORIGINS: testOrigin,
       AI: {
         async run(model, input) {
           const mode = behavior.get(uid);
