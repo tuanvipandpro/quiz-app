@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { workerHarness, modelResult } from '../fixtures/workerHarness.mjs';
+import { workerHarness, modelResult, applyWorkerMigrations } from '../fixtures/workerHarness.mjs';
 import { AI_POLICY, utcDay } from '../../worker/config.js';
 import { createUsageRepository } from '../../worker/repository.js';
 
@@ -71,6 +71,7 @@ test('server validation, byte cap, model allowlist and Vietnamese output for leg
   t.after(h.dispose);
   for (const body of [
     { ...input(), model: 'paid' },
+    { ...input(), max_tokens: 100000 },
     { ...input(), language: 'xx' },
     { ...input(), question: { ...question, answer: ['Z'] } },
     { ...input(), question: { ...question, question: 'x'.repeat(17000) } },
@@ -81,11 +82,17 @@ test('server validation, byte cap, model allowlist and Vietnamese output for leg
   for (const language of ['en', 'vi'])
     assert.equal((await call(h, { ...input(), language })).status, 200);
   assert.equal(observed[0].model, AI_POLICY.model);
-  assert.equal(observed[0].payload.max_tokens, 600);
+  assert.equal(observed[0].payload.max_tokens, 1536);
   assert.equal(observed[0].payload.messages[0].role, 'system');
   assert.match(observed[0].payload.messages[0].content, /Chỉ trả lời bằng tiếng Việt/);
   assert.match(observed[0].payload.messages[1].content, /Câu hỏi và các lựa chọn/);
   assert.match(observed[1].payload.messages[0].content, /tiếng Việt/);
+  for (const { payload } of observed) {
+    assert.match(payload.messages[1].content, /#### 1\. Hiểu câu hỏi/);
+    assert.match(payload.messages[1].content, /#### 3\. Vì sao đáp án đúng/);
+    assert.match(payload.messages[1].content, /#### 4\. Vì sao các đáp án khác sai/);
+    assert.doesNotMatch(payload.messages[1].content, /không phân tích các lựa chọn sai|180 từ/);
+  }
 });
 test('all supported formats cross the real Worker and D1 boundary', async (t) => {
   const h = await workerHarness({ now: () => stamp });
@@ -108,13 +115,16 @@ test('idempotent result, changed payload conflict and owner-scoped request IDs',
   assert.equal((await call(h, { ...body, question: { ...question, answer: ['B'] } })).status, 409);
   assert.equal((await call(h, body, { uid: 'bob' })).status, 200);
   assert.equal(h.calls(), 2);
-  assert.equal((await call(h, null, { path: '/v1/usage' })).data.usage.remaining, 4);
+  assert.equal(
+    (await call(h, null, { path: '/v1/usage' })).data.usage.remaining,
+    AI_POLICY.userLimit - 1
+  );
 });
 test('parallel reservations enforce user last slot and global last slot atomically', async (t) => {
   const h = await workerHarness({ now: () => stamp });
   t.after(h.dispose);
   const repo = createUsageRepository(h.db);
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < AI_POLICY.userLimit - 1; i++) {
     const id = input().requestId;
     await repo.reserve('alice', id, 'hash', stamp);
     await repo.finish('alice', id, { text: 'cached' });
@@ -122,7 +132,7 @@ test('parallel reservations enforce user last slot and global last slot atomical
   const personal = await Promise.all([call(h, input()), call(h, input())]);
   assert.equal(personal.filter((x) => x.status === 200).length, 1);
   assert.equal(personal.find((x) => x.status !== 200).data.error, 'USER_LIMIT');
-  for (let i = 0; i < 94; i++) {
+  for (let i = 0; i < AI_POLICY.globalLimit - AI_POLICY.userLimit - 1; i++) {
     const id = input().requestId;
     await repo.reserve(`seed-${i}`, id, 'hash', stamp);
     await repo.finish(`seed-${i}`, id, { text: 'cached' });
@@ -158,6 +168,31 @@ test('pending duplicates and separate requests do not call model twice', async (
   assert.equal((await pending).status, 200);
   assert.equal(h.calls(), 1);
 });
+
+test('quota migration preserves five used attempts and grants only the remaining fifteen', async (t) => {
+  assert.equal(AI_POLICY.userLimit, 20);
+  assert.equal(AI_POLICY.globalLimit, 100);
+  const h = await workerHarness({ now: () => stamp, migrations: ['0001_ai_requests.sql'] });
+  t.after(h.dispose);
+  const repo = createUsageRepository(h.db);
+  for (let i = 0; i < 5; i++) {
+    const id = input().requestId;
+    await repo.reserve('alice', id, 'fixture-hash', stamp);
+    await repo.finish('alice', id, { text: `saved ${i}` });
+  }
+  await assert.rejects(repo.reserve('alice', input().requestId, 'fixture-hash', stamp), {
+    code: 'USER_LIMIT',
+  });
+  const before = await h.db.prepare('SELECT * FROM ai_requests ORDER BY request_id').all();
+  await applyWorkerMigrations(h.db, ['0002_increase_personal_quota.sql']);
+  const after = await h.db.prepare('SELECT * FROM ai_requests ORDER BY request_id').all();
+  assert.deepEqual(after.results, before.results);
+  assert.equal((await repo.usage('alice', stamp)).remaining, 15);
+  const next = await call(h, input());
+  assert.equal(next.status, 200);
+  assert.equal(next.data.usage.limit, 20);
+  assert.equal(next.data.usage.remaining, 14);
+});
 test('provider failure consumes one attempt and retries never dispatch again', async (t) => {
   const h = await workerHarness({
     now: () => stamp,
@@ -169,7 +204,7 @@ test('provider failure consumes one attempt and retries never dispatch again', a
   const body = input();
   assert.equal((await call(h, body)).data.error, 'UNAVAILABLE');
   const retry = await call(h, body);
-  assert.equal(retry.data.usage.remaining, 4);
+  assert.equal(retry.data.usage.remaining, AI_POLICY.userLimit - 1);
   assert.equal(h.calls(), 1);
 });
 test('UTC reset, stale pending and expired IDs fail closed across cleanup', async (t) => {
@@ -186,7 +221,7 @@ test('UTC reset, stale pending and expired IDs fail closed across cleanup', asyn
   assert.equal((await call(h, body)).data.error, 'EXPIRED_REQUEST');
   const next = await call(h, input(now));
   assert.equal(next.status, 200);
-  assert.equal(next.data.usage.remaining, 4);
+  assert.equal(next.data.usage.remaining, AI_POLICY.userLimit - 1);
 });
 test('CORS is bounded and storage outage never invokes inference', async (t) => {
   const h = await workerHarness({ now: () => stamp });
@@ -233,6 +268,6 @@ test('chat completion parsing rejects empty, truncated and tool-only responses',
     const response = await call(h, input());
     assert.equal(response.status, 503);
     assert.equal(response.data.error, 'UNAVAILABLE');
-    assert.equal(response.data.usage.remaining, 4 - i);
+    assert.equal(response.data.usage.remaining, AI_POLICY.userLimit - 1 - i);
   }
 });

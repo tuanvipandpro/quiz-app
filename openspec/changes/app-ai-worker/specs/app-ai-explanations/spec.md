@@ -19,6 +19,16 @@ The system SHALL require a valid Firebase ID token for every App AI request and 
 
 The system SHALL validate structured questions, construct its own Vietnamese prompt and enforce an allowlisted free model with bounded input/output. App AI and BYOK explanations SHALL always use Vietnamese prose while preserving English technical terminology, product names, identifiers, code and answer labels, independently of UI or source-question language. It SHALL remain unavailable until configured and enabled after free-plan and quality verification.
 
+#### Scenario: Complete educational explanation
+
+- **WHEN** a user requests an explanation through App AI or BYOK
+- **THEN** the prompt requires four readable sections: explain the question and decisive constraints, identify every correct answer, justify each correct answer against those constraints, and explain each remaining choice's error or poorer fit without inventing faults or unsupported facts
+
+#### Scenario: Multiple or structured answers
+
+- **WHEN** a question has multiple correct answers, yes/no statements or dropdown slots
+- **THEN** the explanation instructions cover every selection and alternative within its original row/slot, preserve labels, and explicitly handle all-correct choices, insufficient context or an incorrect marked answer instead of blindly endorsing it
+
 #### Scenario: Oversized or arbitrary model request
 
 - **WHEN** a caller sends invalid questions, excessive bytes or an unsupported payload field
@@ -27,6 +37,11 @@ The system SHALL validate structured questions, construct its own Vietnamese pro
 ### Requirement: CQ-AI-03 Atomic usage limits
 
 The system SHALL enforce daily user and application attempt limits, one pending request per user, and a UTC reset. User-visible counters SHALL reflect server state, including counted failed attempts after dispatch.
+
+#### Scenario: Increase allowance without resetting usage
+
+- **WHEN** the personal allowance increases from 5 to 20 attempts/day
+- **THEN** a forward migration preserves attempts and stored results, a user with five attempts already used has fifteen remaining, and the global 100/day and one-pending/user guards remain enforced
 
 #### Scenario: Concurrent last allowance
 

@@ -5,7 +5,7 @@ Worker phục vụ `GET /v1/usage` và `POST /v1/explanations`. Mọi request c�
 ## Tài nguyên production hiện tại
 
 - Worker `quiz-app-ai`: `https://quiz-app-ai.tuanvipandpro.workers.dev`, đã deploy với `APP_AI_ENABLED=false`.
-- D1 `quiz-app-ai`: `2be26a7b-7393-4f50-a857-990d8a1a7d29`, APAC; migration `0001_ai_requests.sql` đã áp dụng. Account ID và binding được lưu trong `wrangler.jsonc`; không tạo database này lần nữa.
+- D1 `quiz-app-ai`: `2be26a7b-7393-4f50-a857-990d8a1a7d29`, APAC; migrations `0001_ai_requests.sql` và `0002_increase_personal_quota.sql` đã áp dụng. Account ID và binding được lưu trong `wrangler.jsonc`; không tạo database này lần nữa.
 - GitHub repository variable `VITE_APP_AI_URL` chưa được đặt. Chỉ đặt URL production sau khi các bước xác minh và bật Worker bên dưới hoàn tất, rồi build lại website.
 - Không cần provider API key, Firebase service-account secret hay Cloudflare API token trong GitHub Actions cho luồng hiện tại. Worker dùng AI/D1 bindings; deploy thủ công dùng phiên Wrangler OAuth trong keyring. Workflow GitHub chỉ build và publish website.
 - #53 và OpenSpec task 3.2 vẫn mở cho kiểm tra chất lượng/CPU bổ sung và smoke test đăng nhập. Việc cấp phát tài nguyên chưa đồng nghĩa App AI đã hoạt động trên website.
@@ -38,11 +38,13 @@ Tạo `.env.development.local` (ignored) trong worktree với `VITE_APP_AI_URL=h
 
 ## Quota và lỗi
 
-- Mặc định 5 attempts/user/ngày và 100 attempts/app/ngày, fixed SQL triggers; thay đổi cần cập nhật policy và migration cùng test. UID lấy từ verified token, không đọc body UID.
+Migration `0002_increase_personal_quota.sql` chỉ thay trigger giới hạn cá nhân từ 5 lên 20, giữ dữ liệu và trần tổng 100. Người đã dùng 5 lượt hôm nay còn 15 sau migration. Áp dụng migration trước khi deploy Worker dùng policy mới; không sửa migration 0001 hoặc xóa records để nâng quota. Rollback an toàn là tắt App AI; nếu giảm quota, dùng migration và Worker policy đồng bộ thay vì rollback riêng code về giới hạn cũ. Kết quả đã cache không tự tạo lại sau thay đổi prompt; dùng Regenerate khi cần lời giải theo prompt v6.
+
+- Mặc định 20 attempts/user/ngày và 100 attempts/app/ngày, fixed SQL triggers; thay đổi cần cập nhật policy và migration cùng test. UID lấy từ verified token, không đọc body UID.
 - Request ID = ngày UTC + UUID v4. Reservation atomic; một request pending/user. Cùng ID và fingerprint trả outcome cũ; payload đổi bị conflict. Qua UTC day, ID cũ hết hạn để cleanup không tạo lại request. Reset hiển thị theo timezone browser.
 - Request đã dispatch có thể dùng Neurons dù timeout/provider failure, nên vẫn tính attempt. Retry không dispatch lại; Regenerate là attempt mới. Pending sau crash hết lease 120s trở thành TIMEOUT, không tự chạy lại. Client cancellation không có nghĩa provider chưa chạy.
 - Kết quả dùng chung theo request của đúng UID; frontend cache 30 phút/100 entries và xóa khi account đổi. Không public cache, không log token/key/question/result. Cron dọn records quá hai ngày.
-- 16KiB body, 12KiB tổng system/user prompt UTF-8, 600 output tokens, 25s inference deadline. Model allowlist hiện chỉ `@cf/aisingapore/gemma-sea-lion-v4-27b-it`; không nhận model hay prompt tự do từ client. Prompt v5 luôn chỉ dẫn và giải thích bằng tiếng Việt, giữ nguyên thuật ngữ kỹ thuật tiếng Anh; language en/vi từ client cũ được chuẩn hóa về vi, toggle VN/EN chỉ đổi UI; question/reference là dữ liệu chưa xác minh. Chat completion phải kết thúc `stop`; nội dung rỗng, bị cắt hoặc gọi tool bị từ chối.
+- 16KiB body, 12KiB tổng system/user prompt UTF-8, 1536 output tokens, 25s inference deadline. Model allowlist hiện chỉ `@cf/aisingapore/gemma-sea-lion-v4-27b-it`; không nhận model hay prompt tự do từ client. Prompt v6 luôn chỉ dẫn và giải thích bằng tiếng Việt, giữ nguyên thuật ngữ kỹ thuật tiếng Anh; language en/vi từ client cũ được chuẩn hóa về vi, toggle VN/EN chỉ đổi UI; lời giải có đủ phần hiểu câu hỏi, đáp án, lý do từng đáp án đúng và từng lựa chọn khác sai/kém phù hợp; question/reference là dữ liệu chưa xác minh. Chat completion phải kết thúc `stop`; nội dung rỗng, bị cắt hoặc gọi tool bị từ chối.
 - Account Free có 10,000 Neurons/ngày dùng chung tất cả Workers AI. App request quota không tương đương Neuron budget; platform exhaustion phải báo unavailable, không paid fallback. D1 outage cũng fail closed.
 
 ## Rollback và trạng thái

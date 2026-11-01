@@ -1,0 +1,13 @@
+[
+  {
+    "id": "audit-management-api",
+    "question": "A team needs an audit trail of management API calls in its AWS account with minimal operational effort. Which option meets this requirement?",
+    "options": {
+      "A": "AWS CloudTrail",
+      "B": "AWS Glue Data Catalog",
+      "C": "Google Cloud Pub/Sub",
+      "D": "Grant the bedrock:InvokeModelWithResponseStream IAM permission"
+    },
+    "answer": ["A"]
+  }
+]

@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { formatAnswerLines, formatQuestionText } from '../src/utils/questionModel.js';
 import {
   explanationPrompt,
   explanationSystemPrompt,
@@ -33,16 +35,43 @@ test('all callers receive Vietnamese instructions with unchanged technical sourc
   assert.deepEqual(question, before);
 });
 
-test('compact App AI and detailed BYOK share the language policy and bounded reasoning', () => {
+test('App AI and BYOK both require question analysis and reasons for every choice', () => {
   for (const compact of [true, false]) {
     const prompt = explanationPrompt(question, { compact });
     assert.match(prompt, /bằng tiếng Việt/);
     assert.match(prompt, /Giữ nguyên thuật ngữ kỹ thuật tiếng Anh/);
     assert.match(prompt, /chỉ ra dữ kiện còn thiếu/);
     assert.match(prompt, /không thêm chi tiết lịch sử/);
-    if (compact) {
-      assert.match(prompt, /Tối đa 180 từ/);
-      assert.match(prompt, /không phân tích các lựa chọn sai/);
-    } else assert.match(prompt, /200–350 từ/);
+    for (const heading of [
+      'Hiểu câu hỏi',
+      'Đáp án',
+      'Vì sao đáp án đúng',
+      'Vì sao các đáp án khác sai',
+    ])
+      assert.ok(prompt.includes(heading));
+    assert.match(prompt, /từng lựa chọn không được chọn/);
+    assert.match(prompt, /liên hệ trực tiếp với yêu cầu của đề/);
+    assert.match(prompt, /không khẳng định sai tuyệt đối/);
+    assert.match(prompt, /không có lựa chọn sai thay vì tự tạo/);
+    assert.doesNotMatch(prompt, /Tối đa 180 từ|không phân tích các lựa chọn sai/);
   }
 });
+
+for (const format of ['single', 'multiple', 'yes-no', 'dropdown-rows', 'dropdown-inline']) {
+  test(`${format} retains all source choices, part labels and marked answers for independent evaluation`, () => {
+    const question = JSON.parse(
+      readFileSync(new URL(`../public/examples/quiz-${format}.json`, import.meta.url))
+    )[0];
+    const before = structuredClone(question);
+    for (const compact of [true, false]) {
+      const prompt = explanationPrompt(question, { compact });
+      assert.ok(prompt.includes(formatQuestionText(question)));
+      assert.ok(
+        prompt.includes(formatAnswerLines(question, question.answer, { showKeys: true }).join('\n'))
+      );
+      assert.match(prompt, /đúng dòng\/chỗ trống/);
+      assert.match(prompt, /Nếu đáp án được đánh dấu có vẻ sai hoặc thiếu ngữ cảnh/);
+    }
+    assert.deepEqual(question, before);
+  });
+}

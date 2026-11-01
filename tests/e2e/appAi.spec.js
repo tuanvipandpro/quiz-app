@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
 
-const sample = fileURLToPath(new URL('../../public/examples/quiz-single.json', import.meta.url));
+const sample = fileURLToPath(new URL('../fixtures/ai-rationale-question.json', import.meta.url));
 test.beforeEach(async ({ page }) => {
   await page.route('**/*', (route) =>
     ['127.0.0.1', 'localhost'].includes(new URL(route.request().url()).hostname)
@@ -189,11 +189,11 @@ test('authenticated App AI round trip, cached viewing and explicit BYOK with no 
   await start(page, { uid: `browser-${randomUUID()}` });
   await explain(page);
   await expect(page.getByText('Đáp án phù hợp với điều kiện trong câu hỏi.')).toBeVisible();
-  await expect(page.getByText('4/5 App AI attempts left today')).toBeVisible();
+  await expect(page.getByText('19/20 App AI attempts left today')).toBeVisible();
   await page.getByRole('button', { name: 'Close', exact: true }).last().click();
   await explain(page);
   await expect(page.getByText(/Saved explanation/)).toBeVisible();
-  await expect(page.getByText('4/5 App AI attempts left today')).toBeVisible();
+  await expect(page.getByText('19/20 App AI attempts left today')).toBeVisible();
   await page.getByRole('button', { name: 'AI Settings', exact: true }).click();
   const settings = page.getByRole('dialog', { name: 'AI Settings', exact: true });
   await expect(settings).toBeVisible();
@@ -232,13 +232,23 @@ test('UI language changes preserve an in-flight Vietnamese attempt and its cache
   const result = page.locator('.explanation-panel .markdown-container[lang="vi"]');
   await expect(result).toContainText('Đáp án phù hợp với điều kiện trong câu hỏi.');
   await expect(result).toContainText('IAM, API, CloudTrail, Pub/Sub');
+  for (const heading of [
+    '1. Hiểu câu hỏi',
+    '2. Đáp án',
+    '3. Vì sao đáp án đúng',
+    '4. Vì sao các đáp án khác sai',
+  ])
+    await expect(result.getByRole('heading', { name: heading, exact: true })).toBeVisible();
+  await expect(result).toContainText('B. AWS Glue Data Catalog');
+  await expect(result).toContainText('C. Google Cloud Pub/Sub');
+  await expect(result).toContainText('D. IAM permission');
   await page.getByRole('button', { name: 'English', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(result).toBeVisible();
   await page.getByRole('button', { name: 'Close', exact: true }).last().click();
   await explain(page);
   await expect(page.getByText(/Saved explanation/)).toBeVisible();
-  await expect(page.getByText('4/5 App AI attempts left today')).toBeVisible();
+  await expect(page.getByText('19/20 App AI attempts left today')).toBeVisible();
   expect(bodies).toHaveLength(1);
   expect(bodies[0].language).toBe('vi');
   await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
@@ -277,24 +287,24 @@ test('model failure retry reuses operation; regenerate is explicit and quota is 
   await expect(
     page.getByText('App AI is unavailable. You can choose your own API key.').last()
   ).toBeVisible();
-  await expect(page.getByText('4/5 App AI attempts left today')).toBeVisible();
+  await expect(page.getByText('19/20 App AI attempts left today')).toBeVisible();
   await page.getByRole('button', { name: 'Retry', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Retry', exact: true })).toBeEnabled();
-  await expect(page.getByText('4/5 App AI attempts left today')).toBeVisible();
+  await expect(page.getByText('19/20 App AI attempts left today')).toBeVisible();
   await page.getByRole('button', { name: 'Regenerate', exact: true }).click();
-  await expect(page.getByText('3/5 App AI attempts left today')).toBeVisible();
+  await expect(page.getByText('18/20 App AI attempts left today')).toBeVisible();
 });
 test('quota states, themes and source controls fit phone/desktop/landscape', async ({
   page,
+  request,
 }, testInfo) => {
   const uid = `layout-${randomUUID()}`;
+  const seeded = await request.get(`http://127.0.0.1:5176/__test/last-attempt?uid=${uid}`);
+  expect(seeded.ok()).toBe(true);
   await start(page, { uid });
   await explain(page);
   await expect(page.getByText('Đáp án phù hợp với điều kiện trong câu hỏi.')).toBeVisible();
-  for (let i = 0; i < 4; i++) {
-    await page.getByRole('button', { name: 'Regenerate', exact: true }).click();
-    await expect(page.getByText(`${3 - i}/5 App AI attempts left today`)).toBeVisible();
-  }
+  await expect(page.getByText('0/20 App AI attempts left today')).toBeVisible();
   await page.getByRole('button', { name: 'Regenerate', exact: true }).click();
   await expect(page.getByText('You have used your App AI allowance for today.')).toBeVisible();
   for (const width of [320, 390, 412, 768, 1280, 844]) {

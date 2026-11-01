@@ -3,6 +3,9 @@
 import http from 'node:http';
 import { decodeJwt } from 'jose';
 import { workerHarness } from './workerHarness.mjs';
+import { createUsageRepository } from '../../worker/repository.js';
+import { AI_POLICY } from '../../worker/config.js';
+import { randomUUID } from 'node:crypto';
 
 const harness = await workerHarness();
 // An isolated worktree can use a separate browser port; test access stays on loopback.
@@ -31,6 +34,21 @@ const server = http.createServer(async (incoming, outgoing) => {
       behavior.set(url.searchParams.get('uid'), url.searchParams.get('mode'));
       outgoing.writeHead(200, headers);
       outgoing.end('{}');
+      return;
+    }
+    if (url.pathname === '/__test/last-attempt') {
+      const uid = url.searchParams.get('uid');
+      if (!uid) throw new Error('Fixture uid required');
+      const repo = createUsageRepository(harness.db);
+      const now = Date.now();
+      const usage = await repo.usage(uid, now);
+      for (let i = 1; i < usage.remaining; i++) {
+        const id = `fixture-${randomUUID()}`;
+        await repo.reserve(uid, id, 'fixture-hash', now);
+        await repo.finish(uid, id, { text: 'Fixture prior attempt' });
+      }
+      outgoing.writeHead(200, headers);
+      outgoing.end(JSON.stringify({ limit: AI_POLICY.userLimit }));
       return;
     }
     if (url.pathname === '/__test/health') {
