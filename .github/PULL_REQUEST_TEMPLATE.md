@@ -41,6 +41,7 @@ Risks, configuration changes and recovery steps. Do not mark an issue complete w
 Check an item only after verifying it. Explain any item that does not apply.
 
 - [ ] Tracking issue existed before implementation; assessment, classification, scope and acceptance criteria are current, and issue/PR links work both ways.
+- [ ] Staged/outgoing changes were reviewed and secret-scanned with redacted output; no real credentials or secret-bearing files are included. Required CI/runtime secrets use the appropriate secret store, not public frontend output.
 - [ ] Root cause/outcome, affected flows and direct/indirect UI impact assessed.
 - [ ] UI-facing work used the local UI/UX Pro Max skill and recorded relevant queries/results and applied guidance, or explained a reference-only fallback.
 - [ ] Changed UI checked using the applicable minor or full matrix from docs/contributing.md, with actual states/viewports recorded; disposable evidence is kept outside Git.

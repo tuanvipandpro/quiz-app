@@ -28,6 +28,8 @@ The committed `src/config/firebaseProject.json` contains the app's public Fireba
 
 Untracking `.env` does not remove previous commits. Rotate provider keys that were committed previously; Firebase's public web identifiers are a separate kind of configuration.
 
+Follow the [credential policy](docs/contributing.md#credentials-and-secrets): review staged/outgoing changes and run a redacted secret scan before push. Use GitHub Actions Secrets for authorized CI/deployment secrets, and backend/Worker secret storage for private runtime keys. Secrets injected into `VITE_*` or generated frontend files become public. Commit only secret names/references and blank or synthetic examples.
+
 ## Commands
 
 | Command                                     | Purpose                                                                                           |
