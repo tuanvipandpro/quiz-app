@@ -26,7 +26,11 @@ Owner đã xác nhận ngày 01/11/2026: root hiển thị landing cho mọi ng�
 | `#/my-quizzes`, `#/quiz/...` | Hành vi hiện tại     |
 | Hash sai/không hỗ trợ        | Library như hiện tại |
 
-Chỉ nhận `#/` và `#/donate` hợp lệ, không biến đường dẫn lạ thành trang donate. Gom default route để không bỏ sót ba nhánh của hook. Giữ query/canonical alias và vị trí history. Mọi CTA điều hướng dùng `go`/guard hiện có; logo về Home, Quiz Bank vẫn là link trực tiếp. Sửa active state của nav để Home/Donate không bị đánh dấu Quiz Bank. Donate có link ở landing/footer, tránh nhồi thêm control vào header 320px. Nút xem tính năng cuộn nội trang mà không ghi hash như `#features` vào router.
+Chỉ nhận `#/` và `#/donate` hợp lệ, không biến đường dẫn lạ thành trang donate. Giữ query/canonical alias và vị trí history. Mọi CTA dùng `go`/guard; logo và các nút Back trên Donate về Home, Quiz Bank vẫn trực tiếp. Donate có nút nổi bật ở header/hero và CTA cuối; nav mobile được wrap khi cần. Nút điều hướng section cuộn/focus nội trang mà không ghi hash như `#features` vào router.
+
+Revision 02/11/2026: 4 section Intro/Features/Featured/CTA trải hết chiều ngang, `min-height: calc(100svh - header)`; nội dung căn trong container đọc được. Dùng CSS scroll snap trên document chỉ trong Home, gỡ khi unmount; section dài được cuộn đủ nội dung trên phone/landscape/zoom, theo [snap-area overflow](https://www.w3.org/TR/css-scroll-snap-1/#snap-overflow). Không chặn wheel/touch bằng event handler. Desktop có pager bên phải; mobile dùng nút Next trong nội dung để không che CTA. Buttons có accessible name/current state và smooth scroll có kiểm soát; reduced motion dùng instant/proximity. Footer tái sử dụng bên trong section cuối. Back của Donate xóa riêng scroll position Home trước khi về section giới thiệu; browser Back/Forward vẫn giữ restoration hiện có.
+
+Nền luân phiên base/surface/base/primary làm section cuối tương phản rõ. IntersectionObserver chỉ theo dõi active/seen section và reveal một lần bằng opacity/transform; không có thư viện animation mới. Thiếu observer hoặc reduced motion luôn hiện nội dung ở trạng thái cuối; focus trong section luôn làm nội dung hiện. Orbital animation nhẹ, tắt cho reduced motion. Kiểm tra contrast trên nền thực tế của từng panel và CTA đảo màu.
 
 Lý do: hash routes tải lại được trên GitHub Pages mà không cần rewrite/404 workaround. Đánh đổi: không hứa SEO hoặc link preview riêng cho từng hash route. Home có title/description/metadata thương hiệu; title client thay đúng theo Home/Donate/quiz. Chuyển trang mới xử lý heading focus/scroll; Back/Forward không phá restoration hiện có.
 
@@ -78,16 +82,18 @@ Không đổi ID/version/draft/checkpoint. Không có request QR bên ngoài nê
 
 ## Verification plan
 
-| Requirements | Kiểm tra khi implement                                                                              |
-| ------------ | --------------------------------------------------------------------------------------------------- |
-| CQ-HOME-01   | Unit route/alias/query/fallback; E2E root/CTA/deep link/refresh/Back-Forward                        |
-| CQ-HOME-02   | Content/featured-link review; E2E start-as-guest; không fetch quiz/AI cho preview                   |
-| CQ-HOME-03   | Unit preference: saved/empty/invalid/storage-error; E2E dark-first và saved light/EN/VN             |
-| CQ-HOME-04   | E2E leave/cancel/resume/rapid-click, auth loading/error/account transition; focus/contrast/overflow |
-| CQ-DONATE-01 | E2E direct route, refresh, links về Home/Library khi guest                                          |
-| CQ-DONATE-02 | Unit config/missing/invalid; decode asset và owner kiểm tra người nhận, amount, memo                |
-| CQ-DONATE-03 | Clipboard success/denied, image error, download identity, leading-zero account, unmount             |
-| CQ-DONATE-04 | Fixture network assertion không có donate IO; review không có trạng thái nhận tiền giả              |
+| Requirements | Kiểm tra khi implement                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| CQ-HOME-01   | Unit route/alias/query/fallback; E2E root/CTA/deep link/refresh/Back-Forward                                       |
+| CQ-HOME-02   | Content/featured-link review; E2E start-as-guest; không fetch quiz/AI cho preview                                  |
+| CQ-HOME-03   | Unit preference: saved/empty/invalid/storage-error; E2E dark-first và saved light/EN/VN                            |
+| CQ-HOME-04   | E2E leave/cancel/resume/rapid-click, auth loading/error/account transition; focus/contrast/overflow                |
+| CQ-HOME-05   | E2E wheel/keyboard/section nav, kích thước panel, hash không đổi, reduced motion, cleanup snap; visual mobile/zoom |
+| CQ-HOME-06   | Donate visible ở header/hero, pointer/keyboard, trở về Home từ cả hai nút Back                                     |
+| CQ-DONATE-01 | E2E direct route, refresh, links về Home/Library khi guest                                                         |
+| CQ-DONATE-02 | Unit config/missing/invalid; decode asset và owner kiểm tra người nhận, amount, memo                               |
+| CQ-DONATE-03 | Clipboard success/denied, image error, download identity, leading-zero account, unmount                            |
+| CQ-DONATE-04 | Fixture network assertion không có donate IO; review không có trạng thái nhận tiền giả                             |
 
 Planning chỉ chạy SDD validation, format và kiểm tra links. Implementation chạy `yarn verify`, UI-skill integrity và E2E phù hợp; dùng fixtures, không gọi live bank/Firebase/AI. Browser review 320/390/412/768/1280px và landscape, EN/VN × light/dark theo matrix có chọn lọc, reduced motion, keyboard/text zoom. Tái sử dụng viewport helpers, không nhân mọi test với mọi tổ hợp. CI tự chọn profile theo diff, không sửa pipeline trong feature này; tập hợp thay đổi trước push thay vì mỗi task một CI run.
 

@@ -10,6 +10,7 @@ Tracking: [issue #65](https://github.com/tuanvipandpro/quiz-app/issues/65). Lo�
 
 - Root không có hash và `#/` mở Home; CTA mở `#/library`. Giữ đường dẫn quiz, alias, query và checkpoint hiện có. Không tự chuyển hướng người quay lại theo cookie/lịch sử sử dụng.
 - Landing gồm hero, preview sản phẩm, Practice/Exam/study guides, bank nổi bật AIP-C01/CCAR-P và CTA cuối trang. Giữ tên chính thức **QuizMos**, không đổi thành QuizMoss.
+- Revision owner ngày 02/11/2026: landing gồm 4 section full-width, cao tối thiểu một viewport dưới header và scroll snap; thêm reveal/transition, nền tương phản, section navigation và reduced-motion fallback. Donate nổi bật ở header/hero; các nút Back trên Donate về Home.
 - Trang `#/donate` không yêu cầu đăng nhập: giải thích mục đích ủng hộ, VietQR tĩnh đã xác minh, thông tin người nhận, sao chép số tài khoản/nội dung và tải ảnh QR để dùng trên cùng điện thoại.
 - Public pages ưu tiên dark khi chưa có lựa chọn theme; giữ lựa chọn light/dark đã lưu, EN mặc định và VN. Không thay default của link vào trực tiếp Library/quiz.
 - Không tự xác nhận giao dịch, lưu donor, đặt mục tiêu tiền, mở khóa nội dung, gọi API ngân hàng hoặc thêm backend. Người dùng nhập số tiền trong app ngân hàng; QR chọn không khóa số tiền.

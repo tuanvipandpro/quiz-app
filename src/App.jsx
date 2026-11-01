@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import enUS from 'antd/locale/en_US';
 import viVN from 'antd/locale/vi_VN';
-import { ArrowLeftOutlined, GithubOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { useSignIn } from './hooks/useSignIn';
@@ -32,6 +32,7 @@ import MyQuizzes from './components/MyQuizzes';
 import QuizMode from './components/QuizMode';
 import SignInModal from './components/SignInModal';
 import AppHeader from './components/AppHeader';
+import AppFooter from './components/AppFooter';
 import ProviderIdentity from './components/ProviderIdentity';
 import { findQuiz } from './data/quizzes';
 import { getQuickSummary } from './data/quickSummaries';
@@ -40,13 +41,13 @@ import { appBrand } from './data/appBrand';
 import { resolveCheckpoint } from './utils/quizProgress';
 import { validateQuizQuestions } from './utils/questionModel';
 import { clearStudySessions, readStudySession, sessionKey } from './utils/studySession';
-import { canonicalQuizHash, quizUrl, resolveLoadedQuiz } from './utils/navigation';
+import { canonicalQuizHash, DEFAULT_HASH, quizUrl, resolveLoadedQuiz } from './utils/navigation';
 import { readDarkMode, THEME_KEY } from './utils/appearance';
 import 'antd/dist/reset.css';
 import './App.css';
 import './markdown.css';
 
-const { Content, Footer } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
 const UPLOAD_KEY = 'quiz-tab-upload-v1';
 const PracticeMode = lazy(() => import('./components/PracticeMode'));
@@ -417,7 +418,15 @@ export default function App() {
 
   let screen;
   if (route.page === 'home') screen = <LandingPage onNavigate={go} />;
-  else if (route.page === 'donate') screen = <DonatePage onNavigate={go} />;
+  else if (route.page === 'donate')
+    screen = (
+      <DonatePage
+        onReturnHome={() => {
+          scrollPositions.current.delete(DEFAULT_HASH);
+          go(DEFAULT_HASH);
+        }}
+      />
+    );
   else if (route.page === 'library')
     screen = (
       <QuizLibrary
@@ -689,29 +698,7 @@ export default function App() {
             {screen}
           </Suspense>
         </Content>
-        {!studying && (
-          <Footer className="app-footer">
-            <span>
-              {appBrand.name} · {t('Learn at your own pace.')}
-            </span>
-            <div className="footer-links">
-              <button
-                className="public-text-link"
-                onClick={() => go('#/donate')}
-                aria-current={route.page === 'donate' ? 'page' : undefined}
-              >
-                {t('Support QuizMos')}
-              </button>
-              <a
-                href="https://github.com/tuanvipandpro/quiz-app"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <GithubOutlined aria-hidden="true" /> {t('View on GitHub')}
-              </a>
-            </div>
-          </Footer>
-        )}
+        {!studying && route.page !== 'home' && <AppFooter onNavigate={go} page={route.page} />}
       </Layout>
       <SignInModal {...signIn.modalProps} />
       {settingsStatus !== 'closed' && (

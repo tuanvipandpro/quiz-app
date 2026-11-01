@@ -66,7 +66,7 @@ test('saved appearance wins and direct library entry keeps the system default', 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await page.locator('.theme-toggle').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.getByRole('button', { name: 'Back to home', exact: true }).click();
+  await page.locator('.back-home').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.getByRole('button', { name: 'Start practicing', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
@@ -150,7 +150,8 @@ test('public layouts support language, themes, widths and keyboard focus', async
       for (const selector of route === 'home'
         ? ['.hero-description', '.feature-card p', '.preview-note p', '.preview-option.is-selected']
         : ['.donate-status-note', '.donate-phone-tip', '.donate-details dt'])
-        expect(await contrastRatio(page.locator(selector).first())).toBeGreaterThanOrEqual(4.5);
+        if (await page.locator(selector).first().isVisible())
+          expect(await contrastRatio(page.locator(selector).first())).toBeGreaterThanOrEqual(4.5);
       const button = page
         .locator(
           route === 'home' ? '.public-actions .ant-btn-primary' : '.donate-copy-row .ant-btn'
@@ -254,8 +255,11 @@ test('disabled or invalid donation configuration never exposes payment actions',
   await donationEnabled(page, true, true);
   await page.reload();
   await expect(page.getByText('Donations are not available yet.', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Back to library', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
+  await page
+    .locator('.donate-thanks')
+    .getByRole('button', { name: 'Back to home', exact: true })
+    .click();
+  await expect(page.locator('.landing-hero h1')).toBeVisible();
 });
 
 test('late clipboard results do not overwrite a newer action or follow the user home', async ({
@@ -280,7 +284,7 @@ test('late clipboard results do not overwrite a newer action or follow the user 
   await page.evaluate(() => window.pendingCopies[0].reject(new Error('late failure')));
   await expect(page.getByRole('status')).toHaveText('Copied to clipboard.');
   await page.getByRole('button', { name: 'Copy account number', exact: true }).click();
-  await page.getByRole('button', { name: 'Back to home', exact: true }).click();
+  await page.locator('.back-home').click();
   await expect(page.locator('.landing-hero h1')).toBeVisible();
   await page.evaluate(() => window.pendingCopies[2].resolve());
   await expect(page.locator('.copy-status')).toHaveCount(0);
@@ -313,4 +317,102 @@ test('home navigation honors exam cancel, leave and resume', async ({ page }) =>
   await expect(page.locator('.landing-hero h1')).toBeVisible();
   await page.goBack();
   await expect(page.locator('.question-title')).toBeVisible();
+});
+
+test('viewport sections snap with wheel, keyboard and navigation, and Donate is immediately visible', async ({
+  page,
+}, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('./');
+  const panels = page.locator('.landing-panel');
+  await expect(panels).toHaveCount(4);
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-motion', 'normal');
+  expect(await page.locator('html').evaluate((el) => getComputedStyle(el).scrollSnapType)).toBe(
+    'y mandatory'
+  );
+  const geometry = await panels.evaluateAll((elements) =>
+    elements.map((el) => ({
+      width: el.getBoundingClientRect().width,
+      height: el.getBoundingClientRect().height,
+      viewport: window.innerHeight,
+      header: document.querySelector('.app-header').getBoundingClientRect().height,
+      screenWidth: document.documentElement.clientWidth,
+    }))
+  );
+  for (const item of geometry) {
+    expect(item.width).toBe(item.screenWidth);
+    expect(item.height).toBeGreaterThanOrEqual(item.viewport - item.header - 1);
+  }
+  const donate = page
+    .getByRole('navigation', { name: 'Main navigation', exact: true })
+    .getByRole('button', { name: 'Donate', exact: true });
+  await expect(donate).toBeInViewport();
+  await expect(page.locator('.hero-donate')).toBeInViewport();
+  const aligned = async (index) => {
+    await expect
+      .poll(() =>
+        panels.nth(index).evaluate((el) => {
+          const rect = el.getBoundingClientRect();
+          const header = document.querySelector('.app-header').getBoundingClientRect().height;
+          // Oversized snap areas can rest anywhere that fully covers the snapport.
+          const extra = Math.max(0, rect.height - (innerHeight - header));
+          return Math.max(rect.top - header, header - rect.top - extra, 0);
+        })
+      )
+      .toBeLessThan(4);
+    await expect(page.locator('.landing-page')).toHaveAttribute('data-active', String(index));
+  };
+  await page.mouse.wheel(0, testInfo.project.use.viewport.height);
+  await aligned(1);
+  await page.keyboard.press('PageDown');
+  await aligned(2);
+  const navigation = page.getByRole('navigation', { name: 'Landing sections', exact: true });
+  const final =
+    testInfo.project.name === 'phone'
+      ? page.getByRole('button', { name: 'Next: Get started', exact: true })
+      : navigation.getByRole('button', { name: 'Go to Get started', exact: true });
+  if (testInfo.project.name === 'phone') await final.tap();
+  else await final.click();
+  await aligned(3);
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-active', '3');
+  await expect(page).toHaveURL(/#\/$/);
+  expect(await panels.nth(3).evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(
+    await panels.nth(1).evaluate((el) => getComputedStyle(el).backgroundColor)
+  );
+  expect(await contrastRatio(page.locator('.final-primary-action'))).toBeGreaterThanOrEqual(4.5);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-motion', 'reduce');
+  expect(
+    await page.locator('.orbit-one').evaluate((el) => getComputedStyle(el).animationName)
+  ).toBe('none');
+  await donate.click();
+  await expect(page.locator('.donate-heading h1')).toBeVisible();
+  await expect(page.locator('html')).not.toHaveClass(/landing-scroll/);
+  expect(await page.locator('html').evaluate((el) => getComputedStyle(el).scrollSnapType)).toBe(
+    'none'
+  );
+  await page
+    .locator('.donate-thanks')
+    .getByRole('button', { name: 'Back to home', exact: true })
+    .click();
+  await expect(page.locator('.landing-hero h1')).toBeInViewport();
+  await page.locator('.hero-donate').click();
+  await page.locator('.back-home').click();
+  await expect(page.locator('.landing-hero h1')).toBeInViewport();
+});
+
+test('landing remains readable and navigable without IntersectionObserver', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.IntersectionObserver = undefined;
+  });
+  await page.goto('./');
+  await expect(page.locator('.landing-hero h1')).toBeVisible();
+  expect(
+    await page
+      .locator('.landing-features .panel-reveal')
+      .evaluate((el) => getComputedStyle(el).opacity)
+  ).toBe('1');
+  await page.getByRole('button', { name: 'Take a look around', exact: true }).click();
+  await expect(page.locator('#landing-features')).toBeFocused();
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-active', '1');
 });

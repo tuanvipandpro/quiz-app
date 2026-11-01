@@ -1,4 +1,12 @@
 export const vi = {
+  Donate: 'Ủng hộ',
+  Introduction: 'Giới thiệu',
+  'How it works': 'Cách học',
+  'Featured banks': 'Bộ câu hỏi nổi bật',
+  'Get started': 'Bắt đầu',
+  'Landing sections': 'Các phần trang chủ',
+  'Go to {section}': 'Đến {section}',
+  'Next: {section}': 'Tiếp: {section}',
   'Keep the curiosity going.': 'Giữ mãi tinh thần khám phá.',
   'Could not download the QR. Try again or use the transfer details.':
     'Không tải được ảnh QR. Hãy thử lại hoặc dùng thông tin chuyển khoản.',

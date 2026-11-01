@@ -61,3 +61,26 @@ Home và Donate SHALL dùng cùng hợp đồng navigation, title, focus và acc
 
 - **WHEN** auth chậm, lỗi hoặc đổi tài khoản trong lúc xem Home/Donate
 - **THEN** nội dung công khai vẫn dùng được và không hiển thị draft/checkpoint riêng của tài khoản trước
+
+### Requirement: CQ-HOME-05 Viewport sections and motion
+
+Landing SHALL chia 4 section full-width cao tối thiểu phần viewport dưới header, cuộn snap theo section và có điều hướng section rõ ràng. Nội dung lớn SHALL được giãn để giữ khả năng đọc/control. Reveal/transition SHALL tôn trọng reduced motion, không chặn wheel/touch/keyboard hoặc rò snap sang Library/Donate.
+
+#### Scenario: Move between sections
+
+- **WHEN** dùng wheel, touch, Page Down hoặc nút điều hướng section
+- **THEN** section tiếp theo xuất hiện với snap và tương phản nền; header/CTA vẫn dùng được và hash route không bị ghi đè bởi section anchor
+
+#### Scenario: Small viewport or reduced motion
+
+- **WHEN** màn hình nhỏ, landscape, zoom hoặc bật reduced motion
+- **THEN** không crop nội dung/control; chuyển động bị giảm/tắt, tất cả nội dung vẫn đọc được và snap được gỡ khi rời Home
+
+### Requirement: CQ-HOME-06 Discoverable donation entry
+
+Landing SHALL có Donate dễ thấy trong header và hero, ngoài lời mời cuối trang. Mọi entry SHALL mở cùng trang Donate qua navigation guard hiện có.
+
+#### Scenario: Find donation without scrolling
+
+- **WHEN** mở Home ở desktop hoặc phone
+- **THEN** có thể tìm và mở Donate ngay từ header/hero bằng keyboard hoặc pointer mà không cần tới footer

@@ -12,7 +12,7 @@ import { validDonation } from '../utils/donation';
 import { useCopyText } from '../hooks/useCopyText';
 import { useAssetDownload } from '../hooks/useAssetDownload';
 
-export default function DonatePage({ onNavigate }) {
+export default function DonatePage({ onReturnHome }) {
   const { t } = useLanguage();
   const [imageFailed, setImageFailed] = useState(false);
   const { result, copy } = useCopyText();
@@ -31,7 +31,7 @@ export default function DonatePage({ onNavigate }) {
       <Button
         type="text"
         className="back-home"
-        onClick={() => onNavigate('#/')}
+        onClick={onReturnHome}
         icon={<ArrowLeftOutlined aria-hidden="true" />}
       >
         {t('Back to home')}
@@ -160,11 +160,8 @@ export default function DonatePage({ onNavigate }) {
       )}
       <div className="donate-thanks">
         <p>{t('Thank you for being part of QuizMos.')}</p>
-        <Button
-          onClick={() => onNavigate('#/library')}
-          icon={<ArrowLeftOutlined aria-hidden="true" />}
-        >
-          {t('Back to library')}
+        <Button onClick={onReturnHome} icon={<ArrowLeftOutlined aria-hidden="true" />}>
+          {t('Back to home')}
         </Button>
       </div>
     </div>

@@ -8,12 +8,17 @@ Cho phép người dùng tự nguyện ủng hộ QuizMos bằng chuyển khoả
 
 ### Requirement: CQ-DONATE-01 Optional public support
 
-Ứng dụng SHALL có trang `#/donate` truy cập được không cần đăng nhập, giải thích mục đích ủng hộ và có đường về Home/Library. Donate SHALL tự nguyện, không chặn hoặc mở khóa chức năng học tập.
+Ứng dụng SHALL có trang `#/donate` truy cập được không cần đăng nhập, giải thích mục đích ủng hộ; mọi nút Back của trang SHALL về Home/landing. Donate SHALL tự nguyện, không chặn hoặc mở khóa chức năng học tập.
 
 #### Scenario: Visit and refresh
 
 - **WHEN** khách mở link Donate, refresh hoặc đi từ footer/landing
 - **THEN** trang Donate mở đúng, có nội dung EN/VN và light/dark theo preference chung; có thể tiếp tục luyện tập mà không chuyển tiền
+
+#### Scenario: Return from donation
+
+- **WHEN** chọn nút Back ở đầu hoặc cuối Donate
+- **THEN** trở về Home/landing; Library vẫn truy cập được qua navigation chính
 
 ### Requirement: CQ-DONATE-02 Verified static transfer details
 

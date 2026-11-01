@@ -27,13 +27,89 @@
 .public-page .public-eyebrow {
   color: var(--app-primary);
 }
-.landing-hero {
+.public-page.landing-page {
+  max-width: none;
+  padding: 0;
+  overflow: clip;
+}
+html.landing-scroll {
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: var(--app-header-height);
+}
+.landing-panel {
+  position: relative;
+  min-height: calc(100svh - var(--app-header-height));
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  isolation: isolate;
+}
+.panel-inner {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  min-height: inherit;
+  margin: 0 auto;
+  padding: clamp(40px, 7vh, 80px) 74px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.hero-inner {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   align-items: center;
   gap: 42px;
-  min-height: 640px;
-  padding: 76px 0 84px;
+  align-content: center;
+  row-gap: 22px;
+}
+.landing-hero {
+  background:
+    radial-gradient(ellipse at 85% 45%, var(--app-info-bg), transparent 58%), var(--app-bg);
+}
+.panel-index {
+  display: block;
+  font: 11px/1.5 monospace;
+  letter-spacing: 0.2em;
+  color: var(--app-muted);
+  margin-bottom: 32px;
+}
+.section-scroll-hint {
+  grid-column: 1 / -1;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--app-muted);
+  background: none;
+  border: 0;
+  padding: 8px 0;
+  min-height: 44px;
+  font-size: 12px;
+}
+.scroll-hint-line {
+  width: 38px;
+  height: 1px;
+  background: var(--app-primary);
+}
+.section-scroll-hint .anticon {
+  color: var(--app-primary);
+}
+.panel-next {
+  margin-top: 24px;
+  align-self: flex-start;
+}
+.final-back-top {
+  align-self: center;
+  color: inherit;
+}
+.landing-final .final-back-top .anticon {
+  color: inherit;
+}
+.hero-donate.ant-btn {
+  color: var(--app-primary);
+  border-color: var(--app-primary);
+  background: var(--app-surface);
 }
 .hero-copy {
   position: relative;
@@ -231,8 +307,7 @@
   color: var(--app-muted);
 }
 .landing-features {
-  padding: 52px 0 76px;
-  border-top: 1px solid var(--app-border);
+  background: var(--app-surface);
 }
 .public-section-heading {
   max-width: 620px;
@@ -257,7 +332,7 @@
 .feature-card {
   min-width: 0;
   padding: 25px;
-  background: var(--app-surface);
+  background: var(--app-bg);
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-lg);
 }
@@ -290,7 +365,8 @@
   line-height: 1.8;
 }
 .landing-banks {
-  padding: 15px 0 76px;
+  background:
+    radial-gradient(ellipse at 15% 80%, var(--app-info-bg), transparent 65%), var(--app-bg);
 }
 .bank-section-heading {
   display: flex;
@@ -325,15 +401,187 @@
 }
 .landing-final {
   text-align: center;
-  padding: 56px 24px 43px;
-  margin: 0 0 64px;
-  border: 1px solid var(--app-border);
-  border-radius: 22px;
-  background: radial-gradient(ellipse at top, var(--app-info-bg), var(--app-surface) 70%);
+  color: var(--app-on-primary);
+  background: var(--app-primary-bg);
+  overflow: clip;
+}
+.landing-final::before {
+  content: '';
+  position: absolute;
+  width: 90vmin;
+  height: 90vmin;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.14;
+  box-shadow:
+    0 0 0 90px var(--app-primary-bg),
+    0 0 0 91px currentColor;
+  pointer-events: none;
+}
+.landing-final .public-eyebrow,
+.landing-final h2,
+.landing-final p,
+.landing-final .public-text-link,
+.landing-final a {
+  color: inherit;
+}
+.final-inner {
+  padding-bottom: 16px;
+}
+.final-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 0;
+}
+.final-actions {
+  justify-content: center;
+}
+.landing-final .final-primary-action {
+  color: var(--app-primary-bg);
+  background: var(--app-on-primary);
+  border-color: var(--app-on-primary);
+}
+.landing-final .final-donate-action {
+  color: inherit;
+  background: transparent;
+  border-color: currentColor;
+}
+.landing-final .final-primary-action:hover,
+.landing-final .final-primary-action:focus-visible {
+  color: var(--app-primary-bg);
+  background: var(--app-on-primary);
+  border-color: currentColor;
+}
+.landing-final .final-donate-action:hover,
+.landing-final .final-donate-action:focus-visible {
+  color: var(--app-primary-bg);
+  background: var(--app-on-primary);
+  border-color: var(--app-on-primary);
+}
+.landing-final :focus-visible {
+  outline-color: currentColor;
+}
+.landing-footer.ant-layout-footer {
+  padding: 16px 0;
+  background: transparent;
+  color: inherit;
+  width: 100%;
+  border-top: 1px solid currentColor;
 }
 .landing-final h2 {
   margin: 13px auto 24px;
-  max-width: 550px;
+  max-width: 800px;
+  font-size: clamp(36px, 5.2vw, 66px);
+}
+.landing-pagination {
+  position: fixed;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  border: 1px solid var(--app-control-border);
+  border-radius: 30px;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
+}
+.landing-pagination button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--app-muted);
+}
+.section-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  transition: transform 220ms;
+}
+.section-dot-number {
+  display: none;
+  font: 10px/1 monospace;
+}
+.landing-pagination button[aria-current='step'] {
+  color: var(--app-on-primary);
+  background: var(--app-primary-bg);
+}
+.landing-pagination button[aria-current='step'] .section-dot {
+  display: none;
+}
+.landing-pagination button[aria-current='step'] .section-dot-number {
+  display: inline;
+}
+.landing-pagination button:hover .section-dot {
+  transform: scale(1.5);
+}
+.panel-reveal {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 600ms ease,
+    transform 700ms cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+.landing-page[data-ready='true'][data-motion='normal']
+  .landing-panel:not(.is-revealed):not(:focus-within)
+  .panel-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.reveal-later {
+  transition-delay: 100ms;
+}
+.feature-card,
+.public-bank-card {
+  transition:
+    transform 240ms ease,
+    border-color 240ms ease;
+}
+@media (hover: hover) {
+  .feature-card:hover,
+  .public-bank-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--app-primary);
+  }
+}
+.orbit-one {
+  animation: orbit-drift-one 18s ease-in-out infinite alternate paused;
+}
+.orbit-two {
+  animation: orbit-drift-two 22s ease-in-out infinite alternate paused;
+}
+.landing-page[data-active='0'][data-motion='normal'] .orbit {
+  animation-play-state: running;
+}
+@keyframes orbit-drift-one {
+  from {
+    transform: rotate(-27deg);
+  }
+  to {
+    transform: rotate(-12deg);
+  }
+}
+@keyframes orbit-drift-two {
+  from {
+    transform: rotate(28deg);
+  }
+  to {
+    transform: rotate(43deg);
+  }
 }
 .support-invitation {
   margin: 20px 0 0;
@@ -510,7 +758,7 @@
   margin: 0 auto;
 }
 @media (max-width: 900px) {
-  .landing-hero {
+  .hero-inner {
     gap: 24px;
   }
   .hero-copy h1 {
@@ -528,23 +776,65 @@
     padding-left: 16px;
     padding-right: 16px;
   }
-  .landing-hero {
+  .panel-inner {
+    padding: 36px 20px;
+  }
+  .hero-inner {
     grid-template-columns: minmax(0, 1fr);
-    gap: 22px;
-    padding: 45px 0 50px;
+    gap: 12px;
+    padding: 24px 20px 32px;
+  }
+  .hero-copy .public-eyebrow {
+    font-size: 11px;
+    margin-bottom: 0;
   }
   .hero-copy h1 {
-    font-size: clamp(41px, 10vw, 58px);
+    font-size: clamp(38px, 9vw, 58px);
+    margin: 14px 0;
   }
   .hero-description {
     font-size: 15px;
     max-width: 520px;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+  .hero-actions {
+    margin-top: 18px;
+    gap: 8px;
+  }
+  .hero-actions .ant-btn-lg {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  .hero-footnote {
+    margin-top: 12px;
   }
   .hero-visual {
     width: 100%;
     max-width: 440px;
     margin: 0 auto;
-    padding: 28px 6px;
+    padding: 10px 0;
+  }
+  .quiz-preview {
+    padding: 16px;
+  }
+  .quiz-preview .preview-question {
+    font-size: 15px;
+    margin: 12px 0;
+  }
+  .preview-progress,
+  .preview-note,
+  .preview-option:not(.is-selected),
+  .orbit-caption {
+    display: none;
+  }
+  .preview-option {
+    margin-top: 0;
+    padding: 10px;
+  }
+  .section-scroll-hint {
+    font-size: 11px;
+    min-height: 44px;
   }
   .orbit-one {
     inset: 2px 0;
@@ -565,25 +855,74 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .feature-card {
-    padding: 24px;
+    padding: 18px;
   }
   .feature-card h3 {
-    margin-top: 18px;
+    margin-top: 12px;
   }
-  .landing-features {
-    padding: 36px 0 48px;
+  .feature-grid {
+    gap: 12px;
   }
-  .landing-banks {
-    padding-bottom: 48px;
+  .feature-top {
+    float: left;
+    margin-right: 12px;
+  }
+  .feature-number {
+    display: none;
+  }
+  .feature-icon {
+    font-size: 17px;
+    padding: 8px;
+  }
+  .feature-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+  }
+  .feature-card p {
+    clear: both;
+    font-size: 13px;
+  }
+  .panel-index {
+    margin-bottom: 20px;
+  }
+  .public-section-heading {
+    margin-bottom: 24px;
   }
   .bank-section-heading {
     align-items: flex-start;
     flex-direction: column;
     gap: 12px;
   }
-  .landing-final {
-    padding: 38px 16px 24px;
-    margin-bottom: 40px;
+  .final-content {
+    padding: 24px 0;
+  }
+  .landing-final h2 {
+    font-size: clamp(34px, 8.5vw, 54px);
+  }
+  .landing-final .landing-footer.ant-layout-footer {
+    padding: 16px 0 0;
+  }
+  .landing-pagination {
+    display: none;
+  }
+  .public-bank-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+  }
+  .public-bank-card h3 {
+    margin: 0;
+    font-size: 22px;
+  }
+  .public-bank-card p {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .public-bank-card .ant-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
   .footer-links {
     justify-content: center;
@@ -598,5 +937,22 @@
   }
   .donate-details {
     padding: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.landing-scroll {
+    scroll-snap-type: y proximity;
+  }
+  .landing-page .panel-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .landing-page .orbit {
+    animation: none;
+  }
+  .landing-page .feature-card,
+  .landing-page .public-bank-card {
+    transition: none;
   }
 }
