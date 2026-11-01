@@ -38,7 +38,7 @@ Choose a primary type and note secondary types when useful. Record risk as low, 
 
 - `docs`: only development Markdown or issue/PR templates. Validate documentation links/anchors, formatting/YAML syntax, the AGENTS size budget and CI policy tests. Runtime checks and deployment are skipped.
 - `assets`: only modifications of existing allowlisted logo/provider images, optionally with docs. Run documentation checks, `yarn verify` and eight tagged browser smoke cases; Rules/emulators are skipped. Added/deleted images, CSS/JS/copy changes and other runtime files use `full`.
-- `full`: all other changes, including published study content, dependencies, workflow/test code, unknown paths, mode changes, symlinks or unavailable comparison refs. Run docs, `yarn verify`, Rules and the complete browser suite. Compare the tested checkout with the latest successful master run of this repository's validation workflow, verified through read-only Actions history and Git ancestry. This includes preceding runtime commits whose CI failed/cancelled, even when the newest commit only changes docs or an image. Missing/untrusted history, API errors or a non-ancestor baseline force full validation.
+- `full`: all other changes, including published study content, dependencies, workflow/test code, unknown paths, mode changes, symlinks or unavailable comparison refs. Run docs, `yarn verify`, Worker/auth tests and dry-run bundle validation, Rules and the complete browser suite. Worker checks run inside `verify`, so their failures block the aggregate gate. Compare the tested checkout with the latest successful master run of this repository's validation workflow, verified through read-only Actions history and Git ancestry. This includes preceding runtime commits whose CI failed/cancelled, even when the newest commit only changes docs or an image. Missing/untrusted history, API errors or a non-ancestor baseline force full validation.
 - Keep the required-check name `test-and-build`: it always evaluates the plan and job outcomes, rejecting missing, failed, cancelled or unexpectedly skipped checks. Independent jobs run concurrently; the full browser suite is split into two disjoint shards, with two workers per runner. Cache Yarn downloads by lockfile, not installed `node_modules`.
 - Responsive tests assign 320/390/412px and phone landscape to the touch project, 768/1280px to desktop. Required dimensions and language/theme states remain covered; native animation-helper contracts run once on desktop. Product regressions still run in both projects. No assertion thresholds, retries or fixture boundaries are relaxed.
 - Docs-only pushes do not deploy. Runtime pushes validate the merged content and deploy the same run's build only after the aggregate gate passes. Cross-run PR artifact reuse is not implemented. Failure reports remain CI artifacts for seven days; site builds expire after one day.
@@ -74,6 +74,8 @@ These are agent workflow rules supported by templates; templates do not technica
 - Do not refresh a guide's reviewed hash until its content and question mappings have been reviewed. `yarn check:guides` exposes outstanding reviews.
 - Guest uploads stay in the tab. Cloud custom quizzes use 3 owner-only Firestore slots, 1–100 questions and instance/version-scoped drafts/checkpoints. Track production rollout in #42; do not enable the client before compatible Rules are published and verified.
 
+- Guest AI uses BYOK. App AI requires a verified non-anonymous Firebase user, explicit source choice and server quota. Keep Cloudflare on Free with an allowlisted model; never add paid fallback or silently use a user's BYOK credentials. Enable App AI only after Free-account, quality and CPU/usage verification in #53. See [Worker setup and rollout](../worker/README.md).
+
 ## Required review before every change
 
 - Identify the root cause or requested outcome, affected flows, existing owners of the logic/configuration, and potential UI/UX impact before editing. Include indirect effects such as loading, errors, saved state and navigation.
@@ -102,6 +104,7 @@ These are agent workflow rules supported by templates; templates do not technica
 
 ## Implementation and verification
 
+- `worker/` owns App AI authentication/quota and D1 migrations. `yarn test:worker` exercises local D1 and signed fixtures; `yarn worker:check` validates the bundle only. Run both for Worker/auth or its CI integration changes; `yarn verify` alone does not exercise the Worker.
 - Reuse components/services and keep changes focused. No unrelated dependency upgrades or question-answer rewrites.
 - Asset paths respect `import.meta.env.BASE_URL` (`/` on the production custom domain; `/quiz-app/` for local development and isolated E2E).
 - Never log or commit provider API keys. `.env` stays local; Firebase web configuration is public, not authorization.

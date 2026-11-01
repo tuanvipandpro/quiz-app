@@ -1,0 +1,24 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "quiz-app-ai-staging",
+  "account_id": "3ac56ac776a3d5f92b67d2e6bf43f5d6",
+  "main": "index.js",
+  "compatibility_date": "2026-07-30",
+  "workers_dev": true,
+  "vars": {
+    "APP_AI_ENABLED": "true",
+    "FIREBASE_PROJECT_ID": "quiz-app-f70d5",
+    "ALLOWED_ORIGINS": "http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:5177,http://localhost:5177",
+  },
+  "ai": { "binding": "AI" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "quiz-app-ai-staging",
+      "database_id": "3b0d6b06-7e9d-4dd1-95c8-57c3652ead89",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "triggers": { "crons": ["15 0 * * *"] },
+  "observability": { "enabled": false },
+}

@@ -14,6 +14,7 @@ export default {
     return { success: true, user: read(uid) };
   },
   async saveLlmApiKey(uid, provider, apiKey) {
+    if (sessionStorage.getItem('quiz-e2e-fail-key-save')) return { success: false };
     const profile = read(uid);
     profile.llmProviders[provider] = { apiKey };
     write(uid, profile);

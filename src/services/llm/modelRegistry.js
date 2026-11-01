@@ -1,7 +1,9 @@
+export const AI_LABELS = { app: 'App AI', gemini: 'Google Gemini', groq: 'Groq' };
 export const PROVIDERS = [
   {
     id: 'gemini',
     name: 'Google Gemini',
+    shortName: 'Gemini',
     keyUrl: 'https://aistudio.google.com/app/apikey',
     keySteps: [
       'Sign in to Google AI Studio with your Google account and open API Keys.',

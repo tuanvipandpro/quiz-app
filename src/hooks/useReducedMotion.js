@@ -1,13 +1,15 @@
-import { useSyncExternalStore } from 'react';
-
-const QUERY = '(prefers-reduced-motion: reduce)';
-const subscribe = (onChange) => {
-  const preference = window.matchMedia?.(QUERY);
-  preference?.addEventListener('change', onChange);
-  return () => preference?.removeEventListener('change', onChange);
-};
-const getSnapshot = () => window.matchMedia?.(QUERY).matches ?? false;
+import { useEffect, useState } from 'react';
 
 export function useReducedMotion() {
-  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+  // Start without motion until the preference is known. This also lets Ant Design
+  // keep its MotionProvider mounted when the preference changes, preserving forms.
+  const [reduced, setReduced] = useState(true);
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(preference.matches);
+    update();
+    preference.addEventListener('change', update);
+    return () => preference.removeEventListener('change', update);
+  }, []);
+  return reduced;
 }

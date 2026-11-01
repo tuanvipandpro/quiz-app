@@ -1,0 +1,23 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "quiz-app-ai",
+  "main": "index.js",
+  "compatibility_date": "2026-07-30",
+  "workers_dev": true,
+  "vars": {
+    "APP_AI_ENABLED": "false",
+    "FIREBASE_PROJECT_ID": "quiz-app-f70d5",
+    "ALLOWED_ORIGINS": "https://quizmos.runs-at.dev,https://tuanvipandpro.github.io",
+  },
+  "ai": { "binding": "AI" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "quiz-app-ai",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "triggers": { "crons": ["15 0 * * *"] },
+  "observability": { "enabled": false },
+}

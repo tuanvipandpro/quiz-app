@@ -6,10 +6,15 @@ export default defineConfig(({ command }) => {
   if (command === 'build')
     throw new Error('The E2E configuration must never build a deployable app.');
   return mergeConfig(config, {
+    define: { 'import.meta.env.VITE_APP_AI_URL': JSON.stringify('http://127.0.0.1:5176') },
     base: '/quiz-app/',
     server: { warmup: { clientFiles: ['./src/main.jsx', './src/App.jsx'] } },
     resolve: {
       alias: [
+        {
+          find: /^(?:.*\/)appAiService(?:\.js)?$/,
+          replacement: fileURLToPath(new URL('./tests/fixtures/appAiService.js', import.meta.url)),
+        },
         {
           find: /^(?:.*\/)?customQuizService(?:\.js)?$/,
           replacement: fileURLToPath(

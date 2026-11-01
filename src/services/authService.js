@@ -93,6 +93,15 @@ class AuthService {
     return auth.currentUser;
   }
 
+  async getIdToken(uid) {
+    const user = auth.currentUser;
+    if (!user || user.uid !== uid) throw new Error('Sign in to use App AI.');
+    const token = await user.getIdToken();
+    if (auth.currentUser?.uid !== uid)
+      throw new Error('Your sign-in session changed. Please retry.');
+    return token;
+  }
+
   /**
    * Subscribe to auth state changes
    * @param {Function} callback - Callback function that receives user object

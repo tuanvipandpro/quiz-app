@@ -17,6 +17,7 @@ React 19, Vite, Ant Design; Node 24 LTS and Yarn 1.22.22 with tracked `yarn.lock
 - Preserve question IDs/aliases, account-scoped drafts and checkpoints. Multiple-choice answers are arrays; yes/no and dropdown answers are mappings. `aws-ace` resolves to Google ACE.
 - Preserve bank-first/provider navigation, featured AIP-C01/CCAR-P, EN default with VN/EN, both themes and 320px support. Header/nav align left, utilities right. Asset paths use `import.meta.env.BASE_URL` (`/` production, `/quiz-app/` dev/E2E).
 - Never log/commit provider secrets. Use fixtures/emulators for routine auth/AI/Firebase tests. Cloud custom quizzes stay behind verified compatible production Rules; #42 tracks rollout. Do not refresh guide review hashes without content review.
+- Guest AI uses BYOK; App AI requires verified non-anonymous authentication, explicit source choice and server quota. Keep Workers Free with no paid or silent BYOK fallback. Follow [App AI rollout](worker/README.md); #53 gates production activation.
 - Store disposable screenshots/logs/traces/reports in ignored or CI artifacts. Commit maintained docs, source assets and purposeful test fixtures/baselines. `public/summaries/` is published study content, not development documentation. No evidence bundle for routine minor work.
 
 ## Read when relevant

@@ -249,6 +249,7 @@ export default function ExamMode({
                   <Button
                     icon={<QuestionCircleOutlined aria-hidden="true" />}
                     onClick={() => ai.explain()}
+                    ref={ai.triggerRef}
                   >
                     {t('Explain')}
                   </Button>

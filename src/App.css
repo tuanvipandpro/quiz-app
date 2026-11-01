@@ -144,12 +144,6 @@ summary:focus-visible {
   gap: 12px;
   margin: 20px 0;
 }
-.ai-provider-card .ant-card-body {
-  padding: 18px;
-}
-.ai-settings-intro.ant-typography {
-  margin-bottom: 0;
-}
 
 @media (max-width: 1000px) {
   .library-browser {

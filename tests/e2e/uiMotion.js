@@ -21,14 +21,14 @@ export async function waitForUiMotion(locator) {
       );
       const running = [...animations].filter(
         (animation) =>
-          animation.playState === 'running' &&
+          (animation.playState === 'running' || animation.pending) &&
           Number.isFinite(animation.effect?.getComputedTiming().endTime)
       );
       if (!running.length && !preparing) return;
-      // A cancelled transition can be replaced; collect the active ones again.
-      if (running.length)
-        await Promise.all(running.map((animation) => animation.finished.catch(() => undefined)));
-      else await new Promise(requestAnimationFrame);
+      // Re-query browser state each frame. Resize/replacement can retire CSS
+      // transitions while a previously captured finished promise remains pending.
+      // Neither a stale promise nor a fixed delay is a UI readiness signal.
+      await new Promise(requestAnimationFrame);
     }
   });
 }

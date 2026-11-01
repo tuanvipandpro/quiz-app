@@ -6,12 +6,14 @@ import { generate as gemini } from './providers/gemini.js';
 import { generate as groq } from './providers/groq.js';
 import { createExplanationService } from './explanations.js';
 import { LlmError } from './errors.js';
+import appAiService from '../appAiService';
 
 export const credentials = createCredentialStore(userService);
 const providers = { gemini, groq };
 const router = createRouter({ providers });
 const explanations = createExplanationService({ credentials, router });
 export function clearLlmSession(options) {
+  appAiService.reset();
   explanations.reset();
   credentials.clearSession(options);
   router.reset();

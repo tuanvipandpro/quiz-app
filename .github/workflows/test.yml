@@ -58,6 +58,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: yarn verify
+        env:
+          VITE_APP_AI_URL: ${{ vars.VITE_APP_AI_URL }}
+      - run: yarn test:worker
+        if: needs.plan.outputs.profile == 'full'
+      - run: yarn worker:check
+        if: needs.plan.outputs.profile == 'full'
       - uses: actions/upload-artifact@v4
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
