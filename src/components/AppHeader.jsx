@@ -24,7 +24,8 @@ export default function AppHeader({
         <button
           className="app-brand"
           aria-label={appBrand.name}
-          onClick={() => onNavigate('#/library')}
+          onClick={() => onNavigate('#/')}
+          aria-current={page === 'home' ? 'page' : undefined}
         >
           <img
             className="app-brand-logo"
@@ -42,7 +43,7 @@ export default function AppHeader({
         >
           <Button
             type="text"
-            aria-current={page !== 'my-quizzes' ? 'page' : undefined}
+            aria-current={['library', 'quiz'].includes(page) ? 'page' : undefined}
             onClick={() => onNavigate('#/library')}
           >
             {t('Quiz Bank')}

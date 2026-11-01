@@ -3,6 +3,7 @@
 @import './styles/library.css';
 @import './styles/study.css';
 @import './styles/upload.css';
+@import './styles/public-pages.css';
 
 * {
   box-sizing: border-box;

@@ -1,4 +1,81 @@
 export const vi = {
+  'Keep the curiosity going.': 'Giữ mãi tinh thần khám phá.',
+  'Could not download the QR. Try again or use the transfer details.':
+    'Không tải được ảnh QR. Hãy thử lại hoặc dùng thông tin chuyển khoản.',
+  'Small quizzes. Big confidence.': 'Quiz nhỏ. Tự tin lớn.',
+  'Small quizzes.': 'Quiz nhỏ.',
+  'Big confidence.': 'Tự tin lớn.',
+  'A little practice. A new possibility.': 'Luyện tập một chút. Mở thêm cơ hội.',
+  'Make room for your next certification. Practice questions, try mock exams, and turn what you learn into progress.':
+    'Tiến gần hơn tới chứng chỉ tiếp theo. Luyện câu hỏi, thử thi mô phỏng và tiến bộ qua từng buổi học.',
+  'Start practicing': 'Bắt đầu luyện tập',
+  'Take a look around': 'Khám phá QuizMos',
+  'Jump into the quiz bank. No account needed to start.':
+    'Bắt đầu với thư viện quiz. Chưa cần tạo tài khoản.',
+  'Product preview': 'Minh họa sản phẩm',
+  'A moment of practice': 'Một chút luyện tập',
+  Illustration: 'Minh họa',
+  'How do big goals become a little more achievable?': 'Làm sao để mục tiêu lớn trở nên gần hơn?',
+  'Wait for the perfect moment': 'Chờ thời điểm hoàn hảo',
+  'Take it one question at a time': 'Bắt đầu từ từng câu hỏi',
+  'Keep your curiosity going.': 'Giữ mãi tinh thần khám phá.',
+  'Learn. Review. Give it another try.': 'Học. Ôn lại. Thử thêm lần nữa.',
+  'YOUR PACE. YOUR PATH.': 'NHỊP HỌC CỦA BẠN. CON ĐƯỜNG CỦA BẠN.',
+  'A study space that moves with you.': 'Góc học tập theo nhịp của bạn.',
+  'A quick practice session or a focused exam run. Pick what you need today.':
+    'Luyện nhanh vài câu hay tập trung làm bài thi. Chọn cách học bạn cần hôm nay.',
+  'Practice with purpose': 'Luyện tập có định hướng',
+  'Work through questions at your own pace. Review answers and explore explanations as you go.':
+    'Làm câu hỏi theo nhịp riêng. Xem lại đáp án và tìm hiểu lời giải trong lúc học.',
+  'Find your exam rhythm': 'Làm quen nhịp thi',
+  'Try a timed mock exam, then review the questions that deserve another look.':
+    'Thử bài thi mô phỏng có thời gian, rồi ôn lại những câu cần xem kỹ hơn.',
+  'Connect the concepts': 'Kết nối kiến thức',
+  'Use study guides available for supported banks to put individual answers into context.':
+    'Dùng tài liệu ôn tập của các bộ câu hỏi được hỗ trợ để hiểu kiến thức trong bối cảnh rộng hơn.',
+  'FIND YOUR NEXT CHALLENGE': 'TÌM THỬ THÁCH TIẾP THEO',
+  'A place to begin.': 'Một điểm khởi đầu.',
+  'Explore the quiz bank': 'Khám phá thư viện quiz',
+  'Explore {code}': 'Khám phá {code}',
+  'ONE QUESTION IS A START': 'MỘT CÂU HỎI LÀ MỘT KHỞI ĐẦU',
+  'Make your next study session count.': 'Bắt đầu buổi học ý nghĩa tiếp theo.',
+  'Open the quiz bank': 'Mở thư viện quiz',
+  'Enjoying QuizMos?': 'Bạn thích QuizMos?',
+  'Support the project': 'Ủng hộ dự án',
+  'Support QuizMos': 'Ủng hộ QuizMos',
+  'Back to home': 'Về trang chủ',
+  'A LITTLE SUPPORT GOES A LONG WAY': 'MỘT CHÚT ỦNG HỘ, THÊM NHIỀU ĐỘNG LỰC',
+  'If QuizMos has been part of your learning journey, you can support its continued development with a voluntary donation.':
+    'Nếu QuizMos đã đồng hành cùng bạn trong hành trình học tập, bạn có thể tự nguyện ủng hộ để dự án tiếp tục phát triển.',
+  'Scan. Support. Keep learning.': 'Quét mã. Ủng hộ. Tiếp tục học.',
+  'Scan with your banking app and choose any amount in VND.':
+    'Quét mã bằng app ngân hàng và chọn số tiền VND bạn muốn ủng hộ.',
+  'QR image could not be loaded. Use the transfer details instead.':
+    'Không tải được ảnh QR. Bạn có thể dùng thông tin chuyển khoản bên cạnh.',
+  'VietQR for the donation account': 'VietQR của tài khoản nhận ủng hộ',
+  'Download QR': 'Tải ảnh QR',
+  'On the same phone? Save the QR, then choose it from your banking app’s photo library if supported. You can also copy the account details.':
+    'Đang dùng cùng điện thoại? Lưu QR rồi chọn ảnh trong app ngân hàng nếu được hỗ trợ. Bạn cũng có thể sao chép thông tin tài khoản.',
+  'BANK TRANSFER · VND': 'CHUYỂN KHOẢN NGÂN HÀNG · VND',
+  'Your support, your choice.': 'Ủng hộ theo cách của bạn.',
+  Bank: 'Ngân hàng',
+  'Account holder': 'Tên người nhận',
+  'Account number': 'Số tài khoản',
+  'Transfer note': 'Nội dung chuyển khoản',
+  'Copy account number': 'Sao chép số tài khoản',
+  'Copy transfer note': 'Sao chép nội dung chuyển khoản',
+  'Copied to clipboard.': 'Đã sao chép.',
+  'Could not copy. Select the text and copy it manually.':
+    'Không sao chép được. Hãy chọn văn bản và sao chép thủ công.',
+  'Check the recipient before confirming.': 'Kiểm tra người nhận trước khi xác nhận.',
+  'Make sure your banking app shows the account holder and account number above. Enter the amount you want to donate.':
+    'Đối chiếu tên và số tài khoản trong app ngân hàng với thông tin ở trên. Nhập số tiền bạn muốn ủng hộ.',
+  'QuizMos does not automatically track transfers or confirm receipt. A donation is optional and does not unlock study features.':
+    'QuizMos chưa tự động theo dõi giao dịch hoặc xác nhận đã nhận tiền. Ủng hộ là tự nguyện và không mở khóa tính năng học tập.',
+  'Donations are not available yet.': 'Trang ủng hộ chưa sẵn sàng.',
+  'We are checking the transfer details. In the meantime, your next quiz is ready when you are.':
+    'Thông tin chuyển khoản đang được kiểm tra. Trong lúc chờ, bạn vẫn có thể tiếp tục luyện tập.',
+  'Thank you for being part of QuizMos.': 'Cảm ơn bạn đã đồng hành cùng QuizMos.',
   'Could not reach App AI. Retry to check the same attempt.':
     'Chưa kết nối được AI ứng dụng. Thử lại để kiểm tra cùng lượt đã gửi.',
   'AI source': 'Nguồn AI',

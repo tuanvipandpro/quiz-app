@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { parseRoute } from '../utils/navigation';
+import { DEFAULT_HASH, parseRoute } from '../utils/navigation';
 
 const POSITION = 'quizRoutePosition';
 const HASH = 'quizRouteHash';
 
 export function useHashRoute(guard, nativeGuard) {
-  const [hash, setHash] = useState(() => window.location.hash || '#/library');
+  const [hash, setHash] = useState(() => window.location.hash || DEFAULT_HASH);
   const current = useRef(hash);
   const position = useRef(window.history.state?.[POSITION] ?? 0);
   const restoring = useRef(false);
@@ -47,7 +47,7 @@ export function useHashRoute(guard, nativeGuard) {
       !guardRef.current.nativeGuard?.active || window.confirm(guardRef.current.nativeGuard.message);
     const changed = (event) => {
       const entry = event.state || window.history.state;
-      const next = entry?.[HASH] || window.location.hash || '#/library';
+      const next = entry?.[HASH] || window.location.hash || DEFAULT_HASH;
       const targetPosition = Number.isInteger(entry?.[POSITION])
         ? entry[POSITION]
         : position.current - 1;
@@ -65,7 +65,7 @@ export function useHashRoute(guard, nativeGuard) {
       accept(next, targetPosition);
     };
     const hashChanged = () => {
-      const next = window.location.hash || '#/library';
+      const next = window.location.hash || DEFAULT_HASH;
       if (window.history.state?.[HASH] === next || next === current.current || restoring.current)
         return;
       if (!mayLeave()) {

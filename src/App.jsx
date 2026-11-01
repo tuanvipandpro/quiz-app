@@ -41,6 +41,7 @@ import { resolveCheckpoint } from './utils/quizProgress';
 import { validateQuizQuestions } from './utils/questionModel';
 import { clearStudySessions, readStudySession, sessionKey } from './utils/studySession';
 import { canonicalQuizHash, quizUrl, resolveLoadedQuiz } from './utils/navigation';
+import { readDarkMode, THEME_KEY } from './utils/appearance';
 import 'antd/dist/reset.css';
 import './App.css';
 import './markdown.css';
@@ -52,15 +53,21 @@ const PracticeMode = lazy(() => import('./components/PracticeMode'));
 const ExamMode = lazy(() => import('./components/ExamMode'));
 const QuickSummaryMode = lazy(() => import('./components/QuickSummaryMode'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
+const LandingPage = lazy(() => import('./components/LandingPage'));
+const DonatePage = lazy(() => import('./components/DonatePage'));
 
 function initialDarkMode() {
+  let storage;
   try {
-    const saved = localStorage.getItem('quiz-app-theme');
-    if (saved) return saved === 'dark';
+    storage = window.localStorage;
   } catch {
-    /* Use system appearance. */
+    /* Use the default appearance without persistence. */
   }
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+  return readDarkMode(
+    storage,
+    window.location.hash,
+    window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
+  );
 }
 
 export default function App() {
@@ -145,7 +152,7 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light';
     try {
-      localStorage.setItem('quiz-app-theme', isDarkMode ? 'dark' : 'light');
+      localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
     } catch {
       /* Keep the active theme. */
     }
@@ -306,11 +313,15 @@ export default function App() {
   const guide = getQuickSummary(route.quizId);
   useEffect(() => {
     document.title =
-      (route.page === 'library'
-        ? t('Quiz Bank')
-        : route.page === 'my-quizzes'
-          ? t('My quizzes')
-          : active?.name || t('Quiz overview')) + ` · ${appBrand.name}`;
+      (route.page === 'home'
+        ? t('Small quizzes. Big confidence.')
+        : route.page === 'donate'
+          ? t('Support QuizMos')
+          : route.page === 'library'
+            ? t('Quiz Bank')
+            : route.page === 'my-quizzes'
+              ? t('My quizzes')
+              : active?.name || t('Quiz overview')) + ` · ${appBrand.name}`;
   }, [route.page, active?.name, t]);
   let examDraft = null;
   if (active && route.mode === 'overview') {
@@ -405,7 +416,9 @@ export default function App() {
   };
 
   let screen;
-  if (route.page === 'library')
+  if (route.page === 'home') screen = <LandingPage onNavigate={go} />;
+  else if (route.page === 'donate') screen = <DonatePage onNavigate={go} />;
+  else if (route.page === 'library')
     screen = (
       <QuizLibrary
         query={query}
@@ -660,7 +673,11 @@ export default function App() {
           onSignOut={logout}
           onSignIn={openLogin}
         />
-        <Content id="main-content" tabIndex={-1}>
+        <Content
+          id="main-content"
+          tabIndex={-1}
+          className={['home', 'donate'].includes(route.page) ? 'public-content' : undefined}
+        >
           <Suspense
             fallback={
               <div className="load-state" role="status">
@@ -677,13 +694,22 @@ export default function App() {
             <span>
               {appBrand.name} · {t('Learn at your own pace.')}
             </span>
-            <a
-              href="https://github.com/tuanvipandpro/quiz-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <GithubOutlined aria-hidden="true" /> {t('View on GitHub')}
-            </a>
+            <div className="footer-links">
+              <button
+                className="public-text-link"
+                onClick={() => go('#/donate')}
+                aria-current={route.page === 'donate' ? 'page' : undefined}
+              >
+                {t('Support QuizMos')}
+              </button>
+              <a
+                href="https://github.com/tuanvipandpro/quiz-app"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GithubOutlined aria-hidden="true" /> {t('View on GitHub')}
+              </a>
+            </div>
           </Footer>
         )}
       </Layout>
