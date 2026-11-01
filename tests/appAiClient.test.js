@@ -57,13 +57,14 @@ test('App AI requires uid and configured secure URL before credentials/network',
   await assert.rejects(client.usage(null), { code: 'AUTH' });
   assert.equal(tokens, 0);
 });
-test('App cache isolates account/language, regenerates explicitly and refreshes usage', async () => {
+test('App cache isolates owners but reuses Vietnamese answers across UI languages', async () => {
   let generations = 0;
   const client = createAppAiClient({
     baseUrl: 'https://api.test',
     getToken: async (uid) => uid,
     fetchImpl: async (_url, options) => {
       if (options.method === 'GET') return Response.json({ usage });
+      assert.equal(JSON.parse(options.body).language, 'vi');
       generations++;
       return Response.json({ text: 'result', provider: 'app', model: 'fixed', usage });
     },
@@ -71,13 +72,13 @@ test('App cache isolates account/language, regenerates explicitly and refreshes 
   const opts = { uid: 'a', language: 'en', requestId: 'id' };
   await client.generate(question, opts);
   assert.equal((await client.generate(question, opts)).cached, true);
-  await client.generate(question, { ...opts, language: 'vi' });
+  assert.equal((await client.generate(question, { ...opts, language: 'vi' })).cached, true);
   await client.generate(question, { ...opts, uid: 'b' });
   await client.generate(question, { ...opts, forceRefresh: true });
-  assert.equal(generations, 4);
+  assert.equal(generations, 3);
   client.reset();
   await client.generate(question, opts);
-  assert.equal(generations, 5);
+  assert.equal(generations, 4);
 });
 test('reset during HTTP request discards late account response', async () => {
   let finish;

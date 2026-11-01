@@ -1,3 +1,5 @@
+import { EXPLANATION_LANGUAGE } from './explanationPrompt.js';
+
 const messages = {
   NETWORK: 'Could not reach App AI. Retry to check the same attempt.',
   AUTH: 'Sign in again to use App AI.',
@@ -82,8 +84,8 @@ export function createAppAiClient({ baseUrl, getToken, fetchImpl = fetch }) {
       cache.clear();
     },
     usage: (uid, signal) => call('/v1/usage', uid, signal).then((data) => data.usage),
-    async generate(question, { uid, language, requestId, signal, forceRefresh = false }) {
-      const key = JSON.stringify([uid, question, language]);
+    async generate(question, { uid, requestId, signal, forceRefresh = false }) {
+      const key = JSON.stringify([uid, question, EXPLANATION_LANGUAGE]);
       // A failed regeneration must not make Retry return an older successful answer.
       if (forceRefresh) cache.delete(key);
       const saved = cache.get(key);
@@ -92,7 +94,11 @@ export function createAppAiClient({ baseUrl, getToken, fetchImpl = fetch }) {
         return { ...saved.result, usage, cached: true };
       }
       const epoch = generation;
-      const result = await call('/v1/explanations', uid, signal, { question, language, requestId });
+      const result = await call('/v1/explanations', uid, signal, {
+        question,
+        language: EXPLANATION_LANGUAGE,
+        requestId,
+      });
       if (!result.text?.trim()) throw appAiError('UNAVAILABLE', result.usage);
       if (epoch === generation) {
         cache.set(key, { result, expires: Date.now() + 30 * 60_000 });

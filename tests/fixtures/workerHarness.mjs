@@ -53,9 +53,9 @@ export async function workerHarness({ now = Date.now, ai, timeoutMs } = {}) {
         return ai
           ? ai(model, input)
           : modelResult(
-              input.messages[0].content.includes('Respond only in English')
-                ? 'The correct answer follows from the stated conditions.'
-                : 'Đáp án phù hợp với điều kiện trong câu hỏi.'
+              input.messages[0].content.includes('Chỉ trả lời bằng tiếng Việt')
+                ? 'Đáp án phù hợp với điều kiện trong câu hỏi.\n\nThuật ngữ: IAM, API, CloudTrail, Pub/Sub.'
+                : 'Unexpected explanation language.'
             );
       },
     },

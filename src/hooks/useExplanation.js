@@ -8,10 +8,13 @@ import { AI_LABELS } from '../services/llm/modelRegistry';
 // Both quiz modes share request cancellation, credential checks, and error handling.
 export function useExplanation(question, uid) {
   const { source, setSource } = useAiSource(uid);
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const [usage, setUsage] = useState(null);
   const attempt = useRef(null);
-  const [explanation, setExplanation] = useState('');
+  const [completion, setCompletion] = useState(null);
+  const explanation = completion
+    ? `${completion.text}\n\n---\n*${AI_LABELS[completion.provider] || completion.provider} · ${completion.model}${completion.cached ? ' · ' + t('Saved explanation') : ''}*`
+    : '';
   const [error, setError] = useState(null);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,15 +31,15 @@ export function useExplanation(question, uid) {
   useEffect(() => {
     close();
     setSettingsVisible(false);
-    setExplanation('');
+    setCompletion(null);
     setError(null);
     setUsage(null);
     attempt.current = null;
     return () => request.current?.abort();
-  }, [question, uid, language, close]);
+  }, [question, uid, close]);
   useEffect(() => {
     close();
-    setExplanation('');
+    setCompletion(null);
     setError(null);
     setUsage(null);
     attempt.current = null;
@@ -50,7 +53,7 @@ export function useExplanation(question, uid) {
     setVisible(true);
     setLoading(true);
     setError(null);
-    setExplanation('');
+    setCompletion(null);
     try {
       let result;
       if (source === 'app' && uid) {
@@ -62,7 +65,6 @@ export function useExplanation(question, uid) {
         }
         result = await appAiService.generate(question, {
           uid,
-          language,
           requestId: attempt.current,
           signal: controller.signal,
           forceRefresh,
@@ -77,16 +79,13 @@ export function useExplanation(question, uid) {
         }
         result = await generateExplanation(question, {
           uid,
-          language,
           signal: controller.signal,
           forceRefresh,
         });
       }
       if (!controller.signal.aborted) {
         if (result.usage) setUsage(result.usage);
-        setExplanation(
-          `${result.text}\n\n---\n*${AI_LABELS[result.provider] || result.provider} · ${result.model}${result.cached ? ' · ' + t('Saved explanation') : ''}*`
-        );
+        setCompletion(result);
       }
     } catch (err) {
       if (!controller.signal.aborted) {

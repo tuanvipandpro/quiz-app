@@ -1,6 +1,7 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "quiz-app-ai",
+  "account_id": "3ac56ac776a3d5f92b67d2e6bf43f5d6",
   "main": "index.js",
   "compatibility_date": "2026-07-30",
   "workers_dev": true,
@@ -14,7 +15,7 @@
     {
       "binding": "DB",
       "database_name": "quiz-app-ai",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "2be26a7b-7393-4f50-a857-990d8a1a7d29",
       "migrations_dir": "migrations",
     },
   ],

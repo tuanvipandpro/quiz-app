@@ -1,5 +1,6 @@
 import { validateQuizQuestions } from '../src/utils/questionModel.js';
 import {
+  EXPLANATION_LANGUAGE,
   explanationPrompt,
   explanationSystemPrompt,
 } from '../src/services/llm/explanationPrompt.js';
@@ -75,8 +76,8 @@ function validateInput(input, now) {
   } catch {
     throw new ApiError('INVALID');
   }
-  const prompt = explanationPrompt(input.question, { language: input.language, compact: true });
-  if (bytes(prompt) + bytes(explanationSystemPrompt(input.language)) > AI_POLICY.maxPromptBytes)
+  const prompt = explanationPrompt(input.question, { compact: true });
+  if (bytes(prompt) + bytes(explanationSystemPrompt()) > AI_POLICY.maxPromptBytes)
     throw new ApiError('TOO_LARGE', 413);
   return prompt;
 }
@@ -132,7 +133,7 @@ export function createWorker({
         const prompt = validateInput(input, now());
         const hash = await fingerprint({
           question: input.question,
-          language: input.language,
+          language: EXPLANATION_LANGUAGE,
           model: AI_POLICY.model,
           version: AI_POLICY.promptVersion,
         });
@@ -143,7 +144,7 @@ export function createWorker({
           const output = await Promise.race([
             env.AI.run(AI_POLICY.model, {
               messages: [
-                { role: 'system', content: explanationSystemPrompt(input.language) },
+                { role: 'system', content: explanationSystemPrompt() },
                 { role: 'user', content: prompt },
               ],
               max_tokens: AI_POLICY.maxOutputTokens,

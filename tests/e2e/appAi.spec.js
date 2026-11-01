@@ -74,9 +74,7 @@ test('logout while a result is in flight discards the private explanation', asyn
   await clickAfterUiMotion(dialog.getByRole('button', { name: 'Sign out', exact: true }));
   release();
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
-  await expect(
-    page.getByText('The correct answer follows from the stated conditions.')
-  ).toHaveCount(0);
+  await expect(page.getByText('Đáp án phù hợp với điều kiện trong câu hỏi.')).toHaveCount(0);
 });
 test('guest BYOK never calls App AI; key setup and sign-in option are visible', async ({
   page,
@@ -96,11 +94,14 @@ test('guest BYOK never calls App AI; key setup and sign-in option are visible', 
   expect(workerCalls).toBe(0);
   await fs.mkdir('artifacts/app-ai', { recursive: true });
   await page.screenshot({ path: `artifacts/app-ai/guest-setup-${test.info().project.name}.png` });
-  await page.route('https://generativelanguage.googleapis.com/**', (route) =>
-    route.fulfill({
-      json: { candidates: [{ content: { parts: [{ text: 'BYOK fixture explanation' }] } }] },
-    })
-  );
+  const prompts = [];
+  const byokAnswer = 'Lời giải kiểm thử: giữ nguyên IAM, API, CloudTrail và Pub/Sub.';
+  await page.route('https://generativelanguage.googleapis.com/**', (route) => {
+    prompts.push(route.request().postDataJSON().contents[0].parts[0].text);
+    return route.fulfill({
+      json: { candidates: [{ content: { parts: [{ text: byokAnswer }] } }] },
+    });
+  });
   const card = settings.locator('.ai-provider-form');
   await card.getByLabel('Google Gemini API key', { exact: true }).fill('fixture-key');
   await card.getByRole('button', { name: 'Save key', exact: true }).click();
@@ -108,7 +109,20 @@ test('guest BYOK never calls App AI; key setup and sign-in option are visible', 
   await clickAfterUiMotion(settings.getByRole('button', { name: 'Done', exact: true }));
   await expect(page.getByRole('button', { name: 'Explain', exact: true })).toBeFocused();
   await explain(page);
-  await expect(page.getByText('BYOK fixture explanation')).toBeVisible();
+  const answer = page.locator('.explanation-panel .markdown-container[lang="vi"]');
+  await expect(answer).toContainText(byokAnswer);
+  await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
+  await expect(answer).toContainText(byokAnswer);
+  await page.getByRole('button', { name: 'Đóng', exact: true }).last().click();
+  await page.getByRole('button', { name: 'Giải thích', exact: true }).click();
+  await expect(page.getByText(/Lời giải đã lưu/)).toBeVisible();
+  await expect(answer).toContainText(byokAnswer);
+  await page.getByRole('button', { name: 'English', exact: true }).click();
+  await expect(page.getByText(/Saved explanation/)).toBeVisible();
+  await expect(answer).toContainText(byokAnswer);
+  expect(prompts).toHaveLength(1);
+  expect(prompts[0]).toContain('bằng tiếng Việt');
+  expect(prompts[0]).toContain('Giữ nguyên thuật ngữ kỹ thuật tiếng Anh');
   expect(workerCalls).toBe(0);
 });
 
@@ -119,13 +133,7 @@ for (const language of ['en', 'vi'])
       await page
         .getByRole('button', { name: language === 'vi' ? 'Giải thích' : 'Explain', exact: true })
         .click();
-      await expect(
-        page.getByText(
-          language === 'vi'
-            ? 'Đáp án phù hợp với điều kiện trong câu hỏi.'
-            : 'The correct answer follows from the stated conditions.'
-        )
-      ).toBeVisible();
+      await expect(page.getByText('Đáp án phù hợp với điều kiện trong câu hỏi.')).toBeVisible();
       await page
         .getByRole('button', {
           name: language === 'vi' ? 'Cài đặt AI' : 'AI Settings',
@@ -180,9 +188,7 @@ test('authenticated App AI round trip, cached viewing and explicit BYOK with no 
 }) => {
   await start(page, { uid: `browser-${randomUUID()}` });
   await explain(page);
-  await expect(
-    page.getByText('The correct answer follows from the stated conditions.')
-  ).toBeVisible();
+  await expect(page.getByText('Đáp án phù hợp với điều kiện trong câu hỏi.')).toBeVisible();
   await expect(page.getByText('4/5 App AI attempts left today')).toBeVisible();
   await page.getByRole('button', { name: 'Close', exact: true }).last().click();
   await explain(page);
@@ -196,6 +202,69 @@ test('authenticated App AI round trip, cached viewing and explicit BYOK with no 
   await clickAfterUiMotion(settings.getByRole('button', { name: 'Done', exact: true }));
   await explain(page);
   await expect(page.getByRole('dialog', { name: 'AI Settings', exact: true })).toBeVisible();
+});
+
+test('UI language changes preserve an in-flight Vietnamese attempt and its cached result', async ({
+  page,
+}, testInfo) => {
+  await start(page, { uid: `language-${randomUUID()}` });
+  let release, received;
+  const hold = new Promise((resolve) => {
+    release = resolve;
+  });
+  const ready = new Promise((resolve) => {
+    received = resolve;
+  });
+  const bodies = [];
+  await page.route('**/v1/explanations', async (route) => {
+    bodies.push(route.request().postDataJSON());
+    const response = await route.fetch();
+    received();
+    await hold;
+    await route.fulfill({ response });
+  });
+  await explain(page);
+  await ready;
+  // Practice explanations are inline, so the regular language toggle is reachable.
+  await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'vi');
+  release();
+  const result = page.locator('.explanation-panel .markdown-container[lang="vi"]');
+  await expect(result).toContainText('Đáp án phù hợp với điều kiện trong câu hỏi.');
+  await expect(result).toContainText('IAM, API, CloudTrail, Pub/Sub');
+  await page.getByRole('button', { name: 'English', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(result).toBeVisible();
+  await page.getByRole('button', { name: 'Close', exact: true }).last().click();
+  await explain(page);
+  await expect(page.getByText(/Saved explanation/)).toBeVisible();
+  await expect(page.getByText('4/5 App AI attempts left today')).toBeVisible();
+  expect(bodies).toHaveLength(1);
+  expect(bodies[0].language).toBe('vi');
+  await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
+  await expect(page.getByText(/Lời giải đã lưu/)).toBeVisible();
+  await expect(result).toContainText('IAM, API, CloudTrail, Pub/Sub');
+  await page.getByRole('button', { name: 'English', exact: true }).click();
+  await expect(page.getByText(/Saved explanation/)).toBeVisible();
+  expect(bodies).toHaveLength(1);
+  for (const theme of ['light', 'dark']) {
+    if ((await page.locator('html').getAttribute('data-theme')) !== theme)
+      await page.locator('.theme-toggle').click();
+    for (const { width, height } of viewportCases(testInfo.project.name)) {
+      await page.setViewportSize({ width, height });
+      await expect
+        .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
+        .toBe(true);
+    }
+    await page.setViewportSize({
+      width: testInfo.project.name === 'phone' ? 320 : 1280,
+      height: 900,
+    });
+    await result.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: testInfo.outputPath(`vietnamese-explanation-en-ui-${theme}.png`),
+    });
+  }
 });
 test('model failure retry reuses operation; regenerate is explicit and quota is truthful', async ({
   page,
@@ -221,9 +290,7 @@ test('quota states, themes and source controls fit phone/desktop/landscape', asy
   const uid = `layout-${randomUUID()}`;
   await start(page, { uid });
   await explain(page);
-  await expect(
-    page.getByText('The correct answer follows from the stated conditions.')
-  ).toBeVisible();
+  await expect(page.getByText('Đáp án phù hợp với điều kiện trong câu hỏi.')).toBeVisible();
   for (let i = 0; i < 4; i++) {
     await page.getByRole('button', { name: 'Regenerate', exact: true }).click();
     await expect(page.getByText(`${3 - i}/5 App AI attempts left today`)).toBeVisible();

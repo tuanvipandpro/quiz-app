@@ -59,7 +59,7 @@ test('JWT signature/claims/guest protection and disabled rollout reject before i
   assert.equal((await call(h, input())).status, 503);
   assert.equal(h.calls(), 0);
 });
-test('server validation, byte cap, model allowlist and VN/EN prompt', async (t) => {
+test('server validation, byte cap, model allowlist and Vietnamese output for legacy EN/VN requests', async (t) => {
   const observed = [];
   const h = await workerHarness({
     now: () => stamp,
@@ -83,8 +83,8 @@ test('server validation, byte cap, model allowlist and VN/EN prompt', async (t) 
   assert.equal(observed[0].model, AI_POLICY.model);
   assert.equal(observed[0].payload.max_tokens, 600);
   assert.equal(observed[0].payload.messages[0].role, 'system');
-  assert.match(observed[0].payload.messages[0].content, /Respond only in English/);
-  assert.match(observed[0].payload.messages[1].content, /Question and choices/);
+  assert.match(observed[0].payload.messages[0].content, /Chỉ trả lời bằng tiếng Việt/);
+  assert.match(observed[0].payload.messages[1].content, /Câu hỏi và các lựa chọn/);
   assert.match(observed[1].payload.messages[0].content, /tiếng Việt/);
 });
 test('all supported formats cross the real Worker and D1 boundary', async (t) => {
@@ -104,7 +104,8 @@ test('idempotent result, changed payload conflict and owner-scoped request IDs',
   const body = input();
   assert.equal((await call(h, body)).status, 200);
   assert.equal((await call(h, body)).data.cached, true);
-  assert.equal((await call(h, { ...body, language: 'vi' })).status, 409);
+  assert.equal((await call(h, { ...body, language: 'vi' })).data.cached, true);
+  assert.equal((await call(h, { ...body, question: { ...question, answer: ['B'] } })).status, 409);
   assert.equal((await call(h, body, { uid: 'bob' })).status, 200);
   assert.equal(h.calls(), 2);
   assert.equal((await call(h, null, { path: '/v1/usage' })).data.usage.remaining, 4);
