@@ -1,0 +1,68 @@
+name: Tracked change
+description: Track feature, bugfix, hotfix, refactor, minor, docs, chore or data work
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Create or reuse an issue before implementation. Agents must complete the assessment and verification plan before editing; reporters may mark information as needing investigation. Do not include credentials or private user data.
+        Follow the [tracking policy](https://github.com/tuanvipandpro/quiz-app/blob/master/docs/contributing.md#tracking-every-change). Keep the issue open until required CI passes, implementation PRs merge and any required rollout is verified.
+        For minor color/logo/display-copy work, brief answers and one or two acceptance criteria are enough. Record a focused local check plan; no separate proposal or evidence report is needed. Keep generated screenshots/logs in artifacts or a minimal PR attachment.
+  - type: dropdown
+    id: change_type
+    attributes:
+      label: Primary work type
+      description: Agents reassess the type and note secondary types as the scope becomes clear.
+      options:
+        - feature
+        - bugfix
+        - hotfix
+        - refactor
+        - minor
+        - docs
+        - chore
+        - data
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Problem or desired outcome
+      description: Explain current and expected behavior. For bugs/hotfixes, include reproduction steps, environment and impact. Mark unconfirmed causes as hypotheses.
+    validations:
+      required: true
+  - type: textarea
+    id: assessment
+    attributes:
+      label: Assessment and scope
+      description: Record low/medium/high risk with a reason, affected flows/owners, UI and data impact, exclusions, evidence/source revisions and remaining unknowns.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable completion conditions as checkboxes. Include relevant failure states and any deployment or external configuration that must be verified.
+      placeholder: '- [ ] Observable outcome and supporting evidence'
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Documentation and verification plan
+      description: Apply the type/risk matrix in docs/contributing.md. Minor work uses focused checks; prose/template changes do not need full local runtime tests. Identify relevant docs/tests/manual checks and explain N/A. Required CI still applies.
+    validations:
+      required: true
+  - type: textarea
+    id: delivery
+    attributes:
+      label: Delivery and status
+      description: Record rollout/rollback needs, then update with PR links, latest verified head, CI results, merged commits, smoke evidence and remaining gates. Close explicitly after verification; do not use automatic closing keywords.
+      value: |
+        Status: awaiting assessment
+        PRs: pending
+        Required CI: pending
+        Merge: pending
+        Rollout/configuration verification: assess applicability
+        Remaining work: assessment and implementation
+    validations:
+      required: true

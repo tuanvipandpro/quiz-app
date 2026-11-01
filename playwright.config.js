@@ -22,6 +22,8 @@ export default defineConfig({
     },
     {
       name: 'phone',
+      // Native animation-helper contracts do not depend on phone emulation.
+      testIgnore: '**/uiMotion.spec.js',
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 390, height: 844 },
