@@ -3,6 +3,9 @@ name: Frontend CI
 on:
   workflow_call:
     inputs:
+      release:
+        type: boolean
+        default: false
       profile:
         required: true
         type: string
@@ -26,7 +29,7 @@ jobs:
         env:
           VITE_APP_AI_URL: ${{ vars.VITE_APP_AI_URL }}
       - uses: actions/upload-artifact@v4
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && inputs.release
         with:
           name: site-build
           overwrite: true

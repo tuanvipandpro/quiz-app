@@ -10,6 +10,7 @@ import {
   createPlan,
   selectValidatedBase,
   lookupValidatedBase,
+  createReleasePlan,
 } from '../scripts/ci-plan.mjs';
 import { checkGate } from '../scripts/ci-gate.mjs';
 import { checkAgentBudget, checkLinks, headingIds } from '../scripts/check-docs.mjs';
@@ -141,6 +142,67 @@ test('real Git comparison covers every commit in a PR/push, not only the last do
       .profile,
     'full'
   );
+});
+
+test('release uses the complete current push, while CI can include older unvalidated runtime', (t) => {
+  const cwd = workspace(t);
+  const git = (...args) =>
+    execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+  const commit = () => {
+    git('add', '.');
+    git('-c', 'user.name=Test', '-c', 'user.email=test@example.test', 'commit', '-qm', 'fixture');
+    return git('rev-parse', 'HEAD');
+  };
+  git('init', '-q');
+  fs.writeFileSync(path.join(cwd, 'README.md'), '# First\n');
+  const base = commit();
+  fs.mkdirSync(path.join(cwd, 'worker'));
+  fs.writeFileSync(path.join(cwd, 'worker/index.js'), 'export const value=1;\n');
+  const runtime = commit();
+  fs.writeFileSync(path.join(cwd, 'README.md'), '# Later docs\n');
+  const head = commit();
+  const push = (before, after = head) => ({ ref: 'refs/heads/master', before, after });
+  const release = (event, eventName = 'push', revision = head) =>
+    createReleasePlan({ eventName, event, head: revision, cwd });
+  const ci = createPlan({ eventName: 'push', validatedBase: base, head, cwd });
+  assert.equal(ci.backend, true);
+  assert.equal(ci.profile, 'full');
+  assert.deepEqual(release(push(runtime)), {
+    releaseFrontend: false,
+    releaseBackend: false,
+    releaseValid: true,
+    releaseBaseline: runtime,
+  });
+  assert.deepEqual(release(push(base)), {
+    releaseFrontend: false,
+    releaseBackend: true,
+    releaseValid: true,
+    releaseBaseline: base,
+  });
+  const fallback = createPlan({ eventName: 'push', head, cwd });
+  assert.equal(fallback.frontend, true);
+  assert.equal(fallback.backend, true);
+  assert.equal(release(push(base)).releaseFrontend, false);
+  assert.equal(release(push(base)).releaseBackend, true);
+  assert.deepEqual(release(undefined, 'pull_request'), {
+    releaseFrontend: false,
+    releaseBackend: false,
+    releaseValid: true,
+  });
+  for (const event of [
+    undefined,
+    push(undefined),
+    push('0'.repeat(40)),
+    push('f'.repeat(40)),
+    push(base, base),
+    { ...push(base), ref: 'refs/heads/feature' },
+  ]) {
+    const value = release(event);
+    assert.equal(value.releaseValid, false);
+    assert.equal(value.releaseFrontend, false);
+    assert.equal(value.releaseBackend, false);
+  }
+  assert.equal(release(push(head, base), 'push', base).releaseValid, false);
 });
 
 const repository = 'tuanvipandpro/quiz-app';

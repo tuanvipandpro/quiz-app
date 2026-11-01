@@ -73,10 +73,13 @@ export function changesBetween(base, head, cwd = process.cwd()) {
   return changes;
 }
 
-// Modules imported by both the browser and the production Worker.
-const sharedFiles = new Set([
+// Runtime contracts imported by both the browser and the production Worker.
+const sharedRuntimeFiles = new Set([
   'src/utils/questionModel.js',
   'src/services/llm/explanationPrompt.js',
+]);
+const sharedFiles = new Set([
+  ...sharedRuntimeFiles,
   'tests/questionFormats.test.js',
   'tests/explanationPrompt.test.js',
   'tests/ciPlan.test.js',
@@ -114,6 +117,50 @@ export function classifyTargets(changes) {
     } else return both; // Dependencies, CI/toolchain, fixtures and unknown paths fail closed.
   }
   return { frontend, backend };
+}
+
+export function classifyReleases(changes) {
+  let frontend = false,
+    backend = false;
+  for (const change of changes) {
+    if (!regularChange(change)) throw new Error('Unverifiable release change.');
+    const { file } = change;
+    if (sharedRuntimeFiles.has(file) || ['package.json', 'yarn.lock'].includes(file)) {
+      frontend = true;
+      backend = true;
+    } else if (
+      file.startsWith('public/') ||
+      (file.startsWith('src/') && !/(?:^|\/)README\.md$/.test(file)) ||
+      ['index.html', 'vite.config.js'].includes(file)
+    )
+      frontend = true;
+    else if (/^worker\/(?:.+\.(?:[cm]?js|ts)|wrangler\.jsonc|migrations\/[^/]+\.sql)$/.test(file))
+      backend = true;
+    // Tests, workflow/check scripts, dev docs, Firebase and staging config do not publish an app.
+  }
+  return { frontend, backend };
+}
+
+export function createReleasePlan({ eventName, event, head, cwd }) {
+  const none = { releaseFrontend: false, releaseBackend: false };
+  if (eventName === 'pull_request') return { ...none, releaseValid: true };
+  try {
+    if (eventName !== 'push' || event?.ref !== 'refs/heads/master' || event.after !== head)
+      throw new Error('Not a verified master push.');
+    const releases = classifyReleases(changesBetween(event.before, head, cwd));
+    return {
+      releaseFrontend: releases.frontend,
+      releaseBackend: releases.backend,
+      releaseValid: true,
+      releaseBaseline: event.before,
+    };
+  } catch {
+    return {
+      ...none,
+      releaseValid: false,
+      releaseReason: 'Cannot verify the master push diff; release gate blocked.',
+    };
+  }
 }
 
 export function selectValidatedBase(data, repository) {
@@ -180,17 +227,26 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     repository: process.env.GITHUB_REPOSITORY,
     token: process.env.GH_TOKEN,
   });
-  const plan = createPlan({ eventName: process.env.GITHUB_EVENT_NAME, validatedBase, head });
+  let event;
+  try {
+    event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+  } catch {
+    /* Gate blocks unverifiable push evidence. */
+  }
+  const plan = {
+    ...createPlan({ eventName: process.env.GITHUB_EVENT_NAME, validatedBase, head }),
+    ...createReleasePlan({ eventName: process.env.GITHUB_EVENT_NAME, event, head }),
+  };
   const shards = plan.profile === 'full' ? [1, 2] : [1];
   if (process.env.GITHUB_OUTPUT)
     fs.appendFileSync(
       process.env.GITHUB_OUTPUT,
-      `profile=${plan.profile}\nfrontend=${plan.frontend}\nbackend=${plan.backend}\nshards=${JSON.stringify(shards)}\n`
+      `profile=${plan.profile}\nfrontend=${plan.frontend}\nbackend=${plan.backend}\nshards=${JSON.stringify(shards)}\nrelease-frontend=${plan.releaseFrontend}\nrelease-backend=${plan.releaseBackend}\nrelease-valid=${plan.releaseValid}\n`
     );
   if (process.env.GITHUB_STEP_SUMMARY)
     fs.appendFileSync(
       process.env.GITHUB_STEP_SUMMARY,
-      `CI profile: **${plan.profile}**, frontend: **${plan.frontend}**, backend: **${plan.backend}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files since successful master ${plan.baseline}.`}\n`
+      `CI profile: **${plan.profile}**, frontend: **${plan.frontend}**, backend: **${plan.backend}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files since successful master ${plan.baseline}.`}\n\nRelease: frontend **${plan.releaseFrontend}**, backend **${plan.releaseBackend}**, valid **${plan.releaseValid}**. ${plan.releaseReason || (plan.releaseBaseline ? `Push baseline: ${plan.releaseBaseline}.` : 'PR does not release.')}\n`
     );
   console.log(JSON.stringify({ ...plan, shards }));
 }
