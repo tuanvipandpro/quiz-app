@@ -4,11 +4,11 @@ Worker phục vụ `GET /v1/usage` và `POST /v1/explanations`. Mọi request c�
 
 ## Tài nguyên production hiện tại
 
-- Worker `quiz-app-ai`: `https://quiz-app-ai.tuanvipandpro.workers.dev`, đã deploy với `APP_AI_ENABLED=false`.
+- Worker `quiz-app-ai`: `https://quiz-app-ai.tuanvipandpro.workers.dev`, đã bật `APP_AI_ENABLED=true` ngày 2026-11-01, version `d46400b0-f4c8-496e-b808-94786c297b8c`.
 - D1 `quiz-app-ai`: `2be26a7b-7393-4f50-a857-990d8a1a7d29`, APAC; migrations `0001_ai_requests.sql` và `0002_increase_personal_quota.sql` đã áp dụng. Account ID và binding được lưu trong `wrangler.jsonc`; không tạo database này lần nữa.
-- GitHub repository variable `VITE_APP_AI_URL` chưa được đặt. Chỉ đặt URL production sau khi các bước xác minh và bật Worker bên dưới hoàn tất, rồi build lại website.
+- GitHub Actions repository **Variable** `VITE_APP_AI_URL=https://quiz-app-ai.tuanvipandpro.workers.dev` đã được đặt và website đã build/deploy lại. Đây là public URL, không phải Secret; website chỉ nhận thay đổi biến này sau khi build lại.
 - Không cần provider API key, Firebase service-account secret hay Cloudflare API token trong GitHub Actions cho luồng hiện tại. Worker dùng AI/D1 bindings; deploy thủ công dùng phiên Wrangler OAuth trong keyring. Workflow GitHub chỉ build và publish website.
-- #53 và OpenSpec task 3.2 vẫn mở cho kiểm tra chất lượng/CPU bổ sung và smoke test đăng nhập. Việc cấp phát tài nguyên chưa đồng nghĩa App AI đã hoạt động trên website.
+- Chrome production smoke đã thành công bằng phiên đăng nhập được user chỉ định: lời giải tiếng Việt bốn phần, quota 19→18; đổi VN/EN giữ kết quả và quota. #53 và OpenSpec task 3.2 vẫn mở cho review chất lượng rộng hơn/CPU biên và hoàn tất PR cấu hình. Xem [rollout evidence](../openspec/changes/app-ai-worker/rollout.md#production-activation--2026-11-01).
 
 ## Local verification
 
@@ -28,7 +28,7 @@ Khi làm việc qua remote, dùng `yarn wrangler login --device --browser=false`
 
 ## Môi trường thử riêng
 
-`wrangler.staging.jsonc` dành cho Worker và D1 `quiz-app-ai-staging`, chỉ cho phép origins local 5173 và 5177. Account đã được xác minh Workers Free trên Dashboard; staging được bật riêng để smoke test bằng tài khoản user chỉ định. Không dùng database production cho benchmark. Giữ production disabled cho đến khi kết quả quality/CPU/usage và smoke auth được review. Model catalog có sẵn và `default_usage_model=standard` không phải bằng chứng account đang dùng Free.
+`wrangler.staging.jsonc` dành cho Worker và D1 `quiz-app-ai-staging`, chỉ cho phép origins local 5173 và 5177. Account đã được xác minh Workers Free trên Dashboard; staging được bật riêng để smoke test bằng tài khoản user chỉ định. Không dùng database production cho benchmark. Khi cấp phát môi trường mới, giữ disabled cho đến khi review quality/CPU/usage và smoke auth; trạng thái production hiện tại nằm ở mục tài nguyên phía trên. Model catalog có sẵn và `default_usage_model=standard` không phải bằng chứng account đang dùng Free.
 
 ## Chạy nhiều session song song
 
@@ -49,6 +49,6 @@ Migration `0002_increase_personal_quota.sql` chỉ thay trigger giới hạn cá
 
 ## Rollback và trạng thái
 
-Disable `APP_AI_ENABLED` hoặc gỡ frontend API URL để trở về BYOK có thông báo. Không xóa D1 dữ liệu để rollback. #53 còn pending production rollout; xem `openspec/changes/app-ai-worker/rollout.md` để biết bằng chứng live và giới hạn đánh giá. #42 và #52 không bị đóng bởi feature này.
+Đổi `APP_AI_ENABLED=false` trong config rồi deploy lại để chặn inference ngay ở backend; hoặc gỡ Actions Variable `VITE_APP_AI_URL` và build/deploy lại website để App AI unavailable. User vẫn có thể chủ động chọn BYOK, không tự chuyển nguồn. Không xóa D1 dữ liệu để rollback. #53 còn mở cho acceptance/PR cấu hình; xem [rollout evidence](../openspec/changes/app-ai-worker/rollout.md) để biết bằng chứng live và giới hạn đánh giá. #42 và #52 không bị đóng bởi feature này.
 
 Nguồn đối chiếu: [Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/), [Workers limits](https://developers.cloudflare.com/workers/platform/limits/), [Firebase token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
