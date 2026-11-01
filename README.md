@@ -149,7 +149,7 @@ AIP-C01's reviewed fingerprint matches its 136-question bank. Existing guide war
 
 ## Delivery
 
-Every change starts with assessment and a GitHub tracking issue before implementation, including documentation, tests, data and configuration work. Reuse a matching open issue or create one with the [tracked-change form](https://github.com/tuanvipandpro/quiz-app/issues/new/choose). Follow [the tracking policy and work-type matrix](AGENTS.md#tracking-every-change) to choose proportional documentation and tests for feature, bugfix, hotfix, refactor, docs, chore and data changes.
+Every change starts with assessment and a GitHub tracking issue before implementation, including documentation, tests, data and configuration work. Reuse a matching open issue or create one with the [tracked-change form](https://github.com/tuanvipandpro/quiz-app/issues/new/choose). Follow [the tracking policy and work-type matrix](AGENTS.md#tracking-every-change) for feature, bugfix, hotfix, refactor, minor, docs, chore and data changes. Isolated color/logo/display-copy changes can use the [minor check plan](AGENTS.md#minor-changes-and-verification-effort): brief issue/PR, applicable formatting/lint/build and focused visual/smoke checks. Documentation and policy/template-only changes need content/link/format/config checks rather than full local runtime verification. Required CI remains separate and currently runs its full job for every PR.
 
 Link the issue and PR in both directions using `Tracking issue: #N` / `Refs #N`. Keep the issue open through implementation, CI and merge. Close as completed only after acceptance evidence, passing required CI on the latest head, merged PRs and any required post-merge deployment/configuration checks are recorded. Use explicit closure after verification instead of automatic closing keywords; see [the delivery lifecycle](AGENTS.md#implement-verify-merge-then-close).
 
@@ -168,3 +168,5 @@ Before testing Google sign-in on the new origin, add `quizmos.runs-at.dev` to Fi
 - Keep PR acceptance criteria mapped to evidence and mark partial work explicitly. Issue templates and the PR template capture this information.
 
 Local `.vite/`, `dist/`, `artifacts/` and test reports are disposable outputs. Keep useful test logic in `tests/`, not in copied app files under a cache directory.
+
+Use the issue/PR for task reasoning and results. Keep generated screenshots/logs/traces in ignored local folders or CI artifacts, following the [evidence budget](AGENTS.md#documentation-and-evidence-budget). Commit only maintained documentation, source assets, or fixtures/baselines with an ongoing purpose; routine task evidence does not need its own repo report.
