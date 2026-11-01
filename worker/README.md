@@ -12,7 +12,17 @@ Worker phục vụ `GET /v1/usage` và `POST /v1/explanations`. Mọi request c�
 
 ## Local verification
 
-`yarn test:worker` dùng Miniflare D1 thật, signed RSA JWT fixtures và inference stub. `yarn test:e2e` mở API test loopback 5176 cùng Vite 5174; endpoint `/__test/*` chỉ nằm trong fixture Node, không thuộc Worker. `yarn worker:check` bundle dry-run. CI chạy ba nhóm checks trước publish website; không tự deploy Worker.
+`yarn test:worker` dùng Miniflare D1 thật, signed RSA JWT fixtures và inference stub. `yarn test:e2e` mở API test loopback 5176 cùng Vite 5174; endpoint `/__test/*` chỉ nằm trong fixture Node, không thuộc Worker. `yarn worker:check` bundle dry-run. Backend có workflow CI/CD riêng, được `.github/workflows/test.yml` gọi sau component routing; Worker-only không chạy build/browser frontend.
+
+## GitHub Actions backend CD
+
+Sau push/merge vào `master`, nếu plan chọn backend và required gate `test-and-build` pass, workflow `deploy-backend.yml` tải bundle `worker-build` đã kiểm tra trong cùng run rồi deploy bằng Wrangler `--no-bundle`. PR chỉ lint/contract/auth/D1 tests/dry-run, không nhận deployment token và không gọi AI thật. Workflow dùng pinned Wrangler từ lockfile, không cài CLI mới lúc release.
+
+Tạo custom Cloudflare API token tên `quizmos-github-deploy`, scope riêng account production, với các quyền Account: **Workers Scripts / Edit**, **Workers AI / Read**, **Account Settings / Read**, **D1 / Read**. Worker hiện chỉ dùng workers.dev nên không cần Zone permissions. Lưu token trực tiếp vào repository Actions **Secret** `CLOUDFLARE_API_TOKEN`; không dùng Actions Variable, `VITE_*`, source/env file được commit hoặc gửi giá trị qua issue/chat. Account ID public đã được track trong Wrangler config; không cần thêm account ID secret. Hướng dẫn Cloudflare: [GitHub Actions authentication](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/).
+
+CD kiểm tra có credential trước khi deploy. `scripts/check-worker-migrations.mjs` chỉ SELECT tên trong `d1_migrations`, đối chiếu các SQL files của revision, không đọc request ledger hoặc tự apply SQL. Thiếu/khác migrations, API lỗi hay evidence không hợp lệ đều chặn release. Khi có migration mới, review và áp dụng riêng theo quy trình rollout được owner cho phép trước khi chạy lại CD; không cấp D1 Edit chỉ để CI tự migrate.
+
+Frontend deploy tách riêng và không nhận Cloudflare secret. CI/workflow/dependency changes chọn cả hai component; thay prompt hoặc `questionModel.js` cũng kiểm tra/release cả hai để giữ contract đồng bộ. Không thay Firebase Rules, Workers Free hoặc model/quota trong việc setup CI/CD.
 
 ## Setup cần người dùng thực hiện
 

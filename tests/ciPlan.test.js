@@ -222,7 +222,8 @@ for (const kind of ['docs', 'assets']) {
     fs.writeFileSync(path.join(cwd, 'README.md'), '# First\n');
     fs.writeFileSync(path.join(cwd, 'public/quizmos.svg'), '<svg/>\n');
     const validatedBase = commit();
-    fs.writeFileSync(path.join(cwd, 'runtime.js'), 'export const broken = true;\n');
+    fs.mkdirSync(path.join(cwd, 'worker'));
+    fs.writeFileSync(path.join(cwd, 'worker/index.js'), 'export const broken = true;\n');
     const uncheckedHead = commit();
     fs.writeFileSync(
       path.join(cwd, kind === 'docs' ? 'README.md' : 'public/quizmos.svg'),
@@ -231,20 +232,23 @@ for (const kind of ['docs', 'assets']) {
     const head = commit();
     for (const eventName of ['push', 'pull_request']) {
       const event = { before: uncheckedHead, pull_request: { base: { sha: uncheckedHead } } };
-      assert.equal(createPlan({ eventName, event, validatedBase, head, cwd }).profile, 'full');
+      const plan = createPlan({ eventName, event, validatedBase, head, cwd });
+      assert.equal(plan.profile, 'full');
+      assert.equal(plan.backend, true);
+      assert.equal(plan.frontend, kind === 'assets');
     }
   });
 }
 
 const resultsFor = (profile) =>
   Object.fromEntries(
-    ['plan', 'docs', 'verify', 'rules', 'e2e'].map((job) => [
+    ['plan', 'docs', 'frontend', 'backend'].map((job) => [
       job,
       {
         result:
           ['plan', 'docs'].includes(job) ||
           profile === 'full' ||
-          (profile === 'assets' && job !== 'rules')
+          (profile === 'assets' && job === 'frontend')
             ? 'success'
             : 'skipped',
       },

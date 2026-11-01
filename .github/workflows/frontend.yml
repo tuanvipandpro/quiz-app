@@ -1,0 +1,103 @@
+name: Frontend CI
+
+on:
+  workflow_call:
+    inputs:
+      profile:
+        required: true
+        type: string
+      shards:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      VITE_BASE: /
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: yarn verify
+        env:
+          VITE_APP_AI_URL: ${{ vars.VITE_APP_AI_URL }}
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: site-build
+          overwrite: true
+          path: dist/
+          retention-days: 1
+          if-no-files-found: error
+
+  rules:
+    if: inputs.profile == 'full'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: yarn test:rules
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: rules-failure-details
+          path: |
+            firebase-debug.log
+            firestore-debug.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(inputs.shards) }}
+    env:
+      CI_PROFILE: ${{ inputs.profile }}
+      SHARD_INDEX: ${{ matrix.shard }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: yarn playwright install --with-deps chromium
+      - name: Run selected browser checks
+        run: |
+          if [ "$CI_PROFILE" = "assets" ]; then
+            yarn test:e2e --grep @smoke
+          else
+            yarn test:e2e --shard="$SHARD_INDEX/2"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-failure-details-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  frontend-check:
+    needs: [verify, rules, e2e]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/ci-gate.mjs frontend
+        env:
+          CI_PROFILE: ${{ inputs.profile }}
+          CI_RESULTS: ${{ toJSON(needs) }}

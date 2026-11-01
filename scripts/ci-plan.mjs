@@ -13,25 +13,30 @@ const imageAssets = new Set([
   'public/providers/istqb.png',
 ]);
 export const isDocumentation = (file) =>
-  ['AGENTS.md', 'README.md', '.github/PULL_REQUEST_TEMPLATE.md'].includes(file) ||
+  ['AGENTS.md', 'README.md', 'worker/README.md', '.github/PULL_REQUEST_TEMPLATE.md'].includes(
+    file
+  ) ||
   /^docs\/[^\n\r]+\.md$/.test(file) ||
   /^\.github\/ISSUE_TEMPLATE\/[^/]+\.(?:md|ya?ml)$/.test(file);
+
+function regularChange({ file, status, before, after }) {
+  return (
+    Boolean(file) &&
+    !file.startsWith('/') &&
+    !file.includes('\\') &&
+    !file.split('/').some((part) => part === '..' || part === '.') &&
+    ['A', 'M', 'D'].includes(status) &&
+    (status === 'A' || before === '100644') &&
+    (status === 'D' || after === '100644')
+  );
+}
 
 export function classifyChanges(changes) {
   if (!changes.length) return 'full';
   let assets = false;
   for (const change of changes) {
-    const { file, status, before, after } = change;
-    if (
-      !file ||
-      file.startsWith('/') ||
-      file.includes('\\') ||
-      file.split('/').some((part) => part === '..' || part === '.') ||
-      !['A', 'M', 'D'].includes(status) ||
-      (status !== 'A' && before !== '100644') ||
-      (status !== 'D' && after !== '100644')
-    )
-      return 'full';
+    const { file, status } = change;
+    if (!regularChange(change)) return 'full';
     if (isDocumentation(file)) continue;
     if (status === 'M' && imageAssets.has(file)) assets = true;
     else return 'full';
@@ -66,6 +71,49 @@ export function changesBetween(base, head, cwd = process.cwd()) {
     changes.push({ status, file, before: previous.get(file), after: current.get(file) });
   }
   return changes;
+}
+
+// Modules imported by both the browser and the production Worker.
+const sharedFiles = new Set([
+  'src/utils/questionModel.js',
+  'src/services/llm/explanationPrompt.js',
+  'tests/questionFormats.test.js',
+  'tests/explanationPrompt.test.js',
+  'tests/ciPlan.test.js',
+  'tests/ciComponents.test.js',
+]);
+
+export function classifyTargets(changes) {
+  const both = { frontend: true, backend: true };
+  if (!changes.length) return both;
+  let frontend = false,
+    backend = false;
+  for (const change of changes) {
+    const { file } = change;
+    if (!regularChange(change)) return both;
+    if (isDocumentation(file)) continue;
+    if (sharedFiles.has(file)) return both;
+    if (
+      file.startsWith('worker/') ||
+      file.startsWith('tests/worker/') ||
+      /^scripts\/check-worker(?:-migrations)?\.mjs$/.test(file)
+    ) {
+      backend = true;
+    } else if (
+      /^(src\/|public\/|firebase\/|tests\/e2e\/|tests\/firestore\/)/.test(file) ||
+      (/^tests\/[^/]+\.test\.js$/.test(file) && file !== 'tests/ciPlan.test.js') ||
+      [
+        'index.html',
+        'vite.config.js',
+        'playwright.config.js',
+        'firebase.json',
+        'firebase.emulator.json',
+      ].includes(file)
+    ) {
+      frontend = true;
+    } else return both; // Dependencies, CI/toolchain, fixtures and unknown paths fail closed.
+  }
+  return { frontend, backend };
 }
 
 export function selectValidatedBase(data, repository) {
@@ -110,6 +158,7 @@ export function createPlan({ eventName, validatedBase, head, cwd }) {
     const changes = changesBetween(validatedBase, head, cwd);
     return {
       profile: classifyChanges(changes),
+      ...classifyTargets(changes),
       head,
       baseline: validatedBase,
       changedFiles: changes.length,
@@ -117,6 +166,8 @@ export function createPlan({ eventName, validatedBase, head, cwd }) {
   } catch {
     return {
       profile: 'full',
+      frontend: true,
+      backend: true,
       head,
       reason: 'No trusted successful master ancestor available; full validation required.',
     };
@@ -134,12 +185,12 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   if (process.env.GITHUB_OUTPUT)
     fs.appendFileSync(
       process.env.GITHUB_OUTPUT,
-      `profile=${plan.profile}\nshards=${JSON.stringify(shards)}\n`
+      `profile=${plan.profile}\nfrontend=${plan.frontend}\nbackend=${plan.backend}\nshards=${JSON.stringify(shards)}\n`
     );
   if (process.env.GITHUB_STEP_SUMMARY)
     fs.appendFileSync(
       process.env.GITHUB_STEP_SUMMARY,
-      `CI profile: **${plan.profile}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files since successful master ${plan.baseline}.`}\n`
+      `CI profile: **${plan.profile}**, frontend: **${plan.frontend}**, backend: **${plan.backend}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files since successful master ${plan.baseline}.`}\n`
     );
   console.log(JSON.stringify({ ...plan, shards }));
 }

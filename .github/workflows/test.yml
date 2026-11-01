@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: quiz-app-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   plan:
@@ -23,6 +23,8 @@ jobs:
     outputs:
       profile: ${{ steps.plan.outputs.profile }}
       shards: ${{ steps.plan.outputs.shards }}
+      frontend: ${{ steps.plan.outputs.frontend }}
+      backend: ${{ steps.plan.outputs.backend }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +32,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - run: node --test tests/ciPlan.test.js
+      - run: node --test tests/ciPlan.test.js tests/ciComponents.test.js
       - id: plan
         run: node scripts/ci-plan.mjs
         env:
@@ -47,91 +49,23 @@ jobs:
       - run: npm install --global prettier@3.6.2
       - run: node scripts/check-docs.mjs
 
-  verify:
+  frontend:
     needs: plan
-    if: needs.plan.outputs.profile != 'docs'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      VITE_BASE: /
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: yarn verify
-        env:
-          VITE_APP_AI_URL: ${{ vars.VITE_APP_AI_URL }}
-      - run: yarn test:worker
-        if: needs.plan.outputs.profile == 'full'
-      - run: yarn worker:check
-        if: needs.plan.outputs.profile == 'full'
-      - uses: actions/upload-artifact@v4
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        with:
-          name: site-build
-          path: dist/
-          retention-days: 1
-          if-no-files-found: error
+    if: needs.plan.outputs.frontend == 'true'
+    uses: ./.github/workflows/frontend.yml
+    with:
+      profile: ${{ needs.plan.outputs.profile }}
+      shards: ${{ needs.plan.outputs.shards }}
 
-  rules:
+  backend:
     needs: plan
-    if: needs.plan.outputs.profile == 'full'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-      - run: yarn test:rules
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: rules-failure-details
-          path: |
-            firebase-debug.log
-            firestore-debug.log
-          retention-days: 7
-          if-no-files-found: ignore
-
-  e2e:
-    needs: plan
-    if: needs.plan.outputs.profile != 'docs'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: ${{ fromJSON(needs.plan.outputs.shards || '[1]') }}
-    env:
-      CI_PROFILE: ${{ needs.plan.outputs.profile }}
-      SHARD_INDEX: ${{ matrix.shard }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: yarn playwright install --with-deps chromium
-      - name: Run selected browser checks
-        run: |
-          if [ "$CI_PROFILE" = "assets" ]; then
-            yarn test:e2e --grep @smoke
-          else
-            yarn test:e2e --shard="$SHARD_INDEX/2"
-          fi
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: e2e-failure-details-${{ matrix.shard }}
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 7
-          if-no-files-found: ignore
+    if: needs.plan.outputs.backend == 'true'
+    uses: ./.github/workflows/backend.yml
 
   # Preserve the existing required-check name. Missing, failed or cancelled
   # prerequisites must fail this gate, including when a dependency was skipped.
   test-and-build:
-    needs: [plan, docs, verify, rules, e2e]
+    needs: [plan, docs, frontend, backend]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -144,26 +78,22 @@ jobs:
         env:
           CI_PROFILE: ${{ needs.plan.outputs.profile }}
           CI_RESULTS: ${{ toJSON(needs) }}
+          CI_FRONTEND: ${{ needs.plan.outputs.frontend }}
+          CI_BACKEND: ${{ needs.plan.outputs.backend }}
 
-  deploy:
-    needs: [plan, verify, test-and-build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.plan.outputs.profile != 'docs'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+  deploy-frontend:
+    needs: [plan, test-and-build, deploy-backend]
+    if: >-
+      always() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+      && needs.test-and-build.result == 'success' && needs.plan.outputs.frontend == 'true'
+      && (needs.plan.outputs.backend == 'false' || needs.deploy-backend.result == 'success')
     permissions:
       contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v4
-        with:
-          name: site-build
-          path: dist/
-      - name: Publish verified build
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
-          yarn deploy
+    uses: ./.github/workflows/deploy-frontend.yml
+
+  deploy-backend:
+    needs: [plan, test-and-build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.plan.outputs.backend == 'true'
+    uses: ./.github/workflows/deploy-backend.yml
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
