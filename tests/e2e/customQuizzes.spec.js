@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
 import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
 import { contrastRatio } from './uiContrast.js';
+import { viewportCases } from './viewports.js';
 
 const sample = (type = 'single') =>
   fileURLToPath(new URL(`../../public/examples/quiz-${type}.json`, import.meta.url));
@@ -381,14 +382,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
       if ((await page.locator('html').getAttribute('data-theme')) !== theme)
         await page.locator('.theme-toggle').click();
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-      for (const [width, height] of [
-        [320, 844],
-        [390, 844],
-        [412, 915],
-        [768, 1024],
-        [1280, 900],
-        [844, 390],
-      ]) {
+      for (const { width, height } of viewportCases(testInfo.project.name)) {
         await page.setViewportSize({ width, height });
         const reload = await page
           .getByRole('button', {
@@ -417,8 +411,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
         const cardContrast = await contrastRatio(deleteAction);
         expect(cardContrast).toBeGreaterThanOrEqual(4.5);
         contrastEvidence.push({ language, theme, width, cardContrast });
-        const capture =
-          testInfo.project.name === 'desktop' && captures.has(`${language}-${theme}-${width}`);
+        const capture = captures.has(`${language}-${theme}-${width}`);
         if (capture) {
           await page
             .getByRole('heading', {

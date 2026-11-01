@@ -6,7 +6,7 @@ React 19, Vite, Ant Design; Node 24 LTS and Yarn 1.22.22 with tracked `yarn.lock
 
 - Assess the request and reuse/create a GitHub issue **before implementation**, including docs/tests/config/data changes. Read-only investigation may precede tracking. Routine issue creation/updates are authorized by a change request; if tracking is unavailable, retain a draft and report the blocker before editing.
 - Classify purpose and risk: `feature`, `bugfix`, `hotfix`, `refactor`, `minor`, `docs`, `chore`, `data`. Minor means isolated presentation changes preserving behavior and meaning; broad or higher-risk work needs broader checks.
-- Keep minor issue/PR descriptions brief. Docs/policy/templates use format/link/config checks; minor UI uses applicable lint/build and focused visual checks. Other implementation changes use `yarn verify` and relevant regressions. Repeat checks only for changes, failures or unresolved concerns. Current CI still runs its full required gates for every PR.
+- Keep minor issue/PR descriptions brief. Docs/policy/templates use format/link/config checks; minor UI uses applicable lint/build and focused visual checks. Other implementation changes use `yarn verify` and relevant regressions. Repeat checks only for changes, failures or unresolved concerns. CI selects docs/assets/full from the diff; labels never bypass checks.
 - Use a descriptive `codex/` branch, reference the issue in commits and PR, and link the PR back to the issue. Use `Refs #N`, not automatic closing keywords. Keep acceptance evidence, status and remaining work in the issue/PR.
 - Wait for required CI on the latest head. Merge only when requested. Close the issue only after accepted scope is verified, required PRs are merged, and required post-merge CI/rollout checks pass. Keep partial/unverified work open; cancellation is not implementation.
 
@@ -29,4 +29,4 @@ Read only applicable sections; do not load the whole contributor guide for every
 - Features/specs: [OpenSpec rules](docs/contributing.md#spec-driven-work) and the relevant proposal/design/spec/tasks; use pinned `yarn sdd`, not a global CLI.
 - Firebase Rules/indexes or cloud rollout: [release procedure](firebase/README.md). Evidence retention questions: [evidence budget](docs/contributing.md#documentation-and-evidence-budget).
 
-Keep this entry point under roughly 600 words / 6 KiB. Maintain detailed rules in the linked guide; keep task history in issues/PRs.
+Keep this entry point within 600 words / 6 KiB (checked in CI). Maintain detailed rules in the linked guide; keep task history in issues/PRs.

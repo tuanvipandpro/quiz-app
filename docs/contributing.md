@@ -32,7 +32,17 @@ Choose a primary type and note secondary types when useful. Record risk as low, 
 - For documentation or policy/template-only work with no executable behavior change, check changed-file formatting, links/facts and relevant configuration syntax. A `chore` that only edits policy/templates can use this plan. Do not run the runtime build, unit suite, browser suite or emulators locally just for prose/template changes.
 - For runtime features, bugfixes, refactors, data or executable tooling changes, use `yarn verify` plus the relevant checks below. Higher risk (auth, permissions, persisted data, migrations, external services or deployment) requires corresponding failure, compatibility and rollout evidence. A configuration-only production task still needs an issue and a PR containing reviewable configuration or concise rollout documentation.
 - Run the planned local checks once per relevant change. Repeat or broaden them only for a changed implementation, a failure or a specific unresolved concern. A green unchanged head does not need additional full-suite runs for reassurance.
-- Required CI checks still have to pass. The current workflow runs the full CI job for every PR; work-type fields do not change CI routing. The focused plans above reduce agent implementation/local-test overhead. CI routing optimization requires a separately reviewed workflow change; do not claim a faster CI lane or bypass gates by selecting `minor`.
+- Required CI checks still have to pass. CI selects a verification profile from changed paths and file modes, independently of issue/PR labels. An agent classifying work as `minor` does not itself select lighter CI.
+
+### CI profiles
+
+- `docs`: only development Markdown or issue/PR templates. Validate documentation links/anchors, formatting/YAML syntax, the AGENTS size budget and CI policy tests. Runtime checks and deployment are skipped.
+- `assets`: only modifications of existing allowlisted logo/provider images, optionally with docs. Run documentation checks, `yarn verify` and eight tagged browser smoke cases; Rules/emulators are skipped. Added/deleted images, CSS/JS/copy changes and other runtime files use `full`.
+- `full`: all other changes, including published study content, dependencies, workflow/test code, unknown paths, mode changes, symlinks or unavailable comparison refs. Run docs, `yarn verify`, Rules and the complete browser suite. PRs compare the base with the tested checkout; pushes compare the event's before commit with the tested checkout, covering every commit in the push.
+- Keep the required-check name `test-and-build`: it always evaluates the plan and job outcomes, rejecting missing, failed, cancelled or unexpectedly skipped checks. Independent jobs run concurrently; the full browser suite is split into two disjoint shards, with two workers per runner. Cache Yarn downloads by lockfile, not installed `node_modules`.
+- Responsive tests assign 320/390/412px and phone landscape to the touch project, 768/1280px to desktop. Required dimensions and language/theme states remain covered; native animation-helper contracts run once on desktop. Product regressions still run in both projects. No assertion thresholds, retries or fixture boundaries are relaxed.
+- Docs-only pushes do not deploy. Runtime pushes validate the merged content and deploy the same run's build only after the aggregate gate passes. Cross-run PR artifact reuse is not implemented. Failure reports remain CI artifacts for seven days; site builds expire after one day.
+- Batch a coherent change and its local verification before pushing; avoid pushing each intermediate prose edit or rerunning green unchanged commits without a specific reason.
 
 ### Documentation and evidence budget
 

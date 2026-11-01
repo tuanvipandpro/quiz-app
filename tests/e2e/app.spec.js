@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
 import { contrastRatio } from './uiContrast.js';
+import { accountCases, viewportCases } from './viewports.js';
 
 const example = (name) =>
   fileURLToPath(new URL(`../../public/examples/quiz-${name}.json`, import.meta.url));
@@ -59,14 +60,7 @@ for (const reducedMotion of ['no-preference', 'reduce']) {
     const profile = page.getByRole('button', { name: accountName, exact: true });
     await expect(profile).toBeVisible();
 
-    for (const [width, height, language, theme] of [
-      [320, 844, 'vi', 'dark'],
-      [390, 844, 'en', 'light'],
-      [412, 915, 'en', 'dark'],
-      [768, 1024, 'vi', 'light'],
-      [1280, 900, 'en', 'light'],
-      [844, 390, 'vi', 'dark'],
-    ]) {
+    for (const { width, height, language, theme } of accountCases(testInfo.project.name)) {
       await page.setViewportSize({ width, height });
       await page
         .getByRole('button', { name: language === 'en' ? 'English' : 'Tiếng Việt', exact: true })
@@ -280,102 +274,125 @@ test('account menu names remain meaningful when profile metadata is missing', as
   await expect(nextMenu.getByRole('menuitem', { name: 'Tài khoản', exact: true })).toHaveCount(0);
 });
 
-test('QuizMos branding loads under the configured base and keeps navigation accessible', async ({
-  page,
-}) => {
-  await page.goto('./');
-  await expect(page).toHaveTitle('Quiz Bank · QuizMos');
-  const brand = page.getByRole('button', { name: 'QuizMos', exact: true });
-  const logo = brand.locator('img');
-  await expect(logo).toHaveAttribute('alt', '');
-  await expect.poll(() => logo.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
-  const favicon = page.locator('link[rel="icon"]');
-  await expect(favicon).toHaveAttribute('href', '/quiz-app/quizmos.svg');
-  const iconResponse = await page.request.get(await favicon.getAttribute('href'));
-  expect(iconResponse.ok()).toBe(true);
-  expect(iconResponse.headers()['content-type']).toContain('image/svg+xml');
-  await expect(page.locator('.app-footer')).toContainText('QuizMos ·');
+test(
+  'QuizMos branding loads under the configured base and keeps navigation accessible',
+  { tag: '@smoke' },
+  async ({ page }, testInfo) => {
+    await page.goto('./');
+    await expect(page).toHaveTitle('Quiz Bank · QuizMos');
+    const brand = page.getByRole('button', { name: 'QuizMos', exact: true });
+    const logo = brand.locator('img');
+    await expect(logo).toHaveAttribute('alt', '');
+    await expect.poll(() => logo.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
+    const favicon = page.locator('link[rel="icon"]');
+    await expect(favicon).toHaveAttribute('href', '/quiz-app/quizmos.svg');
+    const iconResponse = await page.request.get(await favicon.getAttribute('href'));
+    expect(iconResponse.ok()).toBe(true);
+    expect(iconResponse.headers()['content-type']).toContain('image/svg+xml');
+    await expect(page.locator('.app-footer')).toContainText('QuizMos ·');
 
-  for (const width of [320, 390, 412, 768, 1280]) {
-    await page.setViewportSize({ width, height: 844 });
-    await expect(brand).toHaveAccessibleName('QuizMos');
-    const bounds = await brand.boundingBox();
-    expect(bounds.width).toBeGreaterThanOrEqual(44);
-    expect(bounds.height).toBeGreaterThanOrEqual(44);
+    for (const { width, height } of viewportCases(testInfo.project.name)) {
+      await page.setViewportSize({ width, height });
+      await expect(brand).toHaveAccessibleName('QuizMos');
+      const bounds = await brand.boundingBox();
+      expect(bounds.width).toBeGreaterThanOrEqual(44);
+      expect(bounds.height).toBeGreaterThanOrEqual(44);
+    }
+    await page.setViewportSize(testInfo.project.use.viewport);
+
+    const signIn = page.getByRole('button', { name: 'Sign in', exact: true });
+    await signIn.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.locator('.sign-in-brand strong')).toHaveText('QuizMos');
+    await expect
+      .poll(() => dialog.locator('.sign-in-brand-mark').evaluate((image) => image.naturalWidth))
+      .toBeGreaterThan(0);
+    await waitForUiMotion(dialog);
+    await dialog.getByRole('button', { name: 'Continue with Google', exact: true }).focus();
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(signIn).toBeFocused();
+
+    await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
+    await expect(page).toHaveTitle('My quizzes · QuizMos');
+    await brand.click();
+    await expect(page).toHaveTitle('Quiz Bank · QuizMos');
+    await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
+    await expect(page).toHaveTitle('Thư viện quiz · QuizMos');
+    await page.goto('./#/quiz/aws-aip-c01/practice');
+    await expect(page.locator('.question-title')).toBeVisible();
+    await expect(page).toHaveTitle(/ · QuizMos$/);
   }
+);
 
-  const signIn = page.getByRole('button', { name: 'Sign in', exact: true });
-  await signIn.click();
-  const dialog = page.getByRole('dialog');
-  await expect(dialog.locator('.sign-in-brand strong')).toHaveText('QuizMos');
-  await expect
-    .poll(() => dialog.locator('.sign-in-brand-mark').evaluate((image) => image.naturalWidth))
-    .toBeGreaterThan(0);
-  await waitForUiMotion(dialog);
-  await dialog.getByRole('button', { name: 'Continue with Google', exact: true }).focus();
-  await page.keyboard.press('Escape');
-  await expect(dialog).not.toBeVisible();
-  await expect(signIn).toBeFocused();
-
-  await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
-  await expect(page).toHaveTitle('My quizzes · QuizMos');
-  await brand.click();
-  await expect(page).toHaveTitle('Quiz Bank · QuizMos');
-  await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
-  await expect(page).toHaveTitle('Thư viện quiz · QuizMos');
-  await page.goto('./#/quiz/aws-aip-c01/practice');
-  await expect(page.locator('.question-title')).toBeVisible();
-  await expect(page).toHaveTitle(/ · QuizMos$/);
-});
-
-test('bank, provider identities, language and theme work without overflow', async ({ page }) => {
-  await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
-  await expect(page.getByText('20 quiz sets', { exact: true })).toBeVisible();
-  await expect(page.locator('.header-settings')).toHaveCount(0);
-  await expect(page.locator('.provider-jumps button')).toHaveCount(5);
-  await page.getByRole('textbox', { name: 'Find a certification' }).fill('CLF-C02');
-  await expect(page.getByText('No matching quizzes', { exact: true })).toBeVisible();
-  await page.getByRole('textbox', { name: /Find a certification/ }).fill('CCA-F');
-  await expect(page.locator('.exam-code')).toHaveText('CCAR-F');
-  await page.getByRole('textbox', { name: /Find a certification/ }).fill('');
-  await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
-  await expect(page.locator('html')).toHaveAttribute('lang', 'vi');
-  await page.locator('.theme-toggle').click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  for (const width of [320, 390, 412, 768, 1280]) {
-    await page.setViewportSize({ width, height: 844 });
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
+test(
+  'bank, provider identities, language and theme work without overflow',
+  { tag: '@smoke' },
+  async ({ page }, testInfo) => {
+    await page.goto('./');
+    await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
+    await expect(page.getByText('20 quiz sets', { exact: true })).toBeVisible();
+    await expect(page.locator('.header-settings')).toHaveCount(0);
+    await expect(page.locator('.provider-jumps button')).toHaveCount(5);
+    await expect
+      .poll(() =>
+        page.locator('.provider-identity').evaluateAll(
+          (identities) =>
+            identities.length > 0 &&
+            identities.every((identity) => {
+              const icon = identity.querySelector('img');
+              return icon?.complete && icon.naturalWidth > 0;
+            })
+        )
       )
-    ).toBe(true);
-    const brand = await page.locator('.app-brand').boundingBox();
-    const nav = await page.locator('.app-nav').boundingBox();
-    if (width <= 700) expect(Math.abs(brand.x - nav.x)).toBeLessThan(2);
+      .toBe(true);
+    await page.getByRole('textbox', { name: 'Find a certification' }).fill('CLF-C02');
+    await expect(page.getByText('No matching quizzes', { exact: true })).toBeVisible();
+    await page.getByRole('textbox', { name: /Find a certification/ }).fill('CCA-F');
+    await expect(page.locator('.exam-code')).toHaveText('CCAR-F');
+    await page.getByRole('textbox', { name: /Find a certification/ }).fill('');
+    await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'vi');
+    await page.locator('.theme-toggle').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    for (const { width, height } of viewportCases(testInfo.project.name)) {
+      await page.setViewportSize({ width, height });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
+        )
+      ).toBe(true);
+      const brand = await page.locator('.app-brand').boundingBox();
+      const nav = await page.locator('.app-nav').boundingBox();
+      if (width <= 700) expect(Math.abs(brand.x - nav.x)).toBeLessThan(2);
+    }
   }
-});
+);
 
-test('legacy links and cloud checkpoints resolve to Google ACE', async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem(
-      'quiz-e2e-profile:test-alice',
-      JSON.stringify({
-        llmProviders: {},
-        quizProgress: { 'aws-ace': { questionIndex: 9, savedAt: 10 } },
-      })
-    );
-  });
-  await page.goto('./#/quiz/aws-ace/practice?resume=1&entry=regression');
-  await expect(page).toHaveURL(/#\/quiz\/gcp-ace\/practice\?resume=1&entry=regression$/);
-  await expect(page.locator('.question-title')).toBeVisible();
-  await signIn(page);
-  await expect(page.getByText('Question 10 of 302', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Next question', exact: true }).click();
-  await expect(page.getByText('Question 11 of 302', { exact: true })).toBeVisible();
-  await page.reload();
-  await expect(page.getByText('Question 11 of 302', { exact: true })).toBeVisible();
-});
+test(
+  'legacy links and cloud checkpoints resolve to Google ACE',
+  { tag: '@smoke' },
+  async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'quiz-e2e-profile:test-alice',
+        JSON.stringify({
+          llmProviders: {},
+          quizProgress: { 'aws-ace': { questionIndex: 9, savedAt: 10 } },
+        })
+      );
+    });
+    await page.goto('./#/quiz/aws-ace/practice?resume=1&entry=regression');
+    await expect(page).toHaveURL(/#\/quiz\/gcp-ace\/practice\?resume=1&entry=regression$/);
+    await expect(page.locator('.question-title')).toBeVisible();
+    await signIn(page);
+    await expect(page.getByText('Question 10 of 302', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Next question', exact: true }).click();
+    await expect(page.getByText('Question 11 of 302', { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(page.getByText('Question 11 of 302', { exact: true })).toBeVisible();
+  }
+);
 
 test('upload rejects 101 questions and malformed JSON, previews and restores a valid quiz', async ({
   page,
