@@ -4,7 +4,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { classifyChanges, changesBetween, createPlan } from '../scripts/ci-plan.mjs';
+import {
+  classifyChanges,
+  changesBetween,
+  createPlan,
+  selectValidatedBase,
+  lookupValidatedBase,
+} from '../scripts/ci-plan.mjs';
 import { checkGate } from '../scripts/ci-gate.mjs';
 import { checkAgentBudget, checkLinks, headingIds } from '../scripts/check-docs.mjs';
 import { accountCases, viewportCases } from './e2e/viewports.js';
@@ -112,7 +118,7 @@ test('real Git comparison covers every commit in a PR/push, not only the last do
   assert.equal(
     createPlan({
       eventName: 'pull_request',
-      event: { pull_request: { base: { sha: base } } },
+      validatedBase: base,
       head: docsHead,
       cwd,
     }).profile,
@@ -123,13 +129,112 @@ test('real Git comparison covers every commit in a PR/push, not only the last do
   fs.writeFileSync(path.join(cwd, 'README.md'), '# Third\n');
   const head = commit();
   assert.equal(changesBetween(base, head, cwd).length, 2);
+  assert.equal(createPlan({ eventName: 'push', validatedBase: base, head, cwd }).profile, 'full');
+  for (const validatedBase of [undefined, '0'.repeat(40), 'f'.repeat(40)])
+    assert.equal(createPlan({ eventName: 'push', validatedBase, head, cwd }).profile, 'full');
   assert.equal(
-    createPlan({ eventName: 'push', event: { before: base }, head, cwd }).profile,
+    createPlan({ eventName: 'push', validatedBase: head, head: base, cwd }).profile,
     'full'
   );
-  for (const event of [{}, { before: '0'.repeat(40) }, { before: 'f'.repeat(40) }])
-    assert.equal(createPlan({ eventName: 'push', event, head, cwd }).profile, 'full');
+  assert.equal(
+    createPlan({ eventName: 'workflow_dispatch', validatedBase: base, head: docsHead, cwd })
+      .profile,
+    'full'
+  );
 });
+
+const repository = 'tuanvipandpro/quiz-app';
+const successfulMaster = {
+  event: 'push',
+  head_branch: 'master',
+  status: 'completed',
+  conclusion: 'success',
+  path: '.github/workflows/test.yml',
+  head_repository: { full_name: repository },
+  head_sha: 'a'.repeat(40),
+};
+test('only a successful run of the same repository master validation workflow is trusted', () => {
+  assert.equal(
+    selectValidatedBase({ workflow_runs: [successfulMaster] }, repository),
+    successfulMaster.head_sha
+  );
+  for (const patch of [
+    { event: 'pull_request' },
+    { head_branch: 'feature' },
+    { status: 'in_progress' },
+    { conclusion: 'failure' },
+    { conclusion: 'cancelled' },
+    { path: '.github/workflows/other.yml' },
+    { head_repository: { full_name: 'other/repo' } },
+    { head_sha: '0'.repeat(40) },
+    { head_sha: 'invalid' },
+  ])
+    assert.equal(
+      selectValidatedBase({ workflow_runs: [{ ...successfulMaster, ...patch }] }, repository),
+      undefined
+    );
+  for (const data of [undefined, {}, { workflow_runs: [] }])
+    assert.equal(selectValidatedBase(data, repository), undefined);
+});
+
+test('baseline lookup uses read-only workflow history and falls back on API/network/JSON failures', async () => {
+  let requested;
+  const result = await lookupValidatedBase({
+    repository,
+    fetchImpl: async (url, options) => {
+      requested = { url, options };
+      return { ok: true, json: async () => ({ workflow_runs: [successfulMaster] }) };
+    },
+  });
+  assert.equal(result, successfulMaster.head_sha);
+  assert.match(
+    requested.url,
+    /workflows\/test\.yml\/runs\?branch=master&event=push&status=success/
+  );
+  assert.equal(requested.options.method, undefined);
+  for (const fetchImpl of [
+    async () => {
+      throw new Error('network');
+    },
+    async () => ({ ok: false }),
+    async () => ({
+      ok: true,
+      json: async () => {
+        throw new Error('JSON');
+      },
+    }),
+  ])
+    assert.equal(await lookupValidatedBase({ repository, fetchImpl }), undefined);
+});
+
+for (const kind of ['docs', 'assets']) {
+  test(`unvalidated runtime changes cannot be hidden by a later ${kind} commit`, (t) => {
+    const cwd = workspace(t);
+    const git = (...args) =>
+      execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+    const commit = () => {
+      git('add', '.');
+      git('-c', 'user.name=Test', '-c', 'user.email=test@example.test', 'commit', '-qm', 'fixture');
+      return git('rev-parse', 'HEAD');
+    };
+    git('init', '-q');
+    fs.mkdirSync(path.join(cwd, 'public'));
+    fs.writeFileSync(path.join(cwd, 'README.md'), '# First\n');
+    fs.writeFileSync(path.join(cwd, 'public/quizmos.svg'), '<svg/>\n');
+    const validatedBase = commit();
+    fs.writeFileSync(path.join(cwd, 'runtime.js'), 'export const broken = true;\n');
+    const uncheckedHead = commit();
+    fs.writeFileSync(
+      path.join(cwd, kind === 'docs' ? 'README.md' : 'public/quizmos.svg'),
+      kind === 'docs' ? '# Updated\n' : '<svg><!-- updated --></svg>\n'
+    );
+    const head = commit();
+    for (const eventName of ['push', 'pull_request']) {
+      const event = { before: uncheckedHead, pull_request: { base: { sha: uncheckedHead } } };
+      assert.equal(createPlan({ eventName, event, validatedBase, head, cwd }).profile, 'full');
+    }
+  });
+}
 
 const resultsFor = (profile) =>
   Object.fromEntries(

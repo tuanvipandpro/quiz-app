@@ -44,6 +44,7 @@ export function changesBetween(base, head, cwd = process.cwd()) {
     throw new Error('A concrete base and head are required.');
   const git = (...args) =>
     execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  git('merge-base', '--is-ancestor', base, head);
   const modes = (revision) =>
     new Map(
       git('ls-tree', '-r', '-z', revision)
@@ -67,34 +68,68 @@ export function changesBetween(base, head, cwd = process.cwd()) {
   return changes;
 }
 
-export function createPlan({ eventName, event, head, cwd }) {
-  const base =
-    eventName === 'pull_request'
-      ? event?.pull_request?.base?.sha
-      : eventName === 'push'
-        ? event?.before
-        : undefined;
+export function selectValidatedBase(data, repository) {
+  const run = data?.workflow_runs?.[0];
+  if (
+    run?.event !== 'push' ||
+    run.head_branch !== 'master' ||
+    run.status !== 'completed' ||
+    run.conclusion !== 'success' ||
+    run.path !== '.github/workflows/test.yml' ||
+    run.head_repository?.full_name?.toLowerCase() !== repository?.toLowerCase() ||
+    !SHA.test(run.head_sha || '') ||
+    /^0+$/.test(run.head_sha)
+  )
+    return undefined;
+  return run.head_sha;
+}
+
+export async function lookupValidatedBase({ repository, token, fetchImpl = fetch }) {
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repository || '')) return undefined;
   try {
-    const changes = changesBetween(base, head, cwd);
-    return { profile: classifyChanges(changes), head, changedFiles: changes.length };
+    const response = await fetchImpl(
+      `https://api.github.com/repos/${repository}/actions/workflows/test.yml/runs?branch=master&event=push&status=success&per_page=1`,
+      {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        signal: AbortSignal.timeout(15000),
+      }
+    );
+    return response.ok ? selectValidatedBase(await response.json(), repository) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function createPlan({ eventName, validatedBase, head, cwd }) {
+  try {
+    if (!['pull_request', 'push'].includes(eventName)) throw new Error('Unsupported event.');
+    const changes = changesBetween(validatedBase, head, cwd);
+    return {
+      profile: classifyChanges(changes),
+      head,
+      baseline: validatedBase,
+      changedFiles: changes.length,
+    };
   } catch {
     return {
       profile: 'full',
       head,
-      reason: 'Missing or unresolvable comparison; full validation required.',
+      reason: 'No trusted successful master ancestor available; full validation required.',
     };
   }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-  let event = {};
-  try {
-    event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
-  } catch {
-    /* Full fallback. */
-  }
-  const plan = createPlan({ eventName: process.env.GITHUB_EVENT_NAME, event, head });
+  const validatedBase = await lookupValidatedBase({
+    repository: process.env.GITHUB_REPOSITORY,
+    token: process.env.GH_TOKEN,
+  });
+  const plan = createPlan({ eventName: process.env.GITHUB_EVENT_NAME, validatedBase, head });
   const shards = plan.profile === 'full' ? [1, 2] : [1];
   if (process.env.GITHUB_OUTPUT)
     fs.appendFileSync(
@@ -104,7 +139,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   if (process.env.GITHUB_STEP_SUMMARY)
     fs.appendFileSync(
       process.env.GITHUB_STEP_SUMMARY,
-      `CI profile: **${plan.profile}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files compared.`}\n`
+      `CI profile: **${plan.profile}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files since successful master ${plan.baseline}.`}\n`
     );
   console.log(JSON.stringify({ ...plan, shards }));
 }
