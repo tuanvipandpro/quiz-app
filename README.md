@@ -149,6 +149,10 @@ AIP-C01's reviewed fingerprint matches its 136-question bank. Existing guide war
 
 ## Delivery
 
+Every change starts with assessment and a GitHub tracking issue before implementation, including documentation, tests, data and configuration work. Reuse a matching open issue or create one with the [tracked-change form](https://github.com/tuanvipandpro/quiz-app/issues/new/choose). Follow [the tracking policy and work-type matrix](AGENTS.md#tracking-every-change) to choose proportional documentation and tests for feature, bugfix, hotfix, refactor, docs, chore and data changes.
+
+Link the issue and PR in both directions using `Tracking issue: #N` / `Refs #N`. Keep the issue open through implementation, CI and merge. Close as completed only after acceptance evidence, passing required CI on the latest head, merged PRs and any required post-merge deployment/configuration checks are recorded. Use explicit closure after verification instead of automatic closing keywords; see [the delivery lifecycle](AGENTS.md#implement-verify-merge-then-close).
+
 Pull requests run lint, formatting, Node tests, catalog checks, production build isolation and Playwright. Successful master builds upload a verified artifact; the dependent deploy job publishes that exact artifact to the existing `gh-pages` branch. Deployment cannot run ahead of failed tests. No build-time Gemini key is required.
 
 Production runs at `https://quizmos.runs-at.dev/`. CI sets `VITE_BASE=/` for the verified build; assets and quiz data use `import.meta.env.BASE_URL`. Local development and the isolated E2E server keep `/quiz-app/`. Supply the same `VITE_BASE` when building and previewing an override locally. `public/CNAME` preserves the custom domain when `gh-pages` publishes `dist/`; the old GitHub Pages URL redirects to the custom domain.
