@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
 
 const example = (name) =>
   fileURLToPath(new URL(`../../public/examples/quiz-${name}.json`, import.meta.url));
@@ -15,7 +16,7 @@ test.beforeEach(async ({ page }) => {
 
 async function signIn(page) {
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
 }
 
@@ -28,6 +29,7 @@ async function requestSignOut(page) {
   await menu.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toBeVisible();
+  await waitForUiMotion(dialog);
   return dialog;
 }
 
@@ -62,6 +64,7 @@ test('QuizMos branding loads under the configured base and keeps navigation acce
   await expect
     .poll(() => dialog.locator('.sign-in-brand-mark').evaluate((image) => image.naturalWidth))
     .toBeGreaterThan(0);
+  await waitForUiMotion(dialog);
   await dialog.getByRole('button', { name: 'Continue with Google', exact: true }).focus();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
@@ -215,14 +218,16 @@ test('exam preserves deadline on refresh and requires confirmation before leavin
   await page.getByRole('button', { name: 'Quiz Bank', exact: true }).click();
   const leaveDialog = page.getByRole('dialog').filter({ hasText: 'Leave this exam?' });
   await expect(leaveDialog).toBeVisible();
-  await leaveDialog.getByRole('button', { name: 'Continue exam', exact: true }).click();
+  await clickAfterUiMotion(leaveDialog.getByRole('button', { name: 'Continue exam', exact: true }));
   await expect(leaveDialog).toBeHidden();
   const dialog = await requestSignOut(page);
   await expect(dialog).toContainText('end this exam');
   await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(dialog).toBeHidden();
   await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
-  await page.getByRole('button', { name: 'Submit and view results', exact: true }).click();
+  await clickAfterUiMotion(
+    page.getByRole('button', { name: 'Submit and view results', exact: true })
+  );
   await expect(page.getByRole('heading', { name: 'Exam results', exact: true })).toBeVisible();
   await expect(page.locator('.question-options input').first()).toBeDisabled();
 });

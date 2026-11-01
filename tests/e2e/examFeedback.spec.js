@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { clickAfterUiMotion } from './uiMotion.js';
 import { fileURLToPath } from 'node:url';
 
 const example = (format) =>
@@ -33,7 +34,9 @@ async function submitExam(page) {
   await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Review before submitting', exact: true });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: 'Submit and view results', exact: true }).click();
+  await clickAfterUiMotion(
+    dialog.getByRole('button', { name: 'Submit and view results', exact: true })
+  );
   await expect(page.getByRole('heading', { name: 'Exam results', exact: true })).toBeVisible();
 }
 
@@ -41,7 +44,7 @@ async function leaveToSetup(page) {
   await page.getByRole('button', { name: 'Back to quiz overview', exact: true }).click();
   const dialog = page.getByRole('dialog').filter({ hasText: 'Leave this exam?' });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: 'Leave exam', exact: true }).click();
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Leave exam', exact: true }));
   await expect(dialog).toBeHidden();
   await expect(page.getByRole('radiogroup', { name: 'Exam mode', exact: true })).toBeVisible();
 }
@@ -157,12 +160,12 @@ for (const mode of ['standard', 'learning']) {
     await page.getByRole('radio', { name: modeLabel(other), exact: true }).check();
     await page.getByRole('button', { name: 'Start a new exam', exact: true }).click();
     const dialog = page.getByRole('dialog').filter({ hasText: 'Start a new exam?' });
-    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await clickAfterUiMotion(dialog.getByRole('button', { name: 'Cancel', exact: true }));
     await expect(dialog).toBeHidden();
     await expect(page.getByRole('button', { name: 'Start a new exam', exact: true })).toBeFocused();
     expect(await readDraft(page, 'aws-aip-c01')).toEqual(draft);
     await page.getByRole('button', { name: 'Start a new exam', exact: true }).click();
-    await dialog.getByRole('button', { name: 'Start mock exam', exact: true }).click();
+    await clickAfterUiMotion(dialog.getByRole('button', { name: 'Start mock exam', exact: true }));
     await expect(page.locator('.exam-mode-label')).toContainText(modeLabel(other));
     const fresh = await readDraft(page, 'aws-aip-c01');
     expect(fresh.feedbackMode).toBe(other);
@@ -224,7 +227,7 @@ test('sign-out clears Learning drafts and the next guest exam starts as Standard
 }) => {
   await page.goto('./#/quiz/aws-aip-c01?mode=exam');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await page.getByRole('radio', { name: 'Learning exam', exact: true }).check();
   await page.getByRole('button', { name: 'Start mock exam', exact: true }).click();
@@ -234,7 +237,7 @@ test('sign-out clears Learning drafts and the next guest exam starts as Standard
   await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toContainText('end this exam');
-  await dialog.getByRole('button', { name: 'Sign out', exact: true }).click();
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Sign out', exact: true }));
   await expect(dialog).toBeHidden();
   await expect(page).toHaveURL(/#\/library$/);
   expect(await readDraft(page, 'aws-aip-c01', 'test-alice')).toBeNull();
@@ -271,7 +274,7 @@ test('sign-in during a guest exam returns to setup without creating an account d
   await expect(page.locator('.exam-mode-label')).toContainText('Learning exam');
   await page.getByRole('button', { name: 'Flag', exact: true }).click();
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await expect(page.getByRole('radio', { name: 'Standard exam', exact: true })).toBeChecked();
   expect(await readDraft(page, 'aws-aip-c01')).toBeNull();
