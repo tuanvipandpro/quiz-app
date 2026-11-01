@@ -43,6 +43,29 @@ Không dùng paid plan, model yêu cầu thanh toán hay AI Gateway credits. Cá
 - Live CORS checks: OPTIONS từ 5177 trả 204; GET usage chưa đăng nhập từ hai host 5177 và localhost:5173 trả 401 AUTH với đúng allow-origin; origin ngoài danh sách trả 403 ORIGIN, không allow-origin. Không gọi inference hoặc dùng thêm quota thật.
 - `yarn install --frozen-lockfile` và `yarn verify` trong worktree mới pass, gồm 147 Node tests và production build/isolation. Không chạy lại E2E local vì session khác đang sử dụng cổng test; UI chỉ smoke desktop EN/dark, không có thay đổi layout.
 
+## Production provisioning — 2026-11-01
+
+- PR #54 đã merge vào master tại `552eda7`; CI và website deployment sau merge đã pass. Bước này không tự deploy hoặc bật Worker.
+- Theo yêu cầu setup của user, đã tạo D1 production `quiz-app-ai` (`2be26a7b-7393-4f50-a857-990d8a1a7d29`, APAC) và áp dụng migration `0001_ai_requests.sql`. Read-only schema check xác nhận table, hai indexes và trigger `ai_reserve`; không đọc hoặc sửa dữ liệu quiz/profile.
+- Worker production tại `https://quiz-app-ai.tuanvipandpro.workers.dev`, bản cấp phát đầu `f1b08ebb-53b8-410b-99ea-e4ada7aaf399`, hiện chạy prompt v5 ở version `69e7f7a7-b3d1-428a-89bb-abe732409d2f`, dùng binding `DB`/`AI`, cron cleanup và `APP_AI_ENABLED=false`. Origin production preflight trả 204, request chưa đăng nhập trả 401 AUTH với đúng allow-origin, origin ngoài danh sách trả 403 ORIGIN.
+- Chưa cấu hình GitHub variable `VITE_APP_AI_URL`, chưa rebuild frontend để bật App AI. Không thêm secret hay đổi gói Cloudflare; dùng cùng account đã được owner xác nhận Workers Free.
+- User cho phép tối đa bốn lượt Explain cho rollout này: hai staging kiểm tra payload lớn và hai production với UI EN/VN, lời giải luôn tiếng Việt theo lựa chọn mới của user. Chưa sử dụng lượt nào vì phiên app đã đăng xuất và Google account chooser không hoàn tất; không trích xuất browser token hoặc thay auth bằng fixture trên môi trường thật. Mẫu kiểm thử synthetic EN/VN đã được validator chấp nhận, prompt v5 12,077 bytes cho cả hai UI locales trong cap 12,288; chưa có bằng chứng inference/CPU live của các mẫu này.
+- Kết quả kiểm tra, PR cấu hình và trạng thái tiếp tục được theo dõi trong [issue #53](https://github.com/tuanvipandpro/quiz-app/issues/53). Raw logs và mẫu kiểm thử nằm trong ignored `artifacts/production-rollout/`.
+
+## Chính sách lời giải tiếng Việt — prompt v5
+
+User đã chốt lời giải luôn bằng tiếng Việt, giữ nguyên thuật ngữ kỹ thuật tiếng Anh, độc lập toggle VN/EN. Shared prompt áp dụng cho App AI/BYOK; Worker chấp nhận language en/vi từ client cũ nhưng chuẩn hóa về vi. Cache/retry không tiêu tốn thêm lượt khi chỉ đổi UI locale; result region khai báo lang=vi. Không sửa câu hỏi/options hoặc dữ liệu quiz.
+
+Staging đã deploy v5 ở version `9cedad12-fdfb-4b90-8381-24462b359f69`; production v5 vẫn disabled. Các benchmark live v3/v4 phía trên là bằng chứng lịch sử, không phải kiểm chứng chất lượng lời giải v5. Kiểm thử v5 hiện dùng fixtures; cần hoàn tất live smoke trong giới hạn đã được user cho phép trước khi bật production.
+
+## Lời giải đầy đủ và quota 20 — prompt v6
+
+User yêu cầu phân tích câu hỏi, giải thích từng đáp án đúng và từng lựa chọn sai/kém phù hợp, sau đó yêu cầu tăng quota. Prompt v6 áp dụng đủ bốn phần cho App AI/BYOK, giữ tiếng Việt và English technical terms; App AI có trần output 1536 tokens. Migration 0002 nâng quota cá nhân 5 lên 20, giữ global 100/ngày và dữ liệu.
+
+Đã áp dụng migration và deploy staging version `9c8b11cc-b7a3-4c87-ab6a-c6a21bd58f92`, production version `509bbd39-1e69-4e60-abdf-99c300b78c79`. Production vẫn disabled. Aggregate ledger trước/sau migration: staging giữ nguyên 5 records và 5085 ký tự kết quả đã lưu; production giữ nguyên 0 records. Không reset số lượt đã dùng.
+
+Local verification: 182 Node tests, 15 Worker/auth/migration tests và 20 AI browser cases pass. UI fixtures kiểm tra bốn heading, từng lựa chọn và long-token wrapping trong các viewport/themes hiện có; không phải đánh giá chất lượng model. User tự test live và cung cấp output bốn phần, sau đó xác nhận bản hiện tại OK; không chạy thêm lượt inference để kiểm tra format. Chrome đã hiển thị phiên đăng nhập và quota staging thật; blocker đăng nhập ban đầu đã được giải quyết. Chưa có phép đo live chất lượng/CPU v6 toàn diện; task 3.2 vẫn mở.
+
 ## Pending acceptance
 
-Staging setup và smoke đã có bằng chứng. Giữ task 3.2 và issue #53 mở cho đến khi hoàn tất review chất lượng rộng hơn, kiểm tra biên hiệu năng và rollout production được ghi nhận. PR chưa merge; GitHub Pages chưa được bật App AI bởi lần setup này.
+Staging setup và smoke trước đây đã có bằng chứng; production resources hiện đã được cấp phát nhưng vẫn tắt. Giữ task 3.2 và issue #53 mở cho đến khi hoàn tất review chất lượng rộng hơn, kiểm tra biên hiệu năng và smoke test production được ghi nhận. User đã tự kiểm tra trên Chrome. Các phép thử fixture, số quota hiển thị và request 401 không thay thế phép đo CPU/usage và xác minh rollout production còn thiếu.

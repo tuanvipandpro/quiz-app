@@ -50,6 +50,16 @@ test('reopening the same question reuses the explanation and actual model metada
   assert.deepEqual(second, { ...first, cached: true });
 });
 
+test('BYOK uses Vietnamese instructions and reuses the answer across UI language changes', async () => {
+  const { service, calls } = fixture();
+  await service.generate(question, { uid: 'a', language: 'en' });
+  const second = await service.generate(question, { uid: 'a', language: 'vi' });
+  assert.equal(calls.length, 1);
+  assert.equal(second.cached, true);
+  assert.match(calls[0].prompt, /bằng tiếng Việt/);
+  assert.match(calls[0].prompt, /Giữ nguyên thuật ngữ kỹ thuật tiếng Anh/);
+});
+
 test('accounts and guest sessions never share cached explanations', async () => {
   const { service, calls } = fixture();
   await service.generate(question, { uid: 'a' });

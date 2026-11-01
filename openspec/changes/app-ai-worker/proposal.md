@@ -7,7 +7,8 @@
 ## What Changes
 
 - Thêm API Worker xác thực Firebase, model miễn phí cố định và validation chung.
-- D1 quản lý quota atomic, request identity và cache kết quả riêng tư; mặc định thử nghiệm 5 lượt/user/ngày, 100 lượt/app/ngày và 600 output tokens.
+- App AI và BYOK luôn giải thích bằng tiếng Việt, giữ nguyên thuật ngữ kỹ thuật tiếng Anh; toggle VN/EN chỉ điều khiển giao diện. Lời giải phải phân tích câu hỏi, nêu đáp án, giải thích từng đáp án đúng và từng lựa chọn sai/kém phù hợp.
+- D1 quản lý quota atomic, request identity và cache kết quả riêng tư; mặc định thử nghiệm 20 lượt/user/ngày, 100 lượt/app/ngày và 1536 output tokens.
 - Chọn App AI/BYOK rõ ràng, quota/reset/error states VN/EN; giữ BYOK cho guest và không tự fallback.
 - Tests local, UI evidence và hướng dẫn Cloudflare setup/rollout; production enablement chờ account setup và benchmark.
 

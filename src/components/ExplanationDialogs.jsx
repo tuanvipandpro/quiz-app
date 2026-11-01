@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import SettingsModal from './SettingsModal';
+import { EXPLANATION_LANGUAGE } from '../services/llm/explanationPrompt';
 import { AiUsage } from './AiSourceControl';
 import { useLanguage } from '../contexts/LanguageContext';
 import { formatAnswerLines, formatQuestionText, questionExplanation } from '../utils/questionModel';
@@ -95,7 +96,7 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
           description={t(state.error)}
         />
       ) : (
-        <div className="markdown-container">
+        <div className="markdown-container" lang={EXPLANATION_LANGUAGE}>
           <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>
             {state.explanation}
           </ReactMarkdown>

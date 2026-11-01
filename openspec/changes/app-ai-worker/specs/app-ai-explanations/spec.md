@@ -17,7 +17,17 @@ The system SHALL require a valid Firebase ID token for every App AI request and 
 
 ### Requirement: CQ-AI-02 Free bounded inference
 
-The system SHALL validate structured questions, construct its own VN/EN prompt and enforce an allowlisted free model with bounded input/output. It SHALL remain unavailable until configured and enabled after free-plan and quality verification.
+The system SHALL validate structured questions, construct its own Vietnamese prompt and enforce an allowlisted free model with bounded input/output. App AI and BYOK explanations SHALL always use Vietnamese prose while preserving English technical terminology, product names, identifiers, code and answer labels, independently of UI or source-question language. It SHALL remain unavailable until configured and enabled after free-plan and quality verification.
+
+#### Scenario: Complete educational explanation
+
+- **WHEN** a user requests an explanation through App AI or BYOK
+- **THEN** the prompt requires four readable sections: explain the question and decisive constraints, identify every correct answer, justify each correct answer against those constraints, and explain each remaining choice's error or poorer fit without inventing faults or unsupported facts
+
+#### Scenario: Multiple or structured answers
+
+- **WHEN** a question has multiple correct answers, yes/no statements or dropdown slots
+- **THEN** the explanation instructions cover every selection and alternative within its original row/slot, preserve labels, and explicitly handle all-correct choices, insufficient context or an incorrect marked answer instead of blindly endorsing it
 
 #### Scenario: Oversized or arbitrary model request
 
@@ -27,6 +37,11 @@ The system SHALL validate structured questions, construct its own VN/EN prompt a
 ### Requirement: CQ-AI-03 Atomic usage limits
 
 The system SHALL enforce daily user and application attempt limits, one pending request per user, and a UTC reset. User-visible counters SHALL reflect server state, including counted failed attempts after dispatch.
+
+#### Scenario: Increase allowance without resetting usage
+
+- **WHEN** the personal allowance increases from 5 to 20 attempts/day
+- **THEN** a forward migration preserves attempts and stored results, a user with five attempts already used has fifteen remaining, and the global 100/day and one-pending/user guards remain enforced
 
 #### Scenario: Concurrent last allowance
 
@@ -53,12 +68,22 @@ The system SHALL let authenticated users choose App AI or BYOK and SHALL never a
 
 ### Requirement: CQ-AI-06 Account and study compatibility
 
-The system SHALL discard late responses after account, question, language or source changes, preserve Standard Exam answer timing, and leave stored quiz answers and progress unchanged.
+The system SHALL discard late responses after account, question or source changes, preserve Standard Exam answer timing, and leave stored quiz answers and progress unchanged. Changing only the VN/EN interface language SHALL preserve the Vietnamese explanation and pending attempt without spending another model call.
 
 #### Scenario: Logout during inference
 
 - **WHEN** Alice logs out or Bob becomes active before Alice's response arrives
 - **THEN** Alice's result is not displayed or cached for the new session
+
+#### Scenario: Interface language changes
+
+- **WHEN** a user switches the interface between VN and EN with an explanation saved or in flight
+- **THEN** the explanation remains Vietnamese with English technical terms, its result region declares Vietnamese, and reopening or retrying the same attempt does not consume an extra model call because of that UI switch
+
+#### Scenario: Legacy English-language request
+
+- **WHEN** an older client sends a valid App AI request with language `en`
+- **THEN** the server applies the same Vietnamese explanation policy and canonical request fingerprint as language `vi`, while changed question content and different owners remain isolated
 
 ### Requirement: CQ-AI-07 Accessible state feedback
 
