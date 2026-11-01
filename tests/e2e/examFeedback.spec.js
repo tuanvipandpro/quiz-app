@@ -234,7 +234,7 @@ test('sign-out clears Learning drafts and the next guest exam starts as Standard
   await expect(page.locator('.exam-mode-label')).toContainText('Learning exam');
   await page.getByRole('button', { name: 'Flag', exact: true }).click();
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('menuitem', { name: 'Sign out', exact: true }));
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toContainText('end this exam');
   await clickAfterUiMotion(dialog.getByRole('button', { name: 'Sign out', exact: true }));

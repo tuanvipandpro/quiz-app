@@ -8,7 +8,7 @@ import { PROVIDERS } from '../services/llm/modelRegistry';
 
 const { Text, Paragraph } = Typography;
 
-export default function SettingsModal({ visible, onClose }) {
+export default function SettingsModal({ visible, onClose, afterClose }) {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [keys, setKeys] = useState({ gemini: '', groq: '' });
@@ -84,6 +84,7 @@ export default function SettingsModal({ visible, onClose }) {
       title={t('AI Settings')}
       open={visible}
       onCancel={onClose}
+      afterClose={afterClose}
       width={640}
       footer={<Button onClick={onClose}>{t('Done')}</Button>}
     >

@@ -1,4 +1,5 @@
 export const vi = {
+  Account: 'Tài khoản',
   'Preview stays in this tab until you save it to your account.':
     'Bản xem trước ở trong tab này cho đến khi bạn chọn lưu vào tài khoản.',
   'Cloud save limit: {limit} KiB. Larger quizzes can be used in this tab.':

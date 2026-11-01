@@ -88,13 +88,6 @@
   color: var(--app-danger-text);
   border-color: var(--app-danger-text);
 }
-.cloud-quiz-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled),
-.cloud-quiz-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled):hover,
-.cloud-quiz-modal .ant-btn-dangerous.ant-btn-primary:not(:disabled):active {
-  color: var(--app-on-danger);
-  background: var(--app-danger-text);
-  border-color: var(--app-danger-text);
-}
 .cloud-dialog-quiz-name {
   overflow-wrap: anywhere;
 }
