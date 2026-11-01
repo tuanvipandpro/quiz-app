@@ -1,5 +1,7 @@
 # Cloudflare rollout evidence
 
+Trạng thái ngày 2026-11-01: production đã bật và smoke test Chrome thành công; xem [production activation](#production-activation--2026-11-01). Các mục bên dưới ghi lịch sử từng lần triển khai, không thay thế trạng thái mới nhất. Task 3.2/#53 còn mở cho acceptance bổ sung và PR cấu hình.
+
 ## Account and staging
 
 - Đã xác nhận Workers Free trên Dashboard: **Free / $0 / Current plan**, và user xác nhận cùng thông tin. Subscription API trả 403; không dùng `default_usage_model=standard` làm bằng chứng về gói thanh toán.
@@ -66,6 +68,15 @@ User yêu cầu phân tích câu hỏi, giải thích từng đáp án đúng v�
 
 Local verification: 182 Node tests, 15 Worker/auth/migration tests và 20 AI browser cases pass. UI fixtures kiểm tra bốn heading, từng lựa chọn và long-token wrapping trong các viewport/themes hiện có; không phải đánh giá chất lượng model. User tự test live và cung cấp output bốn phần, sau đó xác nhận bản hiện tại OK; không chạy thêm lượt inference để kiểm tra format. Chrome đã hiển thị phiên đăng nhập và quota staging thật; blocker đăng nhập ban đầu đã được giải quyết. Chưa có phép đo live chất lượng/CPU v6 toàn diện; task 3.2 vẫn mở.
 
+## Production activation — 2026-11-01
+
+- Sau khi user tự kiểm tra prompt v6, chấp nhận kết quả và yêu cầu merge PR #63, tiếp tục setup/activation đã được user cho phép. PR #63 đã merge ở `c33295ba45b9e18bdd32f925566ca0c12bb244ad`.
+- Review analytics staging chỉ tính từ thời điểm deploy v6 `9c8b11cc-b7a3-4c87-ab6a-c6a21bd58f92`: **6 requests, 0 errors**, CPU p99 cao nhất trong các nhóm **9.123 ms**. Mẫu cũ v5 không được tính là bằng chứng v6. Đây là invocations, không phải số lượt inference, và chưa chứng minh worst-case payload/POP.
+- Worker dry-run pass; production đã deploy `APP_AI_ENABLED=true`, version `d46400b0-f4c8-496e-b808-94786c297b8c`. Không đổi model, quota, D1, allowlist hoặc gói Workers Free. Read-only settings xác nhận flag đang bật; preflight production trả 204, usage chưa đăng nhập trả 401 AUTH, origin ngoài danh sách trả 403 không allow-origin.
+- Đặt GitHub Actions repository Variable `VITE_APP_AI_URL=https://quiz-app-ai.tuanvipandpro.workers.dev`, không thêm secret. Re-run job verify và dependencies của [master run 41312669951, attempt 2](https://github.com/tuanvipandpro/quiz-app/actions/runs/41312669951/attempts/2) đã pass và deploy website. Các job không phụ thuộc giữ kết quả thành công trước đó. HTML production HTTP 200 phục vụ `/assets/index-BFrdsZ45.js`, khớp gh-pages; asset HTTP 200 chứa production API URL, không chứa staging URL.
+- Chrome trên `https://quizmos.runs-at.dev` khôi phục phiên tài khoản được chỉ định. Dùng **1/2 lượt production** đã được user cho phép; chưa dùng 2 lượt staging của đợt rollout này. Public CCAR-P câu 50 trả lời **C**, đủ bốn phần tiếng Việt và giải thích A/B/D theo đúng vấn đề minh bạch/scope/timeline. Quota **19→18**; VN rồi EN giữ cùng kết quả và 18/20, result region `lang=vi`. Không chọn đáp án, đổi câu hoặc Save position: trước/sau vẫn câu 50/126, 0 câu đã trả lời, checkpoint giữ nguyên. Không dùng hoặc sửa BYOK key. Screenshot/ledger giữ ignored trong `artifacts/production-rollout/`.
+- Analytics production sau enable trong mẫu kiểm tra: **10 requests, 0 errors**, CPU p99 cao nhất trong các nhóm **9.207 ms**. Mẫu gồm các loại requests tới Worker, không chỉ inference. Kết quả này cùng mẫu chất lượng đã được user chấp nhận xác nhận rollout hoạt động; không đại diện cho mọi câu chứng chỉ, payload sát cap hoặc mọi POP. Neurons benchmark lịch sử phía trên không được gán thành số đo chi phí riêng của v6.
+
 ## Pending acceptance
 
-Staging setup và smoke trước đây đã có bằng chứng; production resources hiện đã được cấp phát nhưng vẫn tắt. Giữ task 3.2 và issue #53 mở cho đến khi hoàn tất review chất lượng rộng hơn, kiểm tra biên hiệu năng và smoke test production được ghi nhận. User đã tự kiểm tra trên Chrome. Các phép thử fixture, số quota hiển thị và request 401 không thay thế phép đo CPU/usage và xác minh rollout production còn thiếu.
+Production activation và một lượt smoke thật đã hoàn tất; giữ task 3.2 và issue #53 mở vì review chất lượng rộng hơn/CPU tại biên payload chưa hoàn tất và PR ghi nhận cấu hình còn chờ CI/merge. Không dùng một câu trả lời tốt hoặc p99 của mẫu nhỏ để đánh dấu các tiêu chí này đã xong. Không tự chạy thêm benchmark/inference ngoài giới hạn được user cho phép; tests thường ngày tiếp tục dùng fixtures.
