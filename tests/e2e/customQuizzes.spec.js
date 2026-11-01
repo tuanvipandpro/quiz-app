@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
 import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
+import { contrastRatio } from './uiContrast.js';
 
 const sample = (type = 'single') =>
   fileURLToPath(new URL(`../../public/examples/quiz-${type}.json`, import.meta.url));
@@ -45,34 +46,6 @@ async function confirm(page, name, action) {
   await expect(dialog).toBeVisible();
   await clickAfterUiMotion(dialog.getByRole('button', { name: action, exact: true }));
   await expect(dialog).toBeHidden();
-}
-
-async function contrastRatio(locator) {
-  await waitForUiMotion(locator);
-  const { foreground, background } = await locator.evaluate((element) => {
-    let current = element,
-      background;
-    while (current) {
-      background = getComputedStyle(current).backgroundColor;
-      if (background !== 'rgba(0, 0, 0, 0)' && background !== 'transparent') break;
-      current = current.parentElement;
-    }
-    return { foreground: getComputedStyle(element).color, background };
-  });
-  const luminance = (color) => {
-    const rgb = color
-      .match(/[\d.]+/g)
-      .slice(0, 3)
-      .map(Number)
-      .map((v) => {
-        v /= 255;
-        return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-      });
-    return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
-  };
-  const a = luminance(foreground),
-    b = luminance(background);
-  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
 test('explicit cloud save survives reload and is available from a second client page', async ({
@@ -364,7 +337,7 @@ test('logout and another account cannot display a private quiz through its old d
   await card(page, 'Alice private').getByRole('button', { name: 'Practice', exact: true }).click();
   const url = page.url();
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('menuitem', { name: 'Sign out', exact: true }));
   await confirm(page, 'Sign out?', 'Sign out');
   await page.goto(url);
   await expect(page.getByText('Sign in to open your saved quiz.', { exact: true })).toBeVisible();
@@ -407,6 +380,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
     for (const theme of ['light', 'dark']) {
       if ((await page.locator('html').getAttribute('data-theme')) !== theme)
         await page.locator('.theme-toggle').click();
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       for (const [width, height] of [
         [320, 844],
         [390, 844],

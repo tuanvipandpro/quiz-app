@@ -17,6 +17,7 @@ import { ArrowLeftOutlined, GithubOutlined } from '@ant-design/icons';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { useHashRoute } from './hooks/useHashRoute';
+import { useReducedMotion } from './hooks/useReducedMotion';
 import { useQuizProgress } from './hooks/useQuizProgress';
 import { useCustomQuizzes, customQuizProgress } from './hooks/useCustomQuizzes';
 import {
@@ -67,6 +68,7 @@ export default function App() {
   const uid = user?.uid || null;
   const progressState = useQuizProgress(uid);
   const [isDarkMode, setIsDarkMode] = useState(initialDarkMode);
+  const reducedMotion = useReducedMotion();
   const [modal, modalHolder] = Modal.useModal();
   const [messageApi, messageHolder] = message.useMessage();
   const [examActive, setExamActive] = useState(false);
@@ -114,7 +116,7 @@ export default function App() {
   const [loginVisible, setLoginVisible] = useState(false);
   const [loginBusy, setLoginBusy] = useState(false);
   const [loginError, setLoginError] = useState(null);
-  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [settingsStatus, setSettingsStatus] = useState('closed');
   const cache = useRef(new Map());
   const scrollPositions = useRef(new Map());
   // Keep study components unmounted until the account transition has been handled.
@@ -395,6 +397,7 @@ export default function App() {
   };
   const logout = () => {
     modal.confirm({
+      className: 'app-danger-dialog',
       title: t('Sign out?'),
       content: t(
         examActive
@@ -633,6 +636,7 @@ export default function App() {
       theme={{
         algorithm: isDarkMode ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
+          motion: !reducedMotion,
           colorPrimary: isDarkMode ? '#91bfff' : '#245db4',
           colorLink: isDarkMode ? '#a8ceff' : '#245db4',
           colorBgContainer: isDarkMode ? '#1c2736' : '#ffffff',
@@ -671,7 +675,7 @@ export default function App() {
           onToggleTheme={() => setIsDarkMode((value) => !value)}
           authLoading={authLoading}
           user={user}
-          onSettings={() => setSettingsVisible(true)}
+          onSettings={() => setSettingsStatus('open')}
           onSignOut={logout}
           onSignIn={openLogin}
         />
@@ -712,9 +716,13 @@ export default function App() {
           setLoginError(null);
         }}
       />
-      {settingsVisible && (
+      {settingsStatus !== 'closed' && (
         <Suspense fallback={null}>
-          <SettingsModal visible onClose={() => setSettingsVisible(false)} />
+          <SettingsModal
+            visible={settingsStatus === 'open'}
+            onClose={() => setSettingsStatus('closing')}
+            afterClose={() => setSettingsStatus('closed')}
+          />
         </Suspense>
       )}
     </ConfigProvider>

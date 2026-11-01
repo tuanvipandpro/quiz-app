@@ -1,15 +1,9 @@
 import React from 'react';
-import { Avatar, Button, Dropdown, Layout, Spin } from 'antd';
-import {
-  LoginOutlined,
-  LogoutOutlined,
-  MoonOutlined,
-  SunOutlined,
-  SettingOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { Button, Layout, Spin } from 'antd';
+import { LoginOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
 import { appBrand } from '../data/appBrand';
+import AccountMenu from './AccountMenu';
 const { Header } = Layout;
 export default function AppHeader({
   headerRef,
@@ -90,35 +84,7 @@ export default function AppHeader({
           {authLoading ? (
             <Spin size="small" />
           ) : user ? (
-            <Dropdown
-              menu={{
-                items: [
-                  { key: 'name', label: user.displayName || user.email, disabled: true },
-                  {
-                    key: 'settings',
-                    label: t('AI Settings'),
-                    icon: <SettingOutlined aria-hidden="true" />,
-                    onClick: onSettings,
-                  },
-                  { type: 'divider' },
-                  {
-                    key: 'logout',
-                    label: t('Sign out'),
-                    icon: <LogoutOutlined aria-hidden="true" />,
-                    onClick: onSignOut,
-                    danger: true,
-                  },
-                ],
-              }}
-            >
-              <Button
-                type="text"
-                className="profile-button"
-                aria-label={user.displayName || user.email}
-              >
-                <Avatar size={28} src={user.photoURL} icon={<UserOutlined aria-hidden="true" />} />
-              </Button>
-            </Dropdown>
+            <AccountMenu key={user.uid} user={user} onSettings={onSettings} onSignOut={onSignOut} />
           ) : (
             <Button
               type="text"

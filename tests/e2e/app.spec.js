@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
+import { contrastRatio } from './uiContrast.js';
 
 const example = (name) =>
   fileURLToPath(new URL(`../../public/examples/quiz-${name}.json`, import.meta.url));
@@ -26,12 +27,258 @@ async function requestSignOut(page) {
   const menu = page.getByRole('menu');
   await expect(menu).toBeVisible();
   await expect(menu.getByRole('separator')).toBeVisible();
-  await menu.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await clickAfterUiMotion(menu.getByRole('menuitem', { name: 'Sign out', exact: true }));
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toBeVisible();
   await waitForUiMotion(dialog);
   return dialog;
 }
+
+for (const reducedMotion of ['no-preference', 'reduce']) {
+  test(`account menu supports keyboard and touch activation without hover (${reducedMotion})`, async ({
+    page,
+  }, testInfo) => {
+    test.setTimeout(120000);
+    await page.emulateMedia({ reducedMotion });
+    const evidence = [];
+    const accountName = 'Certification learner with a deliberately long account display name '
+      .repeat(3)
+      .trim();
+    await page.addInitScript((displayName) => {
+      localStorage.setItem(
+        'quiz-e2e-auth',
+        JSON.stringify({
+          uid: 'test-alice',
+          displayName,
+          email: 'alice@example.test',
+          emailVerified: true,
+        })
+      );
+    }, accountName);
+    await page.goto('./');
+    const profile = page.getByRole('button', { name: accountName, exact: true });
+    await expect(profile).toBeVisible();
+
+    for (const [width, height, language, theme] of [
+      [320, 844, 'vi', 'dark'],
+      [390, 844, 'en', 'light'],
+      [412, 915, 'en', 'dark'],
+      [768, 1024, 'vi', 'light'],
+      [1280, 900, 'en', 'light'],
+      [844, 390, 'vi', 'dark'],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await page
+        .getByRole('button', { name: language === 'en' ? 'English' : 'Tiếng Việt', exact: true })
+        .click();
+      if ((await page.locator('html').getAttribute('data-theme')) !== theme)
+        await page.locator('.theme-toggle').click();
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await page.mouse.move(1, height - 1);
+      await profile.focus();
+      await page.keyboard.press('Enter');
+      const menu = page.getByRole('menu');
+      await expect(menu).toBeVisible();
+      await waitForUiMotion(menu);
+      await expect(profile).toHaveAttribute('aria-haspopup', 'menu');
+      await expect(profile).toHaveAttribute('aria-expanded', 'true');
+      await expect(profile).toHaveAttribute('aria-controls', await menu.getAttribute('id'));
+      const bounds = await menu.boundingBox();
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      expect(bounds.y).toBeGreaterThanOrEqual(0);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(height);
+      const triggerBounds = await profile.boundingBox();
+      expect(triggerBounds.width).toBeGreaterThanOrEqual(44);
+      expect(triggerBounds.height).toBeGreaterThanOrEqual(44);
+      expect(await contrastRatio(profile.locator('.ant-avatar'))).toBeGreaterThanOrEqual(3);
+      const contrast = [];
+      for (const item of await menu.getByRole('menuitem').all())
+        contrast.push(await contrastRatio(item));
+      for (const ratio of contrast) expect(ratio).toBeGreaterThanOrEqual(4.5);
+      const signOut = menu.getByRole('menuitem', {
+        name: language === 'en' ? 'Sign out' : 'Đăng xuất',
+        exact: true,
+      });
+      const target = await signOut.boundingBox();
+      expect(target.height).toBeGreaterThanOrEqual(44);
+      await signOut.hover();
+      expect(await contrastRatio(signOut)).toBeGreaterThanOrEqual(4.5);
+      await signOut.focus();
+      await page.keyboard.press('Escape');
+      await expect(menu).toBeHidden();
+      await expect(profile).toBeFocused();
+      await expect(profile).toHaveAttribute('aria-expanded', 'false');
+
+      await page.keyboard.press('Enter');
+      await expect(menu).toBeVisible();
+      await waitForUiMotion(menu);
+      await menu
+        .getByRole('menuitem', {
+          name: language === 'en' ? 'AI Settings' : 'Cài đặt AI',
+          exact: true,
+        })
+        .focus();
+      await page.keyboard.press('Enter');
+      const settings = page.getByRole('dialog', {
+        name: language === 'en' ? 'AI Settings' : 'Cài đặt AI',
+        exact: true,
+      });
+      await expect(settings).toBeVisible();
+      await expect(menu).toBeHidden();
+      await waitForUiMotion(settings);
+      await page.keyboard.press('Escape');
+      await expect(settings).toBeHidden();
+      await expect(profile).toBeFocused();
+
+      if (testInfo.project.use.hasTouch) {
+        await profile.tap();
+        await expect(menu).toBeVisible();
+        await waitForUiMotion(menu);
+        await page.getByRole('button', { name: 'QuizMos', exact: true }).tap();
+        await expect(menu).toBeHidden();
+      }
+
+      if (testInfo.project.use.hasTouch) await profile.tap();
+      else {
+        await profile.focus();
+        await page.keyboard.press('Enter');
+      }
+      await expect(menu).toBeVisible();
+      await waitForUiMotion(menu);
+      if (testInfo.project.use.hasTouch) await signOut.tap();
+      else {
+        await signOut.focus();
+        await page.keyboard.press('Enter');
+      }
+      const confirmation = page.getByRole('dialog').filter({
+        hasText: language === 'en' ? 'Sign out?' : 'Đăng xuất?',
+      });
+      await expect(confirmation).toBeVisible();
+      await expect(menu).toBeHidden();
+      await waitForUiMotion(confirmation);
+      const confirm = confirmation.getByRole('button', {
+        name: language === 'en' ? 'Sign out' : 'Đăng xuất',
+        exact: true,
+      });
+      const confirmContrast = await contrastRatio(confirm);
+      expect(confirmContrast).toBeGreaterThanOrEqual(4.5);
+      const confirmBounds = await confirm.boundingBox();
+      expect(confirmBounds.height).toBeGreaterThanOrEqual(44);
+      expect(confirmBounds.width).toBeGreaterThanOrEqual(44);
+      const cancel = confirmation.getByRole('button', {
+        name: language === 'en' ? 'Cancel' : 'Hủy',
+        exact: true,
+      });
+      await expect(cancel).toBeFocused();
+      if (testInfo.project.use.hasTouch) await cancel.tap();
+      else await page.keyboard.press('Enter');
+      await expect(confirmation).toBeHidden();
+      await expect(profile).toBeFocused();
+      expect(
+        await page.evaluate(() => sessionStorage.getItem('quiz-e2e-signout-count'))
+      ).toBeNull();
+      evidence.push({
+        width,
+        height,
+        language,
+        theme,
+        reducedMotion,
+        touch: !!testInfo.project.use.hasTouch,
+        triggerBounds,
+        menuBounds: bounds,
+        menuContrast: contrast,
+        confirmContrast,
+        confirmBounds,
+      });
+    }
+    await testInfo.attach('account-menu-matrix', {
+      body: JSON.stringify(evidence, null, 2),
+      contentType: 'application/json',
+    });
+  });
+}
+
+test('fixture sign-in preserves the guest state on failure and allows a single retry', async ({
+  page,
+}) => {
+  await page.goto('./');
+  await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
+  const guestUrl = page.url();
+  await page.evaluate(() => {
+    sessionStorage.setItem('quiz-e2e-defer-signin', '1');
+    sessionStorage.setItem('quiz-e2e-fail-signin', '1');
+  });
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Sign in', exact: true });
+  const google = dialog.getByRole('button', { name: /Continue with Google/ });
+  await clickAfterUiMotion(google);
+  await expect(google).toBeDisabled();
+  await google.dispatchEvent('click');
+  expect(await page.evaluate(() => sessionStorage.getItem('quiz-e2e-signin-count'))).toBe('1');
+  await page.evaluate(() => window.dispatchEvent(new Event('quiz-e2e-complete-signin')));
+  await expect(dialog.getByRole('alert')).toContainText('Could not sign in. Please retry.');
+  await expect(google).toBeEnabled();
+  await expect(page).toHaveURL(guestUrl);
+  await expect(page.getByRole('button', { name: 'Test account', exact: true })).toHaveCount(0);
+  await page.evaluate(() => {
+    sessionStorage.removeItem('quiz-e2e-defer-signin');
+    sessionStorage.removeItem('quiz-e2e-fail-signin');
+  });
+  await clickAfterUiMotion(google);
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => sessionStorage.getItem('quiz-e2e-signin-count'))).toBe('2');
+});
+
+test('account menu names remain meaningful when profile metadata is missing', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      'quiz-e2e-auth',
+      JSON.stringify({ uid: 'test-no-name', emailVerified: true })
+    );
+  });
+  await page.goto('./');
+  const profile = page.getByRole('button', { name: 'Account', exact: true });
+  await expect(profile).toBeVisible();
+  await profile.focus();
+  await page.keyboard.press('Enter');
+  const menu = page.getByRole('menu', { name: 'Account', exact: true });
+  await expect(menu).toBeVisible();
+  await waitForUiMotion(menu);
+  await page.keyboard.press('Escape');
+  await expect(menu).toBeHidden();
+  await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
+  const fallback = page.getByRole('button', { name: 'Tài khoản', exact: true });
+  await expect(fallback).toBeVisible();
+  await fallback.focus();
+  await page.keyboard.press('Enter');
+  const translatedMenu = page.getByRole('menu', { name: 'Tài khoản', exact: true });
+  await expect(translatedMenu).toBeVisible();
+  await waitForUiMotion(translatedMenu);
+  await page.evaluate(() =>
+    window.dispatchEvent(
+      new CustomEvent('quiz-e2e-auth-change', {
+        detail: {
+          uid: 'test-bob',
+          displayName: 'Bob',
+          email: 'bob@example.test',
+          emailVerified: true,
+        },
+      })
+    )
+  );
+  const nextProfile = page.getByRole('button', { name: 'Bob', exact: true });
+  await expect(nextProfile).toBeVisible();
+  await expect(nextProfile).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('menu')).toBeHidden();
+  await nextProfile.focus();
+  await page.keyboard.press('Enter');
+  const nextMenu = page.getByRole('menu');
+  await expect(nextMenu).toBeVisible();
+  await expect(nextMenu.getByRole('menuitem', { name: 'Bob', exact: true })).toBeVisible();
+  await expect(nextMenu.getByRole('menuitem', { name: 'Tài khoản', exact: true })).toHaveCount(0);
+});
 
 test('QuizMos branding loads under the configured base and keeps navigation accessible', async ({
   page,

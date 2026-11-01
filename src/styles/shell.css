@@ -77,6 +77,43 @@
 }
 .profile-button.ant-btn {
   padding: 4px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.profile-button .ant-avatar {
+  color: var(--app-on-primary);
+  background: var(--app-primary-bg);
+}
+.account-menu.ant-dropdown-menu {
+  max-width: min(18rem, calc(100vw - 2 * var(--app-space-4)));
+  max-height: calc(
+    100dvh - var(--app-header-height) - var(--app-space-4) - env(safe-area-inset-bottom)
+  );
+  overflow-y: auto;
+}
+.account-menu.ant-dropdown-menu .ant-dropdown-menu-item {
+  min-height: 44px;
+}
+.account-menu .ant-dropdown-menu-title-content {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.account-menu.ant-dropdown-menu .ant-dropdown-menu-item.ant-dropdown-menu-item-disabled {
+  color: var(--app-muted);
+}
+.account-menu.ant-dropdown-menu
+  .ant-dropdown-menu-item.ant-dropdown-menu-item-danger:not(.ant-dropdown-menu-item-disabled) {
+  color: var(--app-danger-text);
+}
+.account-menu.ant-dropdown-menu
+  .ant-dropdown-menu-item.ant-dropdown-menu-item-danger:not(.ant-dropdown-menu-item-disabled):hover,
+.account-menu.ant-dropdown-menu
+  .ant-dropdown-menu-item.ant-dropdown-menu-item-danger.ant-dropdown-menu-item-active:not(
+    .ant-dropdown-menu-item-disabled
+  ) {
+  color: var(--app-danger-text);
+  background: var(--app-danger-bg);
 }
 .app-footer.ant-layout-footer {
   display: flex;
@@ -88,6 +125,17 @@
   background: var(--app-surface);
   color: var(--app-muted);
   font-size: 13px;
+}
+.app-danger-dialog .ant-btn {
+  min-height: 44px;
+  min-width: 44px;
+}
+.app-danger-dialog .ant-btn-dangerous.ant-btn-primary:not(:disabled),
+.app-danger-dialog .ant-btn-dangerous.ant-btn-primary:not(:disabled):hover,
+.app-danger-dialog .ant-btn-dangerous.ant-btn-primary:not(:disabled):active {
+  color: var(--app-on-danger);
+  background: var(--app-danger-text);
+  border-color: var(--app-danger-text);
 }
 .app-footer a {
   display: inline-flex;
