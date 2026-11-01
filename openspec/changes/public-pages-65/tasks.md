@@ -16,7 +16,7 @@ Tracking: [#65](https://github.com/tuanvipandpro/quiz-app/issues/65). Implementa
 
 - [x] 3.1 Dựng hero, product preview nhẹ và CTA chính bằng tokens/Ant Design. Kiểm tra render 320px/1280px, keyboard/contrast và start-as-guest; preview không khởi tạo quiz session hoặc gọi AI. CQ-HOME-02/04.
 - [x] 3.2 Thêm Practice/Exam/guides, AIP-C01/CCAR-P từ registry và CTA cuối trang; cập nhật metadata chung. Verify đúng nội dung/capability, link overview, EN/VN và cuộn section không đổi route. CQ-HOME-02/04.
-- [x] 3.3 Chia landing thành 4 section full-width/min-viewport, CSS scroll snap và điều hướng section; E2E kích thước, wheel/keyboard/nav, hash không đổi, nội dung mobile/zoom không bị crop và cleanup khi rời Home. CQ-HOME-05.
+- [x] 3.3 Chia landing thành 4 section full-width/min-viewport, scroll snap và điều hướng section; E2E kích thước, wheel nhỏ 120px/keyboard/nav, hash không đổi, nội dung mobile/zoom không bị crop và cleanup khi rời Home. CQ-HOME-05.
 - [x] 3.4 Thêm nền tương phản, reveal/orbit/transition phù hợp, tôn trọng reduced motion; review contrast, focus và nội dung luôn đọc được khi observer/motion không khả dụng. CQ-HOME-04/05.
 
 ## 4. Donate page

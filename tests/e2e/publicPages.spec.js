@@ -348,6 +348,17 @@ test('viewport sections snap with wheel, keyboard and navigation, and Donate is 
     .getByRole('button', { name: 'Donate', exact: true });
   await expect(donate).toBeInViewport();
   await expect(page.locator('.hero-donate')).toBeInViewport();
+  const allowed = await page
+    .locator('.hero-copy')
+    .evaluate((el) => [
+      el.dispatchEvent(
+        new WheelEvent('wheel', { deltaY: 120, ctrlKey: true, bubbles: true, cancelable: true })
+      ),
+      el.dispatchEvent(
+        new WheelEvent('wheel', { deltaX: 120, deltaY: 1, bubbles: true, cancelable: true })
+      ),
+    ]);
+  expect(allowed).toEqual([true, true]);
   const aligned = async (index) => {
     await expect
       .poll(() =>
@@ -362,7 +373,8 @@ test('viewport sections snap with wheel, keyboard and navigation, and Donate is 
       .toBeLessThan(4);
     await expect(page.locator('.landing-page')).toHaveAttribute('data-active', String(index));
   };
-  await page.mouse.wheel(0, testInfo.project.use.viewport.height);
+  // A normal mouse-wheel notch must advance, rather than snap back to the same panel.
+  await page.mouse.wheel(0, 120);
   await aligned(1);
   await page.keyboard.press('PageDown');
   await aligned(2);
@@ -385,12 +397,19 @@ test('viewport sections snap with wheel, keyboard and navigation, and Donate is 
   expect(
     await page.locator('.orbit-one').evaluate((el) => getComputedStyle(el).animationName)
   ).toBe('none');
+  await page.locator('.final-back-top').click();
+  await aligned(0);
+  await page.mouse.wheel(0, 120);
+  await aligned(1);
   await donate.click();
   await expect(page.locator('.donate-heading h1')).toBeVisible();
   await expect(page.locator('html')).not.toHaveClass(/landing-scroll/);
   expect(await page.locator('html').evaluate((el) => getComputedStyle(el).scrollSnapType)).toBe(
     'none'
   );
+  await expect(page.locator('#main-content')).toBeFocused();
+  await page.mouse.wheel(0, 120);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
   await page
     .locator('.donate-thanks')
     .getByRole('button', { name: 'Back to home', exact: true })
