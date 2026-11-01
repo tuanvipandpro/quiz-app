@@ -32,7 +32,7 @@ export async function checkBuild({
     if (!file.endsWith('.js')) continue;
     const content = await fs.readFile(new URL(file, assets), 'utf8');
     if (
-      /quiz-e2e-auth|quiz-e2e-profile:|quiz-e2e-fail-signout|quiz-e2e-custom|__test\/token|127\.0\.0\.1:5176/.test(
+      /quiz-e2e-auth|quiz-e2e-profile:|quiz-e2e-fail-signout|quiz-e2e-custom|quiz-e2e-app-ai-disabled|__test\/token|127\.0\.0\.1:5176/.test(
         content
       )
     )

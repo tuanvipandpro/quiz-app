@@ -36,6 +36,7 @@ export const vi = {
     'AI ứng dụng chưa khả dụng. Bạn có thể chọn API key riêng.',
   'This attempt timed out. Regenerate starts a new attempt and uses quota.':
     'Yêu cầu quá thời gian chờ. Tạo lại sẽ bắt đầu và tính một lượt mới.',
+  Account: 'Tài khoản',
   'Preview stays in this tab until you save it to your account.':
     'Bản xem trước ở trong tab này cho đến khi bạn chọn lưu vào tài khoản.',
   'Cloud save limit: {limit} KiB. Larger quizzes can be used in this tab.':

@@ -87,7 +87,13 @@ export default function AiSourceControl({ active = true, usage: providedUsage, o
         </>
       ) : (
         <div className="ai-sign-in-prompt">
-          <Typography.Text>{t('App AI, no API key needed.')}</Typography.Text>
+          <Typography.Text>
+            {t(
+              appAiService.configured
+                ? 'App AI, no API key needed.'
+                : 'App AI is being set up. You can use your own API key.'
+            )}
+          </Typography.Text>
           <Button onClick={onSignIn} icon={<LoginOutlined aria-hidden="true" />}>
             {t('Sign in')}
           </Button>

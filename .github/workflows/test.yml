@@ -14,63 +14,150 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-and-build:
+  plan:
     runs-on: ubuntu-latest
-    env:
-      VITE_BASE: /
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      profile: ${{ steps.plan.outputs.profile }}
+      shards: ${{ steps.plan.outputs.shards }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: node --test tests/ciPlan.test.js
+      - id: plan
+        run: node scripts/ci-plan.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - run: npm install --global yarn@1.22.22
-      - run: yarn install --frozen-lockfile
+      - run: npm install --global prettier@3.6.2
+      - run: node scripts/check-docs.mjs
+
+  verify:
+    needs: plan
+    if: needs.plan.outputs.profile != 'docs'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      VITE_BASE: /
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - run: yarn verify
         env:
           VITE_APP_AI_URL: ${{ vars.VITE_APP_AI_URL }}
       - run: yarn test:worker
+        if: needs.plan.outputs.profile == 'full'
       - run: yarn worker:check
+        if: needs.plan.outputs.profile == 'full'
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: site-build
+          path: dist/
+          retention-days: 1
+          if-no-files-found: error
+
+  rules:
+    needs: plan
+    if: needs.plan.outputs.profile == 'full'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
       - run: yarn test:rules
-      - run: yarn playwright install --with-deps chromium
-      - run: yarn test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: test-failure-details
+          name: rules-failure-details
           path: |
-            playwright-report/
-            test-results/
             firebase-debug.log
             firestore-debug.log
           retention-days: 7
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        with:
-          name: verified-site
-          path: dist/
-          retention-days: 1
 
-  deploy:
-    needs: test-and-build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  e2e:
+    needs: plan
+    if: needs.plan.outputs.profile != 'docs'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.plan.outputs.shards || '[1]') }}
+    env:
+      CI_PROFILE: ${{ needs.plan.outputs.profile }}
+      SHARD_INDEX: ${{ matrix.shard }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: yarn playwright install --with-deps chromium
+      - name: Run selected browser checks
+        run: |
+          if [ "$CI_PROFILE" = "assets" ]; then
+            yarn test:e2e --grep @smoke
+          else
+            yarn test:e2e --shard="$SHARD_INDEX/2"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-failure-details-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Preserve the existing required-check name. Missing, failed or cancelled
+  # prerequisites must fail this gate, including when a dependency was skipped.
+  test-and-build:
+    needs: [plan, docs, verify, rules, e2e]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - run: npm install --global yarn@1.22.22
-      - run: yarn install --frozen-lockfile
+      - run: node scripts/ci-gate.mjs
+        env:
+          CI_PROFILE: ${{ needs.plan.outputs.profile }}
+          CI_RESULTS: ${{ toJSON(needs) }}
+
+  deploy:
+    needs: [plan, verify, test-and-build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.plan.outputs.profile != 'docs'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - uses: actions/download-artifact@v4
         with:
-          name: verified-site
+          name: site-build
           path: dist/
       - name: Publish verified build
         env:

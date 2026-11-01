@@ -32,6 +32,9 @@ playwright-report
 artifacts
 .wrangler
 .dev.vars*
+# Disposable review evidence belongs in artifacts/ or CI, not new Git history.
+# Existing tracked historical evidence remains tracked.
+docs/evidence/
 .firebase
 firebase-debug.log*
 firestore-debug.log*

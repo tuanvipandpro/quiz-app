@@ -160,7 +160,7 @@ export default function CloudQuizLibrary({
         </>
       )}
       <Modal
-        className="cloud-quiz-modal"
+        className="cloud-quiz-modal app-danger-dialog"
         afterClose={() => {
           // A confirmed delete removes the trigger. Keep keyboard users at the list.
           if (focusAfterDelete.current || document.activeElement === document.body) {

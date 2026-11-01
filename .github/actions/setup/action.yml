@@ -1,0 +1,20 @@
+name: Pinned Node and Yarn dependencies
+description: Install the locked dependencies with a shared Yarn download cache
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+    - run: npm install --global yarn@1.22.22
+      shell: bash
+    - id: yarn-cache
+      run: echo "directory=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - uses: actions/cache@v4
+      with:
+        path: ${{ steps.yarn-cache.outputs.directory }}
+        key: ${{ runner.os }}-node24-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: ${{ runner.os }}-node24-yarn-
+    - run: yarn install --frozen-lockfile
+      shell: bash

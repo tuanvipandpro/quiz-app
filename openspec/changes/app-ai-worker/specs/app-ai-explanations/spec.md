@@ -74,6 +74,11 @@ The system SHALL provide meaningful loading, remaining quota, reset, unavailable
 - **WHEN** a user switches the key provider or opens and closes setup help
 - **THEN** settings shows one labelled key editor, preserves unsaved provider inputs and keeps save/test/error states accessible on phones in both languages and themes
 
+#### Scenario: App AI URL is not configured
+
+- **WHEN** a guest opens AI settings before the App AI URL is configured
+- **THEN** settings explains that App AI is being set up and offers BYOK without promising key-free access; signing in keeps App AI disabled and BYOK available without transferring guest keys or calling the Worker
+
 #### Scenario: Consistent sign-in from AI settings
 
 - **WHEN** a guest selects Sign in from AI settings

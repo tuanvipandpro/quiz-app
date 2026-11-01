@@ -12,6 +12,10 @@ export default defineConfig(({ command }) => {
     resolve: {
       alias: [
         {
+          find: /^(?:.*\/)appAiService(?:\.js)?$/,
+          replacement: fileURLToPath(new URL('./tests/fixtures/appAiService.js', import.meta.url)),
+        },
+        {
           find: /^(?:.*\/)?customQuizService(?:\.js)?$/,
           replacement: fileURLToPath(
             new URL('./tests/fixtures/customQuizService.js', import.meta.url)

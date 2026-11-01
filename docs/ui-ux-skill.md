@@ -42,7 +42,7 @@ Use the absolute script path resolved from the repository root when working in a
 
 For UI-facing work, read the local skill and relevant references, inspect the affected code/tests, then search for the actual task. Keep the existing product rules, translations, semantic tokens and Ant Design components. Use `--design-system` for new pages or broader direction, a domain search for a focused concern, and `--stack react` when implementation guidance is needed.
 
-In the PR, record queries, result IDs/titles, applied recommendations and justified deviations. Follow `AGENTS.md` for screenshots, viewport/language/theme coverage, loading/error/disabled states, keyboard access and navigation. Run `yarn verify` and, for UI/auth/navigation changes, `yarn test:e2e`. This tooling integration itself changes no application UI, so it needs no before/after UI screenshots or browser acceptance matrix.
+In the PR, record queries, result IDs/titles, applied recommendations and justified deviations. Use the contributor guide's [minor check plan](contributing.md#minor-changes-and-verification-effort) for isolated cosmetic edits and [full UI acceptance](contributing.md#mobile-uiux-acceptance-criteria) for layout/navigation/modal/behavior changes. Follow its [evidence budget](contributing.md#documentation-and-evidence-budget) for storage and attachments. Run the checks applicable to the task rather than a full runtime suite for every text or logo edit. This tooling integration itself changes no application UI, so it needs no before/after UI screenshots or browser acceptance matrix.
 
 ## Updating the pinned source
 

@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
-import { clickDialogButton, selectMenuItem, settleMotion } from './motion';
-import { contrastRatio } from './contrast';
+import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
+import { viewportCases } from './viewports.js';
+import { contrastRatio } from './uiContrast.js';
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/*', (route) =>
@@ -29,7 +30,12 @@ async function openSettings(page, { language = 'en', theme = 'light', signedIn =
   await expect(page.locator('.question-title')).toBeVisible();
   if (signedIn) {
     await page.getByRole('button', { name: 'BYOK tester', exact: true }).click();
-    await selectMenuItem(page, language === 'vi' ? 'Cài đặt AI' : 'AI Settings');
+    await clickAfterUiMotion(
+      page.getByRole('menuitem', {
+        name: language === 'vi' ? 'Cài đặt AI' : 'AI Settings',
+        exact: true,
+      })
+    );
   } else
     await page
       .getByRole('button', { name: language === 'vi' ? 'Giải thích' : 'Explain', exact: true })
@@ -39,7 +45,7 @@ async function openSettings(page, { language = 'en', theme = 'light', signedIn =
     exact: true,
   });
   await expect(dialog).toBeVisible();
-  await settleMotion(dialog);
+  await waitForUiMotion(dialog);
   await expect(dialog.locator('input[type=password]')).toBeEnabled();
   return dialog;
 }
@@ -51,7 +57,7 @@ async function selectProvider(settings, name) {
 }
 async function screenshot(page, name) {
   await page.mouse.move(0, 0);
-  await settleMotion(page.locator('body'));
+  await waitForUiMotion(page.locator('body'));
   await fs.mkdir('artifacts/byok-settings', { recursive: true });
   await page.screenshot({
     path: `artifacts/byok-settings/${name}-${test.info().project.name}.png`,
@@ -76,6 +82,78 @@ async function checkGeometry(page, dialog) {
 
 for (const language of ['en', 'vi'])
   for (const theme of ['light', 'dark']) {
+    test(`unconfigured App AI keeps guest and signed-in BYOK usable ${language}/${theme}`, async ({
+      page,
+    }, info) => {
+      let workerCalls = 0;
+      page.on('request', (request) => {
+        if (new URL(request.url()).port === '5176') workerCalls++;
+      });
+      await page.addInitScript(() => sessionStorage.setItem('quiz-e2e-app-ai-disabled', '1'));
+      await page.setViewportSize({
+        width: info.project.name === 'phone' ? 320 : 1280,
+        height: 900,
+      });
+      const settings = await openSettings(page, { language, theme });
+      const unavailable =
+        language === 'vi'
+          ? 'AI ứng dụng đang được thiết lập. Bạn có thể dùng API key riêng.'
+          : 'App AI is being set up. You can use your own API key.';
+      await expect(settings.getByText(unavailable, { exact: true })).toBeVisible();
+      const input = settings.locator('input[type=password]');
+      await expect(input).toBeEnabled();
+      await input.fill('unconfigured-fixture-draft');
+      await checkGeometry(page, settings);
+      await screenshot(page, `unconfigured-${language}-${theme}`);
+      await clickAfterUiMotion(
+        settings.getByRole('button', {
+          name: language === 'vi' ? 'Đăng nhập' : 'Sign in',
+          exact: true,
+        })
+      );
+      const login = page.getByRole('dialog', {
+        name: language === 'vi' ? 'Đăng nhập' : 'Sign in',
+        exact: true,
+      });
+      await clickAfterUiMotion(
+        login.getByRole('button', {
+          name: language === 'vi' ? 'Tiếp tục với Google' : 'Continue with Google',
+          exact: true,
+        })
+      );
+      await expect(login).toBeHidden();
+      // Changing study owner closes guest dialogs. Reopen account settings through
+      // the persistent header to verify the new owner's source and credentials.
+      await expect(settings).toBeHidden();
+      await page.getByRole('button', { name: 'Test account', exact: true }).click();
+      await clickAfterUiMotion(
+        page.getByRole('menuitem', {
+          name: language === 'vi' ? 'Cài đặt AI' : 'AI Settings',
+          exact: true,
+        })
+      );
+      await expect(settings).toBeVisible();
+      await expect(
+        settings.getByRole('radio', {
+          name: language === 'vi' ? 'AI ứng dụng' : 'App AI',
+          exact: true,
+        })
+      ).toBeDisabled();
+      await expect(
+        settings.getByRole('radio', {
+          name: language === 'vi' ? 'API key của bạn' : 'Your API key',
+          exact: true,
+        })
+      ).toBeChecked();
+      await expect(settings.getByText(unavailable, { exact: true })).toBeVisible();
+      await expect(input).toBeEnabled();
+      await expect(input).toHaveValue(''); // Guest credentials never transfer to the account.
+      expect(workerCalls).toBe(0);
+    });
+  }
+
+for (const language of ['en', 'vi'])
+  for (const theme of ['light', 'dark']) {
     test(`compact BYOK and help matrix ${language}/${theme}`, async ({ page }, info) => {
       const settings = await openSettings(page, { language, theme });
       const input = settings.locator('input[type=password]');
@@ -87,8 +165,8 @@ for (const language of ['en', 'vi'])
           exact: true,
         })
       ).toBeDisabled();
-      for (const width of [320, 390, 412, 768, 1280, 844]) {
-        await page.setViewportSize({ width, height: width === 844 ? 390 : 900 });
+      for (const { width, height } of viewportCases(info.project.name)) {
+        await page.setViewportSize({ width, height });
         await checkGeometry(page, settings);
       }
       await page.setViewportSize({
@@ -136,7 +214,7 @@ for (const language of ['en', 'vi'])
         exact: true,
       });
       await expect(help).toBeVisible();
-      await settleMotion(help);
+      await waitForUiMotion(help);
       await expect(
         help.getByRole('link', {
           name: language === 'vi' ? 'Hướng dẫn chính thức' : 'Official setup guide',
@@ -145,8 +223,8 @@ for (const language of ['en', 'vi'])
       await expect(help).toContainText(
         language === 'vi' ? 'hạn mức nhà cung cấp' : 'uses provider quota'
       );
-      for (const width of [320, 390, 412, 768, 1280, 844]) {
-        await page.setViewportSize({ width, height: width === 844 ? 390 : 900 });
+      for (const { width, height } of viewportCases(info.project.name)) {
+        await page.setViewportSize({ width, height });
         await checkGeometry(page, help);
       }
       await page.setViewportSize({
@@ -175,9 +253,9 @@ for (const language of ['en', 'vi'])
         exact: true,
       });
       await expect(clearDialog).toBeVisible();
-      await settleMotion(clearDialog);
-      for (const width of [320, 390, 412, 768, 1280, 844]) {
-        await page.setViewportSize({ width, height: width === 844 ? 390 : 900 });
+      await waitForUiMotion(clearDialog);
+      for (const { width, height } of viewportCases(info.project.name)) {
+        await page.setViewportSize({ width, height });
         await checkGeometry(page, clearDialog);
       }
       await page.setViewportSize({
@@ -193,7 +271,9 @@ for (const language of ['en', 'vi'])
           })
         )
       ).toBeGreaterThanOrEqual(4.5);
-      await clickDialogButton(clearDialog, language === 'vi' ? 'Hủy' : 'Cancel');
+      await clickAfterUiMotion(
+        clearDialog.getByRole('button', { name: language === 'vi' ? 'Hủy' : 'Cancel', exact: true })
+      );
       await expect(clearDialog).toBeHidden();
       await expect(clearButton).toBeFocused();
       await expect(input).toHaveValue('second-fixture-key');
@@ -207,9 +287,9 @@ for (const language of ['en', 'vi'])
         exact: true,
       });
       await expect(login).toBeVisible();
-      await settleMotion(login);
-      for (const width of [320, 390, 412, 768, 1280, 844]) {
-        await page.setViewportSize({ width, height: width === 844 ? 390 : 900 });
+      await waitForUiMotion(login);
+      for (const { width, height } of viewportCases(info.project.name)) {
+        await page.setViewportSize({ width, height });
         await checkGeometry(page, login);
       }
       await page.setViewportSize({
@@ -217,9 +297,11 @@ for (const language of ['en', 'vi'])
         height: 900,
       });
       await screenshot(page, `login-${language}-${theme}`);
-      await clickDialogButton(
-        login,
-        language === 'vi' ? 'Tiếp tục không đăng nhập' : 'Continue as guest'
+      await clickAfterUiMotion(
+        login.getByRole('button', {
+          name: language === 'vi' ? 'Tiếp tục không đăng nhập' : 'Continue as guest',
+          exact: true,
+        })
       );
       await expect(login).toBeHidden();
       await expect(signIn).toBeFocused();
@@ -232,7 +314,9 @@ for (const language of ['en', 'vi'])
         exact: true,
       });
       await expect(reducedHelp).toBeVisible();
-      await clickDialogButton(reducedHelp, language === 'vi' ? 'Xong' : 'Done');
+      await clickAfterUiMotion(
+        reducedHelp.getByRole('button', { name: language === 'vi' ? 'Xong' : 'Done', exact: true })
+      );
       await expect(reducedHelp).toBeHidden();
       await expect(helpButton).toBeFocused();
     });
@@ -255,7 +339,7 @@ test('reduced motion at startup and live preference changes preserve the key edi
     await expect(help).toBeVisible();
     await page.emulateMedia({ reducedMotion: preference });
     await expect(help).toBeVisible();
-    await clickDialogButton(help, 'Done');
+    await clickAfterUiMotion(help.getByRole('button', { name: 'Done', exact: true }));
     await expect(help).toBeHidden();
     await expect(helpButton).toBeFocused();
     await expect(input).toHaveValue('motion-fixture-draft');
@@ -263,11 +347,11 @@ test('reduced motion at startup and live preference changes preserve the key edi
   const signInButton = settings.getByRole('button', { name: 'Sign in', exact: true });
   await signInButton.click();
   const signIn = page.getByRole('dialog', { name: 'Sign in', exact: true });
-  await clickDialogButton(signIn, 'Continue as guest');
+  await clickAfterUiMotion(signIn.getByRole('button', { name: 'Continue as guest', exact: true }));
   await expect(signIn).toBeHidden();
   await expect(signInButton).toBeFocused();
   await expect(input).toHaveValue('motion-fixture-draft');
-  await clickDialogButton(settings, 'Done');
+  await clickAfterUiMotion(settings.getByRole('button', { name: 'Done', exact: true }));
   await expect(settings).toBeHidden();
   await expect(page.getByRole('button', { name: 'Explain', exact: true })).toBeFocused();
 });
@@ -282,23 +366,27 @@ test('settings sign-in uses the shared provider dialog; cancel and failure prese
   await signIn.click();
   const login = page.getByRole('dialog', { name: 'Sign in', exact: true });
   await expect(login).toBeVisible();
-  await settleMotion(login);
+  await waitForUiMotion(login);
   await expect(login.getByRole('button', { name: 'Continue with Google' })).toBeEnabled();
   await expect(login.locator('.provider-sign-in img')).toHaveCount(2);
   await expect(login.locator('.provider-sign-in')).toHaveCount(3);
   await expect(login.locator('.provider-sign-in:disabled')).toHaveCount(2);
   expect(await page.evaluate(() => sessionStorage.getItem('quiz-e2e-signin-count'))).toBeNull();
   await screenshot(page, 'shared-sign-in');
-  await clickDialogButton(login, 'Continue as guest');
+  await clickAfterUiMotion(login.getByRole('button', { name: 'Continue as guest', exact: true }));
   await expect(login).toBeHidden();
   await expect(signIn).toBeFocused();
   await expect(input).toHaveValue('unsaved-fixture-key');
   await page.evaluate(() => sessionStorage.setItem('quiz-e2e-fail-signin', '1'));
   await signIn.click();
-  await clickDialogButton(login, 'Continue with Google');
+  await clickAfterUiMotion(
+    login.getByRole('button', { name: 'Continue with Google', exact: true })
+  );
   await expect(login.getByRole('alert')).toContainText('Could not sign in. Please retry.');
   await page.evaluate(() => sessionStorage.removeItem('quiz-e2e-fail-signin'));
-  await clickDialogButton(login, 'Continue with Google');
+  await clickAfterUiMotion(
+    login.getByRole('button', { name: 'Continue with Google', exact: true })
+  );
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await expect(login).toBeHidden();
   expect(await page.evaluate(() => Number(sessionStorage.getItem('quiz-e2e-signin-count')))).toBe(
@@ -346,11 +434,11 @@ test('BYOK save failure keeps input, connection test has a busy state, and clear
   await expect(settings.getByText(/Connected:/)).toBeVisible();
   await settings.getByRole('button', { name: 'Clear key', exact: true }).click();
   const confirm = page.getByRole('dialog', { name: 'Remove this API key?', exact: true });
-  await clickDialogButton(confirm, 'Cancel');
+  await clickAfterUiMotion(confirm.getByRole('button', { name: 'Cancel', exact: true }));
   await expect(confirm).toBeHidden();
   await expect(input).toHaveValue('fixture-key');
   await settings.getByRole('button', { name: 'Clear key', exact: true }).click();
-  await clickDialogButton(confirm, 'Clear key');
+  await clickAfterUiMotion(confirm.getByRole('button', { name: 'Clear key', exact: true }));
   await expect(settings.getByText('API key removed.')).toBeVisible();
   await expect(input).toHaveValue('');
 });

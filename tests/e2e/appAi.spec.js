@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { selectMenuItem, settleMotion, clickDialogButton } from './motion';
+import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
+import { viewportCases } from './viewports.js';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
@@ -68,9 +69,9 @@ test('logout while a result is in flight discards the private explanation', asyn
   await explain(page);
   await ready;
   await page.getByRole('button', { name: 'AI tester', exact: true }).click();
-  await selectMenuItem(page, 'Sign out');
+  await clickAfterUiMotion(page.getByRole('menuitem', { name: 'Sign out', exact: true }));
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
-  await clickDialogButton(dialog, 'Sign out');
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Sign out', exact: true }));
   release();
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
   await expect(
@@ -88,7 +89,7 @@ test('guest BYOK never calls App AI; key setup and sign-in option are visible', 
   await explain(page);
   const settings = page.getByRole('dialog', { name: 'AI Settings', exact: true });
   await expect(settings).toBeVisible();
-  await settleMotion(settings);
+  await waitForUiMotion(settings);
   await expect(settings.getByText('App AI, no API key needed.')).toBeVisible();
   await expect(settings.getByLabel('Google Gemini API key', { exact: true })).toBeVisible();
   await expect(settings.getByRole('button', { name: 'Sign in', exact: true })).toBeVisible();
@@ -104,7 +105,7 @@ test('guest BYOK never calls App AI; key setup and sign-in option are visible', 
   await card.getByLabel('Google Gemini API key', { exact: true }).fill('fixture-key');
   await card.getByRole('button', { name: 'Save key', exact: true }).click();
   await expect(settings.getByText('API key saved in this browser.')).toBeVisible();
-  await clickDialogButton(settings, 'Done');
+  await clickAfterUiMotion(settings.getByRole('button', { name: 'Done', exact: true }));
   await expect(page.getByRole('button', { name: 'Explain', exact: true })).toBeFocused();
   await explain(page);
   await expect(page.getByText('BYOK fixture explanation')).toBeVisible();
@@ -136,11 +137,11 @@ for (const language of ['en', 'vi'])
         exact: true,
       });
       await expect(dialog).toBeVisible();
-      await settleMotion(dialog);
+      await waitForUiMotion(dialog);
       await expect(page.locator('html')).toHaveAttribute('lang', language);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-      for (const width of [320, 390, 412, 768, 1280, 844]) {
-        await page.setViewportSize({ width, height: width === 844 ? 390 : 900 });
+      for (const { width, height } of viewportCases(testInfo.project.name)) {
+        await page.setViewportSize({ width, height });
         await expect
           .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
           .toBe(true);
@@ -190,9 +191,9 @@ test('authenticated App AI round trip, cached viewing and explicit BYOK with no 
   await page.getByRole('button', { name: 'AI Settings', exact: true }).click();
   const settings = page.getByRole('dialog', { name: 'AI Settings', exact: true });
   await expect(settings).toBeVisible();
-  await settleMotion(settings);
+  await waitForUiMotion(settings);
   await settings.locator('.ant-radio-button-wrapper').filter({ hasText: 'Your API key' }).click();
-  await clickDialogButton(settings, 'Done');
+  await clickAfterUiMotion(settings.getByRole('button', { name: 'Done', exact: true }));
   await explain(page);
   await expect(page.getByRole('dialog', { name: 'AI Settings', exact: true })).toBeVisible();
 });

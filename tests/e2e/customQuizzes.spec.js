@@ -1,9 +1,10 @@
-import { contrastRatio } from './contrast';
 import { test, expect } from '@playwright/test';
-import { selectMenuItem, settleMotion, clickDialogButton } from './motion';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUSTOM_QUIZ_MESSAGES } from '../../src/utils/customQuizModel.js';
+import { clickAfterUiMotion, waitForUiMotion } from './uiMotion.js';
+import { contrastRatio } from './uiContrast.js';
+import { viewportCases } from './viewports.js';
 
 const sample = (type = 'single') =>
   fileURLToPath(new URL(`../../public/examples/quiz-${type}.json`, import.meta.url));
@@ -24,7 +25,7 @@ test.beforeEach(async ({ page }) => {
 async function login(page) {
   await page.goto('./');
   await page.getByRole('banner').getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await expect(page.getByText('0/3 saved quizzes', { exact: true })).toBeVisible();
@@ -44,7 +45,7 @@ async function confirm(page, name, action) {
       ? page.getByRole('dialog').filter({ hasText: name })
       : page.getByRole('dialog', { name, exact: true });
   await expect(dialog).toBeVisible();
-  await clickDialogButton(dialog, action);
+  await clickAfterUiMotion(dialog.getByRole('button', { name: action, exact: true }));
   await expect(dialog).toBeHidden();
 }
 
@@ -131,6 +132,7 @@ test('rename preserves checkpoint and draft; replacement invalidates only that i
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await card(page, 'Original').getByRole('button', { name: 'Rename', exact: true }).click();
   const rename = page.getByRole('dialog', { name: 'Rename quiz', exact: true });
+  await waitForUiMotion(rename);
   await rename.getByRole('textbox', { name: 'Quiz name', exact: true }).fill('Renamed');
   await confirm(page, 'Rename quiz', 'Save name');
   await expect(card(page, 'Renamed')).toContainText('Saved at question 1');
@@ -300,7 +302,7 @@ test('private loading errors are recoverable and do not block bank navigation', 
   await page.addInitScript(() => sessionStorage.setItem('quiz-e2e-custom-fail-list', 'PERMISSION'));
   await page.goto('./');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await expect(
@@ -321,7 +323,7 @@ test('guest uploads remain local and login does not migrate a guest draft into s
   await page.getByRole('button', { name: 'Start practice', exact: true }).click();
   await page.getByRole('radio', { name: /Paris/ }).check();
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
   await expect(page.getByText('0/3 saved quizzes', { exact: true })).toBeVisible();
@@ -336,7 +338,7 @@ test('logout and another account cannot display a private quiz through its old d
   await card(page, 'Alice private').getByRole('button', { name: 'Practice', exact: true }).click();
   const url = page.url();
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await selectMenuItem(page, 'Sign out');
+  await clickAfterUiMotion(page.getByRole('menuitem', { name: 'Sign out', exact: true }));
   await confirm(page, 'Sign out?', 'Sign out');
   await page.goto(url);
   await expect(page.getByText('Sign in to open your saved quiz.', { exact: true })).toBeVisible();
@@ -379,14 +381,8 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
     for (const theme of ['light', 'dark']) {
       if ((await page.locator('html').getAttribute('data-theme')) !== theme)
         await page.locator('.theme-toggle').click();
-      for (const [width, height] of [
-        [320, 844],
-        [390, 844],
-        [412, 915],
-        [768, 1024],
-        [1280, 900],
-        [844, 390],
-      ]) {
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      for (const { width, height } of viewportCases(testInfo.project.name)) {
         await page.setViewportSize({ width, height });
         const reload = await page
           .getByRole('button', {
@@ -396,17 +392,11 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           .boundingBox();
         expect(reload.width).toBeGreaterThanOrEqual(44);
         expect(reload.height).toBeGreaterThanOrEqual(44);
-        await expect
-          .poll(
-            () =>
-              page.evaluate(
-                () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
-              ),
-            {
-              message: `Cloud quiz layout fits ${width}x${height} after resize (${language}/${theme})`,
-            }
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
           )
-          .toBe(true);
+        ).toBe(true);
         for (const button of await card(page, longName).getByRole('button').all()) {
           const box = await button.boundingBox();
           expect(box.width).toBeGreaterThanOrEqual(44);
@@ -418,12 +408,10 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           name: language === 'en' ? 'Delete' : 'Xóa',
           exact: true,
         });
-        await settleMotion(deleteAction);
         const cardContrast = await contrastRatio(deleteAction);
         expect(cardContrast).toBeGreaterThanOrEqual(4.5);
         contrastEvidence.push({ language, theme, width, cardContrast });
-        const capture =
-          testInfo.project.name === 'desktop' && captures.has(`${language}-${theme}-${width}`);
+        const capture = captures.has(`${language}-${theme}-${width}`);
         if (capture) {
           await page
             .getByRole('heading', {
@@ -444,7 +432,7 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
           exact: true,
         });
         await expect(dialog).toBeVisible();
-        await settleMotion(dialog);
+        await waitForUiMotion(dialog);
         const input = dialog.getByRole('textbox');
         await expect(input).toHaveValue(longName);
         await expect(input).toHaveCSS('min-height', '44px');
@@ -473,7 +461,6 @@ test('cloud management and rename dialog fit phones, desktop and landscape in bo
             exact: true,
           });
           await expect(deletion.getByText(longName, { exact: true })).toBeVisible();
-          await settleMotion(deletion);
           const confirmationContrast = await contrastRatio(
             deletion.getByRole('button', {
               name: language === 'en' ? 'Delete' : 'Xóa',

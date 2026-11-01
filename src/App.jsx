@@ -118,7 +118,7 @@ export default function App() {
   const [loadRevision, setLoadRevision] = useState(0);
   const [upload, setUpload] = useState(null);
   const [uploadReady, setUploadReady] = useState(false);
-  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [settingsStatus, setSettingsStatus] = useState('closed');
   const cache = useRef(new Map());
   const scrollPositions = useRef(new Map());
   // Keep study components unmounted until the account transition has been handled.
@@ -378,6 +378,7 @@ export default function App() {
   const openLogin = signIn.show;
   const logout = () => {
     modal.confirm({
+      className: 'app-danger-dialog',
       title: t('Sign out?'),
       content: t(
         examActive
@@ -655,7 +656,7 @@ export default function App() {
           onToggleTheme={() => setIsDarkMode((value) => !value)}
           authLoading={authLoading}
           user={user}
-          onSettings={() => setSettingsVisible(true)}
+          onSettings={() => setSettingsStatus('open')}
           onSignOut={logout}
           onSignIn={openLogin}
         />
@@ -687,9 +688,13 @@ export default function App() {
         )}
       </Layout>
       <SignInModal {...signIn.modalProps} />
-      {settingsVisible && (
+      {settingsStatus !== 'closed' && (
         <Suspense fallback={null}>
-          <SettingsModal visible onClose={() => setSettingsVisible(false)} />
+          <SettingsModal
+            visible={settingsStatus === 'open'}
+            onClose={() => setSettingsStatus('closing')}
+            afterClose={() => setSettingsStatus('closed')}
+          />
         </Suspense>
       )}
     </ConfigProvider>

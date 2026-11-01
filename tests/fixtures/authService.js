@@ -5,18 +5,25 @@ const publish = (user) => {
   localStorage.setItem(KEY, JSON.stringify(user));
   listeners.forEach((listener) => listener(user));
 };
+const changeUser = (event) => publish(event.detail);
 
 export default {
   onAuthStateChanged(listener) {
+    if (!listeners.size) window.addEventListener('quiz-e2e-auth-change', changeUser);
     listeners.add(listener);
     queueMicrotask(() => listeners.has(listener) && listener(readUser()));
-    return () => listeners.delete(listener);
+    return () => {
+      listeners.delete(listener);
+      if (!listeners.size) window.removeEventListener('quiz-e2e-auth-change', changeUser);
+    };
   },
   async signInWithGoogle() {
-    sessionStorage.setItem(
-      'quiz-e2e-signin-count',
-      String(Number(sessionStorage.getItem('quiz-e2e-signin-count') || 0) + 1)
-    );
+    const count = Number(sessionStorage.getItem('quiz-e2e-signin-count') || 0);
+    sessionStorage.setItem('quiz-e2e-signin-count', String(count + 1));
+    if (sessionStorage.getItem('quiz-e2e-defer-signin'))
+      await new Promise((resolve) =>
+        window.addEventListener('quiz-e2e-complete-signin', resolve, { once: true })
+      );
     if (sessionStorage.getItem('quiz-e2e-fail-signin')) return { success: false };
     const user = {
       uid: 'test-alice',

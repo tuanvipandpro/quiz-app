@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { selectMenuItem, clickDialogButton } from './motion';
+import { clickAfterUiMotion } from './uiMotion.js';
 import { fileURLToPath } from 'node:url';
+import { viewportCases } from './viewports.js';
 
 const example = (format) =>
   fileURLToPath(new URL(`../../public/examples/quiz-${format}.json`, import.meta.url));
@@ -34,7 +35,9 @@ async function submitExam(page) {
   await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Review before submitting', exact: true });
   await expect(dialog).toBeVisible();
-  await clickDialogButton(dialog, 'Submit and view results');
+  await clickAfterUiMotion(
+    dialog.getByRole('button', { name: 'Submit and view results', exact: true })
+  );
   await expect(page.getByRole('heading', { name: 'Exam results', exact: true })).toBeVisible();
 }
 
@@ -42,7 +45,7 @@ async function leaveToSetup(page) {
   await page.getByRole('button', { name: 'Back to quiz overview', exact: true }).click();
   const dialog = page.getByRole('dialog').filter({ hasText: 'Leave this exam?' });
   await expect(dialog).toBeVisible();
-  await clickDialogButton(dialog, 'Leave exam');
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Leave exam', exact: true }));
   await expect(dialog).toBeHidden();
   await expect(page.getByRole('radiogroup', { name: 'Exam mode', exact: true })).toBeVisible();
 }
@@ -158,12 +161,12 @@ for (const mode of ['standard', 'learning']) {
     await page.getByRole('radio', { name: modeLabel(other), exact: true }).check();
     await page.getByRole('button', { name: 'Start a new exam', exact: true }).click();
     const dialog = page.getByRole('dialog').filter({ hasText: 'Start a new exam?' });
-    await clickDialogButton(dialog, 'Cancel');
+    await clickAfterUiMotion(dialog.getByRole('button', { name: 'Cancel', exact: true }));
     await expect(dialog).toBeHidden();
     await expect(page.getByRole('button', { name: 'Start a new exam', exact: true })).toBeFocused();
     expect(await readDraft(page, 'aws-aip-c01')).toEqual(draft);
     await page.getByRole('button', { name: 'Start a new exam', exact: true }).click();
-    await clickDialogButton(dialog, 'Start mock exam');
+    await clickAfterUiMotion(dialog.getByRole('button', { name: 'Start mock exam', exact: true }));
     await expect(page.locator('.exam-mode-label')).toContainText(modeLabel(other));
     const fresh = await readDraft(page, 'aws-aip-c01');
     expect(fresh.feedbackMode).toBe(other);
@@ -225,17 +228,17 @@ test('sign-out clears Learning drafts and the next guest exam starts as Standard
 }) => {
   await page.goto('./#/quiz/aws-aip-c01?mode=exam');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await page.getByRole('radio', { name: 'Learning exam', exact: true }).check();
   await page.getByRole('button', { name: 'Start mock exam', exact: true }).click();
   await expect(page.locator('.exam-mode-label')).toContainText('Learning exam');
   await page.getByRole('button', { name: 'Flag', exact: true }).click();
   await page.getByRole('button', { name: 'Test account', exact: true }).click();
-  await selectMenuItem(page, 'Sign out');
+  await clickAfterUiMotion(page.getByRole('menuitem', { name: 'Sign out', exact: true }));
   const dialog = page.getByRole('dialog').filter({ hasText: 'Sign out?' });
   await expect(dialog).toContainText('end this exam');
-  await clickDialogButton(dialog, 'Sign out');
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Sign out', exact: true }));
   await expect(dialog).toBeHidden();
   await expect(page).toHaveURL(/#\/library$/);
   expect(await readDraft(page, 'aws-aip-c01', 'test-alice')).toBeNull();
@@ -272,7 +275,7 @@ test('sign-in during a guest exam returns to setup without creating an account d
   await expect(page.locator('.exam-mode-label')).toContainText('Learning exam');
   await page.getByRole('button', { name: 'Flag', exact: true }).click();
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('button', { name: 'Test account', exact: true })).toBeVisible();
   await expect(page.getByRole('radio', { name: 'Standard exam', exact: true })).toBeChecked();
   expect(await readDraft(page, 'aws-aip-c01')).toBeNull();
@@ -286,53 +289,48 @@ test('sign-in during a guest exam returns to setup without creating an account d
   expect(await readDraft(page, 'aws-aip-c01', 'test-alice')).toEqual(draft);
 });
 
-test('exam mode options support keyboard, languages, themes and phone to landscape layouts', async ({
-  page,
-}) => {
-  await page.goto('./#/quiz/aws-aip-c01?mode=exam');
-  const choices = page.getByRole('radiogroup', { name: 'Exam mode', exact: true });
-  const standard = choices.getByRole('radio', { name: 'Standard exam', exact: true });
-  const learning = choices.getByRole('radio', { name: 'Learning exam', exact: true });
-  await standard.focus();
-  await standard.press('ArrowRight');
-  await expect(learning).toBeChecked();
-  await expect(learning).toBeFocused();
-  for (const language of ['en', 'vi']) {
-    await page
-      .getByRole('button', { name: language === 'en' ? 'English' : 'Tiếng Việt', exact: true })
-      .click();
-    for (const theme of ['light', 'dark']) {
-      if ((await page.locator('html').getAttribute('data-theme')) !== theme) {
-        await page.locator('.theme-toggle').click();
-      }
-      for (const [width, height] of [
-        [320, 844],
-        [390, 844],
-        [412, 915],
-        [768, 1024],
-        [1280, 900],
-        [844, 390],
-      ]) {
-        await page.setViewportSize({ width, height });
-        await expect(
-          page.getByRole('radiogroup', {
-            name: language === 'en' ? 'Exam mode' : 'Chế độ thi',
-            exact: true,
-          })
-        ).toBeVisible();
-        expect(
-          await page.evaluate(
-            () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
-          )
-        ).toBe(true);
-        for (const option of await page.locator('.exam-feedback-option').all()) {
-          const box = await option.boundingBox();
-          expect(box.width).toBeGreaterThanOrEqual(44);
-          expect(box.height).toBeGreaterThanOrEqual(44);
-          expect(box.x).toBeGreaterThanOrEqual(0);
-          expect(box.x + box.width).toBeLessThanOrEqual(width);
+test(
+  'exam mode options support keyboard, languages, themes and phone to landscape layouts',
+  { tag: '@smoke' },
+  async ({ page }, testInfo) => {
+    await page.goto('./#/quiz/aws-aip-c01?mode=exam');
+    const choices = page.getByRole('radiogroup', { name: 'Exam mode', exact: true });
+    const standard = choices.getByRole('radio', { name: 'Standard exam', exact: true });
+    const learning = choices.getByRole('radio', { name: 'Learning exam', exact: true });
+    await standard.focus();
+    await standard.press('ArrowRight');
+    await expect(learning).toBeChecked();
+    await expect(learning).toBeFocused();
+    for (const language of ['en', 'vi']) {
+      await page
+        .getByRole('button', { name: language === 'en' ? 'English' : 'Tiếng Việt', exact: true })
+        .click();
+      for (const theme of ['light', 'dark']) {
+        if ((await page.locator('html').getAttribute('data-theme')) !== theme) {
+          await page.locator('.theme-toggle').click();
+        }
+        for (const { width, height } of viewportCases(testInfo.project.name)) {
+          await page.setViewportSize({ width, height });
+          await expect(
+            page.getByRole('radiogroup', {
+              name: language === 'en' ? 'Exam mode' : 'Chế độ thi',
+              exact: true,
+            })
+          ).toBeVisible();
+          expect(
+            await page.evaluate(
+              () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
+            )
+          ).toBe(true);
+          for (const option of await page.locator('.exam-feedback-option').all()) {
+            const box = await option.boundingBox();
+            expect(box.width).toBeGreaterThanOrEqual(44);
+            expect(box.height).toBeGreaterThanOrEqual(44);
+            expect(box.x).toBeGreaterThanOrEqual(0);
+            expect(box.x + box.width).toBeLessThanOrEqual(width);
+          }
         }
       }
     }
   }
-});
+);
