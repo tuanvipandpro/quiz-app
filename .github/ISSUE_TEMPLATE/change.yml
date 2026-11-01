@@ -5,7 +5,7 @@ body:
     attributes:
       value: |
         Create or reuse an issue before implementation. Agents must complete the assessment and verification plan before editing; reporters may mark information as needing investigation. Do not include credentials or private user data.
-        Follow the [tracking policy](https://github.com/tuanvipandpro/quiz-app/blob/master/AGENTS.md#tracking-every-change). Keep the issue open until required CI passes, implementation PRs merge and any required rollout is verified.
+        Follow the [tracking policy](https://github.com/tuanvipandpro/quiz-app/blob/master/docs/contributing.md#tracking-every-change). Keep the issue open until required CI passes, implementation PRs merge and any required rollout is verified.
         For minor color/logo/display-copy work, brief answers and one or two acceptance criteria are enough. Record a focused local check plan; no separate proposal or evidence report is needed. Keep generated screenshots/logs in artifacts or a minimal PR attachment.
   - type: dropdown
     id: change_type
@@ -49,7 +49,7 @@ body:
     id: verification
     attributes:
       label: Documentation and verification plan
-      description: Apply the type/risk matrix in AGENTS.md. Minor work uses focused checks; prose/template changes do not need full local runtime tests. Identify relevant docs/tests/manual checks and explain N/A. Required CI still applies.
+      description: Apply the type/risk matrix in docs/contributing.md. Minor work uses focused checks; prose/template changes do not need full local runtime tests. Identify relevant docs/tests/manual checks and explain N/A. Required CI still applies.
     validations:
       required: true
   - type: textarea

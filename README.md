@@ -4,7 +4,7 @@ Practice certification questions, take timed mock exams and read curated study g
 
 [Live app](https://quizmos.runs-at.dev/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)
 
-Every change follows the mandatory UI/UX and maintainability rules in `AGENTS.md`: assess user-facing impact, apply the reviewed UI/UX Pro Max guidance for UI work, check mobile/language/theme states, keep module responsibilities clear and centralize shared configuration. The PR checklist records evidence; CI enforces the automated checks, while visual and architectural judgment still require review.
+Core instructions live in the compact [AGENTS.md](AGENTS.md); task-specific policy is in the [contributor guide](docs/contributing.md). Read the sections relevant to the work. The PR checklist records evidence; CI enforces automated checks, while visual and architectural judgment require review.
 
 ## Local UI/UX skill
 
@@ -67,7 +67,7 @@ yarn sdd instructions apply --change custom-quizzes-42 --json
 
 Read [proposal](openspec/changes/custom-quizzes-42/proposal.md), [requirements](openspec/changes/custom-quizzes-42/specs/custom-quizzes/spec.md), [design](openspec/changes/custom-quizzes-42/design.md), [tasks](openspec/changes/custom-quizzes-42/tasks.md) and the [acceptance matrix](openspec/changes/custom-quizzes-42/verification.md). Implementation and production rollout have separate evidence; `planningComplete` or a successful build does not mean #42 is deployed. Review the [Rules/indexes release procedure](firebase/README.md) before merging/enabling persistent uploads.
 
-The default workflow is one feature/change in one PR, with specs and implementation evolving together. The separate setup PR is the one-time bootstrap. Existing project rules remain in AGENTS.md, and OpenSpec config references them rather than creating another competing rule set.
+The default workflow is one feature/change in one PR, with specs and implementation evolving together. The separate setup PR is the one-time bootstrap. OpenSpec config references AGENTS.md, which routes to the maintained [feature workflow](docs/contributing.md#spec-driven-work).
 
 ### Firestore baseline and local tests
 
@@ -128,7 +128,7 @@ openspec/                  Accepted baseline specs and the pending #42 change
 firebase/                  User-supplied rules baseline and provenance
 ```
 
-Legacy Copilot instructions and old manual harnesses are not required to build or test. Development guidance lives in this README, `AGENTS.md` and the local skill integration guide; public study guides are app content and remain published.
+Legacy Copilot instructions and old manual harnesses are not required to build or test. Use AGENTS.md to locate relevant contributor/skill guidance; public study guides are app content and remain published.
 
 ## Data changes and study-guide review
 
@@ -149,9 +149,9 @@ AIP-C01's reviewed fingerprint matches its 136-question bank. Existing guide war
 
 ## Delivery
 
-Every change starts with assessment and a GitHub tracking issue before implementation, including documentation, tests, data and configuration work. Reuse a matching open issue or create one with the [tracked-change form](https://github.com/tuanvipandpro/quiz-app/issues/new/choose). Follow [the tracking policy and work-type matrix](AGENTS.md#tracking-every-change) for feature, bugfix, hotfix, refactor, minor, docs, chore and data changes. Isolated color/logo/display-copy changes can use the [minor check plan](AGENTS.md#minor-changes-and-verification-effort): brief issue/PR, applicable formatting/lint/build and focused visual/smoke checks. Documentation and policy/template-only changes need content/link/format/config checks rather than full local runtime verification. Required CI remains separate and currently runs its full job for every PR.
+Every change starts with assessment and a GitHub tracking issue before implementation, including documentation, tests, data and configuration work. Reuse a matching open issue or create one with the [tracked-change form](https://github.com/tuanvipandpro/quiz-app/issues/new/choose). Follow [the tracking policy and work-type matrix](docs/contributing.md#tracking-every-change) for feature, bugfix, hotfix, refactor, minor, docs, chore and data changes. Isolated color/logo/display-copy changes can use the [minor check plan](docs/contributing.md#minor-changes-and-verification-effort): brief issue/PR, applicable formatting/lint/build and focused visual/smoke checks. Documentation and policy/template-only changes need content/link/format/config checks rather than full local runtime verification. Required CI remains separate and currently runs its full job for every PR.
 
-Link the issue and PR in both directions using `Tracking issue: #N` / `Refs #N`. Keep the issue open through implementation, CI and merge. Close as completed only after acceptance evidence, passing required CI on the latest head, merged PRs and any required post-merge deployment/configuration checks are recorded. Use explicit closure after verification instead of automatic closing keywords; see [the delivery lifecycle](AGENTS.md#implement-verify-merge-then-close).
+Link the issue and PR in both directions using `Tracking issue: #N` / `Refs #N`. Keep the issue open through implementation, CI and merge. Close as completed only after acceptance evidence, passing required CI on the latest head, merged PRs and any required post-merge deployment/configuration checks are recorded. Use explicit closure after verification instead of automatic closing keywords; see [the delivery lifecycle](docs/contributing.md#implement-verify-merge-then-close).
 
 Pull requests run lint, formatting, Node tests, catalog checks, production build isolation and Playwright. Successful master builds upload a verified artifact; the dependent deploy job publishes that exact artifact to the existing `gh-pages` branch. Deployment cannot run ahead of failed tests. No build-time Gemini key is required.
 
@@ -169,4 +169,4 @@ Before testing Google sign-in on the new origin, add `quizmos.runs-at.dev` to Fi
 
 Local `.vite/`, `dist/`, `artifacts/` and test reports are disposable outputs. Keep useful test logic in `tests/`, not in copied app files under a cache directory.
 
-Use the issue/PR for task reasoning and results. Keep generated screenshots/logs/traces in ignored local folders or CI artifacts, following the [evidence budget](AGENTS.md#documentation-and-evidence-budget). Commit only maintained documentation, source assets, or fixtures/baselines with an ongoing purpose; routine task evidence does not need its own repo report.
+Use the issue/PR for task reasoning and results. Keep generated screenshots/logs/traces in ignored local folders or CI artifacts, following the [evidence budget](docs/contributing.md#documentation-and-evidence-budget). Commit only maintained documentation, source assets, or fixtures/baselines with an ongoing purpose; routine task evidence does not need its own repo report.
