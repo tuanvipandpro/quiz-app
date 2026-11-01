@@ -1,0 +1,31 @@
+name: Backend CI
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Backend lint and formatting
+        run: |
+          yarn eslint worker src/utils/questionModel.js src/services/llm/explanationPrompt.js scripts/check-worker.mjs scripts/check-worker-migrations.mjs
+          yarn prettier --check worker src/utils/questionModel.js src/services/llm/explanationPrompt.js scripts/check-worker.mjs scripts/check-worker-migrations.mjs
+      - name: Shared question and prompt contracts
+        run: node --test tests/questionFormats.test.js tests/explanationPrompt.test.js
+      - run: yarn test:worker
+      - run: yarn worker:check
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: worker-build
+          overwrite: true
+          path: artifacts/app-ai/worker-build/
+          retention-days: 1
+          if-no-files-found: error
