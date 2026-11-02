@@ -2,107 +2,107 @@
 
 ## Context
 
-Khảo sát trên master `397f6b9`; xem [proposal](proposal.md) về mục tiêu. `useHashRoute` mặc định `#/library` ở initial state, popstate và hashchange. `parseRoute` fallback Library; `AppHeader` đưa logo về Library và đang đánh dấu Quiz Bank active cho mọi trang trừ My quizzes. Các test trong `tests/e2e/app.spec.js` và suite khác dùng `./` để vào Library cần được phân loại lại theo ý định test.
+Inspected master `397f6b9`; see the [proposal](proposal.md) for goals. `useHashRoute` defaults to `#/library` in initial state, popstate and hashchange. `parseRoute` falls back to Library; `AppHeader` sends the logo to Library and marks Quiz Bank active everywhere except My quizzes. Tests in `tests/e2e/app.spec.js` and other suites using `./` to open Library need classification by intent.
 
-`App.jsx` sở hữu theme, title, exam leave guard, account transition và chọn screen. Tokens đã có navy/dark, màu xanh dương và font Inter/system. `useCustomQuizzes` chỉ bật cho private quiz routes; public pages không cần service mới. Spec hiện tại chỉ có `user-profile-access`, không có spec landing/donate trùng lặp.
+`App.jsx` owns theme, title, exam leave guards, account transitions and screen selection. Tokens already provide navy/dark, blue and Inter/system fonts. `useCustomQuizzes` runs only on private quiz routes; public pages need no new service. The current specs include only `user-profile-access`, with no duplicate landing/donation spec.
 
 ## Goals / Non-Goals
 
-**Goals:** thêm public screens qua ranh giới sẵn có; entry route và preference rõ ràng; donate không cần bí mật hay dịch vụ chạy nền; chia task đủ nhỏ để review từng phần trong một feature PR.
+**Goals:** add public screens through existing boundaries; make entry routes/preferences explicit; support donations without secrets/background services; divide work into reviewable tasks within one feature PR.
 
-**Non-Goals:** đổi router/framework, SSR, route `/donate` không hash, redesign Library/quiz, sửa schema/version của quiz hoặc profile, thay triển khai App AI/Firebase, tích hợp nhận thông báo giao dịch.
+**Non-Goals:** replace the router/framework, add SSR or a hashless `/donate` route, redesign Library/quiz, change quiz/profile schema/version, alter App AI/Firebase deployment or integrate transaction notifications.
 
 ## Decisions
 
-Owner đã xác nhận ngày 01/11/2026: root hiển thị landing cho mọi người, “Start practicing” mở Library; Donate V1 chỉ hiển thị VietQR và thông tin chuyển khoản, chưa tự xác nhận đã nhận tiền. Hai quyết định này đã chốt và khớp specs hiện tại.
+The owner confirmed on 01/11/2026 that root shows landing for everyone, Start practicing opens Library, and Donate V1 only displays VietQR/transfer details without automatically confirming receipt. These decisions are settled and match the current specs.
 
-### 1. Navigation dùng hash hiện có
+### 1. Reuse existing hash navigation
 
-| URL                          | Trang                |
-| ---------------------------- | -------------------- |
-| Root không hash, `#/`        | Home                 |
-| `#/library`                  | Quiz Bank hiện tại   |
-| `#/donate`                   | Donate               |
-| `#/my-quizzes`, `#/quiz/...` | Hành vi hiện tại     |
-| Hash sai/không hỗ trợ        | Library như hiện tại |
+| URL                          | Trang                     |
+| ---------------------------- | ------------------------- |
+| Root without a hash, `#/`    | Home                      |
+| `#/library`                  | Existing Quiz Bank        |
+| `#/donate`                   | Donate                    |
+| `#/my-quizzes`, `#/quiz/...` | Existing behavior         |
+| Malformed/unsupported hash   | Existing Library fallback |
 
-Chỉ nhận `#/` và `#/donate` hợp lệ, không biến đường dẫn lạ thành trang donate. Giữ query/canonical alias và vị trí history. Mọi CTA dùng `go`/guard; logo và các nút Back trên Donate về Home, Quiz Bank vẫn trực tiếp. Donate có nút nổi bật ở header/hero và CTA cuối; nav mobile được wrap khi cần. Nút điều hướng section cuộn/focus nội trang mà không ghi hash như `#features` vào router.
+Accept only valid `#/` and `#/donate` routes; do not interpret unknown paths as donation pages. Preserve queries/canonical aliases and history position. Every CTA uses `go`/the guard; the logo and Donate Back buttons return Home, while Quiz Bank remains directly accessible. Donate has prominent header/hero buttons and a final CTA; mobile navigation wraps as needed. Section controls scroll/focus within the page without writing section hashes such as `#features` into the router.
 
-Revision 02/11/2026: 4 section Intro/Features/Featured/CTA trải hết chiều ngang, `min-height: calc(100svh - header)`; nội dung căn trong container đọc được. Dùng CSS scroll snap trên document chỉ trong Home, gỡ khi unmount; section dài được cuộn đủ nội dung trên phone/landscape/zoom, theo [snap-area overflow](https://www.w3.org/TR/css-scroll-snap-1/#snap-overflow). Wheel delta nhỏ được tích lũy để chuyển đúng một section rồi chờ chuyển động ổn định; chỉ áp dụng trong Home. Ctrl/Meta zoom, wheel ngang, input/dialog/dropdown và nested scroller giữ native behavior. Section dài cuộn nội dung trước khi bước sang section khác; touch/keyboard vẫn native. Listener/timer được dọn khi rời Home. CSS snap thuần không đủ vì wheel 120/240px quay lại section hiện tại. Desktop có pager bên phải; mobile dùng nút Next trong nội dung để không che CTA. Buttons có accessible name/current state và smooth scroll có kiểm soát; reduced motion dùng instant/proximity. Footer tái sử dụng bên trong section cuối. Back của Donate xóa riêng scroll position Home trước khi về section giới thiệu; browser Back/Forward vẫn giữ restoration hiện có.
+Revision 02/11/2026: 4 full-width Intro/Features/Featured/CTA sections with `min-height: calc(100svh - header)` and readable inner containers. Apply document CSS scroll snap only on Home and remove it on unmount; long sections remain fully scrollable on phones/landscape/zoom, following [snap-area overflow](https://www.w3.org/TR/css-scroll-snap-1/#snap-overflow). Accumulate small wheel deltas to advance exactly one section, then wait for motion to settle; apply this only on Home. Preserve native behavior for Ctrl/Meta zoom, horizontal wheels, inputs/dialogs/dropdowns and nested scrollers. Long sections scroll their content before advancing; touch/keyboard remain native. Clean up listeners/timers on leaving Home. CSS snap alone is insufficient because 120/240px wheel steps return to the current section. Desktop uses a right-side pager; mobile uses an in-content Next button to avoid covering CTAs. Buttons expose accessible names/current state and controlled smooth scrolling; reduced motion uses instant/proximity. Reuse the footer inside the final section. Donate Back clears only Home scroll position before returning to the introduction; browser Back/Forward preserve existing restoration.
 
-Review tiếp 02/11/2026: ambient layer crossfade xanh/teal/tím và accent đổi theo active section; reveal/transition chọn lọc khi section vào/ra, giữ nội dung focused rõ. Finale dùng navy/soft-blue cùng họ màu thay vì primary solid. Desktop thêm catalog counts từ registry, learning hints/path và provider details; mobile ẩn phần bổ trợ để giữ mật độ hiện tại. Donate dùng coffee illustration vector, steam nhẹ và palette ấm; giữ nguyên receiving/QR/copy/download/error/manual-status và Back Home. Không thêm amount picker vì QR tĩnh không khóa số tiền. Reduced motion tắt color/reveal/steam transitions. UI/UX queries: `learning platform dark editorial` → Product Demo + Features (không dùng AI-Native skin); `subtle gradient dark` → Aurora UI, áp dụng blend nhẹ; `color transition reduced motion` → Reduced Motion / Color Only / Excessive Motion. Reuse tokens/Ant Design, không thêm font hay animation library.
+Follow-up review 02/11/2026: crossfade blue/teal/purple ambient layers and change accents with the active section; use selective enter/exit reveal/transitions while keeping focused content clear. The finale uses related navy/soft-blue colors rather than solid primary. Desktop adds registry-based catalog counts, learning hints/paths and provider details; mobile hides supporting content to retain its density. Donate uses a vector coffee illustration, subtle steam and warm colors; preserve recipient/QR/copy/download/error/manual-status behavior and Back Home. Do not add an amount picker because the static QR does not lock an amount. Reduced motion disables color/reveal/steam transitions. UI/UX queries: `learning platform dark editorial` → Product Demo + Features (not the AI-Native skin); `subtle gradient dark` → Aurora UI with subtle blending; `color transition reduced motion` → Reduced Motion / Color Only / Excessive Motion. Reuse tokens/Ant Design without adding fonts or an animation library.
 
-Lý do: hash routes tải lại được trên GitHub Pages mà không cần rewrite/404 workaround. Đánh đổi: không hứa SEO hoặc link preview riêng cho từng hash route. Home có title/description/metadata thương hiệu; title client thay đúng theo Home/Donate/quiz. Chuyển trang mới xử lý heading focus/scroll; Back/Forward không phá restoration hiện có.
+Rationale: hash routes reload on GitHub Pages without rewrites/404 workarounds. Trade-off: do not promise separate SEO or link previews for each hash route. Home has brand title/description/metadata; client titles update for Home/Donate/quiz. New-route navigation handles heading focus/scroll without breaking existing Back/Forward restoration.
 
-### 2. Dark-first, tái sử dụng giao diện
+### 2. Dark-first with existing interface reuse
 
-Nếu có `quiz-app-theme` hợp lệ, dùng như hiện tại. Nếu chưa có và entry là Home/Donate, khởi tạo dark; nếu entry trực tiếp Library/quiz, giữ fallback hệ thống. Theme hiện hành được giữ qua CTA và lưu bằng cơ chế hiện có; không ép dark mỗi lần route đổi. Storage bị chặn không được làm trang trắng. EN/VN dùng catalog hiện có.
+Use a valid saved `quiz-app-theme` as before. Without one, Home/Donate entry initializes dark; direct Library/quiz entry retains the system fallback. Keep the current theme across CTAs and persist it through existing storage; do not force dark on every route change. Blocked storage must not produce a blank page. EN/VN use the existing catalog.
 
-Visual direction: nền navy hiện tại, typography rõ, logo QuizMos, accent xanh dương và họa tiết quỹ đạo nhẹ gợi tên Mos/cosmos. Landing ưu tiên nội dung và preview quiz gọn; không video autoplay, thư viện animation hoặc font mới. Dark là thiết kế chính, light vẫn đầy đủ. QR luôn đen/trắng với quiet zone, không invert theo theme hay chèn logo che mã.
+Visual direction: existing navy backgrounds, clear typography, the QuizMos logo, blue accents and subtle orbital motifs suggesting Mos/cosmos. Landing prioritizes content and a compact quiz preview; no autoplay video, animation library or new font. Dark is the primary design, with complete light support. QR remains black/white with a quiet zone, without theme inversion or a logo obscuring the code.
 
-Wireframe đề xuất:
+Proposed wireframe:
 
-1. Header hiện tại: logo/Home, Quiz Bank, My quizzes; utilities bên phải.
-2. Hero: “Small quizzes. Big confidence.” (copy nháp), một câu mô tả và “Start practicing”; desktop chia nội dung/preview, mobile xếp dọc.
-3. Ba lợi ích: Practice có giải thích, Exam có thời gian, Study guides theo bank có hỗ trợ.
-4. Featured banks AIP-C01/CCAR-P, lấy metadata/link từ registry.
-5. CTA luyện tập, lời mời ủng hộ nhỏ và footer.
+1. Existing header: logo/Home, Quiz Bank, My quizzes; utilities aligned right.
+2. Hero: Small quizzes. Big confidence. (draft copy), one description and Start practicing; split content/preview on desktop and stack on mobile.
+3. Three benefits: explained Practice, timed Exam and supported bank-specific study guides.
+4. Featured AIP-C01/CCAR-P banks using registry metadata/links.
+5. Practice CTA, a small support invitation and footer.
 
-Preview dùng component/mockup có nhãn minh họa, không chạy quiz session hoặc gọi AI. Không quảng cáo App AI vô hạn hoặc custom cloud quiz đã rollout đầy đủ. Trạng thái tính năng đối chiếu issue rollout thực tế trước chốt copy.
+The preview uses labelled illustrative components/mockups without starting a quiz session or calling AI. Do not advertise unlimited App AI or fully rolled-out custom cloud quizzes. Check actual rollout issues before finalizing feature claims.
 
-UI/UX search: `quiz exam landing dark --design-system` trả **Product Demo + Features** phù hợp bố cục, nhưng **Claymorphism**/font trẻ em không phù hợp. Retry `developer tool dark minimal --design-system` trả **Dark Mode (OLED)** phù hợp hướng dark; **FAQ/Documentation Landing** không phù hợp nên không dùng. Dùng local reference về contrast/focus/44px/reduced motion; giữ tokens/Ant Design thay vì áp nguyên palette, font, analytics hoặc dark-only của generator. Không persist một design system mới.
+UI/UX search: `quiz exam landing dark --design-system` returned **Product Demo + Features**, fitting the layout, but **Claymorphism**/children's fonts did not fit. Retry `developer tool dark minimal --design-system` returned **Dark Mode (OLED)**, fitting the dark direction; **FAQ/Documentation Landing** did not fit and was not applied. Use local contrast/focus/44px/reduced-motion references; retain tokens/Ant Design rather than adopting the generator's palette, fonts, analytics or dark-only behavior wholesale. Do not persist a new design system.
 
-### 3. Donate bằng QR tĩnh
+### 3. Static QR donations
 
-Một module cấu hình công khai dự kiến chứa `enabled`, ngân hàng/BIN, số tài khoản dạng string, tên người nhận, nội dung gợi ý và đường dẫn asset local. QR PNG chuẩn từ app ngân hàng/VietQR được owner xác minh; không có số tiền cố định. Không cần generator hoặc package mới trong V1. Nếu cần QR đổi theo amount, đó là scope mới cần đánh giá generator/payload và kiểm thử giải mã riêng.
+A proposed public configuration module contains `enabled`, bank/BIN, account number as a string, recipient name, suggested transfer note and a local asset path. The owner verifies the standard QR PNG from a banking app/VietQR; it has no fixed amount. V1 needs no new generator/package. Amount-dependent QR is separate scope requiring generator/payload review and independent decoding tests.
 
-Owner đã cung cấp ngày 01/11/2026 ngân hàng TPBank, tên người nhận và số tài khoản, sau đó yêu cầu implement trang donate. Thông tin nhận chuyển khoản nằm trong module cấu hình công khai cần cho trang này; issue/tài liệu không sao chép chi tiết tài khoản. Không có credential ngân hàng.
+The owner supplied TPBank, a recipient name and account number on 01/11/2026, then requested the donation page. Required transfer-recipient information belongs in the public configuration module; issues/docs do not repeat account details. There are no banking credentials.
 
-Mã ngân hàng `TPB` / BIN `970423` được đối chiếu qua [API ngân hàng VietQR](https://api.vietqr.io/v2/banks). Số tài khoản giữ dạng string, nguyên số 0 đầu. QR PNG 540px đã tạo offline bằng QR encoder có sẵn trong dependency Ant Design; không gọi API Generate/Quicklink hoặc thêm package vào app. CRC đối chiếu vector mẫu từ [VietQR](https://www.vietqr.io/generate); decoder độc lập jsQR 1.4.0 đọc ảnh và khớp payload: BIN/account/memo, initiation tĩnh, không tag amount. Tooling/decoder dùng một lần nằm ngoài Git. Owner đã quét QR và trả lời “Đúng người nhận và số tài khoản” ngày 01/11/2026; vì vậy cấu hình Donate được bật. Không thực hiện giao dịch hoặc dùng API tra cứu tài khoản.
+Bank code `TPB` / BIN `970423` was checked against the [VietQR banks API](https://api.vietqr.io/v2/banks). Preserve the account number as a string, including its leading 0. A 540px QR PNG was generated offline with an encoder already in Ant Design dependencies, without Generate/Quicklink calls or new app packages. CRC was checked against a [VietQR](https://www.vietqr.io/generate) reference vector; independent jsQR 1.4.0 decoding matched BIN/account/memo, static initiation and no amount tag. One-off tools/decoder remain outside Git. The owner scanned the QR and confirmed the correct recipient/account number on 01/11/2026, so Donate configuration is enabled. No transaction or account-lookup API was used.
 
-Đây là thông tin nhận chuyển khoản, không phải thông tin đăng nhập. Không thu password/OTP/API token. Không đưa vào GitHub Secrets với kỳ vọng giấu giá trị đã hiển thị trên website. Credential cần trong một tích hợp tương lai phải ở backend/Worker, không `VITE_*`.
+These are transfer-recipient details, not sign-in credentials. Do not collect passwords/OTPs/API tokens or store publicly displayed values in GitHub Secrets expecting privacy. Any future integration credential belongs in a backend/Worker, not `VITE_*`.
 
-Decode asset, đối chiếu BIN/account/no fixed amount, và để owner kiểm tra màn hình xác nhận người nhận trong app ngân hàng trước publish. Không thực hiện chuyển tiền để test. Nội dung gợi ý phải khớp payload nếu QR có memo; nếu QR không chứa memo, hướng dẫn nhập tay. Một lần thay recipient phải cập nhật config + asset cùng commit/build, dùng tên asset phiên bản mới để tránh ảnh cũ trong cache.
+Decode the asset, compare BIN/account/no-fixed-amount and have the owner inspect the banking app's recipient-confirmation screen before publishing. Do not send money as a test. Suggested notes must match QR memo content when present; otherwise instruct manual entry. Recipient changes update configuration and asset together in one commit/build, using a new versioned asset name to avoid stale cached images.
 
-Page hiển thị lý do ủng hộ, QR, chi tiết tài khoản, “Copy account”, “Copy transfer note”, “Download QR”, hướng dẫn chọn ảnh từ thư viện trong app ngân hàng nếu được hỗ trợ và cách copy thủ công. Static asset cùng origin hỗ trợ download và không gửi account/amount tới dịch vụ QR khi người dùng mở trang. QR lỗi hiện fallback văn bản; thiếu/chưa duyệt config thì trạng thái unavailable, không dùng tài khoản mẫu. Không có nút “Tôi đã thanh toán” hoặc thông báo nhận tiền tự động.
+The page shows the support rationale, QR, account details, Copy account, Copy transfer note, Download QR, instructions for selecting a gallery image in supported banking apps and manual-copy alternatives. A same-origin static asset supports downloading without sending account/amount data to a QR service on page load. QR failure exposes textual fallback; missing/unapproved configuration shows unavailable rather than a sample account. There is no I have paid button or automatic receipt notification.
 
-### 4. Boundaries và trạng thái
+### 4. Boundaries and state
 
-`LandingPage`/`DonatePage` render nội dung; helper nhỏ xác thực public config, hook clipboard quản lý kết quả nếu cần. Không thêm logic page lớn vào `App.jsx`. Asset dùng `BASE_URL`. Public content không chờ auth hay đọc dữ liệu học riêng; giữ nguyên hook auth/account isolation hiện có.
+`LandingPage`/`DonatePage` render content; a small helper validates public configuration and a clipboard hook manages async results when needed. Do not put large page logic in `App.jsx`. Assets use `BASE_URL`. Public content neither waits for auth nor reads private study data; retain existing auth hooks/account isolation.
 
-Không đổi ID/version/draft/checkpoint. Không có request QR bên ngoài nên không phát sinh race tạo QR; clipboard async cần bỏ qua completion sau unmount và tránh toast cũ. Tái dùng exam guard kể cả logo/Home để giữ một confirmation khi click nhanh, Back và Cancel. Client validation của config chỉ ngăn hiển thị sai; không xác minh ngân hàng hay thay thế Firestore Rules. Không sửa Rules hoặc quyền cloud.
+IDs/versions/drafts/checkpoints are unchanged. There is no external QR request, so no QR-generation race; async clipboard completion must be ignored after unmount and avoid stale toasts. Reuse the exam guard, including logo/Home navigation, for one confirmation during rapid clicks, Back and Cancel. Client configuration validation prevents incorrect display; it does not verify banks or replace Firestore Rules. Rules/cloud permissions are unchanged.
 
 ## Risks / Trade-offs
 
-- Thay root làm hỏng test cũ → test về Library dùng `./#/library`, giữ test root riêng cho Home; không làm yếu assertion cũ.
-- Thêm navigation làm mất phiên thi hoặc đổi account sai → regression guard/Back/Cancel/resume; giữ fixture account isolation.
-- QR sai hoặc ảnh bị crop/cache cũ → kiểm tra payload + owner preview, quiet zone và asset version, chặn activation nếu chưa xác minh.
-- QR không tự báo tiền về → copy hướng dẫn rõ; đối soát thủ công ngoài app. Không hứa miễn phí toàn bộ dịch vụ/chuyển khoản ngân hàng; V1 không thêm subscription QR/backend.
-- Metadata hash routes hạn chế → chỉ hứa metadata chung và title client; prerender/SEO riêng là scope sau.
+- Root changes break older tests → use `./#/library` for Library-intent tests and retain separate root/Home tests without weakening assertions.
+- New navigation loses an exam or mishandles account changes → add guard/Back/Cancel/resume regressions and preserve fixture account isolation.
+- Incorrect/cropped/stale-cached QR → verify payload and owner preview, quiet zone and versioned assets; block activation until verified.
+- QR does not report incoming money automatically → explain manual reconciliation outside the app. Do not promise that every banking service/transfer is free; V1 adds no QR subscription/backend.
+- Hash-route metadata limits → promise only shared metadata/client titles; separate prerendering/SEO remains future scope.
 
 ## Verification plan
 
-| Requirements | Kiểm tra khi implement                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------ |
-| CQ-HOME-01   | Unit route/alias/query/fallback; E2E root/CTA/deep link/refresh/Back-Forward                                       |
-| CQ-HOME-02   | Content/featured-link review; E2E start-as-guest; không fetch quiz/AI cho preview                                  |
-| CQ-HOME-03   | Unit preference: saved/empty/invalid/storage-error; E2E dark-first và saved light/EN/VN                            |
-| CQ-HOME-04   | E2E leave/cancel/resume/rapid-click, auth loading/error/account transition; focus/contrast/overflow                |
-| CQ-HOME-05   | E2E wheel/keyboard/section nav, kích thước panel, hash không đổi, reduced motion, cleanup snap; visual mobile/zoom |
-| CQ-HOME-06   | Donate visible ở header/hero, pointer/keyboard, trở về Home từ cả hai nút Back                                     |
-| CQ-DONATE-01 | E2E direct route, refresh, links về Home/Library khi guest                                                         |
-| CQ-DONATE-02 | Unit config/missing/invalid; decode asset và owner kiểm tra người nhận, amount, memo                               |
-| CQ-DONATE-03 | Clipboard success/denied, image error, download identity, leading-zero account, unmount                            |
-| CQ-DONATE-04 | Fixture network assertion không có donate IO; review không có trạng thái nhận tiền giả                             |
+| Requirements | Implementation verification                                                                                                    |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| CQ-HOME-01   | Unit route/alias/query/fallback; E2E root/CTA/deep link/refresh/Back-Forward                                                   |
+| CQ-HOME-02   | Content/featured-link review; E2E start-as-guest; no quiz/AI fetch for previews                                                |
+| CQ-HOME-03   | Unit preferences: saved/empty/invalid/storage-error; E2E dark-first and saved light/EN/VN                                      |
+| CQ-HOME-04   | E2E leave/cancel/resume/rapid-click, auth loading/error/account transition; focus/contrast/overflow                            |
+| CQ-HOME-05   | E2E wheel/keyboard/section navigation, panel geometry, unchanged hash, reduced motion, snap cleanup; mobile/zoom visual review |
+| CQ-HOME-06   | Donate visible in header/hero, pointer/keyboard use, Home return from both Back buttons                                        |
+| CQ-DONATE-01 | E2E direct route, refresh and Home/Library links as a guest                                                                    |
+| CQ-DONATE-02 | Unit configuration/missing/invalid; asset decoding and owner review of recipient, amount and memo                              |
+| CQ-DONATE-03 | Clipboard success/denied, image error, download identity, leading-zero account, unmount                                        |
+| CQ-DONATE-04 | Fixture network assertions show no donation I/O; review confirms no fabricated receipt state                                   |
 
-Planning chỉ chạy SDD validation, format và kiểm tra links. Implementation chạy `yarn verify`, UI-skill integrity và E2E phù hợp; dùng fixtures, không gọi live bank/Firebase/AI. Browser review 320/390/412/768/1280px và landscape, EN/VN × light/dark theo matrix có chọn lọc, reduced motion, keyboard/text zoom. Tái sử dụng viewport helpers, không nhân mọi test với mọi tổ hợp. CI tự chọn profile theo diff, không sửa pipeline trong feature này; tập hợp thay đổi trước push thay vì mỗi task một CI run.
+Planning runs only SDD validation, formatting and link checks. Implementation runs `yarn verify`, UI-skill integrity and relevant E2E using fixtures, without live banking/Firebase/AI calls. Browser review covers 320/390/412/768/1280px and landscape, EN/VN × light/dark through a selected matrix, reduced motion and keyboard/text zoom. Reuse viewport helpers rather than multiplying every test across every combination. CI selects its profile from the diff; do not change the pipeline in this feature. Batch coherent changes before pushing instead of triggering CI per task.
 
 ## Migration Plan
 
-Một feature PR `Refs #65`, chỉ khi user yêu cầu implementation. Bắt đầu với config disabled/fixture; owner có thể cung cấp QR trong khi làm landing. Chỉ bật donate thật sau xác minh; nếu chưa có dữ liệu thì báo rõ phần còn thiếu và giữ issue mở, không tự đổi accepted scope thành placeholder đã hoàn thành.
+Use one feature PR `Refs #65`, only after the user requests implementation. Start with disabled configuration/fixtures; the owner may supply QR while landing is developed. Enable real donations only after verification; if inputs are missing, report them and keep the issue open instead of redefining accepted scope as a completed placeholder.
 
-Sau CI latest head pass, chỉ merge theo yêu cầu. Kiểm tra post-merge CI/deploy, HTTPS root/Home/Library/Donate, deep link cũ, QR download trên production build và owner preview người nhận. Đóng issue sau toàn bộ accepted scope được nghiệm thu. Rollback bằng revert PR hoặc tắt config donate nếu chỉ QR lỗi; không migration dữ liệu cần đảo ngược.
+After exact-head CI passes, merge only when requested. Check post-merge CI/deployment, HTTPS root/Home/Library/Donate, legacy deep links, QR download in the production build and owner recipient preview. Close the issue only after all accepted scope is verified. Roll back by reverting the PR, or disabling donation configuration for a QR-only failure; no data migration needs reversal.
 
 ## Open Questions
 
-- QR tĩnh đã kiểm tra payload và owner đã xác nhận người nhận; Donate đã bật. Copy/layout EN/VN đã có trên implementation để review cùng PR. Không còn input sản phẩm chặn implementation; CI, merge và rollout vẫn theo delivery gates.
+- The static QR payload was checked and the owner confirmed the recipient; Donate is enabled. EN/VN copy/layout exist in the implementation for PR review. No product input blocks implementation; CI, merge and rollout still follow delivery gates.

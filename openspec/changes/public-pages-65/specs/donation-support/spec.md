@@ -2,76 +2,76 @@
 
 ## Purpose
 
-Cho phép người dùng tự nguyện ủng hộ QuizMos bằng chuyển khoản VietQR, với thông tin người nhận minh bạch và thao tác phù hợp cả máy tính lẫn điện thoại.
+Allow voluntary support for QuizMos through VietQR bank transfers, with transparent recipient details and usable desktop/phone interactions.
 
 ## ADDED Requirements
 
 ### Requirement: CQ-DONATE-05 Coffee invitation with complete transfer details
 
-Donate SHALL dùng hình ảnh/copy mời một ly cà phê, đồng thời giữ QR, ngân hàng, người nhận, số tài khoản, nội dung, copy/download, hướng dẫn mobile và trạng thái manual transfer. Số tiền vẫn do người dùng nhập trong app ngân hàng; không có bộ chọn số tiền gây hiểu nhầm về QR tĩnh.
+Donate SHALL use coffee-invitation imagery/copy while retaining QR, bank, recipient, account number, transfer note, copy/download, mobile instructions and manual-transfer status. Users still enter the amount in their banking app; no amount selector may misrepresent the static QR.
 
 #### Scenario: Support with a coffee
 
-- **WHEN** người dùng mở Donate ở EN/VN, desktop/phone hoặc gặp lỗi ảnh/copy/download
-- **THEN** coffee presentation và đầy đủ chi tiết/fallback vẫn đọc được; Back về Home và hành vi chuyển khoản giữ nguyên
+- **WHEN** Donate opens in EN/VN on desktop/phone or encounters image/copy/download errors
+- **THEN** the coffee presentation and complete details/fallbacks remain readable, Back returns Home and transfer behavior stays unchanged
 
 ### Requirement: CQ-DONATE-01 Optional public support
 
-Ứng dụng SHALL có trang `#/donate` truy cập được không cần đăng nhập, giải thích mục đích ủng hộ; mọi nút Back của trang SHALL về Home/landing. Donate SHALL tự nguyện, không chặn hoặc mở khóa chức năng học tập.
+The application SHALL provide public `#/donate` without sign-in, explaining the support purpose; every Back button on the page SHALL return Home/landing. Donations SHALL be voluntary and neither block nor unlock study features.
 
 #### Scenario: Visit and refresh
 
-- **WHEN** khách mở link Donate, refresh hoặc đi từ footer/landing
-- **THEN** trang Donate mở đúng, có nội dung EN/VN và light/dark theo preference chung; có thể tiếp tục luyện tập mà không chuyển tiền
+- **WHEN** a guest opens Donate, refreshes or navigates from the footer/landing
+- **THEN** Donate opens correctly with EN/VN content and light/dark following shared preferences, and practice remains available without a transfer
 
 #### Scenario: Return from donation
 
-- **WHEN** chọn nút Back ở đầu hoặc cuối Donate
-- **THEN** trở về Home/landing; Library vẫn truy cập được qua navigation chính
+- **WHEN** either the top or bottom Donate Back button is selected
+- **THEN** navigation returns Home/landing, and Library remains accessible through main navigation
 
 ### Requirement: CQ-DONATE-02 Verified static transfer details
 
-Trang SHALL chỉ cung cấp QR và thông tin nhận tiền đã được owner xác minh, cho phép công khai. QR SHALL khớp ngân hàng, số tài khoản và không khóa số tiền; tên hiển thị không được coi là bằng chứng xác minh người nhận từ ngân hàng.
+The page SHALL provide only QR/recipient information verified and approved for publication by the owner. The QR SHALL match the bank/account without locking an amount; a displayed name is not bank-provided recipient-verification evidence.
 
 #### Scenario: Verified recipient is available
 
-- **WHEN** cấu hình người nhận và QR hợp lệ đã được kiểm tra trên bản build
-- **THEN** trang hiện ngân hàng, tên người nhận, số tài khoản nguyên vẹn, nội dung gợi ý và QR rõ nét trên nền trắng; hướng dẫn kiểm tra người nhận và nhập số tiền trong app ngân hàng
+- **WHEN** valid recipient configuration and QR have been checked in the build
+- **THEN** the page shows bank, recipient name, intact account number, suggested transfer note and a clear QR on white, with instructions to verify the recipient and enter an amount in the banking app
 
 #### Scenario: Missing or invalid configuration
 
-- **WHEN** thiếu cấu hình, asset chưa xác minh hoặc dữ liệu không hợp lệ
-- **THEN** trang báo chưa sẵn sàng, không hiện QR hay thao tác chuyển tiền tới tài khoản mẫu; Home/Library vẫn hoạt động
+- **WHEN** configuration is missing, the asset is unverified or data is invalid
+- **THEN** the page shows unavailable without QR/transfer actions for a sample account, while Home/Library remain usable
 
 ### Requirement: CQ-DONATE-03 Copy and same-device use
 
-Trang SHALL cho phép sao chép số tài khoản/nội dung gợi ý và tải ảnh QR dùng trên cùng điện thoại, với phản hồi đúng kết quả thao tác. Thông tin chuyển khoản SHALL luôn có dạng văn bản đọc được.
+The page SHALL support copying the account number/suggested note and downloading the QR for use on the same phone, with feedback matching the actual action outcome. Transfer information SHALL always remain available as readable text.
 
 #### Scenario: Copy or download succeeds
 
-- **WHEN** người dùng sao chép số tài khoản có số 0 đầu, nội dung gợi ý hoặc tải QR
-- **THEN** dữ liệu giữ nguyên, ảnh tải về khớp người nhận và UI chỉ xác nhận thao tác copy/download, không xác nhận thanh toán
+- **WHEN** the user copies a leading-0 account number, suggested note or downloads the QR
+- **THEN** data remains intact, the downloaded image matches the recipient and UI confirms only copy/download actions, not payment
 
 #### Scenario: Clipboard or image fails
 
-- **WHEN** clipboard bị từ chối, tải QR thất bại hoặc ảnh không hiển thị
-- **THEN** UI giải thích lỗi gần thao tác, cho phép chọn/copy văn bản thủ công; ảnh lỗi không được trình bày như QR hợp lệ và không mất khả năng quay lại Library
+- **WHEN** clipboard permission is denied, QR download fails or the image cannot load
+- **THEN** UI explains the error near the action and supports manual text selection/copy; failed images are not presented as valid QR, and navigation back to Library remains available
 
 #### Scenario: Repeated action followed by navigation
 
-- **WHEN** người dùng bấm copy nhiều lần rồi rời trang trước khi thao tác hoàn tất
-- **THEN** kết quả cũ không gây lỗi hoặc thông báo gây hiểu nhầm trên trang mới và không tạo bất kỳ giao dịch nào
+- **WHEN** users repeatedly copy and leave before async work completes
+- **THEN** stale results neither cause errors/misleading notifications on the new page nor create transactions
 
 ### Requirement: CQ-DONATE-04 Honest status and data boundaries
 
-V1 SHALL không suy luận nhận tiền từ mở trang, quét/tải QR hay thao tác xác nhận phía client. Trang SHALL không yêu cầu credential ngân hàng, khóa API, thông tin người gửi hoặc ảnh chứng từ, và không ghi donor/giao dịch vào profile.
+V1 SHALL NOT infer receipt from opening the page, scanning/downloading QR or client-side confirmation. The page SHALL NOT request banking credentials, API keys, sender information or receipt images, or write donor/transaction data into profiles.
 
 #### Scenario: User has scanned or transferred
 
-- **WHEN** người dùng đã quét QR hoặc tự chuyển khoản trong app ngân hàng
-- **THEN** QuizMos không hiện trạng thái thanh toán thành công chưa được xác minh; hướng dẫn rõ trang chưa theo dõi giao dịch tự động
+- **WHEN** users scan the QR or transfer independently in their banking app
+- **THEN** QuizMos shows no unverified payment-success state and clearly explains that transactions are not tracked automatically
 
 #### Scenario: Guest or account change
 
-- **WHEN** khách hoặc bất kỳ tài khoản nào mở trang, đăng xuất hoặc đổi tài khoản
-- **THEN** chỉ thông tin người nhận đã duyệt công khai xuất hiện; không thêm đọc/ghi Firestore hoặc Worker cho donate
+- **WHEN** a guest or any account opens the page, signs out or switches accounts
+- **THEN** only owner-approved public recipient information appears, without adding Firestore or Worker donation reads/writes
