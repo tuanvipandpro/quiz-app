@@ -1,82 +1,82 @@
 # Cloudflare rollout evidence
 
-Trạng thái ngày 2026-11-01: production đã bật và smoke test Chrome thành công; xem [production activation](#production-activation--2026-11-01). Các mục bên dưới ghi lịch sử từng lần triển khai, không thay thế trạng thái mới nhất. Task 3.2/#53 còn mở cho acceptance bổ sung và PR cấu hình.
+Status on 2026-11-01: production is enabled and the Chrome smoke test passed; see [production activation](#production-activation--2026-11-01). The sections below record deployment history rather than overriding the latest status. Task 3.2/#53 remains open for additional acceptance and the configuration PR.
 
 ## Account and staging
 
-- Đã xác nhận Workers Free trên Dashboard: **Free / $0 / Current plan**, và user xác nhận cùng thông tin. Subscription API trả 403; không dùng `default_usage_model=standard` làm bằng chứng về gói thanh toán.
-- Device login thành công. OAuth được lưu qua Windows keyring; token không được in hoặc commit. Phiên lệnh Codex cần PATH Windows cập nhật để tìm helper keyring cài global.
-- D1 staging riêng: `quiz-app-ai-staging`, ID `3b0d6b06-7e9d-4dd1-95c8-57c3652ead89`, location hint APAC; migration `0001_ai_requests.sql` đã áp dụng.
-- URL staging: `https://quiz-app-ai-staging.tuanvipandpro.workers.dev`. Bản đầu tắt AI có version `9f4fb0c1-cb66-455f-b967-3ce89611573f`; bản tối ưu JWK/prompt v4 có version `bf29c051-1616-4d67-b034-7af9422a3148`.
-- Staging chỉ cho phép browser origins local 5173/5177 và vẫn bắt buộc Firebase ID token hợp lệ. Không tạo/bật Worker hoặc D1 production; repository variable cho GitHub Pages chưa được thay đổi.
-- `.env.development.local` (ignored) nối app local vào staging; production build không đọc biến riêng cho development này.
+- Workers Free was verified in the Dashboard: **Free / $0 / Current plan**, and confirmed by the user. The subscription API returned 403; `default_usage_model=standard` was not treated as billing-plan evidence.
+- Device login succeeded. OAuth is stored in the Windows keyring; its token was neither printed nor committed. Codex command sessions need an updated Windows PATH to find the globally installed keyring helper.
+- Separate staging D1: `quiz-app-ai-staging`, ID `3b0d6b06-7e9d-4dd1-95c8-57c3652ead89`, APAC location hint; migration `0001_ai_requests.sql` is applied.
+- Staging URL: `https://quiz-app-ai-staging.tuanvipandpro.workers.dev`. The initial AI-disabled version was `9f4fb0c1-cb66-455f-b967-3ce89611573f`; the optimized JWK/prompt v4 version was `bf29c051-1616-4d67-b034-7af9422a3148`.
+- Staging permits only local browser origins on 5173/5177 and still requires a valid Firebase ID token. No production Worker or D1 was created/enabled at this stage; the GitHub Pages repository variable was unchanged.
+- An ignored `.env.development.local` connects the local app to staging; production builds do not read this development-only variable.
 
 ## Live model evaluation
 
-Dùng public examples, ba câu public bank, một câu cố tình đánh dấu sai và một câu thiếu dữ kiện. Không gửi custom quiz riêng tư. Raw results và ảnh được giữ trong ignored `artifacts/app-ai/cloudflare/`.
+Used public examples, three public bank questions, one intentionally mislabelled answer and one underspecified question. No private custom quiz was sent. Raw results/screenshots remain in ignored `artifacts/app-ai/cloudflare/`.
 
-1. Llama 3.2 3B không đạt: request EN trả lời bằng VN; có chi tiết bịa và lập luận tự mâu thuẫn.
-2. Prompt riêng theo ngôn ngữ và system instruction sửa lỗi ngôn ngữ nhưng model nhỏ vẫn không xử lý tốt thiếu ngữ cảnh.
-3. Chọn `@cf/aisingapore/gemma-sea-lion-v4-27b-it` từ catalog khả dụng. Schema chính thức dùng chat-completion; adapter đọc đúng format và từ chối output rỗng, bị cắt hoặc tool-call.
-4. Mẫu SEA-LION 18 cases: đúng ngôn ngữ yêu cầu và đáp án chính về mặt ngữ nghĩa; tất cả kết thúc `stop`. Provider báo **397.608164 Neurons**. REST latency từ máy này **1.540–5.273s**, median **3.3365s**; đây không phải CPU time của Worker.
-5. Review phát hiện hai lỗi ở phần phân tích lựa chọn sai: đảo chiều quan hệ Step Functions/Lambda và nhầm ký hiệu một lựa chọn dropdown. Prompt v4 thu gọn App AI về đáp án chính/lý do cốt lõi, giữ phần chi tiết cho BYOK. Sáu cases tập trung chạy lại đều giữ đáp án/ngôn ngữ đúng và không lặp lại hai lỗi đó; vẫn có câu diễn đạt chưa tự nhiên. Đây là mẫu nhỏ, không chứng minh độ chính xác trên toàn bộ nội dung chứng chỉ.
+1. Llama 3.2 3B failed evaluation: an EN request produced VN output, fabricated details and contradictory reasoning.
+2. Language-specific prompts and system instructions fixed language selection, but the small model still handled missing context poorly.
+3. Selected `@cf/aisingapore/gemma-sea-lion-v4-27b-it` from the available catalog. Its official schema uses chat-completion; the adapter reads that format and rejects empty, truncated or tool-call output.
+4. The SEA-LION sample had 18 cases with the requested language and semantically correct primary answers; all ended with `stop`. The provider reported **397.608164 Neurons**. REST latency from this machine was **1.540–5.273s**, median **3.3365s**; this is not Worker CPU time.
+5. Review found two distractor-analysis errors: reversing the Step Functions/Lambda relationship and misidentifying a dropdown-choice label. Prompt v4 restricted App AI to the primary answer/core rationale, retaining detail for BYOK. Six focused reruns retained correct answers/languages without repeating those errors, though some wording remained unnatural. This small sample does not establish accuracy across all certification content.
 
-Không dùng paid plan, model yêu cầu thanh toán hay AI Gateway credits. Các báo cáo SEA-LION dùng `usage.neurons` do provider trả về; không dùng ước lượng theo hệ số của Llama 3B.
+No paid plan, payment-required model or AI Gateway credits were used. SEA-LION reports use provider-returned `usage.neurons`, not estimates based on Llama 3B coefficients.
 
 ## Live authentication and quota
 
-- User chỉ định phiên đăng nhập app hiện có và cho phép tối đa hai lời giải staging. Đã chạy đúng hai lượt: EN và VN, đều trả lời thành công; quota đổi **5 → 4 → 3**.
-- D1 query tổng hợp xác nhận **2 records ở trạng thái `done`**, không đọc/in UID hoặc nội dung riêng tư trong kết quả kiểm tra quota.
-- Trước và sau thử: cùng câu 1/136, 0/136 đã trả lời; không chọn đáp án, đổi câu hoặc bấm Save position. Ngôn ngữ UI đã khôi phục EN. BYOK keys không bị chỉnh sửa.
-- Anonymous `/v1/usage` trả 401 `AUTH` đúng contract. Live screenshots chứa tên tài khoản được giữ local/ignored, không đưa lên repo công khai.
+- The user designated the existing signed-in app session and authorized at most two staging explanations. Exactly two were run, EN and VN; both succeeded and quota changed **5 → 4 → 3**.
+- An aggregate D1 query confirmed **2 records in `done` state**, without reading/printing UID or private content in quota evidence.
+- Before/after testing: the same question 1/136, 0/136 answered; no answers were selected, questions changed or Save position pressed. UI language was restored to EN. BYOK keys were not edited.
+- Anonymous `/v1/usage` returned 401 `AUTH` as contracted. Live screenshots containing the account name remain local/ignored and are not published in the repository.
 
 ## Worker CPU
 
-- GraphQL Analytics cho thấy cold authentication ban đầu dùng X.509 khoảng **15.347 ms**, dù request vẫn thành công nhờ độ linh hoạt của runtime. Không coi đây là đạt mục tiêu Free 10 ms.
-- Chuyển sang JWK endpoint được công bố trong Firebase OIDC discovery, vẫn dùng jose/WebCrypto và đầy đủ signature/issuer/audience/time/non-anonymous checks. Cache public key/imported key giữ TTL và rotation semantics; bổ sung kiểm thử ký RSA/JWK thật.
-- Sau tối ưu, cửa sổ smoke test có **6 invocations**, **0 Worker errors**; p99 cao nhất trong các nhóm là **6.066 ms** và **7.271 ms**. Đơn vị microseconds được xác nhận qua GraphQL schema introspection.
-- Đây là bằng chứng cold/warm của một mẫu nhỏ trên payload thật, chưa phải load test hay bằng chứng worst-case 12 KiB prompt tại mọi POP.
+- GraphQL Analytics showed initial cold X.509 authentication around **15.347 ms**, although requests succeeded through runtime flexibility. This was not treated as meeting the Free 10 ms target.
+- Switched to the JWK endpoint published in Firebase OIDC discovery, retaining jose/WebCrypto and complete signature/issuer/audience/time/non-anonymous checks. Public/imported-key caching preserves TTL/rotation semantics; real RSA/JWK signing tests were added.
+- After optimization, the smoke window had **6 invocations**, **0 Worker errors**; the highest grouped p99 values were **6.066 ms** and **7.271 ms**. Microsecond units were confirmed through GraphQL schema introspection.
+- This is cold/warm evidence from a small real-payload sample, not a load test or worst-case 12 KiB prompt evidence across every POP.
 
 ## Isolated worktree — 2026-11-01
 
-- Chuyển session App AI sang managed worktree riêng, branch `codex/app-ai-worker`, sau khi checkout gốc được session CTFL sử dụng. Không đổi branch hoặc sửa các thay đổi CTFL ở checkout gốc.
-- Dev server riêng chạy 5177, có `.env.development.local` riêng (ignored). Browser đã mở Quiz Bank; module thực tế trên 5177 chứa App AI hook và staging URL. Origin mới có phiên đăng nhập riêng.
-- Staging version `d69a6f3f-f5a8-4e89-a928-e10bda988f82` bổ sung `localhost:5177` và `127.0.0.1:5177` vào allowlist, giữ nguyên 5173. Production config không đổi.
-- Live CORS checks: OPTIONS từ 5177 trả 204; GET usage chưa đăng nhập từ hai host 5177 và localhost:5173 trả 401 AUTH với đúng allow-origin; origin ngoài danh sách trả 403 ORIGIN, không allow-origin. Không gọi inference hoặc dùng thêm quota thật.
-- `yarn install --frozen-lockfile` và `yarn verify` trong worktree mới pass, gồm 147 Node tests và production build/isolation. Không chạy lại E2E local vì session khác đang sử dụng cổng test; UI chỉ smoke desktop EN/dark, không có thay đổi layout.
+- Moved the App AI session into a separate managed worktree on branch `codex/app-ai-worker` after the CTFL session took the original checkout. The original checkout's branch and CTFL changes were untouched.
+- The separate dev server uses 5177 and its own ignored `.env.development.local`. Browser inspection opened Quiz Bank; the actual module on 5177 contained the App AI hook and staging URL. The new origin has its own sign-in session.
+- Staging version `d69a6f3f-f5a8-4e89-a928-e10bda988f82` added `localhost:5177` and `127.0.0.1:5177` to the allowlist while retaining 5173. Production configuration was unchanged.
+- Live CORS checks: OPTIONS from 5177 returned 204; unauthenticated GET usage from both 5177 hosts and localhost:5173 returned 401 AUTH with the correct allow-origin; an unlisted origin returned 403 ORIGIN without allow-origin. No inference or additional live quota was used.
+- `yarn install --frozen-lockfile` and `yarn verify` passed in the new worktree, including 147 Node tests and production build/isolation. Local E2E was not rerun because another session occupied the test port; UI smoke covered desktop EN/dark only, with no layout change.
 
 ## Production provisioning — 2026-11-01
 
-- PR #54 đã merge vào master tại `552eda7`; CI và website deployment sau merge đã pass. Bước này không tự deploy hoặc bật Worker.
-- Theo yêu cầu setup của user, đã tạo D1 production `quiz-app-ai` (`2be26a7b-7393-4f50-a857-990d8a1a7d29`, APAC) và áp dụng migration `0001_ai_requests.sql`. Read-only schema check xác nhận table, hai indexes và trigger `ai_reserve`; không đọc hoặc sửa dữ liệu quiz/profile.
-- Worker production tại `https://quiz-app-ai.tuanvipandpro.workers.dev`, bản cấp phát đầu `f1b08ebb-53b8-410b-99ea-e4ada7aaf399`, hiện chạy prompt v5 ở version `69e7f7a7-b3d1-428a-89bb-abe732409d2f`, dùng binding `DB`/`AI`, cron cleanup và `APP_AI_ENABLED=false`. Origin production preflight trả 204, request chưa đăng nhập trả 401 AUTH với đúng allow-origin, origin ngoài danh sách trả 403 ORIGIN.
-- Chưa cấu hình GitHub variable `VITE_APP_AI_URL`, chưa rebuild frontend để bật App AI. Không thêm secret hay đổi gói Cloudflare; dùng cùng account đã được owner xác nhận Workers Free.
-- User cho phép tối đa bốn lượt Explain cho rollout này: hai staging kiểm tra payload lớn và hai production với UI EN/VN, lời giải luôn tiếng Việt theo lựa chọn mới của user. Chưa sử dụng lượt nào vì phiên app đã đăng xuất và Google account chooser không hoàn tất; không trích xuất browser token hoặc thay auth bằng fixture trên môi trường thật. Mẫu kiểm thử synthetic EN/VN đã được validator chấp nhận, prompt v5 12,077 bytes cho cả hai UI locales trong cap 12,288; chưa có bằng chứng inference/CPU live của các mẫu này.
-- Kết quả kiểm tra, PR cấu hình và trạng thái tiếp tục được theo dõi trong [issue #53](https://github.com/tuanvipandpro/quiz-app/issues/53). Raw logs và mẫu kiểm thử nằm trong ignored `artifacts/production-rollout/`.
+- PR #54 merged into master at `552eda7`; post-merge CI and website deployment passed. This step did not automatically deploy or enable the Worker.
+- At the user's setup request, created production D1 `quiz-app-ai` (`2be26a7b-7393-4f50-a857-990d8a1a7d29`, APAC) and applied migration `0001_ai_requests.sql`. A read-only schema check confirmed the table, two indexes and `ai_reserve` trigger; quiz/profile data was neither read nor modified.
+- Production Worker: `https://quiz-app-ai.tuanvipandpro.workers.dev`, initially provisioned as `f1b08ebb-53b8-410b-99ea-e4ada7aaf399`, then running prompt v5 at version `69e7f7a7-b3d1-428a-89bb-abe732409d2f` with `DB`/`AI` bindings, cleanup cron and `APP_AI_ENABLED=false`. Production-origin preflight returned 204, unauthenticated requests returned 401 AUTH with the correct allow-origin, and unlisted origins returned 403 ORIGIN.
+- The GitHub variable `VITE_APP_AI_URL` was not configured and the frontend was not rebuilt to enable App AI at this stage. No secret or Cloudflare plan change was added; the account remained the one the owner confirmed as Workers Free.
+- The user authorized at most four Explain calls for this rollout: two staging large-payload checks and two production EN/VN UI checks, with explanations always Vietnamese per the new preference. None had been used because the app session was signed out and Google account selection did not finish; no browser token was extracted or real auth replaced with fixtures. Synthetic EN/VN samples passed validation with prompt v5 at 12,077 bytes for both UI locales within the 12,288 cap; these samples still lacked live inference/CPU evidence.
+- Results, the configuration PR and status remain tracked in [issue #53](https://github.com/tuanvipandpro/quiz-app/issues/53). Raw logs/test samples are in ignored `artifacts/production-rollout/`.
 
-## Chính sách lời giải tiếng Việt — prompt v5
+## Vietnamese explanation policy — prompt v5
 
-User đã chốt lời giải luôn bằng tiếng Việt, giữ nguyên thuật ngữ kỹ thuật tiếng Anh, độc lập toggle VN/EN. Shared prompt áp dụng cho App AI/BYOK; Worker chấp nhận language en/vi từ client cũ nhưng chuẩn hóa về vi. Cache/retry không tiêu tốn thêm lượt khi chỉ đổi UI locale; result region khai báo lang=vi. Không sửa câu hỏi/options hoặc dữ liệu quiz.
+The user confirmed that explanations always use Vietnamese while preserving English technical terms, independently of VN/EN. The shared prompt applies to App AI/BYOK; the Worker accepts legacy language en/vi but normalizes to vi. Cache/retry does not spend another attempt solely because UI locale changes; the result region declares lang=vi. Questions/options and quiz data are unchanged.
 
-Staging đã deploy v5 ở version `9cedad12-fdfb-4b90-8381-24462b359f69`; production v5 vẫn disabled. Các benchmark live v3/v4 phía trên là bằng chứng lịch sử, không phải kiểm chứng chất lượng lời giải v5. Kiểm thử v5 hiện dùng fixtures; cần hoàn tất live smoke trong giới hạn đã được user cho phép trước khi bật production.
+Staging deployed v5 as `9cedad12-fdfb-4b90-8381-24462b359f69`; production v5 remained disabled. The live v3/v4 benchmarks above are historical evidence, not v5 explanation-quality verification. v5 checks currently use fixtures; live smoke must finish within the user's authorized limit before production enablement.
 
-## Lời giải đầy đủ và quota 20 — prompt v6
+## Complete explanations and quota 20 — prompt v6
 
-User yêu cầu phân tích câu hỏi, giải thích từng đáp án đúng và từng lựa chọn sai/kém phù hợp, sau đó yêu cầu tăng quota. Prompt v6 áp dụng đủ bốn phần cho App AI/BYOK, giữ tiếng Việt và English technical terms; App AI có trần output 1536 tokens. Migration 0002 nâng quota cá nhân 5 lên 20, giữ global 100/ngày và dữ liệu.
+The user requested question analysis, justification for every correct answer and every wrong/less-suitable choice, followed by a quota increase. Prompt v6 applies all four sections to App AI/BYOK, retaining Vietnamese and English technical terms; App AI caps output at 1536 tokens. Migration 0002 raises personal quota from 5 to 20 while preserving global 100/day and data.
 
-Đã áp dụng migration và deploy staging version `9c8b11cc-b7a3-4c87-ab6a-c6a21bd58f92`, production version `509bbd39-1e69-4e60-abdf-99c300b78c79`. Production vẫn disabled. Aggregate ledger trước/sau migration: staging giữ nguyên 5 records và 5085 ký tự kết quả đã lưu; production giữ nguyên 0 records. Không reset số lượt đã dùng.
+Applied the migration and deployed staging version `9c8b11cc-b7a3-4c87-ab6a-c6a21bd58f92` and production version `509bbd39-1e69-4e60-abdf-99c300b78c79`. Production remained disabled. Aggregate ledger before/after migration: staging retained 5 records and 5085 stored result characters; production retained 0 records. Used attempts were not reset.
 
-Local verification: 182 Node tests, 15 Worker/auth/migration tests và 20 AI browser cases pass. UI fixtures kiểm tra bốn heading, từng lựa chọn và long-token wrapping trong các viewport/themes hiện có; không phải đánh giá chất lượng model. User tự test live và cung cấp output bốn phần, sau đó xác nhận bản hiện tại OK; không chạy thêm lượt inference để kiểm tra format. Chrome đã hiển thị phiên đăng nhập và quota staging thật; blocker đăng nhập ban đầu đã được giải quyết. Chưa có phép đo live chất lượng/CPU v6 toàn diện; task 3.2 vẫn mở.
+Local verification: 182 Node tests, 15 Worker/auth/migration tests and 20 AI browser cases passed. UI fixtures check four headings, each choice and long-token wrapping in existing viewports/themes; they do not evaluate model quality. The user manually tested live, supplied four-part output and accepted the current version; no additional inference was run for formatting. Chrome showed the signed-in session and real staging quota, resolving the initial sign-in blocker. Comprehensive live v6 quality/CPU measurement is still missing; task 3.2 remains open.
 
 ## Production activation — 2026-11-01
 
-- Sau khi user tự kiểm tra prompt v6, chấp nhận kết quả và yêu cầu merge PR #63, tiếp tục setup/activation đã được user cho phép. PR #63 đã merge ở `c33295ba45b9e18bdd32f925566ca0c12bb244ad`.
-- Review analytics staging chỉ tính từ thời điểm deploy v6 `9c8b11cc-b7a3-4c87-ab6a-c6a21bd58f92`: **6 requests, 0 errors**, CPU p99 cao nhất trong các nhóm **9.123 ms**. Mẫu cũ v5 không được tính là bằng chứng v6. Đây là invocations, không phải số lượt inference, và chưa chứng minh worst-case payload/POP.
-- Worker dry-run pass; production đã deploy `APP_AI_ENABLED=true`, version `d46400b0-f4c8-496e-b808-94786c297b8c`. Không đổi model, quota, D1, allowlist hoặc gói Workers Free. Read-only settings xác nhận flag đang bật; preflight production trả 204, usage chưa đăng nhập trả 401 AUTH, origin ngoài danh sách trả 403 không allow-origin.
-- Đặt GitHub Actions repository Variable `VITE_APP_AI_URL=https://quiz-app-ai.tuanvipandpro.workers.dev`, không thêm secret. Re-run job verify và dependencies của [master run 41312669951, attempt 2](https://github.com/tuanvipandpro/quiz-app/actions/runs/41312669951/attempts/2) đã pass và deploy website. Các job không phụ thuộc giữ kết quả thành công trước đó. HTML production HTTP 200 phục vụ `/assets/index-BFrdsZ45.js`, khớp gh-pages; asset HTTP 200 chứa production API URL, không chứa staging URL.
-- Chrome trên `https://quizmos.runs-at.dev` khôi phục phiên tài khoản được chỉ định. Dùng **1/2 lượt production** đã được user cho phép; chưa dùng 2 lượt staging của đợt rollout này. Public CCAR-P câu 50 trả lời **C**, đủ bốn phần tiếng Việt và giải thích A/B/D theo đúng vấn đề minh bạch/scope/timeline. Quota **19→18**; VN rồi EN giữ cùng kết quả và 18/20, result region `lang=vi`. Không chọn đáp án, đổi câu hoặc Save position: trước/sau vẫn câu 50/126, 0 câu đã trả lời, checkpoint giữ nguyên. Không dùng hoặc sửa BYOK key. Screenshot/ledger giữ ignored trong `artifacts/production-rollout/`.
-- Analytics production sau enable trong mẫu kiểm tra: **10 requests, 0 errors**, CPU p99 cao nhất trong các nhóm **9.207 ms**. Mẫu gồm các loại requests tới Worker, không chỉ inference. Kết quả này cùng mẫu chất lượng đã được user chấp nhận xác nhận rollout hoạt động; không đại diện cho mọi câu chứng chỉ, payload sát cap hoặc mọi POP. Neurons benchmark lịch sử phía trên không được gán thành số đo chi phí riêng của v6.
+- After the user manually checked prompt v6, accepted its output and requested PR #63 merge, continued the already-authorized setup/activation. PR #63 merged at `c33295ba45b9e18bdd32f925566ca0c12bb244ad`.
+- Staging analytics review starts only at v6 deployment `9c8b11cc-b7a3-4c87-ab6a-c6a21bd58f92`: **6 requests, 0 errors**, highest grouped CPU p99 **9.123 ms**. Older v5 samples are not attributed to v6. These are invocations rather than inference counts, and do not establish worst-case payload/POP behavior.
+- Worker dry-run passed; production deployed with `APP_AI_ENABLED=true`, version `d46400b0-f4c8-496e-b808-94786c297b8c`. Model, quota, D1, allowlist and Workers Free were unchanged. Read-only settings confirmed enablement; production preflight returned 204, unauthenticated usage 401 AUTH, and unlisted origins 403 without allow-origin.
+- Set the GitHub Actions repository Variable `VITE_APP_AI_URL=https://quiz-app-ai.tuanvipandpro.workers.dev`, without adding a secret. Rerunning verify and its dependencies in [master run 41312669951, attempt 2](https://github.com/tuanvipandpro/quiz-app/actions/runs/41312669951/attempts/2) passed and deployed the website. Independent jobs retained their earlier successful results. Production HTML HTTP 200 served `/assets/index-BFrdsZ45.js`, matching gh-pages; the HTTP 200 asset contained the production API URL and no staging URL.
+- Chrome on `https://quizmos.runs-at.dev` restored the designated account session. Used **1/2 authorized production calls**; neither of the 2 staging calls in this rollout was used. Public CCAR-P question 50 returned **C**, four Vietnamese sections and A/B/D reasoning aligned with transparency/scope/timeline constraints. Quota **19→18**; VN then EN preserved the answer and 18/20, with result region `lang=vi`. No answer was selected, question changed or Save position pressed: before/after remained question 50/126, 0 answered and the same checkpoint. BYOK keys were neither used nor edited. Screenshot/ledger remain ignored in `artifacts/production-rollout/`.
+- The production sample after enablement had **10 requests, 0 errors**, highest grouped CPU p99 **9.207 ms**. It includes different Worker request types, not only inference. Together with the user-accepted quality sample, it confirms operational rollout, not all certification questions, near-cap payloads or every POP. Historical Neurons measurements above are not attributed as v6-specific costs.
 
 ## Pending acceptance
 
-Production activation và một lượt smoke thật đã hoàn tất; giữ task 3.2 và issue #53 mở vì review chất lượng rộng hơn/CPU tại biên payload chưa hoàn tất và PR ghi nhận cấu hình còn chờ CI/merge. Không dùng một câu trả lời tốt hoặc p99 của mẫu nhỏ để đánh dấu các tiêu chí này đã xong. Không tự chạy thêm benchmark/inference ngoài giới hạn được user cho phép; tests thường ngày tiếp tục dùng fixtures.
+Production activation and one live smoke call are complete; keep task 3.2 and issue #53 open because wider quality/near-cap CPU review is unfinished and the configuration PR still awaits CI/merge. One good answer or small-sample p99 does not complete those criteria. Do not run benchmarks/inference beyond user-authorized limits; routine tests continue using fixtures.

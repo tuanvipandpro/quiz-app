@@ -4,6 +4,7 @@ React 19, Vite, Ant Design; Node 24 LTS and Yarn 1.22.22 with tracked `yarn.lock
 
 ## Core workflow
 
+- Write documentation in English.
 - Assess the request and reuse/create a GitHub issue **before implementation**, including docs/tests/config/data changes. Read-only investigation may precede tracking. Routine issue creation/updates are authorized by a change request; if tracking is unavailable, retain a draft and report the blocker before editing.
 - Classify purpose and risk: `feature`, `bugfix`, `hotfix`, `refactor`, `minor`, `docs`, `chore`, `data`. Minor means isolated presentation changes preserving behavior and meaning; broad or higher-risk work needs broader checks.
 - Keep minor issue/PR descriptions brief. Docs/policy/templates use format/link/config checks; minor UI uses applicable lint/build and focused visual checks. Other implementation changes use `yarn verify` and relevant regressions. Repeat checks only for changes, failures or unresolved concerns. CI selects components and docs/assets/full from the diff; labels never bypass checks.

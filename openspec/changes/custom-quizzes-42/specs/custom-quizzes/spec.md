@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Cho phép người dùng lưu và quản lý quiz cá nhân riêng tư, tiếp tục học trên nhiều thiết bị, với quota và quy tắc tiến trình rõ ràng. Đây là hợp đồng cho phần triển khai tiếp theo của issue #42, chưa mô tả chức năng đã có trong PR setup.
+Allow users to save and manage private personal quizzes and continue studying across devices with explicit quota/progress rules. This is the contract for subsequent implementation of issue #42, not functionality already delivered by the setup PR.
 
 ## ADDED Requirements
 

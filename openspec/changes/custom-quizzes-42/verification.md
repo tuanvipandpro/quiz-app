@@ -2,21 +2,21 @@
 
 ## Status
 
-Implementation/local acceptance có bằng chứng. **Production chưa được bật hoặc xác minh**: tasks 5.2 (đối chiếu Rules/indexes đang publish) và 5.3 (rollout) còn pending. Giữ feature PR ở Draft đến khi giải quyết các prerequisites. Không đóng #42 hoặc archive chỉ dựa trên local tests/CI.
+Implementation/local acceptance has evidence. **Production has not been enabled or verified**: tasks 5.2 (published Rules/index comparison) and 5.3 (rollout) remain pending. Keep the feature PR in Draft until prerequisites are resolved. Do not close #42 or archive based only on local tests/CI.
 
 ## Preserved baseline
 
-- `firebase/baseline/firestore.rules` giữ bản do người dùng cung cấp; hash/provenance gốc ở `firebase/rules-baseline.json`, không được refresh để chấp nhận candidate.
-- 7 test lịch sử ở `tests/firestore/baseline.test.js` tiếp tục kiểm chứng owner/profile/checkpoints, guest/other UID, enumeration, descendants và unknown paths.
-- `firebase/firestore.rules` là candidate. `tests/firestore/customQuizzes.test.js` kiểm chứng bằng SDK thật, gồm quyền profile/checkpoint cũ dưới policy mới. Auth context được mô phỏng; assertions không dùng Admin SDK hoặc rules-disabled access.
+- `firebase/baseline/firestore.rules` preserves the user-supplied policy; original hash/provenance is in `firebase/rules-baseline.json` and must not be refreshed to accept the candidate.
+- The 7 historical tests in `tests/firestore/baseline.test.js` continue to verify owner/profile/checkpoints, guest/other UID, enumeration, descendants and unknown paths.
+- `firebase/firestore.rules` is the candidate. `tests/firestore/customQuizzes.test.js` uses real SDK contexts, including existing profile/checkpoint access under the new policy. Auth is simulated; assertions do not use Admin SDK or Rules-disabled access.
 
 ## Feature acceptance matrix
 
-Kết quả dưới đây là **local**. Browser tests thay auth/profile/custom IO bằng fixtures; quyền/quota/transaction được kiểm chứng riêng bằng client SDK và Rules trên demo Emulator. Screenshots fixture không chứng minh production đã lưu được.
+The results below are **local**. Browser tests replace auth/profile/custom I/O with fixtures; permissions/quota/transactions are verified separately through the client SDK and Rules in the demo Emulator. Fixture screenshots do not establish production persistence.
 
 | ID    | Evidence actually exercised                                                                                                                                                              | Local result                | Production |
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ---------- |
-| CQ-01 | SDK owner CRUD/list, deny guest/other UID; hai authenticated SDK contexts đọc cùng nội dung; UI reload/second page, logout và Bob deep link                                              | Passed                      | Pending    |
+| CQ-01 | SDK owner CRUD/list, deny guest/other UID; two authenticated SDK contexts read the same content; UI reload/second page, logout and Bob deep link                                         | Passed                      | Pending    |
 | CQ-02 | SDK whitelist slot-1..3, deny fourth/arbitrary IDs; deletion frees slot; UI 0/3..3/3, local preview excluded, full quota offers replace/delete                                           | Passed                      | Pending    |
 | CQ-03 | Node 1/100 and five formats; reject 0/101, duplicate IDs, bad mappings, malformed JSON; Rules reject forged count; real SDK round-trip five formats                                      | Passed                      | Pending    |
 | CQ-04 | UTF-8/envelope size boundary; large valid SDK save and actual server rejection over 1 MiB; UI budget and SIZE/REJECTED failures keep preview                                             | Passed                      | Pending    |
