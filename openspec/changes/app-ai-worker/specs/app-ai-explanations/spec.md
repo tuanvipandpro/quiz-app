@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Cung cấp lời giải AI có quota cho tài khoản đăng nhập, giữ BYOK cho guest và quyền chọn nguồn AI rõ ràng.
+Provide quota-controlled AI explanations for signed-in accounts while retaining guest BYOK and explicit AI-source selection.
 
 ## ADDED Requirements
 

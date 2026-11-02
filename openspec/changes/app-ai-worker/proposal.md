@@ -2,26 +2,26 @@
 
 ## Why
 
-[Issue #53](https://github.com/tuanvipandpro/quiz-app/issues/53): user đăng nhập cần lời giải AI mà không phải tạo API key. Guest tiếp tục BYOK; chi phí Cloudflare phải ở gói Free.
+[Issue #53](https://github.com/tuanvipandpro/quiz-app/issues/53): signed-in users need AI explanations without creating an API key. Guests retain BYOK; Cloudflare must remain on the Free plan.
 
 ## What Changes
 
-- Thêm API Worker xác thực Firebase, model miễn phí cố định và validation chung.
-- App AI và BYOK luôn giải thích bằng tiếng Việt, giữ nguyên thuật ngữ kỹ thuật tiếng Anh; toggle VN/EN chỉ điều khiển giao diện. Lời giải phải phân tích câu hỏi, nêu đáp án, giải thích từng đáp án đúng và từng lựa chọn sai/kém phù hợp.
-- D1 quản lý quota atomic, request identity và cache kết quả riêng tư; mặc định thử nghiệm 20 lượt/user/ngày, 100 lượt/app/ngày và 1536 output tokens.
-- Chọn App AI/BYOK rõ ràng, quota/reset/error states VN/EN; giữ BYOK cho guest và không tự fallback.
-- Tests local, UI evidence và hướng dẫn Cloudflare setup/rollout; production enablement chờ account setup và benchmark.
+- Add a Firebase-authenticated Worker API with a fixed free model and shared validation.
+- App AI and BYOK always explain in Vietnamese while preserving English technical terms; the VN/EN toggle controls only the interface. Explanations must analyze the question, identify answers, justify every correct choice and explain every wrong/less-suitable alternative.
+- D1 manages atomic quota, request identity and private result caching; experimental defaults are 20 attempts/user/day, 100 attempts/app/day and 1536 output tokens.
+- Provide explicit App AI/BYOK selection and VN/EN quota/reset/error states; retain guest BYOK without automatic fallback.
+- Add local tests, UI evidence and Cloudflare setup/rollout instructions; production enablement awaits account setup and benchmarking.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `app-ai-explanations`: quyền truy cập, inference giới hạn, quota/retry/cache và trải nghiệm chọn nguồn AI.
+- `app-ai-explanations`: access control, bounded inference, quota/retry/cache and AI-source selection.
 
 ### Modified Capabilities
 
-Không thay đổi user-profile-access. Firebase/Firestore và hosting hiện tại tiếp tục dùng như hiện tại.
+No user-profile-access changes. Existing Firebase/Firestore and hosting remain in use.
 
 ## Impact
 
-Worker mới, dependencies Wrangler/Miniflare/jose, service AI/hook/dialog/settings và browser tests. Không migration storage #52, đổi bank answers hay mở chatbot tổng quát. User đã yêu cầu implement; SDD được chuẩn bị trước code trong cùng feature PR. Setup production và model quality là bước có evidence riêng.
+Adds a Worker, Wrangler/Miniflare/jose dependencies, AI service/hook/dialog/settings and browser tests. It does not migrate storage #52, change bank answers or add a general chatbot. The user requested implementation; SDD was prepared before code in the same feature PR. Production setup and model quality require separate evidence.

@@ -1,41 +1,41 @@
 # Tasks
 
-Các checkbox theo dõi implementation và rollout của #42. PR setup để tất cả task mở; lần triển khai này chỉ đánh dấu task có bằng chứng thực tế. Đối chiếu/deploy production được giữ riêng, không xem như hoàn tất chỉ vì local tests xanh.
+These checkboxes track implementation and rollout for #42. The setup PR left every task open; this implementation marks only tasks backed by actual evidence. Production comparison/deployment remains separate and is not completed merely because local tests pass.
 
 ## 1. Contracts and validation
 
-- [x] 1.1 Định nghĩa custom-quiz identity/envelope, constants và error contract theo D1–D4 (CQ-02, CQ-04, CQ-08, CQ-09); verify bằng unit tests cho instance/version/byte-budget boundaries và cập nhật design nếu default thay đổi.
-- [x] 1.2 Tái sử dụng validator cho import/stored reads (CQ-03); verify 1/100 hợp lệ, 0/101 không hợp lệ, duplicate IDs, malformed JSON và đủ formats trong unit tests.
-- [x] 1.3 Thêm serialization size checks và retry-safe candidate (CQ-04, CQ-05); verify fixture dưới/trên budget và server-size rejection không mất preview.
+- [x] 1.1 Define custom-quiz identity/envelope, constants and error contracts from D1–D4 (CQ-02, CQ-04, CQ-08, CQ-09); verify instance/version/byte-budget boundaries with unit tests and update the design if defaults change.
+- [x] 1.2 Reuse the validator for imports/stored reads (CQ-03); verify valid 1/100 and invalid 0/101 boundaries, duplicate IDs, malformed JSON and all formats with unit tests.
+- [x] 1.3 Add serialization-size checks and retry-safe candidates (CQ-04, CQ-05); verify below/above-budget fixtures and server-size rejection without losing the preview.
 
 ## 2. Rules and persistence service
 
-- [x] 2.1 Thêm explicit customQuizzes slot rules, ownership/field/type/list-count checks và version transitions (CQ-01, CQ-02, CQ-03, CQ-08); verify direct SDK adversarial cases bằng Emulator và giữ toàn bộ baseline profile tests xanh.
-- [x] 2.2 Implement transactional create với stable operation/instance ID (CQ-02, CQ-05); verify hai uploads tranh slot cuối, retry sau response loss và double submit không ghi đè/nhân đôi.
-- [x] 2.3 Implement transactional rename/replace/delete (CQ-06, CQ-07, CQ-08); verify stale revision, deleted/reused slot, cancel không mutate, quota không tăng khi replace và được giải phóng khi delete.
-- [x] 2.4 Implement checkpoint updates gắn instance/contentVersion (CQ-07, CQ-09); verify rename giữ progress, replace reset atomic, delete loại bỏ progress và không đổi bank checkpoints.
-- [x] 2.5 Thêm service documentation gần API và review index exemption cho questions (CQ-04, CQ-12); verify không deploy cấu hình indexes ghi đè ngoài phạm vi và ghi lại cost/size trade-off.
+- [x] 2.1 Add explicit customQuizzes slot Rules, ownership/field/type/list-count checks and version transitions (CQ-01, CQ-02, CQ-03, CQ-08); verify direct-SDK adversarial cases in the Emulator and preserve every baseline profile test.
+- [x] 2.2 Implement transactional creation with a stable operation/instance ID (CQ-02, CQ-05); verify two uploads competing for the final slot, response-loss retries and double submission without overwrite/duplication.
+- [x] 2.3 Implement transactional rename/replace/delete (CQ-06, CQ-07, CQ-08); verify stale revisions, deleted/reused slots, cancellation without mutation, replacement preserving quota and deletion releasing quota.
+- [x] 2.4 Implement checkpoint updates bound to instance/contentVersion (CQ-07, CQ-09); verify rename preserves progress, replacement resets atomically, deletion removes progress and bank checkpoints remain unchanged.
+- [x] 2.5 Add service documentation near the API and review the questions index exemption (CQ-04, CQ-12); verify no out-of-scope index configuration is deployed and record cost/size trade-offs.
 
 ## 3. Account state and study integration
 
-- [x] 3.1 Thêm custom-quiz hook/store với account/request generations và lazy loading (CQ-01, CQ-11); verify late response sau logout/switch account và lỗi private loading không chặn bank.
-- [x] 3.2 Tích hợp route/loaded identity và draft keys có discriminator/instance/version (CQ-08, CQ-09); verify deeplink, reload, stale cache, giữ shuffle/answers/flags/deadline và invalidation khi replace.
-- [x] 3.3 Giữ guest local upload và thêm explicit save transition (CQ-12); verify login không tự migrate upload/progress và bank aliases/checkpoints không đổi.
+- [x] 3.1 Add a custom-quiz hook/store with account/request generations and lazy loading (CQ-01, CQ-11); verify late responses after logout/account switches and private-loading errors that do not block the bank.
+- [x] 3.2 Integrate route/loaded identity and draft keys with discriminator/instance/version (CQ-08, CQ-09); verify deep links, reload, stale cache, shuffle/answers/flags/deadline preservation and replacement invalidation.
+- [x] 3.3 Preserve guest-local uploads and add an explicit save transition (CQ-12); verify login does not automatically migrate uploads/progress and bank aliases/checkpoints remain unchanged.
 
 ## 4. Management UI
 
-- [x] 4.1 Thêm list/quota và preview-save flow (CQ-02, CQ-03, CQ-10); verify quota 0/3..3/3, loading/empty/success, full quota và tất cả failure states bằng E2E.
-- [x] 4.2 Thêm rename, replace, delete và confirmations (CQ-06, CQ-07, CQ-08, CQ-10); verify Cancel giữ dữ liệu, conflict hướng dẫn reload và errors giữ candidate.
-- [x] 4.3 Tái sử dụng Practice/Exam và Quick Summary availability đúng capability (CQ-09); verify các formats, resume, submit và thiếu guide trong E2E.
-- [x] 4.4 Review UI theo AGENTS.md (CQ-10): 320/390/412/768/1280px, VN/EN, light/dark, focus/safe-area/long text; lưu screenshots và ghi rõ emulation so với thiết bị thật.
+- [x] 4.1 Add list/quota and preview-save flows (CQ-02, CQ-03, CQ-10); verify quota 0/3..3/3, loading/empty/success, full quota and every failure state with E2E tests.
+- [x] 4.2 Add rename, replace, delete and confirmations (CQ-06, CQ-07, CQ-08, CQ-10); verify Cancel preserves data, conflicts guide reload and errors retain candidates.
+- [x] 4.3 Reuse Practice/Exam and capability-appropriate Quick Summary availability (CQ-09); verify formats, resume, submission and missing guides with E2E tests.
+- [x] 4.4 Review UI against AGENTS.md (CQ-10): 320/390/412/768/1280px, VN/EN, light/dark, focus/safe-area/long text; retain screenshots and distinguish emulation from real devices.
 
 ## 5. Acceptance and rollout
 
-- [x] 5.1 Chạy toàn bộ acceptance matrix CQ-01..CQ-12, `yarn verify:all`, kiểm tra scope và cập nhật evidence thật trong verification.md; không dùng planningComplete làm bằng chứng feature hoàn tất.
-- [ ] 5.2 Đối chiếu rules/indexes đang publish và kiểm tra drift so với baseline được cung cấp (CQ-01, CQ-12); lưu nguồn/hash/revision đã xác minh trước rollout.
-- [ ] 5.3 Chuẩn bị release/rollback và thực hiện rollout theo chỉ dẫn của người dùng (CQ-01, CQ-12); verify rules tương thích đã có hiệu lực trước khi enable client và ghi trạng thái production thực tế.
+- [x] 5.1 Run the full CQ-01..CQ-12 acceptance matrix and `yarn verify:all`, review scope and update verification.md with actual evidence; do not treat planningComplete as feature-completion evidence.
+- [ ] 5.2 Compare published Rules/indexes and inspect drift against the supplied baseline (CQ-01, CQ-12); record verified source/hash/revision before rollout.
+- [ ] 5.3 Prepare release/rollback and perform owner-directed rollout (CQ-01, CQ-12); verify compatible Rules are effective before enabling the client and record actual production status.
 
 ## Workflow follow-up
 
-- Archive change và đồng bộ main specs chỉ sau khi implementation/evidence được review và rollout status đã rõ.
-- Chỉ đóng issue #42 khi các acceptance criteria thực sự đạt; setup PR không đóng issue.
+- Archive the change and sync main specs only after implementation/evidence review and explicit rollout status.
+- Close issue #42 only when acceptance criteria are actually met; the setup PR does not close it.

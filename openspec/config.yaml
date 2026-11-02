@@ -1,7 +1,7 @@
 schema: spec-driven
 context: |
   Read AGENTS.md for the authoritative product, UI/UX, architecture and verification rules.
-  Write explanatory prose in Vietnamese; preserve required OpenSpec headings and SHALL/WHEN/THEN keywords.
+  Write explanatory prose in English; preserve required OpenSpec headings and SHALL/WHEN/THEN keywords.
   Default: one feature/change in one PR. The initial SDD infrastructure setup is a separate PR only for bootstrapping.
   Issue #42 implementation is not authorized by the setup PR. Planning artifacts being complete does not mean the feature is complete.
   The Firestore baseline was supplied by the user as the deployed rules; it has not been independently exported through the management API.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Ghi nhận hợp đồng truy cập profile hiện tại từ rules do người dùng cung cấp. Setup chỉ kiểm chứng baseline bằng Emulator; không xác nhận đã đọc lại rules production qua API và không thay đổi quyền production.
+Record the current profile-access contract from the user-supplied Rules. Setup verifies the baseline only in the Emulator; it does not establish that production Rules were re-read through the API or change production permissions.
 
 ## Requirements
 

@@ -2,33 +2,33 @@
 
 ## Context
 
-Xem proposal.md. QuizMode giữ cấu hình cục bộ; App truyền cấu hình qua URL; useStudySession khôi phục một exam draft cho mỗi account/quiz. Question và StructuredQuestion đã chặn feedback khi câu chưa đầy đủ. ExamMode chỉ bật feedback khi submitted.
+See proposal.md. QuizMode owns local configuration; App passes settings through the URL; useStudySession restores one exam draft per account/quiz. Question and StructuredQuestion already suppress feedback for incomplete answers. ExamMode enables feedback only after submission.
 
 ## Goals / Non-Goals
 
-**Goals:** bổ sung chính sách feedback vào cùng lifecycle, giữ tương thích và kiểm chứng qua app thật dùng service fixtures.
+**Goals:** add a feedback policy to the same lifecycle, preserve compatibility and verify it through the real app with service fixtures.
 
-**Non-Goals:** tạo engine thi thứ hai, đổi điểm theo lần trả lời đầu, bật AI trước submit, ghi Firebase hoặc triển khai #42.
+**Non-Goals:** create a second exam engine, grade first attempts, enable AI before submission, write to Firebase or implement #42.
 
 ## Decisions
 
-- Registry `src/data/examModes.js` sở hữu id, nhãn, mô tả và thuộc tính phản hồi từng câu; lookup nhận giá trị lạ trả Standard. Không rải string điều kiện qua UI.
-- Draft bổ sung trường `feedbackMode`; query `feedback` chỉ cung cấp cấu hình lúc tạo mới. Khi restore, session là nguồn sự thật, không phải URL/props. Chọn field bổ sung thay vì đổi session key để URL/draft cũ tiếp tục dùng được.
-- `createExamSession` nhận options object chứa clock/random/feedbackMode; cập nhật các caller nội bộ và test. QuizMode cũng truyền một object cấu hình thay vì tiếp tục thêm positional argument.
-- Config luôn mặc định Standard cho bài mới. Khi có draft, notice ghi mode đã lưu và giải thích Resume giữ thiết lập cũ, lựa chọn mới chỉ áp dụng cho Start a new exam. Key của QuizMode gồm account để cấu hình không rò giữa tài khoản.
-- Chờ account đã ổn định trước khi mount study components. Khi đổi account trong exam, về cấu hình trước khi tạo phiên của account mới; lần hydrate auth đầu tiên vẫn restore deep link/draft bình thường. Regression đã phát hiện thứ tự render/auth cũ có thể tạo draft khách ngoài ý muốn khi logout, nên xử lý tại App, nơi sở hữu navigation và cleanup.
-- ExamMode bật feedback sau submit hoặc khi Learning và câu hoàn chỉnh. Navigator vẫn chỉ báo answered/flag khi đang thi, như Practice. AI Explain tiếp tục chỉ có sau submit; không thay service.
-- Một nhóm radio có nhãn/description trong phần cấu hình thi; native semantics hoặc Ant Design phù hợp với nhóm chọn hiện có. Reuse study tokens, responsive grid, style focus và min-height 44px. Label mode nằm trong heading cho cả active/results; Learning có giải thích điểm theo đáp án cuối.
-- UI/UX Pro Max query `input labels` cho kết quả Forms — Input Labels và Accessibility — Form Labels; áp dụng nhãn hiển thị/accessibility. Các đề xuất native không tự áp dụng lên web.
+- Registry `src/data/examModes.js` owns IDs, labels, descriptions and per-question feedback properties; unknown values resolve to Standard. Do not scatter conditional strings across the UI.
+- Add `feedbackMode` to drafts; query parameter `feedback` configures new sessions only. On restoration, the session is authoritative rather than URL/props. Add a field instead of changing the session key so legacy URLs/drafts keep working.
+- `createExamSession` accepts an options object containing clock/random/feedbackMode; update internal callers and tests. QuizMode also passes a configuration object instead of adding more positional arguments.
+- New exams always default to Standard. If a draft exists, its notice shows the saved mode and explains that Resume preserves old settings while the new selection applies only to Start a new exam. QuizMode's key includes the account to prevent settings leaking between accounts.
+- Wait for a stable account before mounting study components. An account change during an exam returns to setup before creating the new account's session; initial auth hydration still restores deep links/drafts normally. Regression testing found the old render/auth ordering could create an unintended guest draft during logout, so App handles it as the owner of navigation and cleanup.
+- ExamMode enables feedback after submission or for a complete answer in Learning. During an active exam, the navigator shows only answered/flagged status, as in Practice. AI Explain remains available only after submission; its service is unchanged.
+- Use one labelled radio group with descriptions in exam setup, with native or Ant Design semantics matching existing selections. Reuse study tokens, responsive grids, focus styles and a 44px minimum height. Include the mode label in active/results headings; Learning explains final-answer grading.
+- UI/UX Pro Max query `input labels` returned Forms — Input Labels and Accessibility — Form Labels; apply visible/accessibility labels. Native-only recommendations do not automatically apply to the web.
 
 ## Risks / Trade-offs
 
-- [Resume khác lựa chọn mới] → notice phân biệt saved mode và cấu hình mới, test reload/Back/Resume/start-new và URL cũ.
-- [Draft cũ/giá trị sai] → normalize về Standard tại boundary create/read, không reset deadline hoặc bộ câu hợp lệ.
-- [Học có thể sửa sau khi xem đáp án] → kết quả ghi rõ Learning và dựa trên đáp án cuối, đúng phạm vi issue; không coi là điểm thi độc lập.
-- [Một tab bị thiếu storage] → giữ phiên trong bộ nhớ, giữ thông báo draft unavailable, không giả thành công lưu cloud.
-- [Expiry/input đồng thời] → giữ kiểm tra deadline tại handler và finishExam idempotent; regression ở cả hai mode.
+- [Resume differs from a new selection] → distinguish the saved mode from new configuration in the notice; test reload/Back/Resume/start-new and legacy URLs.
+- [Legacy drafts/invalid values] → normalize to Standard at create/read boundaries without resetting a valid deadline or question set.
+- [Learning permits edits after viewing answers] → label results as Learning and grade final answers, as scoped by the issue; do not treat this as an independent exam score.
+- [Browser storage unavailable] → retain the session in memory and the draft-unavailable notice, without claiming a successful cloud save.
+- [Expiry/input race] → retain deadline checks in handlers and idempotent finishExam; cover both modes with regressions.
 
 ## Migration Plan
 
-Chạy unit/E2E và review ảnh trên service fixtures, mở một PR có spec/code/evidence. Không đổi Rules hay production data. Merge được yêu cầu mới kích hoạt CI deploy website. Rollback code quay về Standard; field mới không ảnh hưởng reader cũ. #42 giữ nguyên pending. Archive/sync spec và xác nhận production sau review/rollout, không đóng issue chỉ vì planning hoàn tất.
+Run unit/E2E tests and review screenshots using service fixtures, then open one PR containing spec/code/evidence. Do not change Rules or production data. Only a requested merge triggers website CI deployment. Code rollback returns to Standard; the added field does not affect old readers. #42 remains pending. Archive/sync specs and confirm production after review/rollout; planning completion alone does not close the issue.

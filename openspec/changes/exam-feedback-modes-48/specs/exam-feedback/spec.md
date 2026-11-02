@@ -2,80 +2,80 @@
 
 ## Purpose
 
-Cho phép chọn cách xem đáp án khi thi thử, giữ chính sách đó xuyên suốt phiên thi và phân biệt kết quả học có phản hồi với thi tiêu chuẩn.
+Let users choose how answers are revealed in mock exams, preserve that policy throughout the session and distinguish feedback-assisted learning results from standard exams.
 
 ## ADDED Requirements
 
 ### Requirement: CQ48-01 Explicit exam feedback selection
 
-Ứng dụng SHALL cho chọn Standard exam hoặc Learning exam trước khi bắt đầu Mock exam, mặc định Standard. Lựa chọn chỉ thuộc Mock exam và dùng được với bank hoặc custom quiz hiện có.
+The application SHALL offer Standard exam or Learning exam before a Mock exam starts, defaulting to Standard. The choice applies only to Mock exams and supports existing bank or custom quizzes.
 
 #### Scenario: New exam setup
 
-- **WHEN** người dùng mở cấu hình Mock exam cho bank hoặc upload
-- **THEN** Standard được chọn, cả hai lựa chọn có nhãn và mô tả; Practice và Quick Summary giữ hành vi cũ
+- **WHEN** a user opens Mock exam setup for a bank or upload
+- **THEN** Standard is selected, both options have labels/descriptions, and Practice and Quick Summary retain their behavior
 
 ### Requirement: CQ48-02 Standard feedback boundary
 
-Standard SHALL giấu đúng/sai, đáp án và lời giải trong UI khi bài thi chưa kết thúc; submit hoặc hết giờ mới mở review.
+Standard SHALL hide correctness, answers and explanations in the UI until the exam ends; submission or expiry opens review.
 
 #### Scenario: Answer before submission
 
-- **WHEN** trả lời đầy đủ hoặc chưa đầy đủ trong Standard
-- **THEN** không hiện feedback, correct-answer styles, giải thích hoặc trạng thái đúng/sai trên navigator
+- **WHEN** an answer is complete or incomplete in Standard
+- **THEN** feedback, correct-answer styles, explanations and navigator correctness indicators are not shown
 
 #### Scenario: Finished standard exam
 
-- **WHEN** nộp bài hoặc deadline đã qua
-- **THEN** đáp án được hiển thị và câu trả lời không sửa được
+- **WHEN** the exam is submitted or its deadline passes
+- **THEN** answers are revealed and responses can no longer be edited
 
 ### Requirement: CQ48-03 Learning feedback matches answer completeness
 
-Learning SHALL hiện feedback từng câu khi câu trả lời đầy đủ, cho phép sửa trước khi kết thúc và chấm theo đáp án cuối. Hành vi áp dụng cho single, multiple, yes/no và hai dạng dropdown; không tự gọi AI.
+Learning SHALL show per-question feedback for complete answers, allow edits until completion and grade final answers. This applies to single, multiple, yes/no and both dropdown formats; it does not invoke AI automatically.
 
 #### Scenario: Complete and incomplete answers
 
-- **WHEN** chọn một đáp án single, đủ số lựa chọn multiple, hoặc đủ mọi phần yes/no và dropdown
-- **THEN** câu hiện tại hiển thị đúng/sai và đáp án; câu còn thiếu không lộ đáp án
+- **WHEN** a single answer is selected, the required number of multiple choices is selected, or every yes/no or dropdown part is completed
+- **THEN** the current question shows correctness and answers; incomplete questions do not reveal answers
 
 #### Scenario: Edit after feedback
 
-- **WHEN** sửa câu trả lời rồi nộp bài
-- **THEN** kết quả dùng đáp án cuối, ghi rõ Learning exam và khóa chỉnh sửa
+- **WHEN** an answer is edited and the exam is submitted
+- **THEN** results use final answers, identify Learning exam and lock editing
 
 ### Requirement: CQ48-04 Preserve exam lifecycle and identity
 
-Cả hai chế độ SHALL giữ timer, thứ tự random, đáp án, flag, xác nhận rời/nộp bài và tính bất biến khi đã kết thúc. Refresh, Back và Resume không đổi cấu hình của draft; đổi chế độ cần bắt đầu bài mới có xác nhận nếu thay draft đang chạy.
+Both modes SHALL preserve the timer, randomized order, answers, flags, leave/submit confirmations and immutability after completion. Refresh, Back and Resume do not change draft configuration; changing mode requires a new exam and confirmation when replacing an active draft.
 
 #### Scenario: Resume after changing setup
 
-- **WHEN** thay lựa chọn ở cấu hình rồi Resume bài đang chạy, hoặc mở lại URL cũ có giá trị khác
-- **THEN** chế độ, deadline, câu và đáp án từ draft được giữ; bắt đầu bài mới mới dùng lựa chọn mới
+- **WHEN** a user changes setup selection and Resumes an active exam, or reopens a legacy URL with a different value
+- **THEN** the draft's mode, deadline, questions and answers are retained; only a new exam uses the new selection
 
 #### Scenario: Expiry races with input
 
-- **WHEN** deadline qua trong lúc thao tác hoặc trong khi đang rời trang
-- **THEN** bài kết thúc một lần, không thêm thời gian hoặc ghi đáp án sau deadline; review vẫn khả dụng
+- **WHEN** the deadline passes during input or navigation away
+- **THEN** the exam finishes once, without extra time or answers recorded after the deadline; review remains available
 
 ### Requirement: CQ48-05 Safe compatibility and account isolation
 
-Draft/URL thiếu hoặc có chế độ không hợp lệ SHALL dùng Standard mà không reset dữ liệu hợp lệ khác. Phiên theo account và quiz vẫn được cô lập; lỗi browser storage phải được báo bằng trạng thái draft hiện có.
+Drafts/URLs with a missing or invalid mode SHALL use Standard without resetting other valid data. Sessions remain isolated by account and quiz; browser storage errors must use the existing draft-status feedback.
 
 #### Scenario: Legacy and invalid values
 
-- **WHEN** mở draft cũ hoặc URL với giá trị chế độ không nhận diện
-- **THEN** Standard được dùng, giữ deadline/order/answers/flags hợp lệ và không lộ feedback sớm
+- **WHEN** a legacy draft or URL contains an unrecognized mode value
+- **THEN** Standard is used, valid deadline/order/answers/flags are retained and feedback is not revealed early
 
 #### Scenario: Account or quiz changes
 
-- **WHEN** đổi account hoặc bắt đầu bài của quiz khác
-- **THEN** không tái sử dụng chế độ/đáp án của phiên trước; state thuộc account cũ được dọn theo hành vi hiện có
+- **WHEN** the account changes or an exam for another quiz starts
+- **THEN** the previous session's mode/answers are not reused, and the old account's state is cleaned up through existing behavior
 
 ### Requirement: CQ48-06 Accessible responsive mode communication
 
-UI SHALL ghi rõ chế độ trong bài thi và kết quả, hỗ trợ VN/EN và light/dark. Nhóm lựa chọn phải có accessible label, focus bàn phím rõ, vùng bấm ít nhất 44×44px, nội dung không tràn ngang từ 320px.
+The UI SHALL identify the mode during exams and in results, supporting VN/EN and light/dark. Selection groups require accessible labels, clear keyboard focus, targets of at least 44×44px and no horizontal overflow from 320px.
 
 #### Scenario: Phone and keyboard use
 
-- **WHEN** dùng cấu hình, modal và màn thi/kết quả ở 320/390/412/768/1280px hoặc landscape
-- **THEN** nhãn và phản hồi rõ ràng, control thao tác được bằng touch/keyboard, focus qua dialog có thể tiếp tục được
+- **WHEN** setup, dialogs and active/results screens are used at 320/390/412/768/1280px or in landscape
+- **THEN** labels/feedback are clear, controls support touch/keyboard and focus remains usable across dialogs
