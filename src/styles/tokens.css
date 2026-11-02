@@ -1,4 +1,14 @@
 :root {
+  --landing-accent-teal: #236e71;
+  --landing-accent-violet: #7253a6;
+  --landing-halo-blue: rgba(53, 118, 217, 0.06);
+  --landing-halo-teal: rgba(32, 140, 126, 0.06);
+  --landing-halo-violet: rgba(137, 95, 204, 0.08);
+  --landing-overlay: rgba(255, 255, 255, 0.55);
+  --landing-finale: #edf2fa;
+  --coffee-accent: #8a4c1b;
+  --coffee-surface: #fff7ed;
+  --coffee-border: #bc8652;
   --app-font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --app-header-height: 77px;
   color-scheme: light;
@@ -38,6 +48,16 @@
   --app-placeholder-bg: #f3f6fa;
 }
 html[data-theme='dark'] {
+  --landing-accent-teal: #99d9cb;
+  --landing-accent-violet: #c7b0ef;
+  --landing-halo-blue: rgba(53, 118, 217, 0.24);
+  --landing-halo-teal: rgba(32, 140, 126, 0.18);
+  --landing-halo-violet: rgba(137, 95, 204, 0.23);
+  --landing-overlay: rgba(28, 39, 54, 0.4);
+  --landing-finale: #142238;
+  --coffee-accent: #efb883;
+  --coffee-surface: #2b2623;
+  --coffee-border: #a77d56;
   color-scheme: dark;
   --app-bg: #111925;
   --app-surface: #1c2736;

@@ -4,7 +4,7 @@ import {
   ArrowLeftOutlined,
   CopyOutlined,
   DownloadOutlined,
-  HeartOutlined,
+  CoffeeOutlined,
 } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
 import { donation } from '../data/donation';
@@ -27,7 +27,7 @@ export default function DonatePage({ onReturnHome }) {
       )
     : '';
   return (
-    <div className="public-page donate-page">
+    <div className="public-page donate-page coffee-page">
       <Button
         type="text"
         className="back-home"
@@ -36,22 +36,33 @@ export default function DonatePage({ onReturnHome }) {
       >
         {t('Back to home')}
       </Button>
-      <div className="donate-heading">
-        <span className="donate-heart">
-          <HeartOutlined aria-hidden="true" />
-        </span>
-        <p className="public-eyebrow">{t('A LITTLE SUPPORT GOES A LONG WAY')}</p>
-        <h1>{t('Keep the curiosity going.')}</h1>
-        <p>
-          {t(
-            'If QuizMos has been part of your learning journey, you can support its continued development with a voluntary donation.'
-          )}
-        </p>
+      <div className="donate-heading coffee-heading">
+        <div className="coffee-illustration" aria-hidden="true">
+          <span className="coffee-steam steam-one" />
+          <span className="coffee-steam steam-two" />
+          <span className="coffee-steam steam-three" />
+          <CoffeeOutlined />
+          <span className="coffee-saucer" />
+        </div>
+        <div className="coffee-heading-copy">
+          <p className="public-eyebrow">{t('BREW A LITTLE MORE POSSIBILITY')}</p>
+          <h1>{t('Buy QuizMos a coffee.')}</h1>
+          <p>
+            {t(
+              'If QuizMos makes your study sessions a little easier, a coffee-sized contribution is a lovely way to support its continued development.'
+            )}
+          </p>
+          <span className="coffee-kindness">{t('A small gesture. A little more motivation.')}</span>
+        </div>
       </div>
       {ready ? (
         <div className="donate-grid">
           <section className="donate-qr-panel" aria-labelledby="donate-qr-heading">
-            <h2 id="donate-qr-heading">{t('Scan. Support. Keep learning.')}</h2>
+            <div className="coffee-qr-label">
+              <CoffeeOutlined aria-hidden="true" />
+              <span>{t('One coffee, a little encouragement')}</span>
+            </div>
+            <h2 id="donate-qr-heading">{t('A coffee for the next chapter.')}</h2>
             <p>{t('Scan with your banking app and choose any amount in VND.')}</p>
             <div className="donate-qr-frame">
               {imageFailed ? (
@@ -88,10 +99,20 @@ export default function DonatePage({ onReturnHome }) {
                 'On the same phone? Save the QR, then choose it from your banking app’s photo library if supported. You can also copy the account details.'
               )}
             </p>
+            <ol className="desktop-detail coffee-steps">
+              <li>{t('Open your banking app')}</li>
+              <li>{t('Scan the QR or copy the transfer details')}</li>
+              <li>{t('Check the recipient and choose your amount')}</li>
+            </ol>
           </section>
           <section className="donate-details" aria-labelledby="transfer-details-heading">
             <p className="public-eyebrow">{t('BANK TRANSFER · VND')}</p>
-            <h2 id="transfer-details-heading">{t('Your support, your choice.')}</h2>
+            <h2 id="transfer-details-heading">{t('Make it your kind of coffee.')}</h2>
+            <p className="coffee-any-amount">
+              {t(
+                'Any amount is welcome. Choose it in your banking app; this QR has no fixed amount.'
+              )}
+            </p>
             <dl>
               <div>
                 <dt>{t('Bank')}</dt>

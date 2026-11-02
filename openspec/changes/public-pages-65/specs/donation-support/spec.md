@@ -6,6 +6,15 @@ Cho phép người dùng tự nguyện ủng hộ QuizMos bằng chuyển khoả
 
 ## ADDED Requirements
 
+### Requirement: CQ-DONATE-05 Coffee invitation with complete transfer details
+
+Donate SHALL dùng hình ảnh/copy mời một ly cà phê, đồng thời giữ QR, ngân hàng, người nhận, số tài khoản, nội dung, copy/download, hướng dẫn mobile và trạng thái manual transfer. Số tiền vẫn do người dùng nhập trong app ngân hàng; không có bộ chọn số tiền gây hiểu nhầm về QR tĩnh.
+
+#### Scenario: Support with a coffee
+
+- **WHEN** người dùng mở Donate ở EN/VN, desktop/phone hoặc gặp lỗi ảnh/copy/download
+- **THEN** coffee presentation và đầy đủ chi tiết/fallback vẫn đọc được; Back về Home và hành vi chuyển khoản giữ nguyên
+
 ### Requirement: CQ-DONATE-01 Optional public support
 
 Ứng dụng SHALL có trang `#/donate` truy cập được không cần đăng nhập, giải thích mục đích ủng hộ; mọi nút Back của trang SHALL về Home/landing. Donate SHALL tự nguyện, không chặn hoặc mở khóa chức năng học tập.

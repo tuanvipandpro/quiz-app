@@ -8,6 +8,8 @@ Tracking: [issue #65](https://github.com/tuanvipandpro/quiz-app/issues/65). Lo�
 
 ## What Changes
 
+- Review tiếp ngày 02/11/2026: chuyển màu/animation giữa section mượt hơn, thêm nội dung hỗ trợ trên desktop từ catalog/learning flow, giữ mobile gọn; CTA cuối cùng tông nền với landing. Donate đổi thành lời mời một ly cà phê, giữ đầy đủ thông tin/thao tác chuyển khoản.
+
 - Root không có hash và `#/` mở Home; CTA mở `#/library`. Giữ đường dẫn quiz, alias, query và checkpoint hiện có. Không tự chuyển hướng người quay lại theo cookie/lịch sử sử dụng.
 - Landing gồm hero, preview sản phẩm, Practice/Exam/study guides, bank nổi bật AIP-C01/CCAR-P và CTA cuối trang. Giữ tên chính thức **QuizMos**, không đổi thành QuizMoss.
 - Revision owner ngày 02/11/2026: landing gồm 4 section full-width, cao tối thiểu một viewport dưới header và scroll snap; thêm reveal/transition, nền tương phản, section navigation và reduced-motion fallback. Donate nổi bật ở header/hero; các nút Back trên Donate về Home.

@@ -4,6 +4,7 @@ import { accountCases } from './viewports.js';
 import { contrastRatio } from './uiContrast.js';
 import { clickAfterUiMotion } from './uiMotion.js';
 import { donation } from '../../src/data/donation.js';
+import { quizzes, PROVIDERS } from '../../src/data/quizzes.js';
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
@@ -140,7 +141,7 @@ test('public layouts support language, themes, widths and keyboard focus', async
       ).toBeVisible();
       if (route === 'donate')
         await expect(page.locator('.donate-heading h1')).toHaveText(
-          state.language === 'vi' ? 'Giữ mãi tinh thần khám phá.' : 'Keep the curiosity going.'
+          state.language === 'vi' ? 'Mời QuizMos một ly cà phê.' : 'Buy QuizMos a coffee.'
         );
       expect(
         await page.evaluate(
@@ -434,4 +435,64 @@ test('landing remains readable and navigable without IntersectionObserver', asyn
   await page.getByRole('button', { name: 'Take a look around', exact: true }).click();
   await expect(page.locator('#landing-features')).toBeFocused();
   await expect(page.locator('.landing-page')).toHaveAttribute('data-active', '1');
+});
+
+test('desktop details and coffee presentation retain accurate catalog and transfer information', async ({
+  page,
+}, testInfo) => {
+  await page.goto('./');
+  if (testInfo.project.name === 'desktop') {
+    await expect(page.locator('.hero-catalog strong')).toHaveText([
+      String(quizzes.length),
+      String(PROVIDERS.length),
+    ]);
+    await expect(page.locator('.study-path')).toBeVisible();
+    await expect(page.locator('.provider-strip .provider-identity')).toHaveCount(PROVIDERS.length);
+  } else {
+    await expect(page.locator('.hero-catalog')).toBeHidden();
+    await expect(page.locator('.study-path')).toBeHidden();
+    await expect(page.locator('.provider-strip')).toBeHidden();
+  }
+  await page.locator('.hero-donate').click();
+  await expect(page.locator('.donate-heading h1')).toHaveText('Buy QuizMos a coffee.');
+  await expect(page.locator('.coffee-illustration')).toBeVisible();
+  for (const value of [
+    donation.bank,
+    donation.accountName,
+    donation.accountNumber,
+    donation.transferNote,
+  ])
+    await expect(page.locator('.donate-details')).toContainText(value);
+  await expect(page.locator('.coffee-any-amount')).toContainText('this QR has no fixed amount');
+  expect(
+    await page
+      .locator('.coffee-steam')
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationName)
+  ).toBe('none');
+  await expect(page.getByRole('button', { name: 'Download QR', exact: true })).toBeVisible();
+});
+
+test('section color crossfade follows navigation and honors reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('./');
+  await expect(page.locator('.atmosphere-blue')).toHaveCSS('opacity', '1');
+  const initial = await page
+    .locator('.landing-hero .public-eyebrow')
+    .evaluate((el) => getComputedStyle(el).color);
+  await page.getByRole('button', { name: 'Take a look around', exact: true }).click();
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-active', '1');
+  await expect(page.locator('.atmosphere-teal')).toHaveCSS('opacity', '1');
+  await expect(page.locator('.atmosphere-blue')).toHaveCSS('opacity', '0');
+  await expect
+    .poll(() =>
+      page.locator('.landing-features .public-eyebrow').evaluate((el) => getComputedStyle(el).color)
+    )
+    .not.toBe(initial);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-motion', 'reduce');
+  expect(
+    await page.locator('.atmosphere-teal').evaluate((el) => getComputedStyle(el).transitionDuration)
+  ).toBe('0s');
+  await expect(page.locator('.landing-features .panel-reveal')).toHaveCSS('opacity', '1');
 });

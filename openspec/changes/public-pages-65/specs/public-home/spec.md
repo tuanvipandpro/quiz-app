@@ -6,6 +6,20 @@ Cung cấp điểm vào giới thiệu QuizMos trước khi luyện tập, đồ
 
 ## ADDED Requirements
 
+### Requirement: CQ-HOME-07 Balanced desktop density and color transitions
+
+Landing SHALL dùng chuyển màu/nội dung có chọn lọc giữa section và CTA cuối cùng họ màu với trang. Desktop SHALL có thông tin bổ trợ hữu ích từ catalog/learning flow; mobile giữ nội dung cốt lõi gọn. Không bịa số liệu người dùng hoặc kết quả học tập; reduced motion SHALL tắt các hiệu ứng mới.
+
+#### Scenario: Desktop and mobile presentation
+
+- **WHEN** xem landing ở desktop rộng hoặc phone
+- **THEN** desktop có catalog facts/learning steps, phone không bị kéo dài bởi các phần bổ trợ; heading/CTA chính và contrast vẫn rõ
+
+#### Scenario: Change section or motion preference
+
+- **WHEN** chuyển section trong normal motion hoặc bật reduced motion
+- **THEN** gradient/accent và reveal chuyển nhẹ khi normal; khi reduced, màu cuối và nội dung hiển thị ngay, không làm mất focus/control
+
 ### Requirement: CQ-HOME-01 Public entry and compatible deep links
 
 Ứng dụng SHALL mở Home tại URL không có hash hoặc `#/`, giữ `#/library`, `#/my-quizzes` và đường dẫn quiz hiện có. Lựa chọn entry không phụ thuộc đăng nhập hay lần truy cập trước.

@@ -19,12 +19,16 @@ Tracking: [#65](https://github.com/tuanvipandpro/quiz-app/issues/65). Implementa
 - [x] 3.3 Chia landing thành 4 section full-width/min-viewport, scroll snap và điều hướng section; E2E kích thước, wheel nhỏ 120px/keyboard/nav, hash không đổi, nội dung mobile/zoom không bị crop và cleanup khi rời Home. CQ-HOME-05.
 - [x] 3.4 Thêm nền tương phản, reveal/orbit/transition phù hợp, tôn trọng reduced motion; review contrast, focus và nội dung luôn đọc được khi observer/motion không khả dụng. CQ-HOME-04/05.
 
+- [x] 3.5 Review polish: ambient gradient/accent crossfade, transition giữa section, desktop catalog/learning details và finale cùng tông; test density desktop/mobile, reduced motion, contrast và ảnh render. CQ-HOME-07.
+
 ## 4. Donate page
 
 - [x] 4.1 Tạo schema/config public recipient với disabled mặc định từ thông tin owner đã cung cấp trong bản nháp local; unit thiếu/sai config và account có số 0 đầu. Chuẩn bị QR không khóa số tiền, decode đối chiếu BIN/account/memo và owner kiểm tra người nhận trước activation. Ghi kết quả trong issue; nhận thông tin tài khoản chưa hoàn tất task hoặc xác minh người nhận. CQ-DONATE-02/04.
 - [x] 4.2 Dựng layout Donate, QR nền trắng, thông tin người nhận, hướng dẫn nhập amount và unavailable/image-error states. Dùng fixture trong lúc chờ 4.1; E2E guest/direct URL/reload, thiếu config, lỗi ảnh và không có donate API/profile IO. CQ-DONATE-01/02/04.
 - [x] 4.3 Thêm copy account/note, download QR cùng origin và fallback thủ công trên điện thoại. E2E clipboard success/denied, giữ số 0 đầu, file download khớp asset, click lặp/unmount và không báo nhận tiền. CQ-DONATE-03/04.
 - [x] 4.4 Làm Donate nổi bật ở header/hero/final CTA; đổi mọi nút Back trong Donate về Home. E2E entry nhìn thấy ở phone/desktop, Back trên/dưới và exam guard qua Donate. CQ-HOME-06, CQ-DONATE-01.
+
+- [x] 4.5 Thiết kế Donate thành coffee invitation, giữ đầy đủ receiving details/QR/copy/download/error states và Back Home. Test EN/VN, hai theme, mobile/desktop và không có amount picker gây hiểu nhầm. CQ-DONATE-05.
 
 ## 5. Tích hợp và phát hành
 

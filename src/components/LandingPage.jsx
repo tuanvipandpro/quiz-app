@@ -7,11 +7,12 @@ import {
   BookOutlined,
   CheckOutlined,
   ClockCircleOutlined,
+  CoffeeOutlined,
   HeartOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
-import { FEATURED_QUIZ_IDS, findQuiz } from '../data/quizzes';
+import { FEATURED_QUIZ_IDS, findQuiz, quizzes, PROVIDERS } from '../data/quizzes';
 import { quizUrl } from '../utils/navigation';
 import ProviderIdentity from './ProviderIdentity';
 import AppFooter from './AppFooter';
@@ -22,22 +23,27 @@ export default function LandingPage({ onNavigate }) {
   const sections = useLandingSections();
   const sectionLabels = ['Introduction', 'How it works', 'Featured banks', 'Get started'];
   const panelClass = (index) =>
-    'landing-panel' + (sections.seen.includes(index) ? ' is-revealed' : '');
+    'landing-panel' +
+    (sections.seen.includes(index) ? ' is-revealed' : '') +
+    (sections.active === index ? ' is-current' : '');
   const start = () => onNavigate('#/library');
   const features = [
     {
       icon: ThunderboltOutlined,
       title: 'Practice with purpose',
+      note: 'A few questions, whenever you have a moment.',
       text: 'Work through questions at your own pace. Review answers and explore explanations as you go.',
     },
     {
       icon: ClockCircleOutlined,
       title: 'Find your exam rhythm',
+      note: 'A focused session with a clear finish line.',
       text: 'Try a timed mock exam, then review the questions that deserve another look.',
     },
     {
       icon: BookOutlined,
       title: 'Connect the concepts',
+      note: 'The bigger picture behind individual answers.',
       text: 'Use study guides available for supported banks to put individual answers into context.',
     },
   ];
@@ -49,6 +55,11 @@ export default function LandingPage({ onNavigate }) {
       data-active={sections.active}
       data-motion={sections.reducedMotion ? 'reduce' : 'normal'}
     >
+      <div className="landing-atmosphere" aria-hidden="true">
+        {['blue', 'teal', 'violet', 'dusk'].map((tone) => (
+          <span key={tone} className={'atmosphere-layer atmosphere-' + tone} />
+        ))}
+      </div>
       <section className={panelClass(0) + ' landing-hero'} aria-labelledby="landing-intro">
         <div className="panel-inner hero-inner">
           <div className="hero-copy panel-reveal">
@@ -129,6 +140,17 @@ export default function LandingPage({ onNavigate }) {
               QUIZMOS · YOUR LEARNING ORBIT
             </span>
           </div>
+          <div className="desktop-detail hero-catalog" aria-label={t('Explore the catalog')}>
+            <div>
+              <strong>{quizzes.length}</strong>
+              <span>{t('Quiz banks to explore')}</span>
+            </div>
+            <div>
+              <strong>{PROVIDERS.length}</strong>
+              <span>{t('Certification providers')}</span>
+            </div>
+            <p>{t('Find a familiar topic. Discover your next challenge.')}</p>
+          </div>
           <button className="section-scroll-hint" onClick={() => sections.goToSection(1)}>
             <span className="scroll-hint-line" aria-hidden="true" />
             <span>{t('Take a look around')}</span>
@@ -153,7 +175,7 @@ export default function LandingPage({ onNavigate }) {
               </p>
             </div>
             <div className="feature-grid">
-              {features.map(({ icon: Icon, title, text }, index) => (
+              {features.map(({ icon: Icon, title, text, note }, index) => (
                 <article className="feature-card" key={title}>
                   <div className="feature-top">
                     <span className="feature-icon">
@@ -165,8 +187,20 @@ export default function LandingPage({ onNavigate }) {
                   </div>
                   <h3>{t(title)}</h3>
                   <p>{t(text)}</p>
+                  <p className="desktop-detail feature-note">{t(note)}</p>
                 </article>
               ))}
+            </div>
+            <div className="desktop-detail study-path">
+              <span className="study-path-label">{t('A simple rhythm for your next session')}</span>
+              <ol>
+                {['Choose a bank', 'Try the questions', 'Review and repeat'].map((step, index) => (
+                  <li key={step}>
+                    <span aria-hidden="true">0{index + 1}</span>
+                    {t(step)}
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
           <button
@@ -209,6 +243,10 @@ export default function LandingPage({ onNavigate }) {
                     <ProviderIdentity provider={quiz.category} />
                     <h3>{quiz.code}</h3>
                     <p>{quiz.name}</p>
+                    <div className="desktop-detail bank-facts">
+                      <span>{t('{count} questions', { count: quiz.totalQuestions })}</span>
+                      <span>{t('Practice & mock exams')}</span>
+                    </div>
                     <Button
                       onClick={() => onNavigate(quizUrl(id))}
                       icon={<ArrowRightOutlined aria-hidden="true" />}
@@ -219,6 +257,14 @@ export default function LandingPage({ onNavigate }) {
                   </article>
                 );
               })}
+            </div>
+            <div className="desktop-detail provider-strip">
+              <p>{t('More paths in the quiz bank')}</p>
+              <div>
+                {PROVIDERS.map((provider) => (
+                  <ProviderIdentity key={provider} provider={provider} compact />
+                ))}
+              </div>
             </div>
           </div>
           <button
@@ -238,6 +284,23 @@ export default function LandingPage({ onNavigate }) {
             <h2 id="landing-final-heading" tabIndex={-1}>
               {t('Make your next study session count.')}
             </h2>
+            <p className="desktop-detail final-description">
+              {t(
+                'You do not need to know everything today. Choose one topic, take a first step, and build from there.'
+              )}
+            </p>
+            <div className="desktop-detail final-reassurance">
+              {[
+                'Start without an account',
+                'Learn at your own pace.',
+                'Switch between EN and VN',
+              ].map((text) => (
+                <span key={text}>
+                  <CheckOutlined aria-hidden="true" />
+                  {t(text)}
+                </span>
+              ))}
+            </div>
             <div className="public-actions final-actions">
               <Button
                 className="final-primary-action"
@@ -252,7 +315,7 @@ export default function LandingPage({ onNavigate }) {
                 size="large"
                 className="final-donate-action"
                 onClick={() => onNavigate('#/donate')}
-                icon={<HeartOutlined aria-hidden="true" />}
+                icon={<CoffeeOutlined aria-hidden="true" />}
               >
                 {t('Donate')}
               </Button>
@@ -261,7 +324,7 @@ export default function LandingPage({ onNavigate }) {
               {t('Enjoying QuizMos?')}{' '}
               <button className="public-text-link" onClick={() => onNavigate('#/donate')}>
                 <HeartOutlined aria-hidden="true" />
-                {t('Support the project')}
+                {t('Buy us a coffee')}
               </button>
             </p>
           </div>
