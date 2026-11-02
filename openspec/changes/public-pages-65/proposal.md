@@ -2,39 +2,39 @@
 
 ## Why
 
-QuizMos hiện mở thẳng Quiz Bank, nên người mới thiếu phần giới thiệu cách học và chưa có nơi ủng hộ dự án. Thêm landing page ưu tiên dark theme và trang donate giúp người dùng hiểu sản phẩm, bắt đầu luyện tập hoặc hỗ trợ duy trì ứng dụng.
+QuizMos currently opens Quiz Bank directly, leaving new users without an introduction to studying or a way to support the project. A dark-first landing page and donation page help users understand the product, start practicing and support application maintenance.
 
-Tracking: [issue #65](https://github.com/tuanvipandpro/quiz-app/issues/65). Loại `feature`, rủi ro trung bình do thay đổi entry route và navigation dùng chung. Owner đã yêu cầu implementation trên nhánh `codex/public-pages-65`; chưa merge hoặc triển khai.
+Tracking: [issue #65](https://github.com/tuanvipandpro/quiz-app/issues/65). Type `feature`, medium risk because it changes the entry route and shared navigation. The owner requested implementation on `codex/public-pages-65`; merge/deployment are not yet complete.
 
 ## What Changes
 
-- Review tiếp ngày 02/11/2026: chuyển màu/animation giữa section mượt hơn, thêm nội dung hỗ trợ trên desktop từ catalog/learning flow, giữ mobile gọn; CTA cuối cùng tông nền với landing. Donate đổi thành lời mời một ly cà phê, giữ đầy đủ thông tin/thao tác chuyển khoản.
+- Follow-up review on 02/11/2026: smoother inter-section color/animation, useful desktop support content from the catalog/learning flow, compact mobile content and a final CTA matching the landing background palette. Donate becomes a coffee invitation while retaining all transfer details/actions.
 
-- Root không có hash và `#/` mở Home; CTA mở `#/library`. Giữ đường dẫn quiz, alias, query và checkpoint hiện có. Không tự chuyển hướng người quay lại theo cookie/lịch sử sử dụng.
-- Landing gồm hero, preview sản phẩm, Practice/Exam/study guides, bank nổi bật AIP-C01/CCAR-P và CTA cuối trang. Giữ tên chính thức **QuizMos**, không đổi thành QuizMoss.
-- Revision owner ngày 02/11/2026: landing gồm 4 section full-width, cao tối thiểu một viewport dưới header và scroll snap; thêm reveal/transition, nền tương phản, section navigation và reduced-motion fallback. Donate nổi bật ở header/hero; các nút Back trên Donate về Home.
-- Trang `#/donate` không yêu cầu đăng nhập: giải thích mục đích ủng hộ, VietQR tĩnh đã xác minh, thông tin người nhận, sao chép số tài khoản/nội dung và tải ảnh QR để dùng trên cùng điện thoại.
-- Public pages ưu tiên dark khi chưa có lựa chọn theme; giữ lựa chọn light/dark đã lưu, EN mặc định và VN. Không thay default của link vào trực tiếp Library/quiz.
-- Không tự xác nhận giao dịch, lưu donor, đặt mục tiêu tiền, mở khóa nội dung, gọi API ngân hàng hoặc thêm backend. Người dùng nhập số tiền trong app ngân hàng; QR chọn không khóa số tiền.
+- Root without a hash and `#/` open Home; CTAs open `#/library`. Preserve existing quiz paths, aliases, queries and checkpoints. Do not automatically redirect returning users based on cookies or usage history.
+- Landing includes a hero, product preview, Practice/Exam/study guides, featured AIP-C01/CCAR-P banks and a final CTA. Keep the official name **QuizMos**, not QuizMoss.
+- Owner revision on 02/11/2026: landing has 4 full-width sections, each at least the viewport height below the header, with scroll snap; add reveal/transitions, contrasting backgrounds, section navigation and a reduced-motion fallback. Donate is prominent in the header/hero; Donate Back buttons return Home.
+- Public `#/donate` explains support, shows verified static VietQR and recipient details, and supports copying the account/transfer note and downloading the QR for use on the same phone.
+- Public pages default to dark without an existing theme choice; retain saved light/dark preferences, EN as default and VN availability. Do not change defaults for direct Library/quiz entry.
+- Do not automatically confirm transactions, store donors, set funding goals, unlock content, call banking APIs or add a backend. Users enter the amount in their banking app; the selected QR does not lock an amount.
 
-Owner đã xác nhận ngày 01/11/2026: mọi người mở domain chính đều thấy landing, nút “Start practicing” mở Library; Donate V1 hiển thị VietQR và thông tin chuyển khoản, chưa tự xác nhận đã nhận tiền. Landing và Donate đã được implement để review trên PR. QR đã tạo offline, giải mã đối chiếu payload và owner đã quét xác nhận đúng người nhận/số tài khoản. Donate được bật trong cấu hình; [design](design.md#3-donate-bằng-qr-tĩnh) ghi nhận xác minh. Merge và verification sau triển khai vẫn còn mở.
+The owner confirmed on 01/11/2026 that everyone opening the main domain should see landing, Start practicing opens Library, and Donate V1 shows VietQR/transfer details without automatically confirming receipt. Landing and Donate are implemented for PR review. The QR was generated offline, decoded against its payload and scanned by the owner to confirm the recipient/account number. Donate is enabled in configuration; [design](design.md#3-static-qr-donations) records verification. Merge and post-deployment verification remain open.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `public-home`: landing, entry route, navigation, theme và nội dung giới thiệu QuizMos.
-- `donation-support`: trang ủng hộ bằng VietQR tĩnh, thông tin chuyển khoản và trạng thái không khả dụng.
+- `public-home`: landing, entry route, navigation, theme and the QuizMos introduction.
+- `donation-support`: static VietQR donation page, transfer details and unavailable states.
 
 ### Modified Capabilities
 
-Không thay đổi requirement của spec `user-profile-access`. Không sửa scope rollout #42, #52 hoặc #53.
+No changes to `user-profile-access` requirements or rollout scope for #42, #52 or #53.
 
 ## Impact
 
-- Thêm page components; cập nhật `App.jsx`, `AppHeader.jsx`, `useHashRoute.js`, `utils/navigation.js`, translations, tokens/styles và metadata ở các điểm cần thiết.
-- Điều chỉnh test nào đang dùng root như shortcut vào Library; thêm regression cho Home/Donate, deep link, theme và exam leave guard.
-- Giữ React/Ant Design, GitHub Pages, hash routing và `BASE_URL`; chưa cần dependency, API key hoặc hạ tầng mới. QR là asset nguồn được owner duyệt công khai, không phải credential.
-- Routing, auth và CI tái sử dụng hạ tầng hiện có. Hai trang và asset donate đã có, owner đã xác minh người nhận; verification sau triển khai vẫn còn mở. Một feature PR cho change này; task nhỏ không tương ứng một PR riêng.
+- Add page components; update `App.jsx`, `AppHeader.jsx`, `useHashRoute.js`, `utils/navigation.js`, translations, tokens/styles and metadata where needed.
+- Classify tests using root as a Library shortcut by their intent; add Home/Donate, deep-link, theme and exam-leave-guard regressions.
+- Retain React/Ant Design, GitHub Pages, hash routing and `BASE_URL`; no new dependency, API key or infrastructure is needed. The QR is an owner-approved public source asset, not a credential.
+- Reuse routing, auth and CI infrastructure. Both pages and the donation asset exist, with owner-verified recipient details; post-deployment verification remains open. Use one feature PR for this change; small tasks do not require separate PRs.
 
-VietQR.io thông báo Generate API dừng từ 01/01/2027, Quicklink ưu tiên SVG và portal dừng nhận template mới. V1 dùng QR tĩnh đã xác minh để tránh phụ thuộc các API này; QR động theo số tiền là scope sau nếu được yêu cầu. Nguồn: [thông báo chính thức](https://www.vietqr.io/thong-bao-cap-nhat), [Quicklink](https://www.vietqr.io/qr-dong).
+VietQR.io announced that Generate API stops on 01/01/2027, Quicklink prioritizes SVG and the portal stops accepting new templates. V1 uses a verified static QR to avoid dependence on those APIs; amount-dependent dynamic QR is future scope if requested. Sources: [official announcement](https://www.vietqr.io/thong-bao-cap-nhat), [Quicklink](https://www.vietqr.io/qr-dong).

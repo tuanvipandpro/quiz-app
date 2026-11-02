@@ -1,43 +1,43 @@
 # Tasks
 
-Tracking: [#65](https://github.com/tuanvipandpro/quiz-app/issues/65). Implementation và verification local theo checklist dưới đây; owner đã xác nhận QR đúng người nhận và số tài khoản. Donate V1 không tự xác nhận giao dịch; xem [proposal](proposal.md). Requirement-to-test matrix nằm trong [design](design.md#verification-plan); evidence, PR/CI và rollout được ghi ở issue.
+Tracking: [#65](https://github.com/tuanvipandpro/quiz-app/issues/65). Implementation/local verification follow this checklist; the owner confirmed the QR recipient/account number. Donate V1 does not automatically confirm transactions; see the [proposal](proposal.md). The requirement-to-test matrix is in [design](design.md#verification-plan); the issue records evidence, PR/CI and rollout.
 
-## 1. Nội dung và bố cục
+## 1. Content and layout
 
-- [x] 1.1 Chốt copy EN/VN và wireframe Home/Donate theo dark navy + accent xanh; kiểm tra CTA chính, preview minh họa, featured banks và lời giải thích donate với owner trước khi code. Đầu ra: copy/layout review trong issue, không thêm bộ tài liệu riêng. CQ-HOME-02, CQ-DONATE-01/04.
+- [x] 1.1 Finalize EN/VN copy and Home/Donate wireframes using dark navy/blue accents; review the primary CTA, illustrative preview, featured banks and support explanation with the owner before coding. Output: copy/layout review in the issue, not a separate document bundle. CQ-HOME-02, CQ-DONATE-01/04.
 
-## 2. Routing và shell
+## 2. Routing and shell
 
-- [x] 2.1 Thêm Home/Donate vào parser và default hash, giữ Library fallback cho link sai. Bổ sung unit vào `tests/uiCatalog.test.js` cho root, donate, alias/query, malformed links; E2E cho reload và Back/Forward. CQ-HOME-01, CQ-DONATE-01.
-- [x] 2.2 Nối page components, logo/Home, footer/Donate, active nav, title và focus/scroll qua guard hiện có. Kiểm tra E2E CTA, exam Leave/Cancel/resume/rapid clicks và auth loading/account transition; test Library cũ chuyển sang route explicit khi phù hợp. CQ-HOME-01/04, CQ-DONATE-01.
-- [x] 2.3 Thêm dark-first cho entry public, giữ saved theme và default system cho direct study link. Unit preference gồm saved/empty/invalid/storage-error; E2E saved light, fresh dark, switch theme và EN/VN. CQ-HOME-03.
+- [x] 2.1 Add Home/Donate to parsing/default hashes while preserving malformed-link Library fallback. Add unit cases in `tests/uiCatalog.test.js` for root, Donate, alias/query and malformed links, plus reload/Back/Forward E2E. CQ-HOME-01, CQ-DONATE-01.
+- [x] 2.2 Wire page components, logo/Home, footer/Donate, active navigation, titles and focus/scroll through existing guards. E2E covers CTAs, exam Leave/Cancel/resume/rapid clicks and auth loading/account transitions; move legacy Library-intent tests to explicit routes where appropriate. CQ-HOME-01/04, CQ-DONATE-01.
+- [x] 2.3 Add dark-first public entry, preserving saved themes and direct-study system defaults. Unit cases cover saved/empty/invalid/storage-error preferences; E2E covers saved light, fresh dark, theme switching and EN/VN. CQ-HOME-03.
 
 ## 3. Landing page
 
-- [x] 3.1 Dựng hero, product preview nhẹ và CTA chính bằng tokens/Ant Design. Kiểm tra render 320px/1280px, keyboard/contrast và start-as-guest; preview không khởi tạo quiz session hoặc gọi AI. CQ-HOME-02/04.
-- [x] 3.2 Thêm Practice/Exam/guides, AIP-C01/CCAR-P từ registry và CTA cuối trang; cập nhật metadata chung. Verify đúng nội dung/capability, link overview, EN/VN và cuộn section không đổi route. CQ-HOME-02/04.
-- [x] 3.3 Chia landing thành 4 section full-width/min-viewport, scroll snap và điều hướng section; E2E kích thước, wheel nhỏ 120px/keyboard/nav, hash không đổi, nội dung mobile/zoom không bị crop và cleanup khi rời Home. CQ-HOME-05.
-- [x] 3.4 Thêm nền tương phản, reveal/orbit/transition phù hợp, tôn trọng reduced motion; review contrast, focus và nội dung luôn đọc được khi observer/motion không khả dụng. CQ-HOME-04/05.
+- [x] 3.1 Build the hero, lightweight product preview and primary CTA with tokens/Ant Design. Verify 320px/1280px rendering, keyboard/contrast and start-as-guest; the preview starts no quiz session or AI call. CQ-HOME-02/04.
+- [x] 3.2 Add Practice/Exam/guides, registry-based AIP-C01/CCAR-P and a final CTA; update shared metadata. Verify content/capability accuracy, overview links, EN/VN and section scrolling without route changes. CQ-HOME-02/04.
+- [x] 3.3 Divide landing into 4 full-width/min-viewport sections with scroll snap and section controls; E2E covers geometry, small 120px wheel/keyboard/navigation, unchanged hashes, uncropped mobile/zoom content and cleanup on leaving Home. CQ-HOME-05.
+- [x] 3.4 Add contrasting backgrounds and appropriate reveal/orbit/transitions respecting reduced motion; review contrast, focus and readable content when observers/motion are unavailable. CQ-HOME-04/05.
 
-- [x] 3.5 Review polish: ambient gradient/accent crossfade, transition giữa section, desktop catalog/learning details và finale cùng tông; test density desktop/mobile, reduced motion, contrast và ảnh render. CQ-HOME-07.
+- [x] 3.5 Polish review: ambient gradient/accent crossfades, inter-section transitions, desktop catalog/learning details and a matching finale palette; test desktop/mobile density, reduced motion, contrast and rendered screenshots. CQ-HOME-07.
 
 ## 4. Donate page
 
-- [x] 4.1 Tạo schema/config public recipient với disabled mặc định từ thông tin owner đã cung cấp trong bản nháp local; unit thiếu/sai config và account có số 0 đầu. Chuẩn bị QR không khóa số tiền, decode đối chiếu BIN/account/memo và owner kiểm tra người nhận trước activation. Ghi kết quả trong issue; nhận thông tin tài khoản chưa hoàn tất task hoặc xác minh người nhận. CQ-DONATE-02/04.
-- [x] 4.2 Dựng layout Donate, QR nền trắng, thông tin người nhận, hướng dẫn nhập amount và unavailable/image-error states. Dùng fixture trong lúc chờ 4.1; E2E guest/direct URL/reload, thiếu config, lỗi ảnh và không có donate API/profile IO. CQ-DONATE-01/02/04.
-- [x] 4.3 Thêm copy account/note, download QR cùng origin và fallback thủ công trên điện thoại. E2E clipboard success/denied, giữ số 0 đầu, file download khớp asset, click lặp/unmount và không báo nhận tiền. CQ-DONATE-03/04.
-- [x] 4.4 Làm Donate nổi bật ở header/hero/final CTA; đổi mọi nút Back trong Donate về Home. E2E entry nhìn thấy ở phone/desktop, Back trên/dưới và exam guard qua Donate. CQ-HOME-06, CQ-DONATE-01.
+- [x] 4.1 Create public-recipient schema/config with disabled default from owner-supplied local draft information; test missing/invalid config and leading-0 accounts. Prepare a QR without a fixed amount, decode BIN/account/memo and have the owner verify the recipient before activation. Record evidence in the issue; receiving account details alone does not complete this task or verify the recipient. CQ-DONATE-02/04.
+- [x] 4.2 Build Donate layout, white-background QR, recipient details, amount-entry instructions and unavailable/image-error states. Use fixtures while 4.1 is pending; E2E covers guest/direct URL/reload, missing config, image failure and no donation API/profile I/O. CQ-DONATE-01/02/04.
+- [x] 4.3 Add account/note copying, same-origin QR download and manual phone fallback. E2E covers clipboard success/denial, leading-0 preservation, asset-matching downloads, repeated clicks/unmount and no receipt claims. CQ-DONATE-03/04.
+- [x] 4.4 Make Donate prominent in header/hero/final CTA and return all Donate Back buttons Home. E2E covers visible phone/desktop entries, top/bottom Back buttons and exam guards through Donate. CQ-HOME-06, CQ-DONATE-01.
 
-- [x] 4.5 Thiết kế Donate thành coffee invitation, giữ đầy đủ receiving details/QR/copy/download/error states và Back Home. Test EN/VN, hai theme, mobile/desktop và không có amount picker gây hiểu nhầm. CQ-DONATE-05.
+- [x] 4.5 Present Donate as a coffee invitation, retaining all recipient details/QR/copy/download/error states and Back Home. Test EN/VN, both themes, mobile/desktop and absence of a misleading amount picker. CQ-DONATE-05.
 
-## 5. Tích hợp và phát hành
+## 5. Integration and release
 
-- [x] 5.1 Review lại revision full-screen toàn flow Home → Library → quiz → Donate; kiểm tra 320/390/412/768/1280px và landscape, EN/VN, hai theme, keyboard/text zoom/reduced motion bằng matrix có chọn lọc. Ghi trạng thái requirement-to-test trong issue, cập nhật ảnh production review ngoài Git. CQ-HOME-01..06, CQ-DONATE-01..04.
-- [ ] 5.2 Chạy `yarn verify` và E2E liên quan, review diff và redacted secret scan staged/outgoing trước push. Tạo một feature PR `Refs #65`, liên kết về issue, chờ required CI latest head; không tạo một PR cho mỗi task hoặc rerun không có lý do. Đầu ra: link PR, commit, kết quả checks và phần chưa verify.
-- [ ] 5.3 Khi user yêu cầu merge và CI pass: merge, chờ post-merge CI/deploy; smoke HTTPS root/Home/Library/Donate, deep link cũ, QR/download và xác nhận người nhận ở bản deploy. Chỉ close #65 sau accepted scope pass; thiếu QR xác minh hoặc rollout thì vẫn mở. CQ-HOME-01..04, CQ-DONATE-01..04.
+- [x] 5.1 Review the full-screen revision across Home → Library → quiz → Donate; cover 320/390/412/768/1280px and landscape, EN/VN, both themes, keyboard/text zoom/reduced motion through a selected matrix. Record requirement-to-test status in the issue and keep production-review images outside Git. CQ-HOME-01..06, CQ-DONATE-01..04.
+- [ ] 5.2 Run `yarn verify` and relevant E2E, review the diff and redacted staged/outgoing secret scans before pushing. Open one feature PR with `Refs #65`, link the issue and wait for exact-head required CI; do not create a PR per task or rerun without cause. Output: PR/commit links, check results and unverified scope.
+- [ ] 5.3 When the user requests merge and CI passes, merge and wait for post-merge CI/deploy; smoke-test HTTPS root/Home/Library/Donate, legacy deep links, QR/download and recipient confirmation on the deployed build. Close #65 only after accepted scope passes; keep it open if QR verification or rollout is missing. CQ-HOME-01..04, CQ-DONATE-01..04.
 
-Dependencies: 1.1 → 2.1 → 2.2; 2.3 → 3.1 → 3.2. Có thể chuẩn bị 4.1 độc lập trong lúc làm landing; 4.2/4.3 dùng fixture nhưng activation cần hoàn tất 4.1. 2.x + 3.x + 4.x → 5.1 → 5.2 → 5.3. Task là đơn vị làm/review nhỏ, không phải yêu cầu nhiều nhánh hoặc nhiều agent.
+Dependencies: 1.1 → 2.1 → 2.2; 2.3 → 3.1 → 3.2. Prepare 4.1 independently while building landing; 4.2/4.3 use fixtures, but activation requires completed 4.1. 2.x + 3.x + 4.x → 5.1 → 5.2 → 5.3. Tasks are small work/review units, not requirements for multiple branches or agents.
 
 ## Workflow follow-up
 
-- Đồng bộ/archive OpenSpec khi feature đã được nghiệm thu theo workflow của project; planning complete không đồng nghĩa implementation complete.
+- Sync/archive OpenSpec after feature acceptance through the project workflow; planning completion is not implementation completion.

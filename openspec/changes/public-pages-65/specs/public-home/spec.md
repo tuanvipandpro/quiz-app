@@ -2,99 +2,99 @@
 
 ## Purpose
 
-Cung cấp điểm vào giới thiệu QuizMos trước khi luyện tập, đồng thời bảo toàn đường dẫn, dữ liệu học tập và quyền truy cập hiện có.
+Introduce QuizMos before practice while preserving existing links, study data and access permissions.
 
 ## ADDED Requirements
 
 ### Requirement: CQ-HOME-07 Balanced desktop density and color transitions
 
-Landing SHALL dùng chuyển màu/nội dung có chọn lọc giữa section và CTA cuối cùng họ màu với trang. Desktop SHALL có thông tin bổ trợ hữu ích từ catalog/learning flow; mobile giữ nội dung cốt lõi gọn. Không bịa số liệu người dùng hoặc kết quả học tập; reduced motion SHALL tắt các hiệu ứng mới.
+Landing SHALL use selective inter-section color/content transitions and a final CTA in the page's color family. Desktop SHALL provide useful catalog/learning-flow support content while mobile retains compact core content. Do not fabricate user statistics or learning outcomes; reduced motion SHALL disable new effects.
 
 #### Scenario: Desktop and mobile presentation
 
-- **WHEN** xem landing ở desktop rộng hoặc phone
-- **THEN** desktop có catalog facts/learning steps, phone không bị kéo dài bởi các phần bổ trợ; heading/CTA chính và contrast vẫn rõ
+- **WHEN** landing is viewed on a wide desktop or phone
+- **THEN** desktop shows catalog facts/learning steps, supporting content does not lengthen the phone view, and primary headings/CTAs/contrast remain clear
 
 #### Scenario: Change section or motion preference
 
-- **WHEN** chuyển section trong normal motion hoặc bật reduced motion
-- **THEN** gradient/accent và reveal chuyển nhẹ khi normal; khi reduced, màu cuối và nội dung hiển thị ngay, không làm mất focus/control
+- **WHEN** sections change with normal motion or reduced motion is enabled
+- **THEN** gradient/accent and reveal transitions are subtle normally; reduced motion shows final colors/content immediately without losing focus/controls
 
 ### Requirement: CQ-HOME-01 Public entry and compatible deep links
 
-Ứng dụng SHALL mở Home tại URL không có hash hoặc `#/`, giữ `#/library`, `#/my-quizzes` và đường dẫn quiz hiện có. Lựa chọn entry không phụ thuộc đăng nhập hay lần truy cập trước.
+The application SHALL open Home at URLs without a hash or at `#/`, preserving `#/library`, `#/my-quizzes` and existing quiz paths. Entry behavior is independent of authentication or prior visits.
 
 #### Scenario: Direct home and library entry
 
-- **WHEN** khách hoặc người đã đăng nhập mở root hoặc `#/`, kể cả sau lần sử dụng trước
-- **THEN** Home xuất hiện; CTA mở `#/library`; mở trực tiếp `#/library` vẫn tới Quiz Bank và refresh giữ nguyên trang
+- **WHEN** a guest or signed-in user opens root or `#/`, including after a previous visit
+- **THEN** Home appears, its CTA opens `#/library`, direct `#/library` entry still opens Quiz Bank and refresh retains the page
 
 #### Scenario: Existing links and malformed links
 
-- **WHEN** mở quiz có alias `aws-ace`, query resume/question hoặc một hash sai định dạng
-- **THEN** quiz tiếp tục canonicalize thành Google ACE và giữ query; hash sai vẫn fallback về Library như hiện tại
+- **WHEN** a quiz opens with alias `aws-ace`, a resume/question query or a malformed hash
+- **THEN** the quiz still canonicalizes to Google ACE with its query retained, and malformed hashes retain the existing Library fallback
 
 ### Requirement: CQ-HOME-02 Useful and accurate introduction
 
-Home SHALL giới thiệu Practice, Exam và study guides, có preview sản phẩm, link AIP-C01/CCAR-P và CTA luyện tập rõ ràng. Nội dung SHALL phản ánh tính năng thực tế, dùng tên QuizMos và không đưa số liệu, testimonial hoặc cam kết đỗ thi không có căn cứ.
+Home SHALL introduce Practice, Exam and study guides, with a product preview, AIP-C01/CCAR-P links and a clear practice CTA. Content SHALL reflect actual features, use the QuizMos name and avoid unsupported statistics, testimonials or exam-pass guarantees.
 
 #### Scenario: Start without signing in
 
-- **WHEN** khách chọn CTA chính hoặc một bank nổi bật
-- **THEN** Library hoặc overview của bank tương ứng mở mà không buộc đăng nhập; section giới thiệu nội bộ không làm thay đổi quiz route
+- **WHEN** a guest selects the primary CTA or a featured bank
+- **THEN** Library or that bank's overview opens without mandatory sign-in, and internal introductory sections do not alter quiz routes
 
 ### Requirement: CQ-HOME-03 Dark-first public entry with retained preferences
 
-Home và Donate SHALL khởi tạo dark khi chưa có preference hợp lệ, giữ theme đã lưu và cho phép đổi light/dark. Link vào trực tiếp Library/quiz SHALL giữ fallback theo hệ thống hiện có; chuyển trang không tự reset theme. EN SHALL là ngôn ngữ mặc định và VN tiếp tục khả dụng.
+Home and Donate SHALL initialize dark without a valid preference, retain saved themes and allow light/dark switching. Direct Library/quiz entry SHALL preserve the existing system fallback; navigation does not reset the theme. EN SHALL remain the default language and VN remain available.
 
 #### Scenario: New public visit and explicit preference
 
-- **WHEN** mở Home hoặc Donate với storage trống hoặc không truy cập được, kể cả hệ thống đang light
-- **THEN** trang dùng dark; nếu đã lưu light thì dùng light; người dùng vẫn đổi theme/ngôn ngữ được
+- **WHEN** Home or Donate opens with empty/unavailable storage, including when the system uses light mode
+- **THEN** the page uses dark, a saved light preference uses light, and theme/language controls remain usable
 
 #### Scenario: Direct study entry and navigation
 
-- **WHEN** mở trực tiếp Library/quiz với storage trống, rồi chuyển giữa các trang
-- **THEN** theme ban đầu theo hệ thống như trước và giữ theme đang dùng khi chuyển trang; lựa chọn người dùng được giữ sau reload nếu storage khả dụng
+- **WHEN** Library/quiz opens directly with empty storage and the user navigates between pages
+- **THEN** the initial theme follows the system as before, the active theme persists across navigation and preferences survive reload when storage is available
 
 ### Requirement: CQ-HOME-04 Safe navigation and public accessibility
 
-Home và Donate SHALL dùng cùng hợp đồng navigation, title, focus và accessibility của ứng dụng; không xóa draft/checkpoint hay thay quyền tài khoản khi chuyển trang. Public content SHALL đọc được khi auth đang loading hoặc gặp lỗi.
+Home and Donate SHALL share application navigation/title/focus/accessibility contracts, without deleting drafts/checkpoints or changing account permissions during navigation. Public content SHALL remain readable while auth is loading or failing.
 
 #### Scenario: Leave an active exam
 
-- **WHEN** người dùng đang thi bấm logo/Home/Donate hoặc dùng Back/Forward, kể cả click liên tiếp
-- **THEN** chỉ một quyết định rời bài thi có hiệu lực; Cancel giữ bài thi và timer; xác nhận rời giữ khả năng resume theo hợp đồng hiện tại
+- **WHEN** a user in an active exam selects logo/Home/Donate or uses Back/Forward, including rapid repeated clicks
+- **THEN** only one leave decision takes effect, Cancel preserves the exam/timer and confirmed navigation retains existing resume behavior
 
 #### Scenario: Keyboard and small-screen visit
 
-- **WHEN** dùng bàn phím hoặc màn hình 320px với EN/VN, light/dark, text zoom hoặc reduced motion
-- **THEN** điều hướng, CTA, heading và focus vẫn rõ, không tràn ngang; control chính tối thiểu 44px và chữ thường đạt contrast 4.5:1
+- **WHEN** keyboard or a 320px screen is used with EN/VN, light/dark, text zoom or reduced motion
+- **THEN** navigation/CTAs/headings/focus remain clear without horizontal overflow, primary controls are at least 44px and normal text meets 4.5:1 contrast
 
 #### Scenario: Account transition while on a public page
 
-- **WHEN** auth chậm, lỗi hoặc đổi tài khoản trong lúc xem Home/Donate
-- **THEN** nội dung công khai vẫn dùng được và không hiển thị draft/checkpoint riêng của tài khoản trước
+- **WHEN** auth is slow, fails or changes accounts while viewing Home/Donate
+- **THEN** public content remains usable without showing the previous account's private drafts/checkpoints
 
 ### Requirement: CQ-HOME-05 Viewport sections and motion
 
-Landing SHALL chia 4 section full-width cao tối thiểu phần viewport dưới header, cuộn snap theo section và có điều hướng section rõ ràng. Nội dung lớn SHALL được giãn để giữ khả năng đọc/control. Reveal/transition SHALL tôn trọng reduced motion, không chặn wheel/touch/keyboard hoặc rò snap sang Library/Donate.
+Landing SHALL contain 4 full-width sections at least as tall as the viewport below the header, with section snapping and clear section navigation. Large content SHALL expand to preserve readability/controls. Reveal/transitions SHALL respect reduced motion without blocking wheel/touch/keyboard or leaking snap behavior into Library/Donate.
 
 #### Scenario: Move between sections
 
-- **WHEN** dùng wheel, touch, Page Down hoặc nút điều hướng section
-- **THEN** section tiếp theo xuất hiện với snap và tương phản nền; header/CTA vẫn dùng được và hash route không bị ghi đè bởi section anchor
+- **WHEN** users scroll with a wheel, touch, Page Down or section controls
+- **THEN** the next section appears with snapping/contrasting backgrounds, header/CTAs remain usable and section anchors do not overwrite the hash route
 
 #### Scenario: Small viewport or reduced motion
 
-- **WHEN** màn hình nhỏ, landscape, zoom hoặc bật reduced motion
-- **THEN** không crop nội dung/control; chuyển động bị giảm/tắt, tất cả nội dung vẫn đọc được và snap được gỡ khi rời Home
+- **WHEN** the viewport is small, landscape, zoomed or reduced motion is enabled
+- **THEN** content/controls are not cropped, motion is reduced/disabled, all content remains readable and snap behavior is removed on leaving Home
 
 ### Requirement: CQ-HOME-06 Discoverable donation entry
 
-Landing SHALL có Donate dễ thấy trong header và hero, ngoài lời mời cuối trang. Mọi entry SHALL mở cùng trang Donate qua navigation guard hiện có.
+Landing SHALL expose Donate prominently in the header and hero in addition to the final support invitation. Every entry SHALL open the same Donate page through the existing navigation guard.
 
 #### Scenario: Find donation without scrolling
 
-- **WHEN** mở Home ở desktop hoặc phone
-- **THEN** có thể tìm và mở Donate ngay từ header/hero bằng keyboard hoặc pointer mà không cần tới footer
+- **WHEN** Home opens on desktop or phone
+- **THEN** Donate can be found and opened from the header/hero by keyboard or pointer without reaching the footer
