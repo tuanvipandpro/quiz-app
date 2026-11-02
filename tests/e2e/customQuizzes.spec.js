@@ -300,7 +300,7 @@ test('private loading errors are recoverable and do not block bank navigation', 
   page,
 }) => {
   await page.addInitScript(() => sessionStorage.setItem('quiz-e2e-custom-fail-list', 'PERMISSION'));
-  await page.goto('./');
+  await page.goto('./#/library');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await clickAfterUiMotion(page.getByRole('button', { name: 'Continue with Google', exact: true }));
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();

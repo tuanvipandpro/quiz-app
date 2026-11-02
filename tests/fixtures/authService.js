@@ -11,8 +11,12 @@ export default {
   onAuthStateChanged(listener) {
     if (!listeners.size) window.addEventListener('quiz-e2e-auth-change', changeUser);
     listeners.add(listener);
-    queueMicrotask(() => listeners.has(listener) && listener(readUser()));
+    const initial = () => listeners.has(listener) && listener(readUser());
+    if (sessionStorage.getItem('quiz-e2e-defer-auth'))
+      window.addEventListener('quiz-e2e-auth-ready', initial, { once: true });
+    else queueMicrotask(initial);
     return () => {
+      window.removeEventListener('quiz-e2e-auth-ready', initial);
       listeners.delete(listener);
       if (!listeners.size) window.removeEventListener('quiz-e2e-auth-change', changeUser);
     };

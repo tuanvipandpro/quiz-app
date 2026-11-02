@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Layout, Spin } from 'antd';
-import { LoginOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { HeartOutlined, LoginOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
 import { appBrand } from '../data/appBrand';
 import AccountMenu from './AccountMenu';
@@ -24,7 +24,8 @@ export default function AppHeader({
         <button
           className="app-brand"
           aria-label={appBrand.name}
-          onClick={() => onNavigate('#/library')}
+          onClick={() => onNavigate('#/')}
+          aria-current={page === 'home' ? 'page' : undefined}
         >
           <img
             className="app-brand-logo"
@@ -42,7 +43,7 @@ export default function AppHeader({
         >
           <Button
             type="text"
-            aria-current={page !== 'my-quizzes' ? 'page' : undefined}
+            aria-current={['library', 'quiz'].includes(page) ? 'page' : undefined}
             onClick={() => onNavigate('#/library')}
           >
             {t('Quiz Bank')}
@@ -53,6 +54,15 @@ export default function AppHeader({
             onClick={() => onNavigate('#/my-quizzes')}
           >
             {t('My quizzes')}
+          </Button>
+          <Button
+            type="text"
+            className="header-donate"
+            aria-current={page === 'donate' ? 'page' : undefined}
+            onClick={() => onNavigate('#/donate')}
+            icon={<HeartOutlined aria-hidden="true" />}
+          >
+            {t('Donate')}
           </Button>
         </nav>
         <div className="header-actions">

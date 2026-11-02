@@ -196,7 +196,7 @@ for (const reducedMotion of ['no-preference', 'reduce']) {
 test('fixture sign-in preserves the guest state on failure and allows a single retry', async ({
   page,
 }) => {
-  await page.goto('./');
+  await page.goto('./#/library');
   await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
   const guestUrl = page.url();
   await page.evaluate(() => {
@@ -279,7 +279,7 @@ test(
   { tag: '@smoke' },
   async ({ page }, testInfo) => {
     await page.goto('./');
-    await expect(page).toHaveTitle('Quiz Bank · QuizMos');
+    await expect(page).toHaveTitle('Small quizzes. Big confidence. · QuizMos');
     const brand = page.getByRole('button', { name: 'QuizMos', exact: true });
     const logo = brand.locator('img');
     await expect(logo).toHaveAttribute('alt', '');
@@ -316,9 +316,9 @@ test(
     await page.getByRole('button', { name: 'My quizzes', exact: true }).click();
     await expect(page).toHaveTitle('My quizzes · QuizMos');
     await brand.click();
-    await expect(page).toHaveTitle('Quiz Bank · QuizMos');
+    await expect(page).toHaveTitle('Small quizzes. Big confidence. · QuizMos');
     await page.getByRole('button', { name: 'Tiếng Việt', exact: true }).click();
-    await expect(page).toHaveTitle('Thư viện quiz · QuizMos');
+    await expect(page).toHaveTitle('Quiz nhỏ. Tự tin lớn. · QuizMos');
     await page.goto('./#/quiz/aws-aip-c01/practice');
     await expect(page.locator('.question-title')).toBeVisible();
     await expect(page).toHaveTitle(/ · QuizMos$/);
@@ -329,7 +329,7 @@ test(
   'bank, provider identities, language and theme work without overflow',
   { tag: '@smoke' },
   async ({ page }, testInfo) => {
-    await page.goto('./');
+    await page.goto('./#/library');
     await expect(page.getByRole('heading', { name: 'Quiz Bank', exact: true })).toBeVisible();
     await expect(page.getByText('20 quiz sets', { exact: true })).toBeVisible();
     await expect(page.locator('.header-settings')).toHaveCount(0);

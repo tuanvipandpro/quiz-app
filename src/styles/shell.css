@@ -43,6 +43,16 @@
   align-items: center;
   gap: 6px;
 }
+.app-nav {
+  flex-wrap: wrap;
+}
+.app-nav .header-donate.ant-btn {
+  min-height: 44px;
+  color: var(--app-primary);
+  background: var(--app-info-bg);
+  border: 1px solid var(--app-control-border);
+  font-weight: 650;
+}
 .app-nav .ant-btn[aria-current='page'] {
   background: var(--app-info-bg);
   color: var(--app-primary);

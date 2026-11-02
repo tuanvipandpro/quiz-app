@@ -1,5 +1,7 @@
 import { canonicalQuizId } from '../data/quizAliases.js';
 
+export const DEFAULT_HASH = '#/';
+
 export function canonicalQuizHash(hash) {
   return hash.replace(/^(#\/quiz\/)([^/?]+)/, (match, prefix, encodedId) => {
     try {
@@ -11,9 +13,12 @@ export function canonicalQuizHash(hash) {
   });
 }
 
-export function parseRoute(hash) {
+export function parseRoute(hash = '') {
   try {
     const [path, query = ''] = hash.replace(/^#/, '').split('?');
+    if (path === '' || path === '/') return { page: 'home', params: new URLSearchParams(query) };
+    if (path === '/donate' || path === '/donate/')
+      return { page: 'donate', params: new URLSearchParams(query) };
     const parts = path.split('/').filter(Boolean).map(decodeURIComponent);
     if (parts[0] === 'my-quizzes')
       return { page: 'my-quizzes', params: new URLSearchParams(query) };
