@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { classifyTargets } from '../scripts/ci-plan.mjs';
-import { checkGate, checkFrontendGate } from '../scripts/ci-gate.mjs';
+import { spawnSync } from 'node:child_process';
+import { classifyTargets, classifyReleases } from '../scripts/ci-plan.mjs';
+import { checkGate, checkFrontendGate, checkReleaseSelection } from '../scripts/ci-gate.mjs';
 
 const change = (file, extra = {}) => ({
   file,
@@ -62,6 +63,11 @@ test('every transitive browser module imported by the Worker selects both compon
   const visit = (file) => {
     if (visited.has(file)) return;
     visited.add(file);
+    assert.equal(
+      classifyReleases([change(file)]).backend,
+      true,
+      `${file} requires backend release`
+    );
     if (file.startsWith('src/'))
       assert.deepEqual(selected(file), { frontend: true, backend: true }, file);
     const source = fs.readFileSync(file, 'utf8');
@@ -118,4 +124,134 @@ test('frontend gate requires Rules for full and browser checks for both profiles
     );
   }
   assert.throws(() => checkFrontendGate('docs', {}));
+});
+
+test('only production runtime inputs request release, independently of CI selection', () => {
+  const cases = [
+    [
+      [
+        'src/App.jsx',
+        'public/quiz/AWS/exam.json',
+        'public/summaries/guide.md',
+        'public/CNAME',
+        'index.html',
+        'vite.config.js',
+      ],
+      { frontend: true, backend: false },
+    ],
+    [
+      [
+        'worker/index.js',
+        'worker/auth.js',
+        'worker/config.js',
+        'worker/wrangler.jsonc',
+        'worker/migrations/0003.sql',
+      ],
+      { frontend: false, backend: true },
+    ],
+    [
+      [
+        'src/utils/questionModel.js',
+        'src/services/llm/explanationPrompt.js',
+        'package.json',
+        'yarn.lock',
+      ],
+      { frontend: true, backend: true },
+    ],
+    [
+      [
+        'README.md',
+        'docs/contributing.md',
+        'worker/README.md',
+        'src/README.md',
+        'tests/worker/auth.test.js',
+        'tests/ciPlan.test.js',
+        'tests/e2e/appAi.spec.js',
+        'tests/fixtures/workerHarness.mjs',
+        '.github/workflows/backend.yml',
+        'scripts/check-worker.mjs',
+        'scripts/check-worker-migrations.mjs',
+        'worker/wrangler.staging.jsonc',
+        'firebase/firestore.rules',
+        'firebase.emulator.json',
+        'playwright.config.js',
+        '.nvmrc',
+        '.env.example',
+        'unknown.file',
+      ],
+      { frontend: false, backend: false },
+    ],
+  ];
+  for (const [files, expected] of cases)
+    for (const file of files)
+      for (const status of ['A', 'M', 'D'])
+        assert.deepEqual(
+          classifyReleases([
+            change(file, {
+              status,
+              before: status === 'A' ? undefined : '100644',
+              after: status === 'D' ? undefined : '100644',
+            }),
+          ]),
+          expected,
+          `${status} ${file}`
+        );
+  assert.deepEqual(classifyReleases([]), { frontend: false, backend: false });
+  assert.deepEqual(classifyReleases([change('tests/worker/auth.test.js'), change('src/App.jsx')]), {
+    frontend: true,
+    backend: false,
+  });
+  assert.deepEqual(
+    classifyReleases([change('.github/workflows/test.yml'), change('worker/auth.js')]),
+    { frontend: false, backend: true }
+  );
+  assert.throws(() => classifyReleases([change('worker/auth.js', { after: '120000' })]));
+});
+
+test('release gate rejects unverified evidence and release without corresponding CI', () => {
+  const both = { frontend: true, backend: true };
+  for (const release of [
+    { valid: false, frontend: false, backend: false },
+    { frontend: false, backend: false },
+    { valid: true, frontend: 'false', backend: false },
+    { valid: true, frontend: false },
+  ])
+    assert.throws(() => checkReleaseSelection(both, release));
+  assert.doesNotThrow(() =>
+    checkReleaseSelection(both, { valid: true, frontend: false, backend: false })
+  );
+  assert.doesNotThrow(() =>
+    checkReleaseSelection(both, { valid: true, frontend: true, backend: false })
+  );
+  for (const component of ['frontend', 'backend'])
+    assert.throws(() =>
+      checkReleaseSelection(
+        { ...both, [component]: false },
+        { valid: true, frontend: false, backend: false, [component]: true }
+      )
+    );
+});
+
+test('workflow gate parses false release flags literally and blocks missing or invalid evidence', () => {
+  const env = {
+    ...process.env,
+    CI_PROFILE: 'full',
+    CI_FRONTEND: 'true',
+    CI_BACKEND: 'true',
+    CI_RELEASE_VALID: 'true',
+    CI_RELEASE_FRONTEND: 'false',
+    CI_RELEASE_BACKEND: 'false',
+    CI_RESULTS: JSON.stringify(
+      Object.fromEntries(
+        ['plan', 'docs', 'frontend', 'backend'].map((name) => [name, { result: 'success' }])
+      )
+    ),
+  };
+  const run = (values) =>
+    spawnSync(process.execPath, ['scripts/ci-gate.mjs'], { env: values, encoding: 'utf8' });
+  assert.equal(run(env).status, 0);
+  assert.notEqual(run({ ...env, CI_RELEASE_VALID: 'false' }).status, 0);
+  const missing = { ...env };
+  delete missing.CI_RELEASE_BACKEND;
+  assert.notEqual(run(missing).status, 0);
 });

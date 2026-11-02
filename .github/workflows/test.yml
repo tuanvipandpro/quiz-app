@@ -25,6 +25,9 @@ jobs:
       shards: ${{ steps.plan.outputs.shards }}
       frontend: ${{ steps.plan.outputs.frontend }}
       backend: ${{ steps.plan.outputs.backend }}
+      release-frontend: ${{ steps.plan.outputs.release-frontend }}
+      release-backend: ${{ steps.plan.outputs.release-backend }}
+      release-valid: ${{ steps.plan.outputs.release-valid }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,11 +59,14 @@ jobs:
     with:
       profile: ${{ needs.plan.outputs.profile }}
       shards: ${{ needs.plan.outputs.shards }}
+      release: ${{ needs.plan.outputs.release-frontend == 'true' }}
 
   backend:
     needs: plan
     if: needs.plan.outputs.backend == 'true'
     uses: ./.github/workflows/backend.yml
+    with:
+      release: ${{ needs.plan.outputs.release-backend == 'true' }}
 
   # Preserve the existing required-check name. Missing, failed or cancelled
   # prerequisites must fail this gate, including when a dependency was skipped.
@@ -80,20 +86,23 @@ jobs:
           CI_RESULTS: ${{ toJSON(needs) }}
           CI_FRONTEND: ${{ needs.plan.outputs.frontend }}
           CI_BACKEND: ${{ needs.plan.outputs.backend }}
+          CI_RELEASE_VALID: ${{ needs.plan.outputs.release-valid }}
+          CI_RELEASE_FRONTEND: ${{ needs.plan.outputs.release-frontend }}
+          CI_RELEASE_BACKEND: ${{ needs.plan.outputs.release-backend }}
 
   deploy-frontend:
     needs: [plan, test-and-build, deploy-backend]
     if: >-
       always() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master'
-      && needs.test-and-build.result == 'success' && needs.plan.outputs.frontend == 'true'
-      && (needs.plan.outputs.backend == 'false' || needs.deploy-backend.result == 'success')
+      && needs.test-and-build.result == 'success' && needs.plan.outputs.release-frontend == 'true'
+      && (needs.plan.outputs.release-backend == 'false' || needs.deploy-backend.result == 'success')
     permissions:
       contents: write
     uses: ./.github/workflows/deploy-frontend.yml
 
   deploy-backend:
     needs: [plan, test-and-build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.plan.outputs.backend == 'true'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.plan.outputs.release-backend == 'true'
     uses: ./.github/workflows/deploy-backend.yml
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
