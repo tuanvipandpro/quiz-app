@@ -1216,7 +1216,7 @@ html.landing-scroll {
     font-weight: 650;
     color: var(--landing-accent);
   }
-  .hero-catalog span,
+  .hero-catalog > div > span,
   .hero-catalog p {
     font-size: 12px;
     color: var(--app-muted);
@@ -1308,6 +1308,75 @@ html.landing-scroll {
     display: inline-flex;
     align-items: center;
     gap: 7px;
+  }
+}
+
+.rolling-number-visual {
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.rolling-digit {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+}
+.rolling-digit-strip {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--digit-steps) * -1em));
+}
+.rolling-digit-strip > span {
+  height: 1em;
+  flex: 0 0 1em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rolling-number[data-animate='true'] .rolling-digit-strip {
+    animation: catalog-roll 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--digit-order) * 90ms);
+  }
+  .landing-page[data-ready='true'][data-motion='normal'] .hero-copy {
+    animation: landing-enter 550ms ease-out backwards;
+  }
+  .landing-page[data-ready='true'][data-motion='normal'] .hero-visual {
+    animation: landing-enter 650ms 100ms ease-out backwards;
+  }
+  .landing-page[data-ready='true'][data-motion='normal'] .landing-panel.is-current .feature-card,
+  .landing-page[data-ready='true'][data-motion='normal']
+    .landing-panel.is-current
+    .public-bank-card {
+    animation: landing-enter 500ms ease-out backwards;
+  }
+  .landing-panel.is-current .feature-card:nth-child(2),
+  .landing-panel.is-current .public-bank-card:nth-child(2) {
+    animation-delay: 80ms;
+  }
+  .landing-panel.is-current .feature-card:nth-child(3) {
+    animation-delay: 160ms;
+  }
+  .landing-panel:focus-within .hero-copy,
+  .landing-panel:focus-within .hero-visual,
+  .landing-panel:focus-within .feature-card,
+  .landing-panel:focus-within .public-bank-card {
+    animation: none !important;
+  }
+}
+@keyframes catalog-roll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(var(--digit-steps) * -1em));
+  }
+}
+@keyframes landing-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 @media (min-width: 1000px) and (max-height: 820px) {

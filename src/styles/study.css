@@ -327,11 +327,46 @@
   font-size: 12px;
   margin: 8px 0 16px;
 }
+.study-question-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+.study-question-tools .ant-btn {
+  min-height: 44px;
+  min-width: 44px;
+}
 .study-navigation-bar {
+  margin-top: 20px;
+}
+.study-navigation-actions {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 20px;
+}
+.study-compact-label {
+  display: none;
+}
+.study-navigation-actions .ant-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+.exam-sidebar {
+  position: sticky;
+  top: calc(var(--app-header-height) + 16px);
+  display: grid;
+  gap: 12px;
+}
+.exam-sidebar .study-sidebar {
+  position: static;
+  min-width: 0;
+}
+.exam-sidebar .exam-timer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
 }
 .study-sidebar {
   position: sticky;
@@ -430,17 +465,6 @@
 .exam-timer .ant-statistic-content {
   font-size: 24px;
   font-variant-numeric: tabular-nums;
-}
-.exam-timer-sticky {
-  position: sticky;
-  top: calc(var(--app-header-height) + 8px);
-  z-index: 85;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  max-width: 320px;
-  margin-left: auto;
 }
 .exam-score {
   display: flex;
@@ -621,4 +645,73 @@
 }
 .ai-key-help li + li {
   margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  html:has(.is-studying) {
+    scroll-padding-bottom: calc(
+      var(--study-dock-height, 80px) + 24px + env(safe-area-inset-bottom)
+    );
+  }
+  .exam-sidebar {
+    position: static;
+    order: -1;
+  }
+  .study-navigation-bar {
+    position: fixed;
+    inset-inline-start: max(12px, env(safe-area-inset-left));
+    inset-inline-end: max(12px, env(safe-area-inset-right));
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    z-index: 80;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 8px;
+    background: var(--app-surface);
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius-md);
+    box-shadow: var(--app-shadow-lg);
+  }
+  .study-navigation-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .study-navigation-actions.has-explain {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+  .study-navigation-actions .ant-btn {
+    padding: 8px;
+    gap: 6px;
+    font-size: 14px;
+  }
+  .study-wide-label {
+    display: none;
+  }
+  .study-compact-label {
+    display: inline;
+  }
+  .study-navigation-bar .exam-timer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin: 0 0 8px;
+    padding: 0 4px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--app-border);
+    border-radius: 0;
+  }
+  .study-navigation-bar .exam-timer .ant-statistic-content {
+    font-size: 20px;
+  }
+  .is-studying .ant-layout-content {
+    padding-bottom: calc(var(--study-dock-height, 80px) + 32px + env(safe-area-inset-bottom));
+  }
+  /* Give text entry the viewport while the on-screen keyboard is in use. */
+  .is-studying:has(.navigator-jump input:focus, .structured-question [role='combobox']:focus)
+    .study-navigation-bar {
+    position: static;
+    margin-top: 20px;
+  }
 }

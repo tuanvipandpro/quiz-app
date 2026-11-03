@@ -1,16 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Empty, Modal, Radio, Space, Statistic, Typography } from 'antd';
-import {
-  ArrowLeftOutlined,
-  ArrowRightOutlined,
-  ClockCircleOutlined,
-  FlagFilled,
-  FlagOutlined,
-  QuestionCircleOutlined,
-  ReloadOutlined,
-} from '@ant-design/icons';
+import { Alert, Button, Empty, Modal, Radio, Space, Typography } from 'antd';
+import { ArrowLeftOutlined, FlagFilled, FlagOutlined, ReloadOutlined } from '@ant-design/icons';
 import Question from './Question';
 import QuestionNavigator from './QuestionNavigator';
+import StudyNavigation from './StudyNavigation';
+import ExamTimer from './ExamTimer';
+import { useCompactStudyLayout } from '../hooks/useCompactStudyLayout';
 import ExplanationDialogs from './ExplanationDialogs';
 import { useExplanation } from '../hooks/useExplanation';
 import { useStudySession } from '../hooks/useStudySession';
@@ -37,6 +32,7 @@ export default function ExamMode({
 }) {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const compact = useCompactStudyLayout();
   const [session, setSession, draftSaved] = useStudySession(
     sessionKey(user?.uid, quizId, 'exam'),
     questions,
@@ -134,19 +130,6 @@ export default function ExamMode({
           </Paragraph>
         </div>
       </div>
-      {!session.submitted && (
-        <div className="exam-timer exam-timer-sticky" role="timer" aria-label={t('Time remaining')}>
-          <Text type="secondary">
-            <ClockCircleOutlined aria-hidden="true" /> {t('Time remaining')}
-          </Text>
-          <Statistic.Timer
-            type="countdown"
-            value={session.deadline}
-            format="HH:mm:ss"
-            onFinish={() => finish(true)}
-          />
-        </div>
-      )}
       {session.submitted && (
         <>
           {session.timeExpired && <Alert type="info" showIcon message={t('Time is up')} />}
@@ -245,15 +228,7 @@ export default function ExamMode({
                 sortOptions={false}
               />
               <div className="study-secondary-actions">
-                {session.submitted ? (
-                  <Button
-                    icon={<QuestionCircleOutlined aria-hidden="true" />}
-                    onClick={() => ai.explain()}
-                    ref={ai.triggerRef}
-                  >
-                    {t('Explain')}
-                  </Button>
-                ) : (
+                {!session.submitted && (
                   <>
                     <Button
                       icon={
@@ -275,27 +250,17 @@ export default function ExamMode({
                 )}
               </div>
               {session.submitted && <ExplanationDialogs question={question} state={ai} inline />}
-              <div
-                className="study-navigation-bar"
-                role="group"
-                aria-label={t(session.submitted ? 'Exam results' : 'Mock exam')}
-              >
-                <Button
-                  icon={<ArrowLeftOutlined aria-hidden="true" />}
-                  disabled={position <= 0}
-                  onClick={() => go(indexes[position - 1])}
-                >
-                  {t('Previous')}
-                </Button>
-                <Button
-                  type="primary"
-                  icon={<ArrowRightOutlined aria-hidden="true" />}
-                  disabled={position < 0 || position === indexes.length - 1}
-                  onClick={() => go(indexes[position + 1])}
-                >
-                  {t('Next question')}
-                </Button>
-              </div>
+              <StudyNavigation
+                label={t(session.submitted ? 'Exam results' : 'Mock exam')}
+                previousDisabled={position <= 0}
+                nextDisabled={position < 0 || position === indexes.length - 1}
+                onPrevious={() => go(indexes[position - 1])}
+                onNext={() => go(indexes[position + 1])}
+                explanation={session.submitted ? ai : null}
+                timer={
+                  compact && !session.submitted ? <ExamTimer deadline={session.deadline} /> : null
+                }
+              />
             </>
           ) : (
             <Empty description={t('No questions match this filter.')} />
@@ -310,15 +275,18 @@ export default function ExamMode({
             </Text>
           </div>
         </div>
-        <QuestionNavigator
-          questions={session.questions}
-          answers={session.answers}
-          index={session.index}
-          onNavigate={go}
-          flags={session.flags}
-          review={session.submitted}
-          indexes={indexes}
-        />
+        <div className="exam-sidebar">
+          {!compact && !session.submitted && <ExamTimer deadline={session.deadline} />}
+          <QuestionNavigator
+            questions={session.questions}
+            answers={session.answers}
+            index={session.index}
+            onNavigate={go}
+            flags={session.flags}
+            review={session.submitted}
+            indexes={indexes}
+          />
+        </div>
       </div>
       <Modal
         title={t('Review before submitting')}

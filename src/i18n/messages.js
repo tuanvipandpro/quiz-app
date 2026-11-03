@@ -1,4 +1,6 @@
 export const vi = {
+  Prev: 'Trước',
+  Next: 'Tiếp',
   'Open your banking app': 'Mở app ngân hàng của bạn',
   'Scan the QR or copy the transfer details': 'Quét QR hoặc sao chép thông tin chuyển khoản',
   'Check the recipient and choose your amount': 'Kiểm tra người nhận và chọn số tiền',

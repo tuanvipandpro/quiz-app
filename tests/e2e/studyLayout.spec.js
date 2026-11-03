@@ -1,0 +1,171 @@
+import { test, expect } from '@playwright/test';
+import { accountCases } from './viewports.js';
+import { contrastRatio } from './uiContrast.js';
+import { clickAfterUiMotion } from './uiMotion.js';
+
+test.beforeEach(async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.route('**/*', (route) =>
+    ['127.0.0.1', 'localhost'].includes(new URL(route.request().url()).hostname)
+      ? route.continue()
+      : route.abort()
+  );
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'quiz-e2e-auth',
+      JSON.stringify({ uid: 'study-layout', displayName: 'Study tester', emailVerified: true })
+    )
+  );
+});
+
+async function appearance(page, state) {
+  await page.setViewportSize({ width: state.width, height: state.height });
+  await page
+    .getByRole('button', { name: state.language === 'vi' ? 'Tiếng Việt' : 'English', exact: true })
+    .click();
+  if ((await page.locator('html').getAttribute('data-theme')) !== state.theme)
+    await page.locator('.theme-toggle').click();
+}
+
+async function dockGeometry(page, width, height) {
+  const dock = page.locator('.study-navigation-bar');
+  const bounds = await dock.boundingBox();
+  expect(bounds.x).toBeGreaterThanOrEqual(0);
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+  if (width <= 900) {
+    await expect(dock).toHaveCSS('position', 'fixed');
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(height);
+  }
+  const buttons = await dock.locator('button').all();
+  let previous;
+  for (const button of buttons) {
+    const box = await button.boundingBox();
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.x).toBeGreaterThanOrEqual(bounds.x);
+    expect(box.x + box.width).toBeLessThanOrEqual(bounds.x + bounds.width);
+    if (previous) {
+      expect(box.x - previous.x - previous.width).toBeGreaterThanOrEqual(7);
+      expect(Math.abs(box.y - previous.y)).toBeLessThan(1);
+    }
+    if (await button.isEnabled()) expect(await contrastRatio(button)).toBeGreaterThanOrEqual(4.5);
+    previous = box;
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+}
+
+test('practice dock prioritizes navigation and explanation with Save above the question', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(120000);
+  await page.goto('./#/quiz/anthropic-ccar-p/practice');
+  await expect(page.locator('.question-title')).toBeVisible();
+  const cases = accountCases(testInfo.project.name);
+  if (testInfo.project.name === 'phone')
+    cases.push({ width: 360, height: 800, language: 'en', theme: 'dark' });
+  for (const state of cases) {
+    await appearance(page, state);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const save = await page.locator('.study-question-tools').boundingBox();
+    const question = await page.locator('.quiz-question-card').boundingBox();
+    expect(save.y + save.height).toBeLessThanOrEqual(question.y);
+    await expect(page.locator('.study-navigation-actions button')).toHaveCount(3);
+    await page.locator('.draft-status').scrollIntoViewIfNeeded();
+    await dockGeometry(page, state.width, state.height);
+    await page.screenshot({
+      path: testInfo.outputPath(`practice-${state.width}-${state.language}-${state.theme}.png`),
+    });
+    const next = page.getByRole('button', {
+      name: state.language === 'vi' ? 'Câu tiếp' : 'Next question',
+      exact: true,
+    });
+    // Accessible names retain their full meaning even when the visible labels are compact.
+    await next.click();
+    await expect(page.locator('.study-position')).toContainText(
+      state.language === 'vi' ? 'Câu 2' : 'Question 2'
+    );
+    await page.locator('.study-navigation-actions button').first().click();
+    await expect(page.locator('.study-position')).toContainText(
+      state.language === 'vi' ? 'Câu 1' : 'Question 1'
+    );
+  }
+  await page.getByRole('button', { name: 'English', exact: true }).click();
+  await page.getByRole('button', { name: 'Save position', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Save position?', exact: true });
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Cancel', exact: true }));
+  await expect(page.getByRole('button', { name: 'Save position', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Save position', exact: true }).click();
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Save', exact: true }));
+  await expect(page.getByRole('button', { name: 'Position saved', exact: true })).toBeDisabled();
+});
+
+test('exam timer shares a non-overlapping sidebar or dock through scroll, resize and submission', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(120000);
+  await page.goto('./#/quiz/anthropic-ccar-p');
+  await page.getByText('Mock exam', { exact: true }).click();
+  await page.getByRole('button', { name: 'Start mock exam', exact: true }).click();
+  await expect(page.locator('.question-title')).toBeVisible();
+  for (const state of accountCases(testInfo.project.name)) {
+    await appearance(page, state);
+    await page.locator('.draft-status').scrollIntoViewIfNeeded();
+    await expect(page.getByRole('timer')).toHaveCount(1);
+    const timer = await page.getByRole('timer').boundingBox();
+    if (state.width <= 900) {
+      const dock = await page.locator('.study-navigation-bar').boundingBox();
+      const actions = await page.locator('.study-navigation-actions').boundingBox();
+      expect(timer.y).toBeGreaterThanOrEqual(dock.y);
+      expect(timer.y + timer.height).toBeLessThanOrEqual(actions.y);
+    } else {
+      const navigator = await page.locator('.study-sidebar').boundingBox();
+      const main = await page.locator('.study-main').boundingBox();
+      expect(timer.y + timer.height).toBeLessThanOrEqual(navigator.y);
+      expect(timer.x).toBeGreaterThanOrEqual(main.x + main.width);
+    }
+    await dockGeometry(page, state.width, state.height);
+    await page.screenshot({
+      path: testInfo.outputPath(`exam-${state.width}-${state.language}-${state.theme}.png`),
+    });
+    const summary = page.locator('.study-navigator summary');
+    if ((await page.locator('.study-navigator').getAttribute('open')) === null)
+      await summary.click();
+    const jump = page.locator('#question-jump');
+    await jump.focus();
+    if (state.width <= 900)
+      await expect(page.locator('.study-navigation-bar')).toHaveCSS('position', 'static');
+    await jump.fill('2');
+    await jump.press('Enter');
+    await expect(page.locator('.study-position')).toContainText(
+      state.language === 'vi' ? 'Câu 2' : 'Question 2'
+    );
+    await jump.blur();
+  }
+  await page.getByRole('button', { name: 'English', exact: true }).click();
+  await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Review before submitting', exact: true });
+  await clickAfterUiMotion(dialog.getByRole('button', { name: 'Continue exam', exact: true }));
+  await expect(page.getByRole('timer')).toBeVisible();
+  await page.getByRole('button', { name: 'Submit exam', exact: true }).click();
+  await clickAfterUiMotion(
+    dialog.getByRole('button', { name: 'Submit and view results', exact: true })
+  );
+  await expect(page.getByRole('timer')).toHaveCount(0);
+  await expect(
+    page.locator('.study-navigation-bar').getByRole('button', { name: 'Explain', exact: true })
+  ).toBeVisible();
+});
+
+test('explanation opened from the dock is visible and returns focus on close', async ({ page }) => {
+  await page.goto('./#/quiz/anthropic-ccar-p/practice');
+  const explain = page.getByRole('button', { name: 'Explain', exact: true });
+  await explain.click();
+  const panel = page.locator('.explanation-panel');
+  await expect(panel).toBeFocused();
+  await expect(panel.locator('.markdown-container[lang="vi"]')).not.toBeEmpty();
+  const header = await page.locator('.app-header').boundingBox();
+  expect((await panel.boundingBox()).y).toBeGreaterThanOrEqual(header.height);
+  await panel.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(panel).toHaveCount(0);
+  await expect(explain).toBeFocused();
+});

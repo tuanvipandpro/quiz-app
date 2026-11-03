@@ -17,6 +17,7 @@ import { quizUrl } from '../utils/navigation';
 import ProviderIdentity from './ProviderIdentity';
 import AppFooter from './AppFooter';
 import { useLandingSections } from '../hooks/useLandingSections';
+import RollingNumber from './RollingNumber';
 
 export default function LandingPage({ onNavigate }) {
   const { t } = useLanguage();
@@ -142,11 +143,17 @@ export default function LandingPage({ onNavigate }) {
           </div>
           <div className="desktop-detail hero-catalog" aria-label={t('Explore the catalog')}>
             <div>
-              <strong>{quizzes.length}</strong>
+              <RollingNumber
+                value={quizzes.length}
+                animate={sections.ready && !sections.reducedMotion}
+              />
               <span>{t('Quiz banks to explore')}</span>
             </div>
             <div>
-              <strong>{PROVIDERS.length}</strong>
+              <RollingNumber
+                value={PROVIDERS.length}
+                animate={sections.ready && !sections.reducedMotion}
+              />
               <span>{t('Certification providers')}</span>
             </div>
             <p>{t('Find a familiar topic. Discover your next challenge.')}</p>

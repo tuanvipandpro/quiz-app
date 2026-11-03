@@ -442,7 +442,7 @@ test('desktop details and coffee presentation retain accurate catalog and transf
 }, testInfo) => {
   await page.goto('./');
   if (testInfo.project.name === 'desktop') {
-    await expect(page.locator('.hero-catalog strong')).toHaveText([
+    await expect(page.locator('.hero-catalog strong .sr-only')).toHaveText([
       String(quizzes.length),
       String(PROVIDERS.length),
     ]);
@@ -495,4 +495,50 @@ test('section color crossfade follows navigation and honors reduced motion', asy
     await page.locator('.atmosphere-teal').evaluate((el) => getComputedStyle(el).transitionDuration)
   ).toBe('0s');
   await expect(page.locator('.landing-features .panel-reveal')).toHaveCSS('opacity', '1');
+});
+
+test('catalog digits roll once to real values and reduced motion shows final digits immediately', async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name !== 'desktop',
+    'Catalog details retain the existing desktop-only layout.'
+  );
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('./');
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('.rolling-number').first()).toHaveAttribute('data-animate', 'true');
+  await expect(page.locator('.rolling-number .sr-only')).toHaveText([
+    String(quizzes.length),
+    String(PROVIDERS.length),
+  ]);
+  const strips = page.locator('.rolling-digit-strip');
+  const transforms = await strips.evaluateAll((elements) =>
+    elements.map((element) => {
+      const animation = element.getAnimations()[0];
+      const iterations = animation.effect.getTiming().iterations;
+      animation.pause();
+      animation.currentTime = 0;
+      const start = getComputedStyle(element).transform;
+      animation.finish();
+      return { start, end: getComputedStyle(element).transform, iterations };
+    })
+  );
+  for (const result of transforms) {
+    expect(result.iterations).toBe(1);
+    expect(result.end).not.toBe(result.start);
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('.rolling-number').first()).toHaveAttribute('data-animate', 'false');
+  for (const strip of await strips.all()) {
+    await expect(strip).toHaveCSS('animation-name', 'none');
+    const visibleDigit = await strip.evaluate((element) => {
+      const viewport = element.parentElement.getBoundingClientRect();
+      return [...element.children].find((child) => {
+        const rect = child.getBoundingClientRect();
+        return Math.abs(rect.top - viewport.top) < 1;
+      })?.textContent;
+    });
+    expect(visibleDigit).toBe(await strip.locator('span').last().textContent());
+  }
 });

@@ -2,15 +2,14 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Alert, Button, Modal, Typography, message } from 'antd';
 import {
   ArrowLeftOutlined,
-  ArrowRightOutlined,
   BookFilled,
   BookOutlined,
   CopyOutlined,
-  QuestionCircleOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
 import Question from './Question';
 import QuestionNavigator from './QuestionNavigator';
+import StudyNavigation from './StudyNavigation';
 import ExplanationDialogs from './ExplanationDialogs';
 import { useExplanation } from '../hooks/useExplanation';
 import { useStudySession } from '../hooks/useStudySession';
@@ -139,35 +138,7 @@ export default function PracticeMode({
               {t('{count} of {total} answered', { count: answeredCount, total: questions.length })}
             </Text>
           </div>
-          <Question
-            data={question}
-            question={question.question}
-            imageUrl={question.imageUrl}
-            options={question.options}
-            selectedAnswer={answer}
-            onSelectAnswer={(value) =>
-              setSession((previous) => ({
-                ...previous,
-                answers: previous.answers.map((item, index) =>
-                  index === previous.index ? value : item
-                ),
-              }))
-            }
-            showFeedback={complete}
-            isCorrect={isAnswerCorrect(question, answer)}
-            correctOptions={question.answer}
-          />
-          <div className="study-secondary-actions">
-            <Button
-              icon={<QuestionCircleOutlined aria-hidden="true" />}
-              onClick={() => ai.explain()}
-              ref={ai.triggerRef}
-            >
-              {t('Explain')}
-            </Button>
-            <Button icon={<CopyOutlined aria-hidden="true" />} onClick={copy} loading={copying}>
-              {t('Copy')}
-            </Button>
+          <div className="study-question-tools">
             <Button
               icon={
                 isSaved ? <BookFilled aria-hidden="true" /> : <BookOutlined aria-hidden="true" />
@@ -198,24 +169,38 @@ export default function PracticeMode({
               {t('Cloud checkpoints are available for library quizzes.')}
             </Paragraph>
           )}
-          <ExplanationDialogs question={question} state={ai} inline />
-          <div className="study-navigation-bar" role="group" aria-label={t('Practice')}>
-            <Button
-              icon={<ArrowLeftOutlined aria-hidden="true" />}
-              disabled={session.index === 0}
-              onClick={() => go(session.index - 1)}
-            >
-              {t('Previous')}
-            </Button>
-            <Button
-              type="primary"
-              icon={<ArrowRightOutlined aria-hidden="true" />}
-              disabled={session.index === questions.length - 1}
-              onClick={() => go(session.index + 1)}
-            >
-              {t('Next question')}
+          <Question
+            data={question}
+            question={question.question}
+            imageUrl={question.imageUrl}
+            options={question.options}
+            selectedAnswer={answer}
+            onSelectAnswer={(value) =>
+              setSession((previous) => ({
+                ...previous,
+                answers: previous.answers.map((item, index) =>
+                  index === previous.index ? value : item
+                ),
+              }))
+            }
+            showFeedback={complete}
+            isCorrect={isAnswerCorrect(question, answer)}
+            correctOptions={question.answer}
+          />
+          <div className="study-secondary-actions">
+            <Button icon={<CopyOutlined aria-hidden="true" />} onClick={copy} loading={copying}>
+              {t('Copy')}
             </Button>
           </div>
+          <ExplanationDialogs question={question} state={ai} inline />
+          <StudyNavigation
+            label={t('Practice')}
+            previousDisabled={session.index === 0}
+            nextDisabled={session.index === questions.length - 1}
+            onPrevious={() => go(session.index - 1)}
+            onNext={() => go(session.index + 1)}
+            explanation={ai}
+          />
           <div className="draft-status">
             <Text type="secondary" role="status">
               {t(
