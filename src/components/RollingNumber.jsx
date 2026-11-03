@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Keep the real catalog value available to assistive technology throughout motion.
-export default function RollingNumber({ value, animate }) {
+export default function RollingNumber({ value, reducedMotion }) {
+  const numberRef = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    setInView(false);
+    if (reducedMotion || !window.IntersectionObserver) return;
+    const headerHeight =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--app-header-height')
+      ) || 0;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio >= 0.75) setInView(true);
+        // A partly clipped number must not restart on every small scroll.
+        else if (!entry.isIntersecting) setInView(false);
+      },
+      { threshold: [0, 0.75], rootMargin: `-${headerHeight}px 0px 0px 0px` }
+    );
+    observer.observe(numberRef.current);
+    return () => observer.disconnect();
+  }, [reducedMotion]);
   return (
-    <strong className="rolling-number" data-animate={animate}>
+    <strong ref={numberRef} className="rolling-number" data-animate={inView && !reducedMotion}>
       <span className="sr-only">{value}</span>
       <span className="rolling-number-visual" aria-hidden="true">
         {String(value)

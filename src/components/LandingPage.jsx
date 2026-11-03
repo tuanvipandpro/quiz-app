@@ -143,17 +143,11 @@ export default function LandingPage({ onNavigate }) {
           </div>
           <div className="desktop-detail hero-catalog" aria-label={t('Explore the catalog')}>
             <div>
-              <RollingNumber
-                value={quizzes.length}
-                animate={sections.ready && !sections.reducedMotion}
-              />
+              <RollingNumber value={quizzes.length} reducedMotion={sections.reducedMotion} />
               <span>{t('Quiz banks to explore')}</span>
             </div>
             <div>
-              <RollingNumber
-                value={PROVIDERS.length}
-                animate={sections.ready && !sections.reducedMotion}
-              />
+              <RollingNumber value={PROVIDERS.length} reducedMotion={sections.reducedMotion} />
               <span>{t('Certification providers')}</span>
             </div>
             <p>{t('Find a familiar topic. Discover your next challenge.')}</p>

@@ -1332,8 +1332,8 @@ html.landing-scroll {
 }
 @media (prefers-reduced-motion: no-preference) {
   .rolling-number[data-animate='true'] .rolling-digit-strip {
-    animation: catalog-roll 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: calc(var(--digit-order) * 90ms);
+    animation: catalog-roll 1600ms cubic-bezier(0.25, 0.1, 0.35, 1) both;
+    animation-delay: calc(180ms + var(--digit-order) * 90ms);
   }
   .landing-page[data-ready='true'][data-motion='normal'] .hero-copy {
     animation: landing-enter 550ms ease-out backwards;

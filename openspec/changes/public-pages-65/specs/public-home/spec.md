@@ -12,8 +12,8 @@ Landing SHALL use selective inter-section color/content transitions and a final 
 
 #### Scenario: Animated catalog counts
 
-- **WHEN** Home opens with normal motion, or the user switches to reduced motion
-- **THEN** desktop catalog digits roll once to the real registry counts without layout shift or repeated screen-reader announcements; reduced motion immediately displays the final digits without animation, and hero/card entry effects preserve keyboard focus and existing section fade transitions
+- **WHEN** desktop catalog numbers enter the visible viewport, including after scrolling away and back, or the user switches to reduced motion
+- **THEN** digits roll once per visible entry to the real registry counts without layout shift or repeated screen-reader announcements; off-screen counters wait until visible, partial clipping does not restart the roll, and reduced motion immediately displays the final digits without animation
 
 #### Scenario: Desktop and mobile presentation
 

@@ -427,6 +427,12 @@ test('landing remains readable and navigable without IntersectionObserver', asyn
   });
   await page.goto('./');
   await expect(page.locator('.landing-hero h1')).toBeVisible();
+  await expect(page.locator('.rolling-number[data-animate="true"]')).toHaveCount(0);
+  await expect(page.locator('.rolling-number .sr-only')).toHaveText([
+    String(quizzes.length),
+    String(PROVIDERS.length),
+  ]);
+  if (await page.locator('.hero-catalog').isVisible()) await expectFinalCatalogDigits(page);
   expect(
     await page
       .locator('.landing-features .panel-reveal')
@@ -497,7 +503,56 @@ test('section color crossfade follows navigation and honors reduced motion', asy
   await expect(page.locator('.landing-features .panel-reveal')).toHaveCSS('opacity', '1');
 });
 
-test('catalog digits roll once to real values and reduced motion shows final digits immediately', async ({
+async function sampleCounterMotion(page, { reveal = false } = {}) {
+  return page.evaluate(async (reveal) => {
+    if (reveal)
+      document.querySelector('.hero-catalog').scrollIntoView({ block: 'end', behavior: 'instant' });
+    const started = performance.now();
+    const frames = [];
+    await new Promise((resolve) => {
+      const sample = () => {
+        const strip = document.querySelector('.rolling-digit-strip');
+        const bounds = strip.parentElement.getBoundingClientRect();
+        frames.push({
+          transform: getComputedStyle(strip).transform,
+          width: bounds.width,
+          height: bounds.height,
+          iterations: strip.getAnimations()[0]?.effect.getTiming().iterations,
+        });
+        if (performance.now() - started < 700) requestAnimationFrame(sample);
+        else resolve();
+      };
+      requestAnimationFrame(sample);
+    });
+    return frames;
+  }, reveal);
+}
+
+function expectCounterMotion(frames) {
+  expect(new Set(frames.map((frame) => frame.transform)).size).toBeGreaterThan(3);
+  expect(frames.some((frame) => frame.iterations === 1)).toBe(true);
+  expect(new Set(frames.map((frame) => frame.width)).size).toBe(1);
+  expect(new Set(frames.map((frame) => frame.height)).size).toBe(1);
+}
+
+async function expectFinalCatalogDigits(page) {
+  const values = await page.locator('.rolling-number').evaluateAll((numbers) =>
+    numbers.map((number) =>
+      [...number.querySelectorAll('.rolling-digit')]
+        .map((viewport) => {
+          const top = viewport.getBoundingClientRect().top;
+          return [...viewport.querySelector('.rolling-digit-strip').children].find(
+            (digit) => Math.abs(digit.getBoundingClientRect().top - top) < 1
+          )?.textContent;
+        })
+        .join('')
+    )
+  );
+  expect(values).toEqual([String(quizzes.length), String(PROVIDERS.length)]);
+  await expect(page.locator('.rolling-number .sr-only')).toHaveText(values);
+}
+
+test('catalog digits visibly progress on entry and reduced motion immediately shows final counts', async ({
   page,
 }, testInfo) => {
   test.skip(
@@ -506,39 +561,89 @@ test('catalog digits roll once to real values and reduced motion shows final dig
   );
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('./');
-  await expect(page.locator('.landing-page')).toHaveAttribute('data-ready', 'true');
   await expect(page.locator('.rolling-number').first()).toHaveAttribute('data-animate', 'true');
-  await expect(page.locator('.rolling-number .sr-only')).toHaveText([
-    String(quizzes.length),
-    String(PROVIDERS.length),
-  ]);
-  const strips = page.locator('.rolling-digit-strip');
-  const transforms = await strips.evaluateAll((elements) =>
-    elements.map((element) => {
-      const animation = element.getAnimations()[0];
-      const iterations = animation.effect.getTiming().iterations;
-      animation.pause();
-      animation.currentTime = 0;
-      const start = getComputedStyle(element).transform;
-      animation.finish();
-      return { start, end: getComputedStyle(element).transform, iterations };
-    })
-  );
-  for (const result of transforms) {
-    expect(result.iterations).toBe(1);
-    expect(result.end).not.toBe(result.start);
-  }
+  expectCounterMotion(await sampleCounterMotion(page));
+  await expect
+    .poll(() =>
+      page
+        .locator('.rolling-digit-strip')
+        .evaluateAll((elements) =>
+          elements.every((element) => element.getAnimations()[0]?.playState === 'finished')
+        )
+    )
+    .toBe(true);
+  await expectFinalCatalogDigits(page);
+  // A preference change cancels an in-flight roll and preserves the semantic values.
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('.rolling-number').first()).toHaveAttribute('data-animate', 'false');
-  for (const strip of await strips.all()) {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(page.locator('.rolling-number').first()).toHaveAttribute('data-animate', 'true');
+  expectCounterMotion(await sampleCounterMotion(page));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const strip of await page.locator('.rolling-digit-strip').all())
     await expect(strip).toHaveCSS('animation-name', 'none');
-    const visibleDigit = await strip.evaluate((element) => {
-      const viewport = element.parentElement.getBoundingClientRect();
-      return [...element.children].find((child) => {
-        const rect = child.getBoundingClientRect();
-        return Math.abs(rect.top - viewport.top) < 1;
-      })?.textContent;
-    });
-    expect(visibleDigit).toBe(await strip.locator('span').last().textContent());
-  }
+  await expectFinalCatalogDigits(page);
+});
+
+test('catalog rolls wait below the fold and replay after scrolling back into view', async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name !== 'desktop',
+    'Catalog details retain the existing desktop-only layout.'
+  );
+  await page.setViewportSize({ width: 1280, height: 480 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('./');
+  await expect(page.locator('.landing-page')).toHaveAttribute('data-ready', 'true');
+  expect((await page.locator('.rolling-number').first().boundingBox()).y).toBeGreaterThan(480);
+  // Deliberately keep the counts out of view longer than a complete roll: a mount timer must not consume it.
+  await page.waitForTimeout(2100);
+  await expect(page.locator('.rolling-number[data-animate="true"]')).toHaveCount(0);
+  for (const strip of await page.locator('.rolling-digit-strip').all())
+    await expect(strip).toHaveCSS('animation-name', 'none');
+  expectCounterMotion(await sampleCounterMotion(page, { reveal: true }));
+  await expect(page.locator('.rolling-number').first()).toHaveAttribute('data-animate', 'true');
+  const strip = page.locator('.rolling-digit-strip').first();
+  const animation = await strip.evaluateHandle((element) => element.getAnimations()[0]);
+  const bounds = await page.locator('.rolling-number').first().boundingBox();
+  await page.setViewportSize({ width: 1280, height: Math.round(bounds.y + bounds.height / 2) });
+  await expect
+    .poll(() =>
+      page
+        .locator('.rolling-number')
+        .first()
+        .evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.top < innerHeight && rect.bottom > innerHeight;
+        })
+    )
+    .toBe(true);
+  await expect(page.locator('.rolling-number').first()).toHaveAttribute('data-animate', 'true');
+  expect(
+    await strip.evaluate((element, previous) => element.getAnimations()[0] === previous, animation)
+  ).toBe(true);
+  await animation.dispose();
+  await page.setViewportSize({ width: 1280, height: 480 });
+  await page
+    .locator('.landing-features')
+    .evaluate((panel) => panel.scrollIntoView({ block: 'start', behavior: 'instant' }));
+  await expect(page.locator('.rolling-number[data-animate="true"]')).toHaveCount(0);
+  expectCounterMotion(await sampleCounterMotion(page, { reveal: true }));
+  await expect
+    .poll(() =>
+      page
+        .locator('.rolling-digit-strip')
+        .evaluateAll((elements) =>
+          elements.every((element) => element.getAnimations()[0]?.playState === 'finished')
+        )
+    )
+    .toBe(true);
+  await expectFinalCatalogDigits(page);
+  // Hiding the desktop-only facts and expanding back must create a fresh visible entry.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('.hero-catalog')).toBeHidden();
+  await expect(page.locator('.rolling-number[data-animate="true"]')).toHaveCount(0);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  expectCounterMotion(await sampleCounterMotion(page, { reveal: true }));
 });
