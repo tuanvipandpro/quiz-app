@@ -132,14 +132,17 @@ test('exam timer shares a non-overlapping sidebar or dock through scroll, resize
       await summary.click();
     const jump = page.locator('#question-jump');
     await jump.focus();
-    if (state.width <= 900)
-      await expect(page.locator('.study-navigation-bar')).toHaveCSS('position', 'static');
+    if (state.width <= 900) {
+      await expect(page.locator('.study-navigation-bar')).toBeHidden();
+      await expect(page.locator('.study-navigation-bar')).toHaveCSS('position', 'fixed');
+    }
     await jump.fill('2');
     await jump.press('Enter');
     await expect(page.locator('.study-position')).toContainText(
       state.language === 'vi' ? 'Câu 2' : 'Question 2'
     );
     await jump.blur();
+    await expect(page.locator('.study-navigation-bar')).toBeVisible();
   }
   await page.getByRole('button', { name: 'English', exact: true }).click();
   await page.getByRole('button', { name: 'Submit exam', exact: true }).click();

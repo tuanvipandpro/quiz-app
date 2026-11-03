@@ -708,10 +708,13 @@
   .is-studying .ant-layout-content {
     padding-bottom: calc(var(--study-dock-height, 80px) + 32px + env(safe-area-inset-bottom));
   }
-  /* Give text entry the viewport while the on-screen keyboard is in use. */
-  .is-studying:has(.navigator-jump input:focus, .structured-question [role='combobox']:focus)
+  /* Keep layout stable when input focus changes between pointer down and click. */
+  .is-studying:has(
+      .navigator-jump input:focus,
+      .structured-question [role='combobox'][aria-expanded='true']
+    )
     .study-navigation-bar {
-    position: static;
-    margin-top: 20px;
+    visibility: hidden;
+    pointer-events: none;
   }
 }
