@@ -54,7 +54,7 @@ async function dockGeometry(page, width, height) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 }
 
-test('practice dock prioritizes navigation and explanation with Save above the question', async ({
+test('practice dock prioritizes navigation and explanation with Copy and Save above the question', async ({
   page,
 }, testInfo) => {
   test.setTimeout(120000);
@@ -69,6 +69,20 @@ test('practice dock prioritizes navigation and explanation with Save above the q
     const save = await page.locator('.study-question-tools').boundingBox();
     const question = await page.locator('.quiz-question-card').boundingBox();
     expect(save.y + save.height).toBeLessThanOrEqual(question.y);
+    const tools = page.locator('.study-question-tools button');
+    await expect(tools).toHaveCount(2);
+    const copyBounds = await tools.first().boundingBox();
+    const saveBounds = await tools.last().boundingBox();
+    expect(copyBounds.height).toBeGreaterThanOrEqual(44);
+    expect(saveBounds.height).toBeGreaterThanOrEqual(44);
+    expect(Math.abs(copyBounds.y - saveBounds.y)).toBeLessThan(1);
+    expect(saveBounds.x - copyBounds.x - copyBounds.width).toBeGreaterThanOrEqual(8);
+    await page.locator('.study-question-tools').scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: testInfo.outputPath(
+        `question-tools-${state.width}-${state.language}-${state.theme}.png`
+      ),
+    });
     await expect(page.locator('.study-navigation-actions button')).toHaveCount(3);
     await page.locator('.draft-status').scrollIntoViewIfNeeded();
     await dockGeometry(page, state.width, state.height);

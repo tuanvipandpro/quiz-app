@@ -329,7 +329,9 @@
 }
 .study-question-tools {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 8px;
   margin-bottom: 12px;
 }
 .study-question-tools .ant-btn {

@@ -139,6 +139,9 @@ export default function PracticeMode({
             </Text>
           </div>
           <div className="study-question-tools">
+            <Button icon={<CopyOutlined aria-hidden="true" />} onClick={copy} loading={copying}>
+              {t('Copy')}
+            </Button>
             <Button
               icon={
                 isSaved ? <BookFilled aria-hidden="true" /> : <BookOutlined aria-hidden="true" />
@@ -187,11 +190,6 @@ export default function PracticeMode({
             isCorrect={isAnswerCorrect(question, answer)}
             correctOptions={question.answer}
           />
-          <div className="study-secondary-actions">
-            <Button icon={<CopyOutlined aria-hidden="true" />} onClick={copy} loading={copying}>
-              {t('Copy')}
-            </Button>
-          </div>
           <ExplanationDialogs question={question} state={ai} inline />
           <StudyNavigation
             label={t('Practice')}
