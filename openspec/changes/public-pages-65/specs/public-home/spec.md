@@ -10,6 +10,11 @@ Introduce QuizMos before practice while preserving existing links, study data an
 
 Landing SHALL use selective inter-section color/content transitions and a final CTA in the page's color family. Desktop SHALL provide useful catalog/learning-flow support content while mobile retains compact core content. Do not fabricate user statistics or learning outcomes; reduced motion SHALL disable new effects.
 
+#### Scenario: Animated catalog counts
+
+- **WHEN** desktop catalog numbers enter the visible viewport, including after scrolling away and back, or the user switches to reduced motion
+- **THEN** digits roll once per visible entry to the real registry counts without layout shift or repeated screen-reader announcements; off-screen counters wait until visible, partial clipping does not restart the roll, and reduced motion immediately displays the final digits without animation
+
 #### Scenario: Desktop and mobile presentation
 
 - **WHEN** landing is viewed on a wide desktop or phone

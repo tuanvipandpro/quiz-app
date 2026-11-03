@@ -82,18 +82,21 @@ IDs/versions/drafts/checkpoints are unchanged. There is no external QR request, 
 
 ## Verification plan
 
-| Requirements | Implementation verification                                                                                                    |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| CQ-HOME-01   | Unit route/alias/query/fallback; E2E root/CTA/deep link/refresh/Back-Forward                                                   |
-| CQ-HOME-02   | Content/featured-link review; E2E start-as-guest; no quiz/AI fetch for previews                                                |
-| CQ-HOME-03   | Unit preferences: saved/empty/invalid/storage-error; E2E dark-first and saved light/EN/VN                                      |
-| CQ-HOME-04   | E2E leave/cancel/resume/rapid-click, auth loading/error/account transition; focus/contrast/overflow                            |
-| CQ-HOME-05   | E2E wheel/keyboard/section navigation, panel geometry, unchanged hash, reduced motion, snap cleanup; mobile/zoom visual review |
-| CQ-HOME-06   | Donate visible in header/hero, pointer/keyboard use, Home return from both Back buttons                                        |
-| CQ-DONATE-01 | E2E direct route, refresh and Home/Library links as a guest                                                                    |
-| CQ-DONATE-02 | Unit configuration/missing/invalid; asset decoding and owner review of recipient, amount and memo                              |
-| CQ-DONATE-03 | Clipboard success/denied, image error, download identity, leading-zero account, unmount                                        |
-| CQ-DONATE-04 | Fixture network assertions show no donation I/O; review confirms no fabricated receipt state                                   |
+Follow-up [#74](https://github.com/tuanvipandpro/quiz-app/issues/74) reuses `useReducedMotion` and adds CSS digit strips with a finite transform animation when the numbers themselves enter view. An IntersectionObserver starts at 75% visibility below the header and resets only after leaving view, allowing a replay on return without restarting during partial clipping. A 1.6-second roll and short lead-in make the effect visible after the hero entrance. The accessible count stays at the catalog value; reduced motion or a missing observer shows the final digits immediately. Tests sample natural frames rather than seeking the animation timeline. Selective hero/card entry animations yield to existing section transitions after finishing; focused content bypasses entry animation. No animation dependency or generated statistics are introduced.
+
+| Requirements | Implementation verification                                                                                                                                                                        |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CQ-HOME-01   | Unit route/alias/query/fallback; E2E root/CTA/deep link/refresh/Back-Forward                                                                                                                       |
+| CQ-HOME-02   | Content/featured-link review; E2E start-as-guest; no quiz/AI fetch for previews                                                                                                                    |
+| CQ-HOME-03   | Unit preferences: saved/empty/invalid/storage-error; E2E dark-first and saved light/EN/VN                                                                                                          |
+| CQ-HOME-04   | E2E leave/cancel/resume/rapid-click, auth loading/error/account transition; focus/contrast/overflow                                                                                                |
+| CQ-HOME-05   | E2E wheel/keyboard/section navigation, panel geometry, unchanged hash, reduced motion, snap cleanup; mobile/zoom visual review                                                                     |
+| CQ-HOME-06   | Donate visible in header/hero, pointer/keyboard use, Home return from both Back buttons                                                                                                            |
+| CQ-HOME-07   | `publicPages.spec.js`: real catalog counts, one-shot digit motion, final reduced-motion digits, existing color/focus/section tests; study layout regressions for #74 live in `studyLayout.spec.js` |
+| CQ-DONATE-01 | E2E direct route, refresh and Home/Library links as a guest                                                                                                                                        |
+| CQ-DONATE-02 | Unit configuration/missing/invalid; asset decoding and owner review of recipient, amount and memo                                                                                                  |
+| CQ-DONATE-03 | Clipboard success/denied, image error, download identity, leading-zero account, unmount                                                                                                            |
+| CQ-DONATE-04 | Fixture network assertions show no donation I/O; review confirms no fabricated receipt state                                                                                                       |
 
 Planning runs only SDD validation, formatting and link checks. Implementation runs `yarn verify`, UI-skill integrity and relevant E2E using fixtures, without live banking/Firebase/AI calls. Browser review covers 320/390/412/768/1280px and landscape, EN/VN × light/dark through a selected matrix, reduced motion and keyboard/text zoom. Reuse viewport helpers rather than multiplying every test across every combination. CI selects its profile from the diff; do not change the pipeline in this feature. Batch coherent changes before pushing instead of triggering CI per task.
 

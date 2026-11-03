@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Alert, Button, Card, Collapse, Modal, Spin, Typography } from 'antd';
 import { SettingOutlined, ReloadOutlined, CloseOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
@@ -14,6 +14,13 @@ const { Title, Paragraph, Text } = Typography;
 
 export default function ExplanationDialogs({ question, state, inline = false }) {
   const { t } = useLanguage();
+  const panelRef = useRef(null);
+  useEffect(() => {
+    if (inline && state.visible) {
+      panelRef.current?.focus({ preventScroll: true });
+      panelRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }
+  }, [inline, state.visible]);
   const reference = questionExplanation(question);
   const actions = (
     <div className="quiz-dialog-actions">
@@ -38,7 +45,13 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
           {t('Regenerate')}
         </Button>
       )}
-      <Button icon={<CloseOutlined aria-hidden="true" />} onClick={state.close}>
+      <Button
+        icon={<CloseOutlined aria-hidden="true" />}
+        onClick={() => {
+          state.close();
+          state.triggerRef.current?.focus({ preventScroll: true });
+        }}
+      >
         {t('Close')}
       </Button>
     </div>
@@ -115,7 +128,14 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
     <>
       {inline ? (
         state.visible && (
-          <Card className="explanation-panel" title={t('Question Explanation')}>
+          <Card
+            ref={panelRef}
+            tabIndex={-1}
+            role="region"
+            aria-label={t('Question Explanation')}
+            className="explanation-panel"
+            title={t('Question Explanation')}
+          >
             {content}
             {actions}
           </Card>
