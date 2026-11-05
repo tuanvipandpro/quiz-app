@@ -1,60 +1,57 @@
 # M1 delivery coordination
 
-Tracking issue: [#87](https://github.com/tuanvipandpro/quiz-app/issues/87). [Milestone 1](https://github.com/tuanvipandpro/quiz-app/milestone/1). Baseline inspected: master 648d9e1, 2026-11-05.
+Tracking: [#87](https://github.com/tuanvipandpro/quiz-app/issues/87), [Milestone 1](https://github.com/tuanvipandpro/quiz-app/milestone/1). Implementation status reconciled 2026-11-06; inspected master baseline `648d9e1`.
 
-This MR contains only cross-issue sequencing and acceptance coordination for #87. Each M1 delivery issue has its own independent planning MR based directly on master. Issue-specific specs, designs, tasks and operational work packages live in those MRs, not in this coordination diff.
+This MR owns only sequencing and acceptance coordination. Each of the seven delivery issues continues in its original issue MR, including its code/content, specs, tests and maintained evidence. No delivery payload is bundled into this coordination diff. M1 is not complete while integration, output-quality or production acceptance remains open.
 
 ## Confirmed scope
 
-- Owner-confirmed Profile MVP: Google account information plus QuizMos settings; custom identity/avatar editing is outside this MVP.
-- Owner-confirmed history MVP: Exam history first; Practice retains its current draft/checkpoint flow.
-- Proposed history storage, limits and archive-retention decisions are documented for review in the #80 MR.
-- App AI activation is already delivered. The boundary CPU benchmark remains explicitly owner-deferred, not a passing claim or a reinstated M1 completion gate.
+- Profile: read-only Google account information plus the existing QuizMos language/theme settings; identity/avatar editing is outside the MVP.
+- History: Exam first; Practice retains current drafts/checkpoints. #80 implements 50 retained private attempts, 20-row metadata queries and immutable scored snapshots. Independent saved-quiz archive retention and minimal anti-replay receipts are disclosed.
+- App AI activation already shipped. Wider v6 output quality remains in M1. The CPU-boundary benchmark is explicitly owner-deferred and is neither a passing claim nor a reinstated M1 gate.
+- Storage migration #52 and Practice event/revision queues remain outside M1.
 
-## Independent issue MRs
+## Seven issue MRs
 
-| Issue                                                      | Planning MR                                                 | Scope                                                         |
-| ---------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
-| [#74](https://github.com/tuanvipandpro/quiz-app/issues/74) | [MR #89](https://github.com/tuanvipandpro/quiz-app/pull/89) | Dock lifecycle regression and correction                      |
-| [#77](https://github.com/tuanvipandpro/quiz-app/issues/77) | [MR #90](https://github.com/tuanvipandpro/quiz-app/pull/90) | Included explanations and explicit AI entry                   |
-| [#75](https://github.com/tuanvipandpro/quiz-app/issues/75) | [MR #91](https://github.com/tuanvipandpro/quiz-app/pull/91) | Google-info Profile, workspace menu and reviewed quiz updates |
-| [#80](https://github.com/tuanvipandpro/quiz-app/issues/80) | [MR #92](https://github.com/tuanvipandpro/quiz-app/pull/92) | Exam-only history and progress dashboard                      |
-| [#78](https://github.com/tuanvipandpro/quiz-app/issues/78) | [MR #93](https://github.com/tuanvipandpro/quiz-app/pull/93) | Substantive review of four study guides                       |
-| [#79](https://github.com/tuanvipandpro/quiz-app/issues/79) | [MR #94](https://github.com/tuanvipandpro/quiz-app/pull/94) | Production custom-quiz rollout evidence                       |
-| [#53](https://github.com/tuanvipandpro/quiz-app/issues/53) | [MR #95](https://github.com/tuanvipandpro/quiz-app/pull/95) | Remaining App AI output-quality acceptance                    |
+| Issue                                                      | MR                                                       | Implemented/prepared result                                                                                                                                      | Remaining acceptance                                                                                                                   |
+| ---------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| [#74](https://github.com/tuanvipandpro/quiz-app/issues/74) | [#89](https://github.com/tuanvipandpro/quiz-app/pull/89) | Stale dock measurements ignored after unmount/replacement; local regression and required CI passed.                                                              | Owner-requested merge, master CI/deploy and public dock smoke.                                                                         |
+| [#77](https://github.com/tuanvipandpro/quiz-app/issues/77) | [#90](https://github.com/tuanvipandpro/quiz-app/pull/90) | Included references open without key/profile/quota/inference IO; AI generation is explicit. Local acceptance and required CI passed.                             | Integrate after #89; owner-requested merge/deploy and reference-only public smoke.                                                     |
+| [#75](https://github.com/tuanvipandpro/quiz-app/issues/75) | [#91](https://github.com/tuanvipandpro/quiz-app/pull/91) | Profile, Manage quizzes, reviewed Quiz updates and native-hash Cancel correction; local acceptance and required CI passed.                                       | Integrate after #90; owner-requested merge/deploy and account/public smoke.                                                            |
+| [#80](https://github.com/tuanvipandpro/quiz-app/issues/80) | [#92](https://github.com/tuanvipandpro/quiz-app/pull/92) | Exam archive/dashboard/review/delete and atomic Rules implemented; 220 Node, 27 real SDK/Rules and 32 History UI checks passed. Client defaults off.             | Draft stacked on #89; master integration/latest-head CI, compatible policy/index publication and designated-account persistence smoke. |
+| [#78](https://github.com/tuanvipandpro/quiz-app/issues/78) | [#93](https://github.com/tuanvipandpro/quiz-app/pull/93) | Four guides substantively reviewed, all 554 current IDs mapped; bank files/answers unchanged. Local/content-head CI passed.                                      | Acceptance-record head CI, owner-requested merge/deploy and published guide/link smoke. #96 is separate bank-content follow-up.        |
+| [#79](https://github.com/tuanvipandpro/quiz-app/issues/79) | [#94](https://github.com/tuanvipandpro/quiz-app/pull/94) | Published Console policy/index provenance reconciled; complete candidate and real SDK tests prepared; required CI passed.                                        | Explicit policy-publication permission, fresh full-config drift check and designated-account bounded custom-quiz smoke.                |
+| [#53](https://github.com/tuanvipandpro/quiz-app/issues/53) | [#95](https://github.com/tuanvipandpro/quiz-app/pull/95) | Historical v6 single-answer output reviewed; eight public missing-case samples and bounded protocol prepared. 193 Node/18 local Worker tests and dry-run passed. | Draft: latest-head CI, current account/budget authorization and actual output-quality findings; CPU benchmark stays deferred.          |
 
-Each planning MR changes only its own OpenSpec directory or operational-plan document. It can receive that same issue's implementation and evidence when the owner requests apply; a second setup MR is not mandatory. Planning readiness alone does not satisfy runtime/content/production acceptance. If the owner chooses to merge planning first, the later implementation remains separately tracked under the same issue.
+The full History integration run had 200 passes, 24 local loading timeouts and two intentional skips; all 24 failed cases passed in a focused serial rerun with unchanged source/assertions/timeouts. The original run is not reported as green. Each issue MR records its own precise evidence, retained diagnostics and limitations; these are not combined-suite or production-acceptance claims.
 
-## Recommended implementation order
+## Integration and release order
 
 ```mermaid
 flowchart LR
-  A["#74 Dock lifecycle"] --> B["#77 Included explanations"]
-  B --> C["#75 Profile and updates"]
-  C --> D["#80 Exam history"]
-  R["#79 Rollout evidence"] -->|before cloud enablement| D
+  A["#89 / #74 Dock"] --> B["#90 / #77 References"]
+  B --> C["#91 / #75 Profile + updates"]
+  C --> D["#92 / #80 History"]
+  R["#94 / #79 Reconciled policy"] -->|before cloud-history enablement| D
   D --> M["M1 accepted"]
-  G["#78 Guide review"] --> M
-  Q["#53 AI quality acceptance"] --> M
+  G["#93 / #78 Guides"] --> M
+  Q["#95 / #53 Actual AI quality"] --> M
 ```
 
-The arrows describe integration order, not stacked planning branches. The planning diffs merge independently. #78/#79/#53 can progress independently; #80 domain/fixture work may start before #79 clears its production gate. #52 migration is outside M1.
+The main UI integration sequence is #89 → #90 → #91 → #92, checking/rebasing each current head and resolving shared header/App changes before its required CI. #93 and #94 can integrate independently when their checks and owner-requested merge gates are satisfied. #95's preparation/CI does not satisfy its missing model-quality review.
 
-## Shared delivery gates
+#92 is temporarily based on `codex/plan-study-dock-74`: its own diff excludes the #74 fix while local tests consume verified foundation `f3cf769`. The workflow currently triggers PR checks only against master, so #92 has **no current feature-head CI pass**. After the owner requests #89 merge, integrate/retarget #92 to master and wait for required CI on that resulting head. Do not use its old planning checks or waive the gate. Retain #75's account navigation during integration.
 
-- Each issue owns its stable requirement IDs, planned tests, unchecked implementation tasks and acceptance evidence. The five OpenSpec plans contain 20 requirements and 39 open implementation tasks; #79/#53 retain their existing rollout contracts.
-- Preserve canonical bank/question IDs, account isolation, private-quiz instance/version semantics and checkpoint compatibility across changes. Do not silently migrate guest uploads or drafts into account storage.
-- #79 reconciles the actual published Rules/indexes and rollout evidence while preserving closed #42 history. #80 still needs its own additive policy/index verification before cloud history is enabled.
-- #53 separates completed rollout from remaining output-quality review and owner-deferred CPU-boundary work. New live inference/persistence checks use a current authorized account/budget and the existing release procedure.
-- UI work uses the existing Ant Design/tokens/translations, relevant 320/390/412/768/1280px and landscape states, VN/EN, themes, keyboard/focus and reduced motion. Include the reported 360px dock case. Keep disposable evidence outside Git and describe emulation honestly.
-- Land each behavior's tests and documentation with its issue MR. Run type/risk-appropriate checks and wait for required CI on the latest head. Merge only when requested, then verify applicable master CI/deploy/smoke before closing that delivery issue.
+#79 observed a published parent-profile-only policy with no custom-quiz descendant grant, and no manual indexes/exemptions. Its complete custom-quiz candidate still needs explicit publication authorization and fresh drift reconciliation. #80 adds its own policy/payload-index contract; approval of the custom-only candidate does not authorize the history candidate or enable its client. Publish and verify compatible complete Rules/indexes before history enablement. Preserve unrelated configuration and roll back the client setting first.
 
-## Coordination verification and closure
+## Shared acceptance and owner actions
 
-For this documentation-only MR, verify formatting, local links, the issue-to-MR mapping and the absence of issue-specific payloads from its diff. Required CI still follows the actual diff; no runtime acceptance is claimed here.
+- Keep stable question IDs/aliases, account-scoped drafts/checkpoints and private instance/version identity. No guest-upload migration or silent archive pruning.
+- Keep each issue's current OpenSpec tasks and evidence authoritative; avoid duplicating stale task counts here. Local fixtures/emulators and browser geometry are not real-account persistence, model-quality or physical-device evidence.
+- UI acceptance uses existing Ant Design/tokens/translations and 320/360/390/412/768/1280px plus landscape, VN/EN, themes, keyboard/focus and reduced motion. Disposable captures/logs/traces remain ignored or CI artifacts.
+- Already requested owner decisions: merge #89; publish #79's concrete policy candidate and designate the bounded smoke account; authorize the concrete #53 pack for at most eight staging attempts/current account. Pending requests are not permission. No M1 merge, Firebase publication or new live inference was performed in implementation preparation.
+- After every owner-requested merge, wait for required master CI/deploy and perform the issue's applicable public or designated-account smoke. Keep all seven delivery issues open until their accepted scopes and rollout gates actually pass.
 
-#87 tracks preparation and coordination only. Keep all seven delivery issues open until their own accepted scopes and rollout gates pass. Completion of planning artifacts or the coordination MR does not complete M1.
+## Coordination checks and closure
 
-## Next entry
-
-Review the #74 plan in [MR #89](https://github.com/tuanvipandpro/quiz-app/pull/89) and continue that issue's MR with implementation when requested. The coordination MR may merge in any order; it has no local-file dependency on an unmerged issue plan.
+This documentation-only MR verifies formatting, local links, issue/MR mapping, current dependency boundaries and the absence of delivery code/content in its diff. Its own required CI and owner-requested merge remain separate. #87 tracks preparation/coordination; completing or merging it does not complete M1.
