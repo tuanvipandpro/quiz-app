@@ -64,6 +64,8 @@ Before is the historical production My quizzes upload page before this feature. 
 
 ## Production prerequisites — unfinished
 
+**Current follow-up:** [#79 reconciliation](../../../docs/m1-custom-quiz-rollout-79.md) records a fresh 6 November 2026 read-only Console observation. An admin session is now available; the starred published policy still contains only the original profile grant, with no custom-quiz descendants or question-field exemption. The historical findings below describe the original implementation session. They do not describe current login availability. Raw export/publication and designated-account persistence remain open. #42 is closed historically; #79 now owns release acceptance, without converting its unchecked tasks into passes.
+
 - Firebase CLI authorized-account count was **0**; no credential values printed. Read-only project Console navigation redirected to Google Sign in; no login/grant performed.
 - Current published Rules revision/hash and complete indexes/field overrides have **not** been independently retrieved or compared. The supplied baseline provenance remains unchanged.
 - `firestore.indexes.fragment.json` is only a questions exemption fragment, not a complete deploy configuration. Reconcile with full production indexes; no fragment/empty indexes were deployed.

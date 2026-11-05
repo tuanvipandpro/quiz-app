@@ -1,0 +1,6 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "customQuizzes", "fieldPath": "questions", "indexes": [] }
+  ]
+}
