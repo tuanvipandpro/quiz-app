@@ -1,6 +1,6 @@
 # Cloudflare rollout evidence
 
-Status on 2026-11-01: production is enabled and the Chrome smoke test passed; see [production activation](#production-activation--2026-11-01). The sections below record deployment history rather than overriding the latest status. Task 3.2/#53 remains open for additional acceptance and the configuration PR.
+Status reconciled on 2026-11-06: production activation and Chrome smoke passed on 2026-11-01; #64 merged and post-merge CI/deploy passed. Wider v6 quality acceptance remains open in #53; the CPU-boundary benchmark is **Deferred by owner**. See the [acceptance matrix](../../../docs/m1-app-ai-acceptance-53.md). Dated sections below preserve deployment history and their then-current status.
 
 ## Account and staging
 
@@ -79,4 +79,4 @@ Local verification: 182 Node tests, 15 Worker/auth/migration tests and 20 AI bro
 
 ## Pending acceptance
 
-Production activation and one live smoke call are complete; keep task 3.2 and issue #53 open because wider quality/near-cap CPU review is unfinished and the configuration PR still awaits CI/merge. One good answer or small-sample p99 does not complete those criteria. Do not run benchmarks/inference beyond user-authorized limits; routine tests continue using fixtures.
+Production activation, one live smoke call, #64 merge and [post-merge CI/deploy](https://github.com/tuanvipandpro/quiz-app/actions/runs/41317854864) are complete. The original composite task 3.2 is split in [tasks](tasks.md): rollout complete, wider quality pending, CPU-boundary work owner-deferred and acceptance-MR delivery pending. One good answer or small-sample p99 does not establish missing criteria. The eight-case staging pack is ready for fresh account/budget authorization; this reconciliation ran no live inference and routine tests use stubs.

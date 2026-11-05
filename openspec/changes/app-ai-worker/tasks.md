@@ -18,4 +18,9 @@
 ## 3. Acceptance
 
 - [x] 3.1 Run verify, Worker integration and E2E suites; update scenario evidence and PR with actual results/limitations.
-- [ ] 3.2 Verify Cloudflare Free account, model quality/CPU/usage benchmark and authorized production setup/rollout; record actual evidence before enable/issue closure.
+- [x] 3.2 Verify the Free account and complete authorized production provisioning/activation/smoke, configuration merge and post-merge CI/deploy; preserve historical evidence from #54/#63/#64.
+- [ ] 3.3 Complete the wider prompt-v6 quality review across all formats, ambiguity, incorrect marked answers, conflicting references and long input; use retained evidence first and a freshly authorized bounded staging sample for missing outputs.
+- [ ] 3.4 Measure near-cap/cold-key/multi-POP CPU and usage boundaries. **Deferred by owner**; outside the M1 critical path and not reported as measured or passed.
+- [ ] 3.5 Deliver the #53 acceptance MR through latest-head required CI, owner-requested merge and post-merge checks; keep the issue open while quality acceptance remains incomplete.
+
+The original composite task 3.2 was split on 2026-11-06 to distinguish completed rollout from pending quality and explicitly deferred CPU work. See [acceptance matrix](../../../docs/m1-app-ai-acceptance-53.md). No new inference or quality pass is implied by the split.

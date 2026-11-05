@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { workerHarness, modelResult, applyWorkerMigrations } from '../fixtures/workerHarness.mjs';
 import { AI_POLICY, utcDay } from '../../worker/config.js';
 import { createUsageRepository } from '../../worker/repository.js';
+import { appAiQualityCases } from '../fixtures/appAiQualityCases.js';
 
 const question = {
   id: 'one',
@@ -104,6 +105,34 @@ test('all supported formats cross the real Worker and D1 boundary', async (t) =>
     const response = await call(h, { ...input(), question: questions[0] });
     assert.equal(response.status, 200, JSON.stringify(response));
   }
+});
+
+test('the public quality-review pack fits the real request/prompt boundary without live inference', async (t) => {
+  const observed = [];
+  const h = await workerHarness({
+    now: () => stamp,
+    ai: async (_model, payload) => {
+      observed.push(payload);
+      return modelResult('Stub output; this does not establish model quality.');
+    },
+  });
+  t.after(h.dispose);
+  for (const sample of appAiQualityCases) {
+    const body = { ...input(), question: sample.question, language: sample.uiLanguage };
+    assert.ok(Buffer.byteLength(JSON.stringify(body)) <= AI_POLICY.maxBodyBytes, sample.id);
+    const response = await call(h, body);
+    assert.equal(response.status, 200, `${sample.id}: ${JSON.stringify(response.data)}`);
+  }
+  assert.equal(h.calls(), 8);
+  const promptBytes = observed.map((payload) =>
+    payload.messages.reduce((total, message) => total + Buffer.byteLength(message.content), 0)
+  );
+  assert.ok(Math.max(...promptBytes) <= AI_POLICY.maxPromptBytes);
+  assert.ok(Math.max(...promptBytes) >= AI_POLICY.maxPromptBytes - 256);
+  const tooLarge = structuredClone(appAiQualityCases.at(-1).question);
+  tooLarge.options.A += '界'.repeat(200);
+  assert.equal((await call(h, { ...input(), question: tooLarge })).status, 413);
+  assert.equal(h.calls(), 8);
 });
 test('idempotent result, changed payload conflict and owner-scoped request IDs', async (t) => {
   const h = await workerHarness({ now: () => stamp });
