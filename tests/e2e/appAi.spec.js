@@ -45,6 +45,8 @@ async function start(page, { uid, language = 'en', theme = 'light' } = {}) {
 }
 async function explain(page) {
   await page.getByRole('button', { name: 'Explain', exact: true }).click();
+  const generate = page.getByRole('button', { name: 'Generate AI explanation', exact: true });
+  if (await generate.count()) await generate.click();
 }
 
 test('logout while a result is in flight discards the private explanation', async ({ page }) => {
@@ -107,7 +109,9 @@ test('guest BYOK never calls App AI; key setup and sign-in option are visible', 
   await card.getByRole('button', { name: 'Save key', exact: true }).click();
   await expect(settings.getByText('API key saved in this browser.')).toBeVisible();
   await clickAfterUiMotion(settings.getByRole('button', { name: 'Done', exact: true }));
-  await expect(page.getByRole('button', { name: 'Explain', exact: true })).toBeFocused();
+  await expect(
+    page.getByRole('button', { name: 'Generate AI explanation', exact: true })
+  ).toBeFocused();
   await explain(page);
   const answer = page.locator('.explanation-panel .markdown-container[lang="vi"]');
   await expect(answer).toContainText(byokAnswer);
@@ -132,6 +136,12 @@ for (const language of ['en', 'vi'])
       await start(page, { uid: `matrix-${randomUUID()}`, language, theme });
       await page
         .getByRole('button', { name: language === 'vi' ? 'Giải thích' : 'Explain', exact: true })
+        .click();
+      await page
+        .getByRole('button', {
+          name: language === 'vi' ? 'Tạo giải thích AI' : 'Generate AI explanation',
+          exact: true,
+        })
         .click();
       await expect(page.getByText('Đáp án phù hợp với điều kiện trong câu hỏi.')).toBeVisible();
       await page
@@ -284,6 +294,7 @@ test('model failure retry reuses operation; regenerate is explicit and quota is 
   await request.get(`http://127.0.0.1:5176/__test/behavior?uid=${uid}&mode=failure`);
   await start(page, { uid });
   await explain(page);
+  await expect(page.locator('.included-explanation')).toContainText('Included audit reference');
   await expect(
     page.getByText('App AI is unavailable. You can choose your own API key.').last()
   ).toBeVisible();

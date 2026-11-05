@@ -47,7 +47,7 @@ export default function StudyNavigation({
         {explanation && (
           <Button
             icon={<QuestionCircleOutlined aria-hidden="true" />}
-            onClick={() => explanation.explain()}
+            onClick={() => explanation.open()}
             loading={explanation.loading}
             ref={explanation.triggerRef}
           >

@@ -19,13 +19,24 @@ export function useExplanation(question, uid) {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [requested, setRequested] = useState(false);
+  const [revealRequest, setRevealRequest] = useState(0);
   const request = useRef(null);
   const triggerRef = useRef(null);
-  const close = useCallback(() => {
+  const cancel = useCallback(() => {
     request.current?.abort();
     request.current = null;
-    setVisible(false);
     setLoading(false);
+  }, []);
+  const close = useCallback(() => {
+    if (request.current) setRequested(false);
+    cancel();
+    setVisible(false);
+  }, [cancel]);
+  const open = useCallback(() => {
+    setVisible(true);
+    setRevealRequest((previous) => previous + 1);
+    setCompletion((previous) => (previous ? { ...previous, cached: true } : previous));
   }, []);
 
   useEffect(() => {
@@ -34,16 +45,18 @@ export function useExplanation(question, uid) {
     setCompletion(null);
     setError(null);
     setUsage(null);
+    setRequested(false);
     attempt.current = null;
     return () => request.current?.abort();
   }, [question, uid, close]);
   useEffect(() => {
-    close();
+    cancel();
     setCompletion(null);
     setError(null);
     setUsage(null);
+    setRequested(false);
     attempt.current = null;
-  }, [source, close]);
+  }, [source, cancel]);
 
   const explain = async ({ forceRefresh = false } = {}) => {
     if (!question) return;
@@ -51,6 +64,7 @@ export function useExplanation(question, uid) {
     const controller = new AbortController();
     request.current = controller;
     setVisible(true);
+    setRequested(true);
     setLoading(true);
     setError(null);
     setCompletion(null);
@@ -73,7 +87,7 @@ export function useExplanation(question, uid) {
         const keys = await credentials.getKeys(uid);
         if (controller.signal.aborted) return;
         if (!Object.values(keys).some(Boolean)) {
-          setVisible(false);
+          setRequested(false);
           setSettingsVisible(true);
           return;
         }
@@ -93,11 +107,17 @@ export function useExplanation(question, uid) {
         setError(err.message || 'Could not generate an explanation. Please retry.');
       }
     } finally {
-      if (request.current === controller) setLoading(false);
+      if (request.current === controller) {
+        request.current = null;
+        setLoading(false);
+      }
     }
   };
   return {
     triggerRef,
+    open,
+    revealRequest,
+    requested,
     source,
     setSource,
     usage,

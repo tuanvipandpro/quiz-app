@@ -8,6 +8,7 @@
       "C": "Google Cloud Pub/Sub",
       "D": "Grant the bedrock:InvokeModelWithResponseStream IAM permission"
     },
-    "answer": ["A"]
+    "answer": ["A"],
+    "explanation": "Included audit reference: AWS CloudTrail records management API calls."
   }
 ]

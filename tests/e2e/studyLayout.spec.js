@@ -179,7 +179,7 @@ test('explanation opened from the dock is visible and returns focus on close', a
   await explain.click();
   const panel = page.locator('.explanation-panel');
   await expect(panel).toBeFocused();
-  await expect(panel.locator('.markdown-container[lang="vi"]')).not.toBeEmpty();
+  await expect(panel.locator('.included-explanation .markdown-container')).not.toBeEmpty();
   const header = await page.locator('.app-header').boundingBox();
   expect((await panel.boundingBox()).y).toBeGreaterThanOrEqual(header.height);
   await panel.getByRole('button', { name: 'Close', exact: true }).click();
