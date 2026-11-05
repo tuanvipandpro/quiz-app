@@ -1,4 +1,5 @@
 import { validateQuizQuestions } from './questionModel.js';
+import { secureId } from './secureId.js';
 import {
   CUSTOM_QUIZ_SLOTS,
   MAX_CUSTOM_QUESTIONS,
@@ -33,7 +34,7 @@ export function checkCustomQuizSize(value) {
   return bytes;
 }
 
-export function createCustomCandidate(title, questions, instanceId = crypto.randomUUID()) {
+export function createCustomCandidate(title, questions, instanceId = secureId()) {
   if (!UUID.test(instanceId)) throw customQuizError('INVALID', 'Invalid quiz identity.');
   const candidate = {
     instanceId,

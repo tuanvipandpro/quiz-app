@@ -14,6 +14,8 @@ import {
 } from '../data/customQuizLimits';
 import QuestionFormatGuide from './QuestionFormatGuide';
 import CloudQuizLibrary from './CloudQuizLibrary';
+import { secureId } from '../utils/secureId.js';
+import { EXAM_HISTORY_ENABLED } from '../config/examHistoryConfig';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -64,7 +66,7 @@ export default function MyQuizzes({
       if (revision !== request.current) return Upload.LIST_IGNORE;
       setCandidate({
         id: 'custom',
-        instanceId: crypto.randomUUID(),
+        instanceId: secureId(),
         name: file.name.replace(/\.json$/i, '').slice(0, MAX_CUSTOM_TITLE),
         questions,
       });
@@ -104,6 +106,13 @@ export default function MyQuizzes({
         <span className="section-eyebrow">{t('Personal workspace')}</span>
         <Title level={1}>{t('My quizzes')}</Title>
         <Paragraph type="secondary">{t('Practise with your own questions.')}</Paragraph>
+        {EXAM_HISTORY_ENABLED && signedIn && (
+          <Paragraph type="secondary">
+            {t(
+              'Saved quiz exams can be archived separately. Replacing or deleting a quiz does not delete its exam history.'
+            )}
+          </Paragraph>
+        )}
       </div>
       <CloudQuizLibrary
         cloud={cloud}

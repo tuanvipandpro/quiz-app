@@ -16,11 +16,12 @@ See [proposal](proposal.md). Exam sessions currently persist the shuffled questi
 
 Propose examHistoryRepository/store/hook and pure examHistory helpers, with injected storage/clock/service dependencies. ExamMode observes terminal state and requests capture through the hook; components do not call Firebase. App only composes routes. Use explicit owner descendants rather than the profile's general field map:
 
-| Path under users/{uid}           | Purpose                                                                   |
-| -------------------------------- | ------------------------------------------------------------------------- |
-| examAttempts/{attemptId}         | Immutable small summary, source identity and payload fingerprint          |
-| examAttemptSnapshots/{attemptId} | Immutable allowlisted question/answer snapshot, fetched only for review   |
-| examHistoryState/quota           | Bounded count/revision and the attempt/operation coupled to each mutation |
+| Path under users/{uid}           | Purpose                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------- |
+| examAttempts/{attemptId}         | Immutable small summary, source identity and payload fingerprint            |
+| examAttemptSnapshots/{attemptId} | Immutable allowlisted question/answer snapshot, fetched only for review     |
+| examHistoryState/quota           | Bounded count/revision and the attempt/operation coupled to each mutation   |
+| examAttemptReceipts/{attemptId}  | Private saved/deleted lifecycle receipt preventing stale-draft resurrection |
 
 This reuses current infrastructure without waiting for Cloudflare migration or expanding the AI Worker into a history API. Separate summary/payload documents keep list and dashboard reads small.
 
@@ -38,6 +39,10 @@ Proposed named limits in a focused history-limits module: 50 retained attempts/a
 
 Create summary, snapshot and quota transition in one online transaction. First check for the same attempt: identical canonical payload succeeds idempotently even at capacity; a different payload conflicts. New creates increment quota once; confirmed deletion atomically removes both archive documents and decrements quota. Rules require the paired transition via getAfter/existsAfter checks, immutable fields and explicit owner/schema/limit constraints; quota cannot be reset or independently deleted. Demonstrate the 49→50 race and forged direct-SDK transitions in the emulator.
 
+Review correction: couple a lifecycle receipt to the same transaction. A saved receipt binds the payload fingerprint; deletion removes summary/snapshot and replaces the receipt with only deleted state and timestamps, dropping the fingerprint. Receipt identity is the random attempt ID, with owner-only get and no client deletion/reset/listing. A stale retry or refreshed terminal draft of a deleted attempt returns a deleted/local-only state and cannot recreate it. Save A → Delete A → retry/refresh A must leave both content documents absent and quota unchanged. The 50 cap bounds retained full attempts; tiny non-content receipts grow with completed/deleted attempts. Disclose that retention trade-off rather than claiming deletion erases its anti-replay marker. No question/answer/AI/key data remains in a deleted receipt.
+
+Use a canonical JSON snapshot string with an allowlisted schema and preserved per-question outcomes, plus a SHA-256 fingerprint shared by its immutable summary and receipt. Bound UTF-8 payload bytes in Rules and the conservative serialized envelope on the client. Read validation checks stored structural/count consistency without regrading under the current policy. Source fingerprints reuse the existing question-fingerprint contract; private creation rechecks current instance/contentVersion inside the transaction. Metadata queries use actual 20-item pages; retained statistics gather the bounded metadata pages without fetching snapshots.
+
 Detailed question/scoring validation stays in pure client/domain helpers; Rules do not pretend to validate every nested answer semantic. The 750 KiB envelope is a conservative client budget; the service still handles platform document-limit rejection honestly. Keep payload fields exempt from unnecessary indexing and merge any required query indexes into the complete production configuration.
 
 ### 4. Query, review and deletion semantics
@@ -52,25 +57,29 @@ Online transactions can fail offline. Keep a failed terminal result in the same 
 
 The client capture/list entry stays disabled behind one centrally owned public feature setting until compatible new Rules/indexes are published and verified. That setting is rollout control, not authorization. #79 reconciles baseline production evidence; this feature adds its own policy release checklist and emulator scenarios.
 
+Persist capture eligibility and the owner in new/actively resumed sessions. Completed drafts created while history was disabled, guests/unsaved uploads and pre-history completed drafts are not backfilled after enablement. Legacy active drafts get an additive stable ID and unknown start time without resetting deadline/order/answers. One shared finalization transform records endedAt/end reason for manual, timer and late-answer paths.
+
 ## Risks / Trade-offs
 
 - More retained snapshots mean storage/read cost → bounded cap, small metadata queries, payload-on-open and explicit deletion; no plan or billing change is implied.
 - Deleting a quiz can be confused with deleting archives → disclose independent history retention and expose a direct deletion path; do not cascade silently.
-- Rules access-call limits can reject an otherwise valid transaction → keep the mutation to summary/snapshot/quota and verify the full atomic policy with real client SDK contexts.
+- Rules access-call limits can reject an otherwise valid transaction → keep the mutation to summary/snapshot/quota/receipt and verify the full atomic policy with real client SDK contexts, including private-source revalidation.
 - Historical content may outlive a bank asset → freeze text/answers and label unavailable assets/source versions.
 
 ## Verification matrix
 
-| Requirement   | Planned evidence                                                                                                     | Status  |
-| ------------- | -------------------------------------------------------------------------------------------------------------------- | ------- |
-| CQ-HISTORY-01 | Eligible-source/terminal-state unit cases; guest/Practice/local-upload zero-write E2E                                | Pending |
-| CQ-HISTORY-02 | Legacy active draft migration; refresh/StrictMode/two-tab duplicate and lost-response tests                          | Pending |
-| CQ-HISTORY-03 | Emulator owner/guest/Bob, schema/byte rejection, atomic-pair/quota reset/50th-slot races; paginated metadata queries | Pending |
-| CQ-HISTORY-04 | All formats, changed bank/hash, private replacement/deletion, missing image and immutable grade replay               | Pending |
-| CQ-HISTORY-05 | Offline/permission/size/quota errors, retained Retry, logout/account switch and stale responses                      | Pending |
-| CQ-HISTORY-06 | Deterministic pages, full retained-summary totals, empty/error UI, cancel/delete and source-instance grouping        | Pending |
+| Requirement   | Local acceptance evidence                                                                                                                                                     | Release status                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| CQ-HISTORY-01 | Domain source/terminal gates and UI guest/Practice/unsaved-upload zero-write checks passed.                                                                                   | Client default disabled; no production capture. |
+| CQ-HISTORY-02 | Stable manual/absolute-deadline/late-answer finalization, legacy restoration, actual React StrictMode, response-loss idempotency and deleted-attempt anti-replay passed.      | Integration/CI and rollout pending.             |
+| CQ-HISTORY-03 | Real demo-emulator SDK owner/Bob/guest, orphan/forged quota/receipt/reset, immutable payload/UTF-8 bound and 49→50 concurrency cases passed; metadata pages 20/20/5 verified. | Complete candidate Rules/indexes not published. |
+| CQ-HISTORY-04 | All five formats in both modes, stored future-grade replay, changed/deleted/reused source and missing-image review passed without AI.                                         | Designated-account persistence smoke pending.   |
+| CQ-HISTORY-05 | Offline/permission/size/quota recovery, same-ID retry, delayed save/read ownership gates and auth transitions passed in domain/store/UI fixtures.                             | Real account rollout pending.                   |
+| CQ-HISTORY-06 | Full retained totals, alias/instance grouping, stable pagination, empty/full/error states and delete Cancel/failure/focus passed; responsive matrix inspected.                | Post-merge acceptance pending.                  |
 
-Use Node/domain tests, a dedicated test fixture and real demo-quiz-app emulator contexts; then the full relevant UI matrix and production build isolation checks. No production writes are test fixtures.
+Local evidence: `yarn verify` passed 220 Node tests and production build/isolation; real SDK Rules suite passed 27 cases; History E2E passed 32 cases with no page errors. The full-app run and focused failure diagnoses are recorded in [the maintained contract](../../../docs/exam-history.md). Disposable traces/screenshots remain ignored. UI/IO fixture results are not production acceptance.
+
+The History UI requires #74's dock correction. Local integration used foundation `f3cf76982bded136d640f0af94dd504d02d64ae6`; the #80 implementation does not duplicate that fix. Keep the History MR dependent on #89 until its owner-requested merge and master integration/CI. Preserve the #75 account/menu changes when rebasing and reconcile #79 policy before enablement.
 
 ## Migration Plan
 

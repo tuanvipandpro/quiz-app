@@ -2,20 +2,20 @@
 
 ## 1. Domain contract and durable identity
 
-- [ ] 1.1 Add the focused history model/limits and immutable snapshot validation using the shared scorer; verify CQ-HISTORY-01 and CQ-HISTORY-04 with all formats, source eligibility, unknown legacy duration and archived grade/version cases, and document the schema/retention defaults.
-- [ ] 1.2 Add stable attempt/start/grading metadata to new sessions and additive active-draft restoration; unify every terminal path and verify CQ-HISTORY-02 with manual submit, expiry, late answers, refresh and StrictMode duplication while preserving old drafts/deadlines.
+- [x] 1.1 Add the focused history model/limits and immutable snapshot validation using the shared scorer; verify CQ-HISTORY-01 and CQ-HISTORY-04 with all formats, source eligibility, unknown legacy duration and archived grade/version cases, and document the schema/retention defaults.
+- [x] 1.2 Add stable attempt/start/grading metadata to new sessions and additive active-draft restoration; unify every terminal path and verify CQ-HISTORY-02 with manual submit, expiry, late answers, refresh and StrictMode duplication while preserving old drafts/deadlines.
 
 ## 2. Repository and enforced policy
 
-- [ ] 2.1 Implement injected summary/snapshot/quota transactions and deletion; verify CQ-HISTORY-02 and CQ-HISTORY-03 through real demo-emulator SDK tests for idempotency, conflicting payload, lost response, owner/Bob/guest, forged pair/quota/reset writes and the fiftieth-slot race.
-- [ ] 2.2 Add explicit descendant Rules and complete-index reconciliation notes, with no profile-access regression; run baseline plus candidate Rules tests and verify snapshot payload rejection/index assumptions against the declared service contract.
-- [ ] 2.3 Add the account-scoped store/capture hook with disabled-by-default rollout setting; verify CQ-HISTORY-01 and CQ-HISTORY-05 source gating, zero Practice/guest/unsaved-upload writes, same-ID retry and discarded stale account responses in fixtures.
+- [x] 2.1 Implement injected summary/snapshot/quota/receipt transactions and deletion; verify CQ-HISTORY-02 and CQ-HISTORY-03 through real demo-emulator SDK tests for idempotency, conflicting payload, lost response, Save/Delete/stale retry, owner/Bob/guest, forged pair/quota/receipt/reset writes and the fiftieth-slot race.
+- [x] 2.2 Add explicit descendant Rules and complete-index reconciliation notes, with no profile-access regression; run baseline plus candidate Rules tests and verify snapshot payload rejection/index assumptions against the declared service contract.
+- [x] 2.3 Add the account-scoped store/capture hook with disabled-by-default rollout setting; verify CQ-HISTORY-01 and CQ-HISTORY-05 source gating, zero Practice/guest/unsaved-upload writes, same-ID retry and discarded stale account responses in fixtures.
 
 ## 3. History and dashboard UI
 
-- [ ] 3.1 Build paginated summaries and per-bank retained-history statistics; verify CQ-HISTORY-06 stable order, full retained totals, aliases/instance grouping, empty/error/full states and source-status copy.
-- [ ] 3.2 Build read-only archived review and confirmed deletion, including the saved-quiz archive-retention disclosure; verify CQ-HISTORY-04 and CQ-HISTORY-06 changed/deleted source, missing images, slot reuse, cancel, failure and complete snapshot removal.
-- [ ] 3.3 Wire guarded History routes/account entry and result save/retry states; verify CQ-HISTORY-05 and CQ-HISTORY-06 with offline/permission/size/quota failures, active-exam navigation, account switches and the full UI matrix; document user-visible retention/local-only behavior and update the design matrix.
+- [x] 3.1 Build paginated summaries and per-bank retained-history statistics; verify CQ-HISTORY-06 stable order, full retained totals, aliases/instance grouping, empty/error/full states and source-status copy.
+- [x] 3.2 Build read-only archived review and confirmed deletion, including the saved-quiz archive-retention disclosure; verify CQ-HISTORY-04 and CQ-HISTORY-06 changed/deleted source, missing images, slot reuse, cancel, failure and complete snapshot removal.
+- [x] 3.3 Wire guarded History routes/account entry and result save/retry states; verify CQ-HISTORY-05 and CQ-HISTORY-06 with offline/permission/size/quota failures, active-exam navigation, account switches and the full UI matrix; document user-visible retention/local-only behavior and update the design matrix.
 
 ## 4. Integrate and release safely
 

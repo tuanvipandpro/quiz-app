@@ -34,6 +34,11 @@ Each new exam SHALL have a stable attempt identity, and archiving the same termi
 - **WHEN** an active pre-history draft is resumed
 - **THEN** an additive attempt identity preserves its questions, answers, mode and deadline; old completed drafts are not automatically backfilled
 
+#### Scenario: Retry an intentionally deleted attempt
+
+- **WHEN** an attempt was saved and then deleted before a stale tab retries or refreshes its terminal draft
+- **THEN** a private non-content lifecycle receipt prevents recreation; the result remains local and quota/content deletion is not reversed
+
 ### Requirement: CQ-HISTORY-03 Private bounded storage
 
 History SHALL be owner-only with an enforced 50-attempt account cap, immutable archive schema and bounded payloads; queries SHALL load paginated summaries separately from full snapshots.
@@ -89,3 +94,4 @@ History SHALL show recent attempts and per-bank statistics over retained summari
 
 - **WHEN** a learner confirms deletion or the account reaches capacity
 - **THEN** deletion removes the result and snapshot consistently and frees capacity; a full archive requests an explicit choice rather than overwriting older records
+- **AND** deletion retains only the disclosed private anti-replay receipt, with no questions, answers or payload fingerprint

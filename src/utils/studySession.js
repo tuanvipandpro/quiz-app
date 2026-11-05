@@ -8,6 +8,8 @@ import {
 import { canonicalQuizId, QUIZ_ID_ALIASES } from '../data/quizAliases.js';
 import { canonicalQuizHash } from './navigation.js';
 import { getExamFeedbackMode } from '../data/examModes.js';
+import { EXAM_GRADING_VERSION } from '../data/examHistoryLimits.js';
+import { secureId, UUID_PATTERN } from './secureId.js';
 
 export const SESSION_PREFIX = 'quiz-study-v1:';
 
@@ -27,7 +29,15 @@ export function createExamSession(
   questions,
   count,
   minutes,
-  { now = Date.now(), random = Math.random, feedbackMode } = {}
+  {
+    now = Date.now(),
+    random = Math.random,
+    feedbackMode,
+    idFactory = secureId,
+    historyOwner = null,
+    captureHistory = false,
+    historySource = null,
+  } = {}
 ) {
   if (!questions.length) throw new Error('An exam needs at least one question.');
   const pool = [...questions];
@@ -40,6 +50,12 @@ export function createExamSession(
     .slice(0, Math.min(size, questions.length))
     .map((question) => shuffleQuestionOptions(question, random));
   return {
+    attemptId: idFactory(),
+    startedAt: now,
+    gradingVersion: EXAM_GRADING_VERSION,
+    historyOwner,
+    captureHistory: !!captureHistory && !!historyOwner && !!historySource,
+    historySource,
     signature: questionFingerprint(questions),
     questions: selected,
     answers: selected.map(emptyAnswer),
@@ -58,7 +74,15 @@ export function initialStudySession(
   questions,
   mode,
   create,
-  { fresh = null, initialIndex = null, entryToken = null } = {}
+  {
+    fresh = null,
+    initialIndex = null,
+    entryToken = null,
+    historyOwner = null,
+    captureHistory = false,
+    historySource = null,
+    idFactory = secureId,
+  } = {}
 ) {
   if (typeof entryToken === 'string') entryToken = canonicalQuizHash(entryToken);
   const restored = readStudySession(storage, key, questions, mode);
@@ -72,6 +96,20 @@ export function initialStudySession(
       : value.index;
   return {
     ...value,
+    ...(mode === 'exam' && !value.submitted
+      ? {
+          attemptId: UUID_PATTERN.test(value.attemptId || '') ? value.attemptId : idFactory(),
+          startedAt: Number.isSafeInteger(value.startedAt) ? value.startedAt : null,
+          gradingVersion: value.gradingVersion || EXAM_GRADING_VERSION,
+          historyOwner: Object.hasOwn(value, 'historyOwner') ? value.historyOwner : historyOwner,
+          historySource: value.historySource || historySource,
+          captureHistory:
+            !!captureHistory &&
+            !!historySource &&
+            !!historyOwner &&
+            (!Object.hasOwn(value, 'historyOwner') || value.historyOwner === historyOwner),
+        }
+      : {}),
     index,
     freshToken: olderLink ? value.freshToken : fresh || value.freshToken,
     entryToken: entryToken || value.entryToken,
@@ -80,7 +118,23 @@ export function initialStudySession(
 
 export function finishExam(session, now = Date.now(), submit = false) {
   if (session.submitted || (!submit && now < session.deadline)) return session;
-  return { ...session, submitted: true, timeExpired: now >= session.deadline };
+  const timeExpired = now >= session.deadline;
+  return {
+    ...session,
+    submitted: true,
+    timeExpired,
+    endedAt: timeExpired ? session.deadline : now,
+    endReason: timeExpired ? 'expired' : 'submitted',
+  };
+}
+
+export function answerExamQuestion(session, value, now = Date.now()) {
+  if (session.submitted) return session;
+  if (now >= session.deadline) return finishExam(session, now);
+  return {
+    ...session,
+    answers: session.answers.map((answer, index) => (index === session.index ? value : answer)),
+  };
 }
 
 export function readStudySession(storage, key, questions, mode) {
