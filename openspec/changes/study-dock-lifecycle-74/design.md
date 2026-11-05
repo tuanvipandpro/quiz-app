@@ -25,13 +25,15 @@ See [proposal](proposal.md). Baseline StudyNavigation measured through dockRef.c
 
 | Requirement | Planned evidence                                                                                              | Status                            |
 | ----------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| CQ-DOCK-01  | studyLayout navigation/resize regression, forced late delivery, pageerror capture, old/new dock CSS ownership | Local pass; CI/production pending |
-| CQ-DOCK-02  | Existing viewport/language/theme geometry, timer submission, keyboard focus and safe-area checks              | Local pass; CI/production pending |
+| CQ-DOCK-01  | studyLayout navigation/resize regression, forced late delivery, pageerror capture, old/new dock CSS ownership | Local/CI pass; production pending |
+| CQ-DOCK-02  | Existing viewport/language/theme geometry, timer submission, keyboard focus and safe-area checks              | Local/CI pass; production pending |
 
 Check 320/360/390/412/768/1280px and 844×390, VN/EN, both themes and reduced motion. Include the observed Practice/Exam → Summary path.
 
 Local implementation evidence (2026-11-06): the new controlled regression failed on the old component with two null-ref page errors; the fixed study-layout suite passed all 10 cases, and both late-delivery cases also passed with normal motion. Native route/resize checks and the existing geometry/focus/submit tests cover the stated matrix. yarn verify passed (193 Node tests, strict SDD/catalog/build checks). Rendered samples inspected: 320 VN/dark, 390 EN/light, 1280 EN/light and 844×390 VN/dark. Logs, the original red trace, the corrected responsive Summary-selector diagnostics and final screenshots remain under ignored artifacts/implement-m1/. This is Chromium emulation; production smoke awaits an owner-requested merge/deploy.
 
 ## Migration Plan
+
+[Runtime-head CI](https://github.com/tuanvipandpro/quiz-app/actions/runs/42079685372) passed on `84898b8eabaa152455659b712b9b902b7ffc6aad`, including frontend/backend verification, Rules, both E2E shards and the aggregate gate. Staged and outgoing redacted scans were clean. Evidence and the remaining production gate are recorded in [issue #74](https://github.com/tuanvipandpro/quiz-app/issues/74#issuecomment-6665647720). This acceptance-only documentation update must also pass its latest-head CI; it changes no runtime inputs.
 
 One #74 bugfix PR; run yarn verify and relevant E2E, then wait for latest-head CI. Merge on owner request, verify master CI/deploy and repeat the route smoke on production before closing #74. Revert the component/test commit to roll back; no persisted data changes.
