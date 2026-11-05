@@ -1,4 +1,4 @@
-**Bộ lọc 10 giây:** thiếu dữ liệu, sai tool, mất context hay sai validation? Sửa đúng nguyên nhân, giữ an toàn/SLA. Học nguyên tắc; đối chiếu phiên bản SDK khi dùng các tool/lệnh trong bank vào thực tế.
+**Bộ lọc 10 giây:** thiếu dữ liệu, sai tool, mất context hay sai validation? Sửa đúng tầng, giữ an toàn/SLA; đối chiếu phiên bản SDK trước khi áp dụng lệnh trong bank.
 
 ## Agent loop & phối hợp nhiều agent
 
@@ -52,22 +52,23 @@
 - **Precision/recall:** “chỉ báo lỗi chắc chắn” có thể bỏ sót bug; tách bước tìm ứng viên có severity/confidence khỏi bước lọc. Khi model sai theo mẫu lặp lại, thêm ví dụ đối chiếu acceptable pattern với lỗi thật.
 - **Tránh bẫy:** hỏi dồn mọi chi tiết làm tăng friction; suy luận việc đảo ngược được từ context và nêu giả định. Chỉ một câu hỏi nếu mơ hồ về hành động; xác nhận trước booking/xóa. Prefill chỉ dùng khi model hỗ trợ; version prompt cho session dài.
 
-> **Mẹo nhớ:** Sai định dạng/cách hiểu lặp lại → few-shot; thiếu bằng chứng → thêm context/tool; thiếu mục tiêu → hỏi đúng một điểm.
+> **Mẹo nhớ:** Ví dụ sửa mẫu sai; tool bổ sung căn cứ; hỏi đúng một điểm.
 
 ## Structured output & validation
 
-- **Nắm nhanh:** JSON/schema đúng không bảo đảm ý nghĩa đúng. Chọn structured output/strict tool schema phù hợp phiên bản; cần tool extract chạy trước enrichment → ép đúng `tool_choice`; `any` chỉ yêu cầu một tool, không chọn hộ tên cụ thể.
+- **Nắm nhanh:** JSON/schema đúng không bảo đảm ý nghĩa đúng. Chọn structured output/strict tool schema phù hợp phiên bản; `tool_choice` cưỡng bức chỉ dùng khi model/chế độ hỗ trợ. `any` không chọn hộ tên tool; schema thông thường không tự thay thế strict validation. Xử lý cả refusal và output bị cắt bởi `max_tokens`.
 - **Chọn đáp án:** field không có bằng chứng → `null`/empty khi schema cho phép; enum cần `other`/`unclear` nếu nghiệp vụ có trường hợp đó. Amendment → giữ giá trị, vị trí nguồn và ngày hiệu lực, không âm thầm ghi đè.
 - **Sửa semantic error:** gửi lại tài liệu, extraction và lỗi validation cụ thể. Kiểm tra tổng line items với stated total bằng logic ứng dụng; lệch thì review. Retry không tạo ra dữ liệu chỉ tồn tại ngoài input.
-- **Đo confidence:** hiệu chỉnh ngưỡng trên validation set có nhãn và theo từng document type/field. Lấy mẫu phân tầng cả nhóm confidence cao; score tự báo không phải bảo đảm đúng. Chia tài liệu/PR dài rồi merge, deduplicate nếu chất lượng giảm.
+- **Đo confidence:** hiệu chỉnh ngưỡng theo document type/field trên validation set có nhãn; lấy mẫu cả nhóm confidence cao. Chia tài liệu/PR dài rồi merge, deduplicate nếu chất lượng giảm.
+- **Giữ chứng cứ:** OCR mất bố cục → thử ảnh gốc, chuyển phần không đọc được cho người. Kiểm quote/vị trí trong nguồn. Áp dụng quy tắc ưu tiên nguồn đã xác minh; amendment vẫn cần giữ giá trị và ngày hiệu lực.
 
-> **Mẹo nhớ:** Schema giữ khuôn; validation giữ nghĩa; nguồn giữ sự thật; calibration mới dùng confidence.
+> **Mẹo nhớ:** Schema giữ khuôn; validator giữ nghĩa; nguồn giữ sự thật.
 
 ## Batch, SLA & checklist chọn đáp án
 
 - **Nắm nhanh:** xử lý offline/không gấp → cân nhắc Batch; alert cần trong vài chục phút → realtime. Ngân sách context gồm system prompt, tool definitions, input và phần output cần dành chỗ; “vừa context” chưa chắc trích xuất tốt.
-- **Chọn đáp án:** tính **thời gian gom + xử lý tối đa + dự phòng**. Với giả định trong Q99: gom 4 giờ + xử lý tối đa 24 giờ = 28 giờ, có khoảng đệm trước SLA 30 giờ; không lấy thời gian trung bình làm cam kết.
+- **Chọn đáp án:** tính **thời gian gom + cửa sổ xử lý + dự phòng**. Theo giả định Q99: gom 4 giờ + cửa sổ 24 giờ = 28 giờ trước mốc 30 giờ. API có thể hết hạn mà chưa xử lý xong; phép cộng này không chứng minh SLA 99,9%. Cần theo dõi deadline, lỗi/expiry và đường xử lý dự phòng.
 - **Retry batch:** theo `custom_id`, chỉ gửi lại phần lỗi sau khi sửa nguyên nhân; context overflow → chunk rồi ghép. Có deadline, giới hạn retry và review cho lỗi không thể khôi phục; đừng chạy lại toàn bộ phần đã thành công.
-- **Trước khi chọn:** tìm “must”, “before”, “cannot leave to model”, “most effective”. Loại cách sửa sai tầng, mất nguồn/facts, retry side effect chưa rõ, hoặc hy sinh SLA để rẻ hơn. Phương án tốt nhất phụ thuộc ràng buộc đề.
+- **Trước khi chọn:** tìm “must”, “before”, “cannot leave to model”. Loại cách sửa sai tầng, mất facts, retry side effect chưa rõ hoặc hy sinh SLA.
 
-> **Mẹo nhớ:** Batch tiết kiệm khi được phép chờ; đúng hạn phải tính cả chờ gom; sửa phần lỗi, giữ phần đã đúng.
+> **Mẹo nhớ:** Batch khi được chờ; deadline tính cả gom và expiry.

@@ -142,16 +142,16 @@ Preserve IDs and marked answers unless a review explicitly authorizes a correcti
 
 The historical Anthropic importer remains available as `node scripts/import-anthropic-quizzes.mjs <snapshot-directory> --check`. Remove `--check` only for an intentional reviewed import; generated reports go to ignored `artifacts/imports/`; keep them separate from development guidance.
 
-Four guides currently require content/coverage review:
+The four Anthropic guides were substantively reviewed against the revisions in the [6 November 2026 review note](docs/study-guide-review-2026-11-06.md). Counts and topic links now cover the current banks:
 
 | Guide  | Reviewed questions | Current bank |
 | ------ | -----------------: | -----------: |
-| CCAR-F |                175 |          201 |
-| CCAR-P |                 63 |          157 |
-| CCAO-F |                119 |          151 |
-| CCDV-F |                 53 |           96 |
+| CCAR-F |                195 |          195 |
+| CCAR-P |                126 |          126 |
+| CCAO-F |                137 |          137 |
+| CCDV-F |                 96 |           96 |
 
-AIP-C01's reviewed fingerprint matches its 136-question bank. Existing guide warnings are intentional. Review the Markdown, concepts, primary references and topic-to-question mappings before updating `sourceQuestionCount`/`sourceQuizHash`. Do not relabel a stale guide as reviewed merely to make a check green.
+AIP-C01's reviewed fingerprint still matches its 136-question bank. Guides retain the stale-source warning if a later bank change invalidates the reviewed snapshot. Review the Markdown, concepts, primary references and topic-to-question mappings before updating `sourceQuestionCount`/`sourceQuizHash`; a matching hash alone is not content acceptance. These reviews do not certify every marked answer; [#96](https://github.com/tuanvipandpro/quiz-app/issues/96) tracks dated product-scope questions separately. Publication acceptance follows the #78 MR/deploy gates.
 
 ## Delivery
 
@@ -174,7 +174,7 @@ Before testing Google sign-in on the new origin, add `quizmos.runs-at.dev` to Fi
 ## Next setup increments
 
 - **Issue #42 rollout:** review the feature evidence, compare current published Rules/indexes with the preserved baseline, authorize and verify compatible Rules before merging/enabling the client, then smoke test production. The repository does not automatically deploy Firebase configuration.
-- Review the four published guides above against their expanded banks; this cleanup does not certify their new coverage.
+- Keep guide snapshots aligned through substantive content/mapping review; #78 tracks the reviewed four-guide publication and #96 the separate product-scope question follow-up.
 - Continue extracting App orchestration only around well-tested feature boundaries. Header extraction and stylesheet separation are the first step.
 - Add WebKit/real-device smoke coverage and selected visual baselines after the initial browser suite is stable.
 - Keep PR acceptance criteria mapped to evidence and mark partial work explicitly. Issue templates and the PR template capture this information.

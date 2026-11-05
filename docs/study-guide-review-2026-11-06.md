@@ -1,0 +1,50 @@
+# Anthropic study-guide review — 6 November 2026
+
+Tracking: [#78](https://github.com/tuanvipandpro/quiz-app/issues/78), MR #93. This is a content/mapping review, not certification of every marked answer. Public bank IDs, question text and answers remain unchanged.
+
+## Frozen source and prior review
+
+| Guide                      | Bank revision                              | Prior reviewed count/hash                                                | Current count/fingerprint                                                | Review status                                |
+| -------------------------- | ------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | -------------------------------------------- |
+| CCAR-F (`anthropic-cca-f`) | `4dd9bf48f8c52eb5f4379bfd8dd6a1ed42323edc` | 175 / `ec5cde6fa1ce0afe57b0d85d2f13fd63493b716fae3cdc25a6471b7799a79810` | 195 / `113e548873719661047a0823de5339d34c66010ef892055ee9ae6c88de407af9` | Content/render local pass; CI/deploy pending |
+| CCAR-P                     | `4dd9bf48f8c52eb5f4379bfd8dd6a1ed42323edc` | 63 / `e8606d273bfa766427bbdce88a849fa17f2a7db735455ef0d29cbba89c57a6a3`  | 126 / `24e7fe359ba614f55e26c05250578ef82805ef55a371273efe5bb7a87fface2b` | Content/render local pass; CI/deploy pending |
+| CCAO-F                     | `4dd9bf48f8c52eb5f4379bfd8dd6a1ed42323edc` | 119 / `3dd456848502677b9d0ee8affdc439d39536598863c0f012055e90de13665697` | 137 / `098623facb1e702dcef47127078d5900f68431779b0d117f613b57f46f56f990` | Content/render local pass; CI/deploy pending |
+| CCDV-F                     | `e5ec4a4477c94faf4f304f1d103159da1604444c` | 53 / `20859d630256ffe9ed89ed5031540afaa7ed9d71dcec9a6783110f926823c241`  | 96 / `ddf1e126c7dc2158fe69ef1a18a34e943c323a5c06e85539c80e2d8c2dafe682`  | Content/render local pass; CI/deploy pending |
+
+The prior full banks at `e5ec4a4^` (CCAR-F/CCAO-F/CCDV-F) and `7950eab` (CCAR-P) reproduce all four prior guide fingerprints. Relative to those reviewed snapshots, CCAR-F retains 171 questions, retires duplicate IDs 102/130/132/174 and adds 24; CCAR-P retains all 63 and adds 63; CCAO-F retains 119, changes the already-reviewed ordering question `ccao-f-105`, and adds 18; CCDV-F retains 53 and adds 43. The deduplication fixture remains historical evidence, rather than a rule that permanently freezes guide review hashes.
+
+Disposable full-question inventories, source comparisons and rendered evidence are retained in ignored `artifacts/implement-m1/`. Recheck source fingerprints before updating review metadata; a matching hash alone is not content acceptance. Each row stays pending until concepts, primary references and related-question mappings are reviewed and any corrections are applied.
+
+## CCAR-F content and links
+
+Reviewed retained stems/marked choices and all 24 added questions. Retained IDs still match their existing conceptual sections; the four retired duplicates remain absent. Added links: orchestration 176; tool design 178/197/198; approval 179; context 181/196/199/200; Claude Code 180; prompting 191/193/194/195; validation 182/184–190/192; Batch 183. All 195 current questions are linked under their stable IDs.
+
+The guide now separates plain tool schemas from strict output validation and qualifies forced tool selection by model/mode support. It covers original-image review for OCR layout loss, verified source precedence versus amendment effective dates, and Batch expiry rather than treating a 24-hour window as an SLA guarantee. Primary review used Claude tool definitions, structured-output refusal/token-limit cases, vision, Batch processing, sessions, memory/hooks and the pinned MCP tool/error contract. No current model names, prices or guaranteed completion-time claims were added. The label now matches catalog code CCAR-F while retaining `anthropic-cca-f`. Metadata advanced only after content/mapping review and a rechecked source fingerprint. Schema/section/hash/link validation passed for 195 references; the guide remains below the 1,600-word quick-reading limit. Rendering, full-suite CI and production acceptance remain separate gates.
+
+## CCAR-P content and links
+
+Reviewed all 63 retained stems/marked choices and the 63 added items, including every Yes/No statement and dropdown slot. Added links cover integration/workflow (6), model/prompt/retrieval tactics (12), security (5), evaluation/observability (5), governance (8), stakeholder value/communication (6), Claude Code (10) and lifecycle/handoff (11). Retained first-launch MCP diagnosis (`ccar-p-13`) moves to Claude Code, return-to-design (`ccar-p-28`) to lifecycle, and security-audience communication (`ccar-p-26`) to stakeholders; `ccar-p-54` also links evaluation because its second control tests drift. All 126 stable IDs remain represented.
+
+Content now distinguishes direct API integration from MCP reuse, pre/model/post-processing, dense/sparse/hybrid retrieval and corpus-aware chunks. It adds correlation/model-version trace requirements, risk-based sampling, secret handling, federated Skill publication and scoped BAA/tool eligibility. Settings precedence is labelled as the ordinary settings-key stack, with separate list/permission and env/flag behavior, rather than a universal override rule. Sources include Claude settings, evaluation, guardrails/Skills, contextual retrieval, HHS and Anthropic's feature-specific BAA table. The guide is educational, not a claim that an Enterprise/ZDR label makes every feature compliant or that any marked answer certifies a live architecture. Source/hash/mapping validation passes for 126 references; rendering/CI/deploy remain pending.
+
+## CCAO-F content and links
+
+Reviewed 119 retained questions, including the corrected dependency order in `ccao-f-105`, and all 18 added stems/marked choices. Added related links: features/models 121/135/146; output format 129; Project/Connector setup 122/123/147; context 127/130; verification 142/143; workflow/handoff 131/134/144; governance/incidents 132/138/139; iteration 151. All 137 stable IDs are represented.
+
+The guide now distinguishes reusable Artifact output, connector read/write capabilities from permission/approval policy, requirement-by-requirement completeness checks, restricted-output incident handling and the data-before-approval sequence in Q105. It retains the important distinction between Incognito history/memory behavior and backend/organizational retention. Primary sources include Projects, Incognito, official Artifacts/Google Workspace connector help and the 4D framework (the blocked older landing link is replaced with the official Academy lesson). The currently served AUP page displays a future 12 November 2026 effective date; it is not treated as already active, and the guide explicitly asks readers to check policy effective dates. Source/hash/schema/section/link checks pass for 137 references below the quick-reading limit. Rendering/CI/deploy remain pending.
+
+## CCDV-F content and links
+
+Reviewed all 53 retained questions and all 43 added stems/marked choices. New links: architecture/capability/SDK 55/59/64/66/76/83/96; context/checkpoints 56/57/78/88/93/95; security 58/61/68/69/82; prompting/model selection 65/70/74/77/85/91; tool/MCP design 71/75/94; configuration/CI 67/72/73/79/86/92; validation 62/63/81; operations/cost/retry 54/60/80/84/87/89/90. All 96 IDs are represented.
+
+The revised guide distinguishes SDK async use, persisted checkpoints from filesystem state, and BYOC runtime placement from the model/API/egress/logging boundary. It clarifies reasoning-mode visibility, structured-output stop/refusal handling, versioned environment/plugin configuration, impact-based error paging, existing SDK retry behavior, per-feature token accounting and offline Batch expiry. The existing SSE versus bidirectional WebSocket distinction and pinned MCP STDIO/Streamable HTTP rules remain accurate. Primary review used Claude streaming/structured output, SDK hosting/sessions, hooks/headless operation, caching/Batch and MCP transports. Source/hash/section/link validation passes for 96 references. No model price, clinical recommendation or raw internal-reasoning guarantee is introduced.
+
+## Local acceptance and publication
+
+`yarn check:guides` and catalog validation pass for all five published guides, including unchanged AIP-C01. Focused guide/dedup tests pass 21/21; historical duplicate/retired-ID/checkpoint evidence remains intact. `yarn verify` passes 193 Node tests, strict OpenSpec, build and fixture-isolation checks. All 14 guide E2E cases pass: current version markers/no stale warning, stable-ID keyboard navigation to MC/Yes-No/dropdown questions, Back, future source mismatch warning, and readable long content/sources across 320/390/412/768/1280px and landscape, VN/EN and both themes. Inspected 320px VN/dark and 1280px EN/light captures; retained diagnostics show the corrected title assertions, not a renderer change. Guide word counts are 1593/1528/1562/1519. This establishes local content/render acceptance; latest-head CI, owner-requested merge and published-site link/status smoke remain pending.
+
+## Separate bank follow-up
+
+Required CI on content head `e8a400e9255fbee79de50ee539a2710325835f8d` subsequently passed: [run 42092540782](https://github.com/tuanvipandpro/quiz-app/actions/runs/42092540782). An initial runner timeout after slow system-dependency installation was diagnosed and only failed jobs were rerun, with unchanged assertions/timeouts. The acceptance-record update requires latest-head CI again; merge and published-site status/link smoke remain open. This record does not refresh any guide hash or bank content.
+
+[#96](https://github.com/tuanvipandpro/quiz-app/issues/96) tracks dated Gmail behavior in `ccao-f-122` and the overly broad product-scope framing in `ccar-p-92` for a separate option/source review. No question text, answer or stable ID is rewritten in this guide-only change. Current source fingerprints remain the frozen bank fingerprints above.

@@ -4,14 +4,14 @@
 
 - **Nắm nhanh:** chuyển mục tiêu kinh doanh thành yêu cầu chức năng, hạ tầng và tiêu chí thành công. Chọn kiến trúc theo sự phụ thuộc và trạng thái công việc, không theo độ “agentic” của giải pháp.
 - **Chọn đáp án:** các stage có input/output và thước đo riêng → tách call; workflow cần quay lại stage theo state → graph; chia việc chuyên biệt rồi tổng hợp → orchestrator/subagent. Mỗi bên cần contract, context và giới hạn tool/token rõ.
-- **Tận dụng SDK:** dùng tool interface, loop, dispatch và history sẵn có khi phù hợp. Xét từng customization theo lý do gốc và khả năng SDK hiện tại; không giữ hoặc xóa tất cả theo khẩu hiệu.
-- **Tránh bẫy:** thêm abstraction đa-provider khi không có nhu cầu thực. Nếu hợp đồng yêu cầu Bedrock, dùng đường tích hợp tương thích và tách logic nghiệp vụ khỏi adapter; built-in thiếu tính năng → cân nhắc mở rộng hay custom tool theo lợi ích thực.
+- **Tận dụng SDK:** dùng tool interface, loop, dispatch và history phù hợp; async client cho service async. Xét từng customization theo lý do gốc và SDK hiện tại; không giữ/xóa tất cả theo khẩu hiệu.
+- **Tránh bẫy:** thêm đa-provider abstraction khi chưa cần. Hợp đồng yêu cầu Bedrock → dùng adapter tương thích. BYOC chỉ đổi nơi chạy agent; vẫn kiểm API/model, egress, logs và storage theo ranh giới dữ liệu. Built-in thiếu tính năng → xét mở rộng hoặc custom tool.
 
 > **Mẹo nhớ:** Nhu cầu trước framework; contract trước delegation; đơn giản trước tầng trung gian.
 
 ## Prompt, few-shot & chọn model
 
-- **Nắm nhanh:** prompt nêu nhiệm vụ, context, schema/ràng buộc và đầu ra cần đạt. Ví dụ có nhãn tốt là few-shot/multi-shot, đặc biệt hữu ích cho edge case và format khó mô tả chỉ bằng câu chữ.
+- **Nắm nhanh:** prompt nêu nhiệm vụ, context, schema và đầu ra; few-shot minh họa edge case/format. Chế độ reasoning tùy model và bài toán; không hứa hiển thị toàn bộ suy nghĩ nội bộ.
 - **Chọn đáp án:** model phù hợp đồng thời quality–latency–cost của workload. Bản mới suy luận tốt hơn nhưng làm hỏng JSON chưa đủ điều kiện upgrade; chỉnh prompt theo thay đổi, eval lại cả chất lượng và format trước promotion.
 - **Cải tiến đúng:** input category mới tăng mà chất lượng kém → thêm case đại diện, sửa prompt và đo lại. Kết quả diễn đạt khác nhau có thể do sinh token/sampling; không mặc định coi là bug request hoặc hứa deterministic chỉ bằng giảm temperature.
 - **Tránh bẫy:** hard-code prompt/model rải rác. Giữ cấu hình/phiên bản review được; nêu với stakeholder rằng tính biến thiên được quản bằng validation, eval và retry/fallback có điều kiện, không bằng lời bảo đảm tuyệt đối.
@@ -20,7 +20,7 @@
 
 ## Structured output & validation
 
-- **Nắm nhanh:** yêu cầu JSON trong prompt không thay thế contract. Khi được hỗ trợ, dùng structured output/strict schema; luôn parse phòng thủ và kiểm dữ liệu trước khi chuyển xuống downstream.
+- **Nắm nhanh:** yêu cầu JSON trong prompt không thay contract. Dùng structured output/strict schema khi hỗ trợ; vẫn kiểm `stop_reason`, refusal, output bị cắt và parse/validate trước downstream.
 - **Chọn đáp án:** thiếu field, sai type hoặc giá trị ngoài enum → đường lỗi được nhận diện: repair, retry có giới hạn hoặc fallback. Không để output bất ngờ làm crash hệ thống; không lờ lỗi rồi gửi dữ liệu sai đi tiếp.
 - **Tool arguments:** giữ schema rõ, validate trước dispatch, trả lỗi có cấu trúc để agent sửa; đừng nới mọi constraint chỉ để call được chạy. JSON hợp lệ vẫn có thể sai nghĩa, nên thêm kiểm tra nghiệp vụ cần thiết.
 - **Tránh bẫy:** format drift qua nhiều turn không nhất thiết là parser hỏng. Trace context tiến triển thế nào, phần nào lấn át yêu cầu, rồi phối hợp context management với output validation; không retry vô hạn cùng input không đổi.
@@ -30,7 +30,7 @@
 ## Context, session & chunking
 
 - **Nắm nhanh:** prompt engineering định hình một yêu cầu; context engineering giữ đúng thông tin xuyên turn/stage: nội dung nào cần thêm, giữ, rút gọn, truy xuất hoặc cách ly.
-- **Chọn đáp án:** stage không được thấy toàn bộ history → context isolation/subagent có scope riêng. Session cần quy tắc hết hạn, reset và bắt đầu mới; đừng để context cũ tự chảy sang khách hàng hoặc nhiệm vụ mới.
+- **Chọn đáp án:** scope context theo stage; session có expiry/reset rõ. Task dài cần checkpoint bền vững và quy tắc resume; transcript không tự khôi phục filesystem. Không để context cũ chảy sang khách hàng mới.
 - **Chunk theo mục tiêu:** tài liệu vừa cửa sổ không tự quyết định nên gửi nguyên hay chia. Cần quan hệ toàn cục/citation có thể ưu tiên context đầy đủ; xử lý cục bộ có thể chunk nhưng phải giữ nguồn, ranh giới và bước ghép. Eval trên tài liệu đại diện.
 - **Tránh bẫy:** tool output ngắn hạn vẫn tích lũy mãi. Prune phần không cần nữa, giữ facts và contract còn dùng cho bước tiếp theo. Cách ly context không đồng nghĩa chỉ tách tên agent nhưng vẫn đưa chung mọi dữ liệu.
 
@@ -57,7 +57,7 @@
 ## Claude Code, cấu hình & CI
 
 - **Nắm nhanh:** `CLAUDE.md` cung cấp quy ước/context; `.claude/settings.json` project chứa cấu hình và permissions phù hợp cho team. Scope rộng cho chuẩn chung, scope project cho chi tiết repo; đừng nhân bản mọi quy tắc vào mọi nơi.
-- **Chọn đáp án:** version-control cấu hình không chứa secrets cùng source và review qua PR. Prompt, model và error handling phải có cấu trúc cấu hình/test; refactor duplication và control flow phức tạp có kế hoạch trước khi mở rộng tiếp.
+- **Chọn đáp án:** version-control prompt, model/plugin version và cấu hình từng môi trường; giữ secrets ngoài Git. Review qua PR, chạy integration/lint; refactor duplication và control flow phức tạp trước khi mở rộng.
 - **CI:** headless/non-interactive, ví dụ `claude -p`, với quyền tool cần thiết được cấu hình trước và output được capture cho pipeline. Không tương đương bật toàn quyền hoặc bỏ mọi bước phê duyệt.
 - **Tránh bẫy:** staging pass chưa chứng minh mọi downstream consumer không bị ảnh hưởng. Đánh giá tác động prompt/config lên từng hệ thống, phối hợp owner, rollout có kiểm soát và phương án rollback.
 
@@ -67,7 +67,7 @@
 
 - **Nắm nhanh:** unit cho hàm, integration cho kết nối Claude, end-to-end cho luồng quan trọng; production cần monitoring, triage và kế hoạch tiến hóa. Deprecation → regression trước, migrate từng nhóm rồi xác nhận lại.
 - **Chọn đáp án:** output bất nhất/refusal ngoài dự kiến → trace input, system/user messages, model, params và output để so case tốt/xấu. Mask secrets/PII khi ghi trace; đừng đoán hoặc thay đồng thời mọi tham số.
-- **Giữ tải ổn:** thiết kế cho rate limit giờ cao điểm; queue/throttle khi phù hợp và backoff có giới hạn lúc bị limit. Kiểm tra retry có an toàn với side effect, thay vì mặc định lặp mọi call lỗi.
-- **Tính đúng tiền:** input/output token có rate riêng, cộng cả tool/context và lượt retry. Prompt caching tái dùng prefix ổn định; response cache là cơ chế khác cần xét freshness và quyền truy cập, không tự bỏ model call chỉ vì prompt có đoạn giống nhau.
+- **Giữ tải ổn:** queue/throttle và backoff có giới hạn; hiểu retry sẵn có của SDK, tránh nhân retry với side effect. Phân severity theo impact/khả năng phục hồi để chọn paging hay log.
+- **Tính đúng tiền:** đo token theo feature, tính input/output, tool/context và retry riêng. Prompt cache tái dùng prefix; response cache còn cần freshness/quyền. Batch hợp offline được chờ, vẫn phải xử lý expiry/deadline.
 
 > **Mẹo nhớ:** Trace trước đoán; regression trước migrate; tính token hai chiều; cache prefix khác cache đáp án.

@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import deduplication from './fixtures/anthropicDeduplication.json' with { type: 'json' };
 import { getQuickSummary } from '../src/data/quickSummaries.js';
 import {
   fingerprintQuestions,
@@ -12,7 +11,7 @@ import {
 
 const assets = [
   { quizId: 'anthropic-ccar-p', bank: 'Anthropic/CCAR_P.json', label: 'CCAR-P' },
-  { quizId: 'anthropic-cca-f', bank: 'Anthropic/CCA_F.json', label: 'CCA-F' },
+  { quizId: 'anthropic-cca-f', bank: 'Anthropic/CCA_F.json', label: 'CCAR-F' },
   { quizId: 'anthropic-ccao-f', bank: 'Anthropic/CCAO_F.json', label: 'CCAO-F' },
   { quizId: 'anthropic-ccdv-f', bank: 'Anthropic/CCDV_F.json', label: 'CCDV-F' },
   { quizId: 'aws-aip-c01', bank: 'AWS/AIP_C01.json', label: 'AIP-C01' },
@@ -57,18 +56,14 @@ for (const { quizId, questions, meta, markdown, label } of assets) {
     const ids = new Set(questions.map((question) => question.id));
     const references = new Set(document.sections.flatMap((section) => section.questionIds));
     assert.ok([...references].every((id) => ids.has(id)));
-    const cleanup = deduplication.banks.find((bank) => bank.quizId === quizId);
-    const reviewedContentChanged = ['anthropic-cca-f', 'anthropic-ccao-f'].includes(quizId);
-    if (cleanup) {
-      // Keep the historical review evidence; remapping links is not a new content review.
-      assert.equal(meta.sourceQuizHash, cleanup.reviewedSourceHash);
-      assert.equal(meta.sourceQuestionCount, cleanup.reviewedSourceQuestionCount);
-    }
-    assert.equal(references.size, cleanup?.currentGuideReferenceCount ?? meta.sourceQuestionCount);
+    // #78 completed substantive content/mapping review; historical deduplication
+    // fixtures remain unchanged in anthropicDeduplication.test.js.
+    assert.equal(meta.sourceQuestionCount, questions.length);
+    assert.equal(references.size, questions.length);
     const currentReferenceHash = await fingerprintQuestions(
       questions.filter((question) => references.has(String(question.id)))
     );
-    assert.equal(currentReferenceHash !== meta.sourceQuizHash, reviewedContentChanged);
+    assert.equal(currentReferenceHash, meta.sourceQuizHash);
     assert.ok(
       markdown.split(/\s+/).length < 1600,
       'Keep the quick guide within a short reading session'
@@ -80,7 +75,9 @@ test('question and option reordering keep the guide current; changed answers or 
   const reordered = [...questions].reverse().map((question) => ({
     ...question,
     options: Object.fromEntries(Object.entries(question.options).reverse()),
-    answer: [...question.answer].reverse(),
+    answer: Array.isArray(question.answer)
+      ? [...question.answer].reverse()
+      : Object.fromEntries(Object.entries(question.answer).reverse()),
   }));
   assert.equal(await fingerprintQuestions(reordered), meta.sourceQuizHash);
   reordered[0] = { ...reordered[0], question: 'Updated wording' };

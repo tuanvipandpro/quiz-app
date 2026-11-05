@@ -13,7 +13,7 @@
 
 - **Nắm nhanh:** prompt có nhiệm vụ, mục tiêu/audience, context, ràng buộc và format. “Xem giúp pricing” chưa đủ rõ; cần nghiên cứu đối thủ hay nghĩ ý tưởng mới?
 - **Chọn đáp án:** liệt kê câu hỏi và mục bắt buộc. Nêu tone, độ dài, vùng/người nhận và thông điệp chính; ví dụ minh họa tiêu chuẩn, không thay dữ liệu thực tế.
-- **Đúng hình thức:** nhiều record/metric → bảng có hàng/cột rõ; executive memo → kết luận và driver trước, triển vọng sau; transcript yêu cầu → tách must-have, nice-to-have, câu hỏi mở và mâu thuẫn.
+- **Đúng hình thức:** record/metric → bảng; memo → kết luận, driver, triển vọng; transcript → must-have, nice-to-have, câu hỏi mở và mâu thuẫn. Nội dung độc lập cần sửa/tái dùng, như prototype hay quy trình → Artifact.
 - **Tránh bẫy:** dùng một template cho mọi tác vụ, chỉ nói “hay hơn”, hoặc yêu cầu chung chung không chỉ rõ output. Tone sai → mô tả tone + audience; thuật ngữ sai → cung cấp glossary và yêu cầu áp dụng.
 
 > **Mẹo nhớ:** Làm gì — cho ai — dựa vào đâu — theo khuôn nào — giới hạn gì?
@@ -22,8 +22,8 @@
 
 - **Nắm nhanh:** Project giữ bộ tài liệu và instructions cho workload lặp lại; knowledge base chứa nguồn, instructions chứa vai trò/tone/format/quy tắc. Xác định mục đích và các việc thường làm trước khi cấu hình.
 - **Chọn đáp án:** quy trình dùng lại → Skill; truy cập nguồn ngoài → Connector; context cần nhớ giữa phiên → Memory theo phạm vi được duyệt. Kết hợp Skill, tài liệu và instructions tham chiếu đúng từng phần.
-- **Bảo trì:** rà nguồn/instructions theo chính sách và thuật ngữ mới. Sửa/xóa memory sai hoặc lỗi thời, bổ sung context còn thiếu; sao lưu/export khi tính năng cho phép trước thay đổi lớn, kiểm lại quyền chia sẻ.
-- **Tránh bẫy:** “chạy được một lần là đúng mãi”, nhét toàn bộ tài liệu vào instructions, bật Skill lạ vì tiện. Kiểm nguồn/phạm vi/quyền của Skill và Connector; chỉ kết nối nguồn đã được tổ chức cho phép.
+- **Bảo trì:** rà nguồn/instructions, sửa memory sai/lỗi thời, bổ sung context thiếu; export khi được hỗ trợ trước thay đổi lớn và kiểm quyền chia sẻ.
+- **Tránh bẫy:** nhét mọi tài liệu vào instructions hoặc bật Skill lạ. Connector có thể đọc/ghi tùy phiên bản, quyền và chính sách approval; kiểm chức năng hiện tại, không mặc định Gmail chỉ soạn nháp. Chỉ kết nối nguồn đã được duyệt.
 
 > **Mẹo nhớ:** Knowledge = nguồn; instructions = cách làm; Skill = quy trình; Connector = kết nối; Memory = context xuyên phiên.
 
@@ -40,7 +40,7 @@
 
 - **Nắm nhanh:** văn phong tự tin không phải bằng chứng. Định nghĩa tiêu chí và ngưỡng đạt trước khi chấm: factual accuracy, đủ trường/độ sâu, đúng audience, format và length.
 - **Chọn đáp án:** nghi hallucination → chỉ ra claim, đối chiếu nguồn, sửa hoặc bỏ phần chưa xác minh. Ba bài báo lặp cùng một số chưa thay thế nghiên cứu gốc.
-- **Đánh giá đủ:** câu trả lời có đủ tên năm mục nhưng thiếu ba yếu tố rủi ro vẫn chưa đủ yêu cầu. Kết luận trái bằng chứng là lỗi nội dung/logic, không chữa được chỉ bằng thêm heading đẹp.
+- **Đánh giá đủ:** map từng yêu cầu nguồn tới phần tương ứng trong output. Có đủ heading nhưng thiếu nội dung vẫn chưa đạt; kết luận trái bằng chứng là lỗi logic.
 - **Tránh bẫy:** chỉ trích nguồn ủng hộ, bỏ chi phí chuyển đổi hoặc ý kiến bất lợi. Nguồn mâu thuẫn → tìm nguồn sơ cấp phù hợp về thời điểm/phạm vi; ghi gap và xử lý trước khi giao, không “bỏ phiếu theo số nguồn”.
 
 > **Mẹo nhớ:** Nghe hợp lý ≠ xác minh; đủ đề mục ≠ đủ nội dung; đẹp ≠ đúng.
@@ -57,10 +57,10 @@
 ## Governance, dữ liệu & quyền sở hữu
 
 - **Nắm nhanh:** trước upload/Connector, phân loại dữ liệu và xác nhận công cụ, nguồn, quyền được duyệt. Chỉ gửi trường cần thiết; redact/anonymize ID, thẻ thanh toán hoặc địa chỉ không phục vụ nhiệm vụ.
-- **Chọn đáp án:** policy tổ chức cấm dữ liệu điều tra → không nhập, xin phương án được duyệt. Incognito không đóng góp chat history/memory theo tính năng hiện hành; **không đồng nghĩa không lưu ở mọi tầng** hay được phép gửi dữ liệu cấm.
+- **Chọn đáp án:** policy cấm dữ liệu điều tra → không nhập. Incognito không đóng góp history/memory; **không đồng nghĩa không lưu ở mọi tầng** hay được gửi dữ liệu cấm. Output lộ dữ liệu → dừng chia sẻ, báo kênh incident được duyệt và bảo vệ bằng chứng.
 - **Giữ trách nhiệm:** không giao Claude tự quyết định cuối về tuyển dụng/tín dụng. Use case rủi ro cao cần điều kiện, giám sát và phê duyệt phù hợp; “có người xem” không tự làm một use case chưa duyệt thành được phép.
 - **4D:** Delegation = giao việc nào; Description = mô tả task/kỳ vọng; Discernment = phê bình kết quả; Diligence = làm việc có trách nhiệm và kiểm chứng trước giao. Xem cả hệ quả lỗi, khả năng đảo ngược, thiên lệch và công bằng.
-- **Tránh bẫy:** khái quát nhóm người thay cho hành vi quan sát được. Nội dung khách hàng có cam kết SLA cần review/escalate; truyền đạt trung thực giới hạn và nơi con người giữ quyết định, kể cả khi người nghe muốn bỏ review.
+- **Thứ tự theo Q105:** xét audience/tác động → dữ liệu nhạy cảm → chính sách đúng ngày hiệu lực → quyết định → ghi rationale. Cam kết SLA hay quyết định tác động lớn cần review/escalate theo thẩm quyền.
 
 > **Mẹo nhớ:** Được làm? Dữ liệu nào? Ai kiểm? Ai chịu trách nhiệm? Đừng nhầm bảo mật giao diện với toàn bộ chính sách lưu trữ.
 
@@ -69,6 +69,6 @@
 - **Nắm nhanh:** mô tả đúng lỗi rồi mới sửa: thiếu mục → task statement; thuật ngữ lệch → glossary; drift Project → kiểm instructions/nguồn; độ chậm → tìm bước tốn thời gian bằng dữ liệu.
 - **Chọn đáp án:** giữ baseline tốt nhất, đặt giả thuyết, đổi một yếu tố có thể nhận diện, so lại tiêu chí và ghi hiệu ứng. Phần đã được duyệt nên giữ, chỉ sửa đúng feedback; feedback mơ hồ thì làm rõ trước.
 - **Biết dừng:** chất lượng plateau qua nhiều lần → nhờ người review hoặc đổi cách tiếp cận. Đừng tiếp tục prompt dài hơn chỉ vì đã tốn công; nếu bản mới tệ hơn, quay lại baseline gần mục tiêu nhất.
-- **Khi làm bài:** gặp “BEFORE” hãy tìm đầu vào/phê duyệt còn thiếu; câu sắp thứ tự theo dependency; “Choose two” chọn đủ hai. Ưu tiên nguồn kiểm chứng, quyền được duyệt và handoff rõ hơn phương án hứa tự động hóa toàn bộ.
+- **Khi làm bài:** “BEFORE” tìm dependency; “Choose two” chọn đủ hai. Mơ hồ nhưng có thể sửa → nêu giả định, mời chỉnh; hành động khó đảo ngược → làm rõ. Giữ nguồn, quyền và handoff thay vì hứa tự động hóa hết.
 
 > **Mẹo nhớ:** Đo lỗi → giả thuyết → đổi một điểm → so baseline → ghi nhận hoặc quay lại.
