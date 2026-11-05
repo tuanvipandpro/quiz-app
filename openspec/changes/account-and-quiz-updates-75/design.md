@@ -26,15 +26,21 @@ See [proposal](proposal.md). AccountMenu owns click/keyboard activation and focu
 
 ## Verification matrix
 
-| Requirement   | Planned evidence                                                                                              | Status  |
-| ------------- | ------------------------------------------------------------------------------------------------------------- | ------- |
-| CQ-ACCOUNT-01 | Current/missing Google fields; local preference persistence/storage failure; no identity/cloud-profile writes | Pending |
-| CQ-ACCOUNT-02 | Account-menu keyboard/touch and active-exam Cancel/Leave/Resume through each entry                            | Pending |
-| CQ-ACCOUNT-03 | Auth loading, guest deep links, sign-in failure, sign-out/account switch with no stale private UI             | Pending |
-| CQ-UPDATES-01 | Pure registry validation; source/date/content review; canonical link and invalid-entry tests                  | Pending |
-| CQ-UPDATES-02 | Guest discovery, empty/newest-first list, deep-link reload/Back and guarded navigation                        | Pending |
+| Requirement   | Planned evidence                                                                                      | Status                        |
+| ------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------- |
+| CQ-ACCOUNT-01 | Current/missing fields; keyboard and device-local preferences; blocked storage; no new profile writes | Local pass; CI/deploy pending |
+| CQ-ACCOUNT-02 | Keyboard/touch menu and active-exam Cancel/Leave/Resume; native hash cancellation regression          | Local pass; CI/deploy pending |
+| CQ-ACCOUNT-03 | Deferred auth, guest sign-in failure/retry, sign-out and Alice/Bob/guest identity replacement         | Local pass; CI/deploy pending |
+| CQ-UPDATES-01 | Four domain tests; reviewed CTFL source/date/count/context; invalid metadata and canonical link cases | Local pass; CI/deploy pending |
+| CQ-UPDATES-02 | Guest discovery, empty list, deterministic ordering, reload/Back, bank link and exam guard            | Local pass; CI/deploy pending |
 
 Apply 320/390/412/768/1280px and landscape, VN/EN, both themes, focus and reduced motion. Use fixture-backed auth; no real account changes are needed for routine verification.
+
+Implementation evidence (2026-11-06): the account/app/custom-quiz E2E run passed all 84 cases after correcting four tests to activate visible Radio.Button labels instead of their zero-size internal inputs. Keyboard preference changes are covered separately. Four focused public-entry/landing cases passed. The new native hash test reproduced a real Cancel bug in both projects: an unannotated forward hash event was mistaken for a Back traversal. Deferring that event to the existing hashchange handler fixed it; all eight focused native/programmatic exam-guard cases passed with unchanged drafts/deadlines. Initial diagnostics and final screenshots/logs remain under ignored `artifacts/implement-m1/`.
+
+Rendered Profile/Updates samples were inspected at 320px VN/dark and VN/light, 1280px EN/light, and landscape. Geometry covers all stated widths and language/theme combinations; new controls retain 44px targets and measured menu/settings text contrast is at least 4.5:1. Profile uses current AuthContext identity and existing preference setters only. UI search `account settings navigation --domain ux` returned Keyboard Navigation and Sticky Navigation; applied labelled groups, visible keyboard focus, existing header offset and left alignment. Breadcrumbs were unnecessary for these flat destinations.
+
+Registry provenance: reviewed commit `241c5b16dc23b04eb9ce0a5c7a63e4833b492a46`, dated 2026-11-01, against its parent. CTFL grew 240 → 276, adding IDs 243–278; question 88 changed from an incomplete user-story stem to explicit payment acceptance criteria and test-cycle context. The published summary claims only those inspected changes. No bank answers or guide review hashes were changed.
 
 ## Migration Plan
 

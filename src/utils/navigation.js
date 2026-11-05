@@ -19,6 +19,9 @@ export function parseRoute(hash = '') {
     if (path === '' || path === '/') return { page: 'home', params: new URLSearchParams(query) };
     if (path === '/donate' || path === '/donate/')
       return { page: 'donate', params: new URLSearchParams(query) };
+    for (const page of ['profile', 'updates'])
+      if (path === `/${page}` || path === `/${page}/`)
+        return { page, params: new URLSearchParams(query) };
     const parts = path.split('/').filter(Boolean).map(decodeURIComponent);
     if (parts[0] === 'my-quizzes')
       return { page: 'my-quizzes', params: new URLSearchParams(query) };

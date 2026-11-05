@@ -1,4 +1,34 @@
 export const vi = {
+  Profile: 'Hồ sơ',
+  'Your account and QuizMos settings.': 'Tài khoản và cài đặt QuizMos của bạn.',
+  'Loading account…': 'Đang tải tài khoản…',
+  'Sign in to view your profile': 'Đăng nhập để xem hồ sơ',
+  'Use your Google account to view your profile and manage your quizzes.':
+    'Dùng tài khoản Google để xem hồ sơ và quản lý quiz của bạn.',
+  'Google account': 'Tài khoản Google',
+  'Identity is provided by Google and is read-only here.':
+    'Thông tin do Google cung cấp và chỉ được xem tại đây.',
+  Name: 'Tên',
+  Email: 'Email',
+  'Not provided': 'Chưa cung cấp',
+  'Manage quizzes': 'Quản lý quiz',
+  'QuizMos settings': 'Cài đặt QuizMos',
+  'Language and theme are saved on this device. They do not change your Google account or sync between devices.':
+    'Ngôn ngữ và giao diện được lưu trên thiết bị này. Các cài đặt không thay đổi tài khoản Google và không đồng bộ giữa các thiết bị.',
+  Theme: 'Giao diện',
+  Light: 'Sáng',
+  Dark: 'Tối',
+  'Quiz updates': 'Cập nhật quiz',
+  'Reviewed additions and changes to the public quiz banks. Dates refer to bank content changes.':
+    'Các bổ sung và thay đổi đã được rà soát trong thư viện quiz công khai. Ngày hiển thị là ngày thay đổi nội dung bộ câu hỏi.',
+  'No reviewed quiz updates yet. Explore the Quiz Bank while new changes are reviewed.':
+    'Chưa có cập nhật quiz đã được rà soát. Hãy khám phá thư viện quiz trong khi các thay đổi mới được kiểm tra.',
+  Added: 'Đã thêm',
+  Updated: 'Đã cập nhật',
+  'Reviewed source': 'Nguồn đã rà soát',
+  'Open quiz': 'Mở quiz',
+  'Added 36 questions, bringing this bank to 276. Restored missing question context, including the payment acceptance-criteria scenario.':
+    'Bổ sung 36 câu hỏi, nâng tổng số lên 276. Khôi phục ngữ cảnh còn thiếu, bao gồm tình huống về tiêu chí chấp nhận thanh toán.',
   Prev: 'Trước',
   Next: 'Tiếp',
   'Open your banking app': 'Mở app ngân hàng của bạn',

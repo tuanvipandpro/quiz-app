@@ -14,6 +14,13 @@ export default function AppFooter({ onNavigate, page, embedded = false }) {
       <div className="footer-links">
         <button
           className="public-text-link"
+          onClick={() => onNavigate('#/updates')}
+          aria-current={page === 'updates' ? 'page' : undefined}
+        >
+          {t('Quiz updates')}
+        </button>
+        <button
+          className="public-text-link"
           onClick={() => onNavigate('#/donate')}
           aria-current={page === 'donate' ? 'page' : undefined}
         >
