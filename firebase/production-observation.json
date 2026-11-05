@@ -1,0 +1,24 @@
+{
+  "projectId": "quiz-app-f70d5",
+  "databaseId": "(default)",
+  "reviewCompletedAtUtc": "2026-11-05T18:46:11Z",
+  "source": "authenticated-firebase-console-read-only",
+  "rules": {
+    "url": "https://console.firebase.google.com/project/quiz-app-f70d5/firestore/databases/-default-/security/rules",
+    "publishedRevisionLabel": "Dec 14, 2025 • 10:39 PM",
+    "displayTimezoneVerified": false,
+    "snapshot": "observed/firestore-2026-11-06.rules",
+    "sha256Lf": "1c7d3194063316cacc0203a094420e61a4360141e0e8548fe4ec2dcce843065b",
+    "normalization": "Displayed editor text, LF line endings and one final newline. Includes two empty lines before service.",
+    "managementApiExport": false
+  },
+  "indexes": {
+    "url": "https://console.firebase.google.com/project/quiz-app-f70d5/firestore/databases/-default-/indexes",
+    "manual": [],
+    "fieldOverrides": [],
+    "collectionDefaults": { "ascending": true, "descending": true, "arrays": true },
+    "collectionGroupDefaults": { "ascending": false, "descending": false, "arrays": false },
+    "managementApiExport": false
+  },
+  "productionMutationPerformed": false
+}
