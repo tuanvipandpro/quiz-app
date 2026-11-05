@@ -13,7 +13,7 @@
 
 ## 3. Integrate and release
 
-- [ ] 3.1 Run yarn verify and relevant E2E, review/secret-scan the diff, open one #77 PR and record latest-head CI with acceptance status.
+- [x] 3.1 Run yarn verify and relevant E2E, review/secret-scan the diff, open one #77 PR and record latest-head CI with acceptance status.
 - [ ] 3.2 After owner-requested merge and master deploy, smoke included-only reading without live inference and verify no setup/quota request is needed; close #77 only with evidence.
 
 ## Workflow follow-up

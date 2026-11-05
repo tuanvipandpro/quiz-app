@@ -30,15 +30,17 @@ Alternative considered: show reference only after attempting AI. It retains the 
 
 | Requirement   | Planned evidence                                                                                                         | Status                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------- |
-| CQ-EXPLAIN-01 | explanationAccess guest/signed-in IO instrumentation and missing-reference cases                                         | Local pass; CI/deploy pending |
-| CQ-EXPLAIN-02 | appAi/byok explicit generation, no-key setup, loading, cached reopening, quota, retry and error-with-reference cases     | Local pass; CI/deploy pending |
-| CQ-EXPLAIN-03 | examFeedback all five formats in both active/submitted modes; delayed question response, logout and close/reopen focus   | Local pass; CI/deploy pending |
-| CQ-EXPLAIN-04 | Long tokens/unsafe HTML sanitized; reference language preserved; viewport/contrast matrix and rendered samples inspected | Local pass; CI/deploy pending |
+| CQ-EXPLAIN-01 | explanationAccess guest/signed-in IO instrumentation and missing-reference cases                                         | Local/CI pass; deploy pending |
+| CQ-EXPLAIN-02 | appAi/byok explicit generation, no-key setup, loading, cached reopening, quota, retry and error-with-reference cases     | Local/CI pass; deploy pending |
+| CQ-EXPLAIN-03 | examFeedback all five formats in both active/submitted modes; delayed question response, logout and close/reopen focus   | Local/CI pass; deploy pending |
+| CQ-EXPLAIN-04 | Long tokens/unsafe HTML sanitized; reference language preserved; viewport/contrast matrix and rendered samples inspected | Local/CI pass; deploy pending |
 
 Use the repository UI matrix (320–1280px plus landscape, VN/EN, themes, reduced motion) and local fixtures only. UI guidance: error recovery retry returned Error Recovery, Error Messages and Error Placement; apply actionable role=alert errors near generation while preserving readable reference content.
 
 Local evidence: `yarn verify` passed (193 Node tests). Of 98 focused E2E cases, 96 passed initially; the two new navigation tests failed because adjacent CCAR-P questions happened to share the same reference, then passed with distinct reference fixtures and an awaited late delivery. The corrected explanationAccess suite passed all 12 cases, and the added contrast matrix passed both projects at 4.5:1 or better. Existing appAi/byok/examFeedback/studyLayout cases passed without changed production data or live API calls. Screenshots at 320px VN/dark, 1280px EN/light and landscape VN/dark were inspected; 390/412/768px and all language/theme combinations are covered by the matrix. Normal motion is exercised by the existing AI/settings suites, reduced motion by explanationAccess. Logs and initial failure evidence remain in ignored `artifacts/implement-m1/`. Latest-head CI and post-merge acceptance remain separate gates.
 
 ## Migration Plan
+
+[Runtime-head CI](https://github.com/tuanvipandpro/quiz-app/actions/runs/42082906003) passed on `f3e3cbac3f5cc8cd64d848132796277138b262e1`, including verification, Rules, both full E2E shards and the aggregate gate. Staged/outgoing redacted scans were clean. This acceptance-only documentation update still requires latest-head CI. Production reading smoke remains pending owner-requested merge/deployment; #77 stays open.
 
 One #77 feature PR after the #74 lifecycle correction, with yarn verify and relevant E2E. There is no data migration or backend rollout. After owner-requested merge and master deploy, smoke reference-only reading on a public question without calling AI. Revert the UI/hook change if needed; no keys or quota ledgers change.
