@@ -94,7 +94,13 @@ export default function AppHeader({
           {authLoading ? (
             <Spin size="small" />
           ) : user ? (
-            <AccountMenu key={user.uid} user={user} onSettings={onSettings} onSignOut={onSignOut} />
+            <AccountMenu
+              key={user.uid}
+              user={user}
+              onSettings={onSettings}
+              onSignOut={onSignOut}
+              onNavigate={onNavigate}
+            />
           ) : (
             <Button
               type="text"

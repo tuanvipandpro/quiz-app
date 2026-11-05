@@ -8,6 +8,10 @@ The root opens a dark-first landing with four viewport sections, native scroll s
 
 [Live app](https://quizmos.runs-at.dev/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)
 
+The account menu opens **Profile**, **Manage quizzes**, AI Settings and Sign out. Profile shows read-only Google identity; QuizMos language/theme choices use existing device-local preferences and do not sync between devices. Manage quizzes opens the existing private quiz workspace.
+
+**Quiz updates** is public, reachable from Quiz Bank and the footer. Maintainers add reviewed content changes to [the update registry](src/data/quizUpdates.js), using canonical bank IDs, a valid content-change date, `added`/`updated`, a concise translated summary and the full source commit. Review the actual bank diff before publishing; UI builds are not content updates. The initial CTFL entry was checked against `241c5b16dc23b04eb9ce0a5c7a63e4833b492a46` (1 November 2026): 240 → 276 questions, 36 added IDs 243–278, and restored context such as question 88's payment acceptance criteria. Validation rejects invalid dates, aliases, missing sources and unsupported kinds.
+
 Core instructions live in the compact [AGENTS.md](AGENTS.md); task-specific policy is in the [contributor guide](docs/contributing.md). Read the sections relevant to the work. The PR checklist records evidence; CI enforces automated checks, while visual and architectural judgment require review.
 
 ## Local UI/UX skill

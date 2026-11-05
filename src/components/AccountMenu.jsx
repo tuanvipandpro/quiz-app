@@ -1,9 +1,9 @@
 import React, { useId, useRef, useState } from 'react';
 import { Avatar, Button, Dropdown } from 'antd';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { FolderOutlined, LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
 
-export default function AccountMenu({ user, onSettings, onSignOut }) {
+export default function AccountMenu({ user, onSettings, onSignOut, onNavigate }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);
@@ -32,6 +32,18 @@ export default function AccountMenu({ user, onSettings, onSignOut }) {
         className: 'account-menu',
         items: [
           { key: 'name', label: name, disabled: true },
+          {
+            key: 'profile',
+            label: t('Profile'),
+            icon: <UserOutlined aria-hidden="true" />,
+            onClick: (event) => activate(event, () => onNavigate('#/profile')),
+          },
+          {
+            key: 'quizzes',
+            label: t('Manage quizzes'),
+            icon: <FolderOutlined aria-hidden="true" />,
+            onClick: (event) => activate(event, () => onNavigate('#/my-quizzes')),
+          },
           {
             key: 'settings',
             label: t('AI Settings'),

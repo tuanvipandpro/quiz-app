@@ -4,6 +4,7 @@
 @import './styles/study.css';
 @import './styles/upload.css';
 @import './styles/public-pages.css';
+@import './styles/account.css';
 
 * {
   box-sizing: border-box;

@@ -47,6 +47,10 @@ export function useHashRoute(guard, nativeGuard) {
       !guardRef.current.nativeGuard?.active || window.confirm(guardRef.current.nativeGuard.message);
     const changed = (event) => {
       const entry = event.state || window.history.state;
+      // A newly assigned hash fires popstate before hashchange with no app
+      // position. Let hashChanged own that forward entry and its cancellation.
+      // Treating it as a Back traversal would restore in the wrong direction.
+      if (!entry?.[HASH]) return;
       const next = entry?.[HASH] || window.location.hash || DEFAULT_HASH;
       const targetPosition = Number.isInteger(entry?.[POSITION])
         ? entry[POSITION]
