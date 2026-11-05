@@ -119,6 +119,15 @@ for (const mode of ['standard', 'learning']) {
         else await expect(feedback).toHaveCount(0);
       }
       await submitExam(page);
+      await page.getByRole('button', { name: 'Explain', exact: true }).click();
+      const explanation = page.locator('.explanation-panel');
+      await expect(explanation).toBeVisible();
+      await expect(
+        explanation.locator('.included-explanation, .missing-explanation')
+      ).toBeVisible();
+      await expect(explanation.locator('.ai-generated-explanation')).toHaveCount(0);
+      await expect(page.getByRole('dialog')).toHaveCount(0);
+      await explanation.getByRole('button', { name: 'Close', exact: true }).click();
       await expect(feedback).toBeVisible();
       await expect(page.locator('.exam-mode-label')).toHaveText(`Exam mode: ${modeLabel(mode)}`);
       await expect(page.locator('.score-number')).toHaveText(

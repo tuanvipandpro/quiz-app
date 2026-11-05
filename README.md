@@ -4,6 +4,8 @@ Signed-in App AI is implemented behind an optional API URL and a disabled-by-def
 
 Practice certification questions, take timed mock exams and read curated study guides. React 19, Vite, Ant Design and Firebase.
 
+In Practice and submitted exam review, **Explain** opens the quiz's included explanation without API keys or an AI request. The reference keeps its original language and is labelled as supplied quiz content. **Generate AI explanation** is a separate action using your selected App AI/BYOK source; generated help follows the Vietnamese explanation policy. Active Standard and Learning exams keep Explain unavailable until submission.
+
 The root opens a dark-first landing with four viewport sections, native scroll snap and reduced-motion support; **Start practicing** opens `#/library`. **Donate** is visible in the header/hero and opens `#/donate`; its Back buttons return to the first Home section. Public receiving details and its activation flag live in [donation configuration](src/data/donation.js). Recheck the static QR and bank recipient before changing or reactivating the receiving account.
 
 [Live app](https://quizmos.runs-at.dev/) · [Agent workflow](AGENTS.md) · [Custom-quiz cloud storage backlog](https://github.com/tuanvipandpro/quiz-app/issues/42)

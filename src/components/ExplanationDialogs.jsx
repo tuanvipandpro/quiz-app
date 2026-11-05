@@ -15,27 +15,35 @@ const { Title, Paragraph, Text } = Typography;
 export default function ExplanationDialogs({ question, state, inline = false }) {
   const { t } = useLanguage();
   const panelRef = useRef(null);
+  const settingsTrigger = useRef(null);
   useEffect(() => {
     if (inline && state.visible) {
       panelRef.current?.focus({ preventScroll: true });
       panelRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
     }
-  }, [inline, state.visible]);
+  }, [inline, state.visible, state.revealRequest]);
   const reference = questionExplanation(question);
   const actions = (
     <div className="quiz-dialog-actions">
       <Button
-        icon={<SettingOutlined aria-hidden="true" />}
-        onClick={() => state.setSettingsVisible(true)}
+        type="primary"
+        icon={<ReloadOutlined aria-hidden="true" />}
+        loading={state.loading}
+        onClick={(event) => {
+          settingsTrigger.current = event.currentTarget;
+          state.explain({ forceRefresh: state.requested && !state.error });
+        }}
       >
-        {t('AI Settings')}
+        {t(state.requested ? (state.error ? 'Retry' : 'Regenerate') : 'Generate AI explanation')}
       </Button>
       <Button
-        icon={<ReloadOutlined aria-hidden="true" />}
-        disabled={state.loading}
-        onClick={() => state.explain({ forceRefresh: !state.error })}
+        icon={<SettingOutlined aria-hidden="true" />}
+        onClick={(event) => {
+          settingsTrigger.current = event.currentTarget;
+          state.setSettingsVisible(true);
+        }}
       >
-        {t(state.error ? 'Retry' : 'Regenerate')}
+        {t('AI Settings')}
       </Button>
       {state.error && state.source === 'app' && (
         <Button
@@ -70,9 +78,11 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
           ))}
         </>
       )}
-      {reference && (
+      {reference ? (
         <Collapse
+          className="included-explanation"
           size="small"
+          defaultActiveKey={['reference']}
           style={{ marginBottom: 16 }}
           items={[
             {
@@ -91,37 +101,53 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
             },
           ]}
         />
+      ) : (
+        <Alert
+          className="missing-explanation"
+          type="info"
+          showIcon
+          message={t('No explanation is included with this question.')}
+        />
       )}
       <Title level={3}>{t('AI explanation')}</Title>
       <Text type="secondary">{t(state.source === 'app' ? 'App AI' : 'Your API key')}</Text>
-      {state.source === 'app' && <AiUsage usage={state.usage} />}
-      {state.loading ? (
-        <div className="explanation-loading" role="status">
-          <Spin />
-          <Text>{t('Generating explanation…')}</Text>
-        </div>
-      ) : state.error ? (
-        <Alert
-          showIcon
-          role="alert"
-          type="error"
-          message={t('Could not generate an explanation. Please retry.')}
-          description={t(state.error)}
-        />
-      ) : (
-        <div className="markdown-container" lang={EXPLANATION_LANGUAGE}>
-          <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>
-            {state.explanation}
-          </ReactMarkdown>
+      {!state.requested && (
+        <Paragraph type="secondary">
+          {t('Generate AI help when you need more explanation.')}
+        </Paragraph>
+      )}
+      {state.requested && (
+        <div className="ai-generated-explanation">
+          {state.source === 'app' && <AiUsage usage={state.usage} />}
+          {state.loading ? (
+            <div className="explanation-loading" role="status">
+              <Spin />
+              <Text>{t('Generating explanation…')}</Text>
+            </div>
+          ) : state.error ? (
+            <Alert
+              showIcon
+              role="alert"
+              type="error"
+              message={t('Could not generate an explanation. Please retry.')}
+              description={t(state.error)}
+            />
+          ) : (
+            <div className="markdown-container" lang={EXPLANATION_LANGUAGE}>
+              <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>
+                {state.explanation}
+              </ReactMarkdown>
+            </div>
+          )}
+          <Paragraph type="secondary" className="study-hint">
+            {t(
+              state.source === 'app'
+                ? 'Regenerating uses a new App AI attempt.'
+                : 'Regenerating sends a new AI request using your provider quota.'
+            )}
+          </Paragraph>
         </div>
       )}
-      <Paragraph type="secondary" className="study-hint">
-        {t(
-          state.source === 'app'
-            ? 'Regenerating uses a new App AI attempt.'
-            : 'Regenerating sends a new AI request using your provider quota.'
-        )}
-      </Paragraph>
     </div>
   );
   return (
@@ -154,7 +180,11 @@ export default function ExplanationDialogs({ question, state, inline = false }) 
       <SettingsModal
         visible={state.settingsVisible}
         onClose={() => state.setSettingsVisible(false)}
-        afterClose={() => state.triggerRef.current?.focus()}
+        afterClose={() => {
+          if (settingsTrigger.current?.isConnected)
+            settingsTrigger.current.focus({ preventScroll: true });
+          else state.triggerRef.current?.focus();
+        }}
       />
     </>
   );

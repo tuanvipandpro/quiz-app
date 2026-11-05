@@ -36,10 +36,17 @@ async function openSettings(page, { language = 'en', theme = 'light', signedIn =
         exact: true,
       })
     );
-  } else
+  } else {
     await page
       .getByRole('button', { name: language === 'vi' ? 'Giải thích' : 'Explain', exact: true })
       .click();
+    await page
+      .getByRole('button', {
+        name: language === 'vi' ? 'Tạo giải thích AI' : 'Generate AI explanation',
+        exact: true,
+      })
+      .click();
+  }
   const dialog = page.getByRole('dialog', {
     name: language === 'vi' ? 'Cài đặt AI' : 'AI Settings',
     exact: true,
@@ -353,7 +360,9 @@ test('reduced motion at startup and live preference changes preserve the key edi
   await expect(input).toHaveValue('motion-fixture-draft');
   await clickAfterUiMotion(settings.getByRole('button', { name: 'Done', exact: true }));
   await expect(settings).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Explain', exact: true })).toBeFocused();
+  await expect(
+    page.getByRole('button', { name: 'Generate AI explanation', exact: true })
+  ).toBeFocused();
 });
 
 test('settings sign-in uses the shared provider dialog; cancel and failure preserve typed key', async ({

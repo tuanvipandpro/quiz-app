@@ -1,4 +1,8 @@
 export const vi = {
+  'Generate AI explanation': 'Tạo giải thích AI',
+  'No explanation is included with this question.': 'Câu hỏi này chưa có giải thích kèm theo.',
+  'Generate AI help when you need more explanation.':
+    'Tạo lời giải AI khi bạn cần được giải thích thêm.',
   Prev: 'Trước',
   Next: 'Tiếp',
   'Open your banking app': 'Mở app ngân hàng của bạn',
