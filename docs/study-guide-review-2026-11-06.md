@@ -45,4 +45,6 @@ The revised guide distinguishes SDK async use, persisted checkpoints from filesy
 
 ## Separate bank follow-up
 
+Required CI on content head `e8a400e9255fbee79de50ee539a2710325835f8d` subsequently passed: [run 42092540782](https://github.com/tuanvipandpro/quiz-app/actions/runs/42092540782). An initial runner timeout after slow system-dependency installation was diagnosed and only failed jobs were rerun, with unchanged assertions/timeouts. The acceptance-record update requires latest-head CI again; merge and published-site status/link smoke remain open. This record does not refresh any guide hash or bank content.
+
 [#96](https://github.com/tuanvipandpro/quiz-app/issues/96) tracks dated Gmail behavior in `ccao-f-122` and the overly broad product-scope framing in `ccar-p-92` for a separate option/source review. No question text, answer or stable ID is rewritten in this guide-only change. Current source fingerprints remain the frozen bank fingerprints above.

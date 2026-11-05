@@ -11,7 +11,7 @@
 ## 2. Publish honest reviewed state
 
 - [x] 2.1 Reconcile maintained README/review notes, run check:guides/catalog and quickSummary tests, and inspect guide rendering/related links; verify CQ-GUIDE-03 and leave every unfinished bank explicitly pending.
-- [ ] 2.2 Run yarn verify and relevant E2E, review/secret-scan one #78 data PR and wait for latest-head CI, recording actual content acceptance rather than only hash equality.
+- [x] 2.2 Run yarn verify and relevant E2E, review/secret-scan one #78 data PR and wait for latest-head CI, recording actual content acceptance rather than only hash equality.
 - [ ] 2.3 After owner-requested merge and deploy, verify published guide statuses and intended related-question links before closing #78.
 
 ## Workflow follow-up
