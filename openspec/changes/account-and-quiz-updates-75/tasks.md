@@ -14,7 +14,7 @@
 
 ## 3. Integrate and release
 
-- [ ] 3.1 Run yarn verify/E2E, review and secret-scan, open one #75 feature PR and record latest-head CI and actual acceptance results.
+- [x] 3.1 Run yarn verify/E2E, review and secret-scan, open one #75 feature PR and record latest-head CI and actual acceptance results.
 - [ ] 3.2 After owner-requested merge, verify master CI/deploy and public/Profile/Manage entry smoke under the permitted account scope; close #75 only after its combined scope is accepted.
 
 ## Workflow follow-up

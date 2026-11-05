@@ -28,11 +28,11 @@ See [proposal](proposal.md). AccountMenu owns click/keyboard activation and focu
 
 | Requirement   | Planned evidence                                                                                      | Status                        |
 | ------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------- |
-| CQ-ACCOUNT-01 | Current/missing fields; keyboard and device-local preferences; blocked storage; no new profile writes | Local pass; CI/deploy pending |
-| CQ-ACCOUNT-02 | Keyboard/touch menu and active-exam Cancel/Leave/Resume; native hash cancellation regression          | Local pass; CI/deploy pending |
-| CQ-ACCOUNT-03 | Deferred auth, guest sign-in failure/retry, sign-out and Alice/Bob/guest identity replacement         | Local pass; CI/deploy pending |
-| CQ-UPDATES-01 | Four domain tests; reviewed CTFL source/date/count/context; invalid metadata and canonical link cases | Local pass; CI/deploy pending |
-| CQ-UPDATES-02 | Guest discovery, empty list, deterministic ordering, reload/Back, bank link and exam guard            | Local pass; CI/deploy pending |
+| CQ-ACCOUNT-01 | Current/missing fields; keyboard and device-local preferences; blocked storage; no new profile writes | Local/CI pass; deploy pending |
+| CQ-ACCOUNT-02 | Keyboard/touch menu and active-exam Cancel/Leave/Resume; native hash cancellation regression          | Local/CI pass; deploy pending |
+| CQ-ACCOUNT-03 | Deferred auth, guest sign-in failure/retry, sign-out and Alice/Bob/guest identity replacement         | Local/CI pass; deploy pending |
+| CQ-UPDATES-01 | Four domain tests; reviewed CTFL source/date/count/context; invalid metadata and canonical link cases | Local/CI pass; deploy pending |
+| CQ-UPDATES-02 | Guest discovery, empty list, deterministic ordering, reload/Back, bank link and exam guard            | Local/CI pass; deploy pending |
 
 Apply 320/390/412/768/1280px and landscape, VN/EN, both themes, focus and reduced motion. Use fixture-backed auth; no real account changes are needed for routine verification.
 
@@ -43,5 +43,7 @@ Rendered Profile/Updates samples were inspected at 320px VN/dark and VN/light, 1
 Registry provenance: reviewed commit `241c5b16dc23b04eb9ce0a5c7a63e4833b492a46`, dated 2026-11-01, against its parent. CTFL grew 240 → 276, adding IDs 243–278; question 88 changed from an incomplete user-story stem to explicit payment acceptance criteria and test-cycle context. The published summary claims only those inspected changes. No bank answers or guide review hashes were changed.
 
 ## Migration Plan
+
+[Runtime-head CI](https://github.com/tuanvipandpro/quiz-app/actions/runs/42085609548) passed on `86e9566a1621d1864a82945adb41c221ae2d8824`, including verify, Rules, both full E2E shards, backend verification and the aggregate gate. Staged/outgoing redacted scans were clean. This acceptance-only documentation update still requires its latest-head checks; owner-requested merge, deployment and production acceptance remain pending and #75 stays open.
 
 One #75 feature PR after #77; #78 content review and #79 evidence work can proceed independently. Run yarn verify/E2E and latest-head CI. After owner-requested merge/deploy, smoke public updates and guest/profile navigation; signed-in acceptance uses fixtures or a designated authorized account. Revert routes/menu/registry together to roll back. Existing preferences, profile fields and quiz data remain compatible.
