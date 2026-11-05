@@ -16,15 +16,18 @@ export default function StudyNavigation({
   const dockRef = useRef(null);
   useEffect(() => {
     const root = document.documentElement;
-    const measure = () =>
-      root.style.setProperty(
-        '--study-dock-height',
-        `${dockRef.current.getBoundingClientRect().height}px`
-      );
+    const dock = dockRef.current;
+    if (!dock) return;
+    let active = true;
+    const measure = () => {
+      if (!active || !dock.isConnected) return;
+      root.style.setProperty('--study-dock-height', `${dock.getBoundingClientRect().height}px`);
+    };
     const observer = new ResizeObserver(measure);
-    observer.observe(dockRef.current);
+    observer.observe(dock);
     measure();
     return () => {
+      active = false;
       observer.disconnect();
       root.style.removeProperty('--study-dock-height');
     };

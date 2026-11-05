@@ -2,7 +2,7 @@
 
 ## Context
 
-See [proposal](proposal.md). StudyNavigation measures through dockRef.current inside ResizeObserver; a late delivery can observe a cleared ref. The callback also writes a root CSS variable used by compact layout. Existing study-layout tests check geometry but do not fail on every uncaught page error.
+See [proposal](proposal.md). Baseline StudyNavigation measured through dockRef.current inside ResizeObserver; a late delivery could observe a cleared ref. The callback also writes a root CSS variable used by compact layout. The baseline study-layout tests checked geometry without failing on every uncaught page error.
 
 ## Goals / Non-Goals
 
@@ -23,12 +23,14 @@ See [proposal](proposal.md). StudyNavigation measures through dockRef.current in
 
 ## Verification matrix
 
-| Requirement | Planned evidence                                                                                              | Status                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| CQ-DOCK-01  | studyLayout navigation/resize regression, forced late delivery, pageerror capture, old/new dock CSS ownership | Pending implementation |
-| CQ-DOCK-02  | Existing viewport/language/theme geometry, timer submission, keyboard focus and safe-area checks              | Pending implementation |
+| Requirement | Planned evidence                                                                                              | Status                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| CQ-DOCK-01  | studyLayout navigation/resize regression, forced late delivery, pageerror capture, old/new dock CSS ownership | Local pass; CI/production pending |
+| CQ-DOCK-02  | Existing viewport/language/theme geometry, timer submission, keyboard focus and safe-area checks              | Local pass; CI/production pending |
 
 Check 320/360/390/412/768/1280px and 844×390, VN/EN, both themes and reduced motion. Include the observed Practice/Exam → Summary path.
+
+Local implementation evidence (2026-11-06): the new controlled regression failed on the old component with two null-ref page errors; the fixed study-layout suite passed all 10 cases, and both late-delivery cases also passed with normal motion. Native route/resize checks and the existing geometry/focus/submit tests cover the stated matrix. yarn verify passed (193 Node tests, strict SDD/catalog/build checks). Rendered samples inspected: 320 VN/dark, 390 EN/light, 1280 EN/light and 844×390 VN/dark. Logs, the original red trace, the corrected responsive Summary-selector diagnostics and final screenshots remain under ignored artifacts/implement-m1/. This is Chromium emulation; production smoke awaits an owner-requested merge/deploy.
 
 ## Migration Plan
 
