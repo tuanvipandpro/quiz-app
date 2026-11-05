@@ -3,7 +3,12 @@ import { accountCases } from './viewports.js';
 import { contrastRatio } from './uiContrast.js';
 import { clickAfterUiMotion } from './uiMotion.js';
 
+const pageErrors = new WeakMap();
+
 test.beforeEach(async ({ page }) => {
+  const errors = [];
+  pageErrors.set(page, errors);
+  page.on('pageerror', (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/*', (route) =>
     ['127.0.0.1', 'localhost'].includes(new URL(route.request().url()).hostname)
@@ -16,6 +21,103 @@ test.beforeEach(async ({ page }) => {
       JSON.stringify({ uid: 'study-layout', displayName: 'Study tester', emailVerified: true })
     )
   );
+});
+
+test.afterEach(async ({ page }) => {
+  expect(pageErrors.get(page)).toEqual([]);
+});
+
+test('late dock measurements are inert after leaving and replacing study controls', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => {
+    const NativeResizeObserver = window.ResizeObserver;
+    window.studyDockDeliveries = [];
+    window.ResizeObserver = class {
+      constructor(callback) {
+        this.callback = callback;
+        this.native = new NativeResizeObserver((entries) => callback(entries, this));
+      }
+      observe(element, options) {
+        this.native.observe(element, options);
+        if (element.classList.contains('study-navigation-bar')) {
+          window.studyDockDeliveries.push({ element, deliver: () => this.callback([], this) });
+        }
+      }
+      unobserve(element) {
+        this.native.unobserve(element);
+      }
+      disconnect() {
+        this.native.disconnect();
+      }
+    };
+  });
+  const height = () =>
+    page.evaluate(() => document.documentElement.style.getPropertyValue('--study-dock-height'));
+  const deliverOldMeasurement = () =>
+    page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            try {
+              window.studyDockDeliveries[0].deliver();
+            } finally {
+              requestAnimationFrame(resolve);
+            }
+          }, 0);
+        })
+    );
+  await page.goto('./#/quiz/anthropic-ccar-p/practice');
+  await expect(page.locator('.question-title')).toBeVisible();
+  await expect.poll(height).not.toBe('');
+  await page.goto('./#/quiz/anthropic-ccar-p/summary');
+  await expect(page.locator('.quick-summary-body')).toBeVisible();
+  await expect.poll(height).toBe('');
+  expect(await page.evaluate(() => window.studyDockDeliveries[0].element.isConnected)).toBe(false);
+  await deliverOldMeasurement();
+  expect(await height()).toBe('');
+  expect(pageErrors.get(page)).toEqual([]);
+
+  await page.goto('./#/quiz/anthropic-ccar-p');
+  await page.getByText('Mock exam', { exact: true }).click();
+  await page.getByRole('button', { name: 'Start mock exam', exact: true }).click();
+  await expect(page.getByRole('timer')).toBeVisible();
+  await expect.poll(height).not.toBe('');
+  const currentHeight = await height();
+  await deliverOldMeasurement();
+  expect(await height()).toBe(currentHeight);
+  expect(pageErrors.get(page)).toEqual([]);
+});
+
+test('native dock measurements stay correct through resize and study-to-summary navigation', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(120000);
+  await page.goto('./#/quiz/anthropic-ccar-p/practice');
+  for (const state of accountCases(testInfo.project.name)) {
+    await appearance(page, state);
+    const dock = page.locator('.study-navigation-bar');
+    await expect(dock).toBeVisible();
+    await expect
+      .poll(async () => {
+        const bounds = await dock.boundingBox();
+        const reserved = await page.evaluate(() =>
+          parseFloat(document.documentElement.style.getPropertyValue('--study-dock-height'))
+        );
+        return bounds ? Math.abs(reserved - bounds.height) : Infinity;
+      })
+      .toBeLessThan(1);
+    await page.goto('./#/quiz/anthropic-ccar-p/summary');
+    await expect(page.locator('.quick-summary-body')).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.documentElement.style.getPropertyValue('--study-dock-height'))
+      )
+      .toBe('');
+    await page.goto('./#/quiz/anthropic-ccar-p/practice');
+    await expect(page.locator('.question-title')).toBeVisible();
+  }
 });
 
 async function appearance(page, state) {
