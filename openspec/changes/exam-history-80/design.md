@@ -79,7 +79,7 @@ Persist capture eligibility and the owner in new/actively resumed sessions. Comp
 
 Local evidence: `yarn verify` passed 220 Node tests and production build/isolation; real SDK Rules suite passed 27 cases; History E2E passed 32 cases with no page errors. The full-app run and focused failure diagnoses are recorded in [the maintained contract](../../../docs/exam-history.md). Disposable traces/screenshots remain ignored. UI/IO fixture results are not production acceptance.
 
-The History UI requires #74's dock correction. Local integration used foundation `f3cf76982bded136d640f0af94dd504d02d64ae6`; the #80 implementation does not duplicate that fix. Keep the History MR dependent on #89 until its owner-requested merge and master integration/CI. Preserve the #75 account/menu changes when rebasing and reconcile #79 policy before enablement.
+The History UI requires #74's dock correction. Recorded local integration used foundation `f3cf76982bded136d640f0af94dd504d02d64ae6` plus History `599a5ec`. Workflow migration #97 replays the unchanged #80 runtime/tests on the original #80 plan so the issue-only MR targets `work/release-m1-20261106`; its source no longer inherits #74. First land #89 on that release and bootstrap branch-aware CI through #98, then update #92 and require current-base CI. Preserve #75's account/menu changes and reconcile #79 policy before enablement. Production acceptance remains after the milestone's develop/production promotion, not merely an issue merge into the release.
 
 ## Migration Plan
 

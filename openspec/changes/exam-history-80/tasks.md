@@ -19,9 +19,9 @@
 
 ## 4. Integrate and release safely
 
-- [ ] 4.1 Run yarn verify, test:rules and E2E; inspect the disabled-client build for fixture leakage, review/secret-scan one #80 feature PR and wait for latest-head required CI, recording actual acceptance evidence.
+- [ ] 4.1 After #89 release integration and #98 CI bootstrap, update #92 against the current milestone release; run yarn verify, test:rules and E2E, inspect the disabled-client build for fixture leakage, review/secret-scan the #80 feature PR and wait for latest-head required CI, recording actual acceptance evidence.
 - [ ] 4.2 Use #79's reconciled baseline plus the new history policy/index contract; publish/verify compatible policy through the authorized release procedure before enabling history, and record source revisions/rollback rather than deploying a fragment.
-- [ ] 4.3 After owner-requested merge/enablement and master CI/deploy, perform bounded designated-account save/reload/read/delete smoke, confirm unrelated bank/custom progress remains compatible and close #80 only after actual rollout acceptance.
+- [ ] 4.3 After owner-requested milestone promotion/enablement and production CI/deploy, perform bounded designated-account save/reload/read/delete smoke, confirm unrelated bank/custom progress remains compatible and close #80 only after actual rollout acceptance.
 
 ## Workflow follow-up
 
