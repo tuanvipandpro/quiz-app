@@ -1,0 +1,7 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "customQuizzes", "fieldPath": "questions", "indexes": [] },
+    { "collectionGroup": "examAttemptSnapshots", "fieldPath": "payload", "indexes": [] }
+  ]
+}

@@ -35,7 +35,7 @@ export default [
     },
   },
   {
-    files: ['src/**/*.{js,jsx}', 'tests/e2e/**/*.js', 'tests/fixtures/**/*.js'],
+    files: ['src/**/*.{js,jsx}', 'tests/e2e/**/*.js', 'tests/fixtures/**/*.{js,jsx}'],
     languageOptions: { globals: globals.browser },
   },
 ];

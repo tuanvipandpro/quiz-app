@@ -4,6 +4,7 @@ import { ReloadOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CUSTOM_QUIZ_LIMIT, MAX_CUSTOM_TITLE } from '../data/customQuizLimits';
 import { CUSTOM_QUIZ_MESSAGES, normalizeCustomError } from '../utils/customQuizModel';
+import { EXAM_HISTORY_ENABLED } from '../config/examHistoryConfig';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -208,6 +209,13 @@ export default function CloudQuizLibrary({
             <Paragraph>
               {t('This deletes the quiz and its saved progress. Other quizzes are kept.')}
             </Paragraph>
+            {EXAM_HISTORY_ENABLED && (
+              <Paragraph>
+                {t(
+                  'Archived exam results are kept separately. Delete them from Exam history when needed.'
+                )}
+              </Paragraph>
+            )}
           </>
         )}
         {error && (

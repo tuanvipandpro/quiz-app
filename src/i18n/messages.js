@@ -569,6 +569,109 @@ export const vi = {
   Expert: 'Expert',
   Advanced: 'Nâng cao',
   Practitioner: 'Practitioner',
+  'Exam history': 'Lịch sử thi',
+  'Sign in to use your exam history.': 'Đăng nhập để dùng lịch sử thi.',
+  'This exam archive is invalid or uses an unsupported format.':
+    'Bản lưu bài thi không hợp lệ hoặc dùng định dạng chưa được hỗ trợ.',
+  'Your history is full. Delete an older attempt, then retry this result.':
+    'Lịch sử đã đầy. Xóa một bài thi cũ rồi thử lưu kết quả này lại.',
+  'This result is too large to archive. It remains in this tab.':
+    'Kết quả này quá lớn để lưu vào lịch sử. Nội dung vẫn còn trong tab này.',
+  'History access was denied. Please retry later.':
+    'Quyền truy cập lịch sử bị từ chối. Vui lòng thử lại sau.',
+  'Could not reach exam history. Check your connection and retry.':
+    'Không kết nối được với lịch sử thi. Kiểm tra mạng rồi thử lại.',
+  'The history service rejected this result. It remains in this tab.':
+    'Dịch vụ lịch sử từ chối kết quả này. Nội dung vẫn còn trong tab.',
+  'This attempt already has a different archive. It was not overwritten.':
+    'Bài thi này đã có bản lưu khác. Bản lưu đó không bị ghi đè.',
+  'The saved quiz changed or was removed. This result remains in this tab.':
+    'Quiz đã lưu đã thay đổi hoặc bị xóa. Kết quả vẫn còn trong tab này.',
+  'This archive was deleted. This tab result will not recreate it.':
+    'Bản lưu đã bị xóa. Kết quả trong tab này sẽ không tạo lại bản lưu đó.',
+  'This exam archive is no longer available.': 'Bản lưu bài thi này không còn khả dụng.',
+  'Exam history is unavailable. Please retry later.':
+    'Lịch sử thi chưa khả dụng. Vui lòng thử lại sau.',
+  'The account changed. Open history from the current account.':
+    'Tài khoản đã thay đổi. Hãy mở lịch sử từ tài khoản hiện tại.',
+  'Please wait for the current history action.': 'Vui lòng chờ thao tác lịch sử hiện tại hoàn tất.',
+  'Sign in to archive future exams. This result stays in this tab.':
+    'Đăng nhập để lưu các bài thi tiếp theo. Kết quả này vẫn ở trong tab.',
+  'Unsaved quiz results stay in this tab. Save the quiz before starting a future exam to keep history.':
+    'Kết quả của quiz chưa lưu chỉ nằm trong tab này. Lưu quiz trước khi bắt đầu bài thi tiếp theo để giữ lịch sử.',
+  'This completed exam stays in this tab. New exams can be archived.':
+    'Bài thi đã hoàn thành này chỉ nằm trong tab. Các bài thi mới có thể được lưu vào lịch sử.',
+  'This result stays in its original account and tab.':
+    'Kết quả này được giữ trong tài khoản và tab ban đầu.',
+  'Saving exam to history…': 'Đang lưu bài thi vào lịch sử…',
+  'Exam saved to history.': 'Đã lưu bài thi vào lịch sử.',
+  'View saved result': 'Xem kết quả đã lưu',
+  'The current result remains available in this tab.':
+    'Kết quả hiện tại vẫn có thể xem trong tab này.',
+  'Manage history': 'Quản lý lịch sử',
+  'Checking the original quiz…': 'Đang kiểm tra quiz gốc…',
+  'The original quiz is still available.': 'Quiz gốc vẫn còn khả dụng.',
+  'The source quiz changed. This review shows the saved version.':
+    'Quiz gốc đã thay đổi. Phần xem lại này hiển thị phiên bản đã lưu.',
+  'The original quiz is no longer available. Your archived questions remain here.':
+    'Quiz gốc không còn khả dụng. Các câu hỏi đã lưu của bạn vẫn có ở đây.',
+  'The saved quiz slot has been reused. This archive belongs to the original quiz.':
+    'Vị trí lưu quiz đã được sử dụng lại. Bản lưu bài thi này vẫn thuộc quiz ban đầu.',
+  'The original source status could not be checked. Archived content is still available.':
+    'Chưa kiểm tra được trạng thái quiz gốc. Nội dung bài thi đã lưu vẫn có thể xem.',
+  'The original illustration is unavailable. Saved question text remains available.':
+    'Không tải được hình minh họa gốc. Nội dung câu hỏi đã lưu vẫn có thể xem.',
+  'Read-only saved exam. The recorded result is shown without regrading.':
+    'Bài thi đã lưu chỉ để xem. Kết quả được giữ theo lần chấm ban đầu.',
+  'Delete archive': 'Xóa bản lưu',
+  'Archived score': 'Điểm đã lưu',
+  Ended: 'Kết thúc',
+  Duration: 'Thời lượng',
+  'Duration unavailable': 'Không rõ thời lượng',
+  '{minutes} min {seconds} sec': '{minutes} phút {seconds} giây',
+  'Recorded scoring policy': 'Quy tắc chấm điểm đã lưu',
+  'Open current quiz': 'Mở quiz hiện tại',
+  'Archived question': 'Câu hỏi đã lưu',
+  'Your saved answer': 'Câu trả lời đã lưu của bạn',
+  'Correct answer in this snapshot': 'Đáp án đúng trong bản lưu này',
+  'Archived question navigation': 'Điều hướng câu hỏi đã lưu',
+  'Personal learning history, not an official exam credential.':
+    'Lịch sử học cá nhân, không phải kết quả chứng nhận chính thức.',
+  'Exam history is not available yet. Results remain in this tab.':
+    'Lịch sử thi chưa được mở. Kết quả vẫn nằm trong tab này.',
+  'Loading exam history…': 'Đang tải lịch sử thi…',
+  'Sign in to view exam history': 'Đăng nhập để xem lịch sử thi',
+  'Your saved exam results are private to your account.':
+    'Kết quả bài thi đã lưu chỉ thuộc tài khoản của bạn.',
+  'Loading saved result…': 'Đang tải kết quả đã lưu…',
+  '{count}/{limit} saved exams': '{count}/{limit} bài thi đã lưu',
+  'Statistics cover all retained attempts. Delete an archive to free space.':
+    'Thống kê gồm tất cả bài thi còn được giữ. Xóa bản lưu để giải phóng chỗ.',
+  'No saved exam results yet. Complete a future exam on a bank or a saved quiz to build your history.':
+    'Chưa có kết quả bài thi đã lưu. Hoàn thành bài thi mới từ thư viện hoặc quiz đã lưu để tạo lịch sử.',
+  'Retained history statistics': 'Thống kê lịch sử còn được giữ',
+  Attempts: 'Lượt thi',
+  Best: 'Cao nhất',
+  Latest: 'Gần nhất',
+  'Saved exams': 'Bài thi đã lưu',
+  'Review saved result': 'Xem lại kết quả',
+  Expired: 'Hết thời gian',
+  Submitted: 'Đã nộp',
+  'History pages': 'Các trang lịch sử',
+  'Page {page} of {total}': 'Trang {page} / {total}',
+  'Deleting an archive removes its questions and answers. A private deletion receipt remains to prevent stale retries from recreating it.':
+    'Xóa bản lưu sẽ xóa câu hỏi và câu trả lời của bài thi đó. Một dấu xác nhận xóa riêng tư được giữ lại để tab cũ không tạo lại bản lưu.',
+  'Back to history': 'Về lịch sử thi',
+  'Refresh history': 'Tải lại lịch sử',
+  'Archive deleted.': 'Đã xóa bản lưu.',
+  'Saved quiz version': 'Phiên bản quiz đã lưu',
+  'Delete this exam archive?': 'Xóa bản lưu bài thi này?',
+  'Questions and answers will be removed from history. The original quiz is kept. A minimal deletion receipt remains.':
+    'Câu hỏi và câu trả lời sẽ bị xóa khỏi lịch sử. Quiz gốc được giữ nguyên. Một dấu xác nhận xóa tối thiểu vẫn được lưu.',
+  'Saved quiz exams can be archived separately. Replacing or deleting a quiz does not delete its exam history.':
+    'Bài thi từ quiz đã lưu có thể được lưu lịch sử riêng. Thay JSON hoặc xóa quiz không xóa lịch sử thi của quiz đó.',
+  'Archived exam results are kept separately. Delete them from Exam history when needed.':
+    'Kết quả bài thi được giữ riêng. Hãy xóa chúng từ Lịch sử thi khi cần.',
 };
 
 export function translate(language, key, params = {}) {

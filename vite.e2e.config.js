@@ -8,9 +8,31 @@ export default defineConfig(({ command }) => {
   return mergeConfig(config, {
     define: { 'import.meta.env.VITE_APP_AI_URL': JSON.stringify('http://127.0.0.1:5176') },
     base: '/quiz-app/',
+    plugins: [
+      {
+        name: 'e2e-real-root',
+        transformIndexHtml: {
+          order: 'pre',
+          handler: (html) =>
+            html.replace('src="/src/main.jsx"', 'src="/tests/fixtures/historyEntry.jsx"'),
+        },
+      },
+    ],
     server: { warmup: { clientFiles: ['./src/main.jsx', './src/App.jsx'] } },
     resolve: {
       alias: [
+        {
+          find: /^(?:.*\/)?examHistoryService(?:\.js)?$/,
+          replacement: fileURLToPath(
+            new URL('./tests/fixtures/examHistoryService.js', import.meta.url)
+          ),
+        },
+        {
+          find: /^(?:.*\/)?examHistoryConfig(?:\.js)?$/,
+          replacement: fileURLToPath(
+            new URL('./tests/fixtures/examHistoryConfig.js', import.meta.url)
+          ),
+        },
         {
           find: /^(?:.*\/)appAiService(?:\.js)?$/,
           replacement: fileURLToPath(new URL('./tests/fixtures/appAiService.js', import.meta.url)),

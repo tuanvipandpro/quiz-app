@@ -1,0 +1,195 @@
+.exam-history-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  min-width: 0;
+}
+.exam-history-page > .ant-btn {
+  margin: 0 0 20px -12px;
+}
+.exam-history-page .ant-btn,
+.exam-archive-status .ant-btn {
+  min-height: 44px;
+}
+.history-page-heading,
+.history-review-heading,
+.history-attempt-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.history-page-heading h1.ant-typography {
+  margin-top: 0;
+}
+.history-page-heading {
+  margin-bottom: 20px;
+}
+.history-review-heading {
+  margin-bottom: 20px;
+}
+.history-page-heading > div,
+.history-attempt-heading > div,
+.history-review-heading > div {
+  min-width: 0;
+  flex: 1 1 200px;
+}
+.history-retention,
+.history-stat-values,
+.history-attempt-actions,
+.history-review-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.history-retention {
+  margin-bottom: 20px;
+}
+.history-full,
+.history-source-status,
+.exam-archive-status {
+  margin: 16px 0 24px;
+}
+.exam-archive-status[role='status'] {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.history-statistics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.history-statistics h2.ant-typography,
+.history-attempt h3.ant-typography {
+  margin-top: 0;
+  font-size: 18px;
+}
+.history-attempts ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+.history-attempt time {
+  color: var(--app-muted);
+}
+.history-attempt-heading {
+  margin-bottom: 12px;
+}
+.history-attempt-heading .ant-tag {
+  margin: 0;
+  white-space: normal;
+}
+.history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-block: 24px;
+}
+.history-receipt-note {
+  margin-top: 24px;
+}
+.history-score .ant-card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.history-score .ant-card-body::before,
+.history-score .ant-card-body::after {
+  display: none;
+}
+.history-score h3.ant-typography {
+  margin: 8px 0 12px;
+}
+.history-score dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.history-score dt {
+  color: var(--app-muted);
+}
+.history-score dd {
+  margin: 0;
+}
+.archive-question-picker {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0 16px;
+  max-width: 320px;
+}
+.archive-question-picker .ant-select,
+.archive-question-picker .ant-select-selector {
+  min-height: 44px;
+}
+.history-question-outcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.archived-exam-review .quiz-question-card {
+  margin-bottom: 20px;
+}
+.archive-answer-context h3.ant-typography {
+  font-size: 18px;
+  margin-top: 0;
+}
+.archive-answer-context h3:not(:first-child) {
+  margin-top: 20px;
+}
+.history-review-footer {
+  margin-top: 24px;
+}
+.history-delete-success {
+  margin-bottom: 20px;
+}
+.exam-history-page .ant-tag-success {
+  color: var(--app-success-text);
+  background: var(--app-success-bg);
+  border-color: var(--app-success-border);
+}
+.exam-history-page .ant-tag-error,
+.exam-history-page .ant-btn-dangerous:not(:disabled) {
+  color: var(--app-danger-text);
+}
+.exam-history-page .ant-tag-error {
+  background: var(--app-danger-bg);
+  border-color: var(--app-danger-border);
+}
+.exam-history-page .ant-btn-dangerous:not(:disabled):hover {
+  color: var(--app-danger-text);
+  background: var(--app-danger-bg);
+  border-color: var(--app-danger-border);
+}
+.archived-exam-review > .question-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 16px;
+}
+@media (max-width: 700px) {
+  .history-statistics,
+  .history-score .ant-card-body {
+    grid-template-columns: 1fr;
+  }
+  .exam-history-page .ant-card-body {
+    padding: 20px;
+  }
+  .history-score dl {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .history-score dd:not(:last-child) {
+    margin-bottom: 8px;
+  }
+}

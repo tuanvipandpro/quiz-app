@@ -1,9 +1,10 @@
 import React, { useId, useRef, useState } from 'react';
 import { Avatar, Button, Dropdown } from 'antd';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { HistoryOutlined, LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { EXAM_HISTORY_ENABLED } from '../config/examHistoryConfig';
 
-export default function AccountMenu({ user, onSettings, onSignOut }) {
+export default function AccountMenu({ user, onSettings, onSignOut, onNavigate }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);
@@ -39,6 +40,16 @@ export default function AccountMenu({ user, onSettings, onSignOut }) {
             onClick: (event) => activate(event, onSettings),
           },
           { type: 'divider' },
+          ...(EXAM_HISTORY_ENABLED
+            ? [
+                {
+                  key: 'history',
+                  label: t('Exam history'),
+                  icon: <HistoryOutlined aria-hidden="true" />,
+                  onClick: (event) => activate(event, () => onNavigate('#/history')),
+                },
+              ]
+            : []),
           {
             key: 'logout',
             label: t('Sign out'),

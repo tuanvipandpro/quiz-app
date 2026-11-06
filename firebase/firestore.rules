@@ -6,6 +6,108 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
 
+      function historyOwner() { return request.auth != null && request.auth.uid == userId; }
+      function historyId(id) { return id is string && id.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'); }
+      function historyHash(value) { return value is string && value.matches('[0-9a-f]{64}'); }
+      function historySummaryPath(id) { return /databases/$(database)/documents/users/$(userId)/examAttempts/$(id); }
+      function historySnapshotPath(id) { return /databases/$(database)/documents/users/$(userId)/examAttemptSnapshots/$(id); }
+      function historyReceiptPath(id) { return /databases/$(database)/documents/users/$(userId)/examAttemptReceipts/$(id); }
+      function historyQuotaPath() { return /databases/$(database)/documents/users/$(userId)/examHistoryState/quota; }
+      function historySource(source) {
+        return source is map
+          && source.keys().hasAll(['kind','id','title','fingerprint','slotId','instanceId','contentVersion'])
+          && source.keys().hasOnly(['kind','id','title','fingerprint','slotId','instanceId','contentVersion'])
+          && source.title is string && source.title.size() > 0 && source.title.size() <= 240
+          && historyHash(source.fingerprint)
+          && ((source.kind == 'bank' && source.id is string && source.id.matches('[a-z0-9-]{1,120}')
+              && source.slotId == null && source.instanceId == null && source.contentVersion == null)
+            || (source.kind == 'custom' && historyId(source.id) && source.id == source.instanceId
+              && source.slotId in ['slot-1','slot-2','slot-3'] && source.contentVersion is int && source.contentVersion > 0
+              && get(/databases/$(database)/documents/users/$(userId)/customQuizzes/$(source.slotId)).data.instanceId == source.instanceId
+              && get(/databases/$(database)/documents/users/$(userId)/customQuizzes/$(source.slotId)).data.contentVersion == source.contentVersion));
+      }
+      function historySummary(d,id) {
+        return d.keys().hasAll(['schemaVersion','attemptId','source','startedAt','endedAt','elapsedMs','feedbackMode','gradingVersion','endReason','questionCount','correct','incorrect','unanswered','passed','payloadHash','createdAt'])
+          && d.keys().hasOnly(['schemaVersion','attemptId','source','startedAt','endedAt','elapsedMs','feedbackMode','gradingVersion','endReason','questionCount','correct','incorrect','unanswered','passed','payloadHash','createdAt'])
+          && d.schemaVersion == 1 && d.attemptId == id && historySource(d.source)
+          && d.endedAt is int && d.endedAt >= 0
+          && ((d.startedAt == null && d.elapsedMs == null) || (d.startedAt is int && d.startedAt >= 0 && d.startedAt <= d.endedAt && d.elapsedMs == d.endedAt-d.startedAt))
+          && d.feedbackMode in ['standard','learning'] && d.gradingVersion == 'quizmos-score-v1'
+          && d.endReason in ['submitted','expired']
+          && d.questionCount is int && d.questionCount >= 1 && d.questionCount <= 100
+          && d.correct is int && d.correct >= 0 && d.incorrect is int && d.incorrect >= 0 && d.unanswered is int && d.unanswered >= 0
+          && d.correct+d.incorrect+d.unanswered == d.questionCount
+          && d.passed is bool && d.passed == (d.correct*100 > d.questionCount*80)
+          && historyHash(d.payloadHash) && d.createdAt == request.time;
+      }
+      function historySnapshot(d,id) {
+        return d.keys().hasAll(['schemaVersion','attemptId','payloadHash','payload','createdAt'])
+          && d.keys().hasOnly(['schemaVersion','attemptId','payloadHash','payload','createdAt'])
+          && d.schemaVersion == 1 && d.attemptId == id && historyHash(d.payloadHash)
+          && d.payload is string && d.payload.toUtf8().size() > 0 && d.payload.toUtf8().size() <= 763904
+          && d.createdAt == request.time;
+      }
+      function historyQuotaTransition(id,operation) {
+        let oldCount = exists(historyQuotaPath()) ? get(historyQuotaPath()).data.count : 0;
+        let oldRevision = exists(historyQuotaPath()) ? get(historyQuotaPath()).data.revision : 0;
+        let next = getAfter(historyQuotaPath()).data;
+        return next.keys().hasAll(['count','revision','attemptId','operation','updatedAt'])
+          && next.keys().hasOnly(['count','revision','attemptId','operation','updatedAt'])
+          && next.count is int && next.count >= 0 && next.count <= 50
+          && next.revision is int && next.revision == oldRevision+1
+          && next.attemptId == id && next.operation == operation && next.updatedAt == request.time
+          && next.count == oldCount+(operation == 'create' ? 1 : -1);
+      }
+      function historyCreate(id) {
+        let summary = getAfter(historySummaryPath(id)).data;
+        let snapshot = getAfter(historySnapshotPath(id)).data;
+        let receipt = getAfter(historyReceiptPath(id)).data;
+        return historyId(id) && !exists(historyReceiptPath(id)) && historyQuotaTransition(id,'create')
+          && summary.attemptId == id && snapshot.attemptId == id
+          && summary.payloadHash == snapshot.payloadHash && summary.payloadHash == receipt.payloadHash
+          && receipt.state == 'saved' && summary.createdAt == request.time && snapshot.createdAt == request.time
+          && receipt.createdAt == request.time && receipt.updatedAt == request.time;
+      }
+      function historyDelete(id) {
+        let previous = get(historyReceiptPath(id)).data;
+        let receipt = getAfter(historyReceiptPath(id)).data;
+        return historyId(id) && historyQuotaTransition(id,'delete')
+          && previous.state == 'saved' && get(historySummaryPath(id)).data.payloadHash == previous.payloadHash
+          && !existsAfter(historySummaryPath(id)) && !existsAfter(historySnapshotPath(id))
+          && receipt.keys().hasAll(['state','createdAt','deletedAt']) && receipt.keys().hasOnly(['state','createdAt','deletedAt'])
+          && receipt.state == 'deleted' && receipt.createdAt == previous.createdAt && receipt.deletedAt == request.time;
+      }
+      match /examAttempts/{attemptId} {
+        allow get: if historyOwner();
+        allow list: if historyOwner() && request.query.limit > 0 && request.query.limit <= 20;
+        allow create: if historyOwner() && historySummary(request.resource.data,attemptId) && historyCreate(attemptId);
+        allow update: if false;
+        allow delete: if historyOwner() && historyDelete(attemptId);
+      }
+      match /examAttemptSnapshots/{attemptId} {
+        allow get: if historyOwner();
+        allow list: if false;
+        allow create: if historyOwner() && historySnapshot(request.resource.data,attemptId) && historyCreate(attemptId);
+        allow update: if false;
+        allow delete: if historyOwner() && historyDelete(attemptId);
+      }
+      match /examAttemptReceipts/{attemptId} {
+        allow get: if historyOwner();
+        allow list, delete: if false;
+        allow create: if historyOwner()
+          && request.resource.data.keys().hasAll(['state','payloadHash','createdAt','updatedAt'])
+          && request.resource.data.keys().hasOnly(['state','payloadHash','createdAt','updatedAt'])
+          && historyCreate(attemptId);
+        allow update: if historyOwner() && historyDelete(attemptId);
+      }
+      match /examHistoryState/{stateId} {
+        allow get: if historyOwner() && stateId == 'quota';
+        allow list, delete: if false;
+        allow create, update: if historyOwner() && stateId == 'quota'
+          && ((request.resource.data.operation == 'create' && historyCreate(request.resource.data.attemptId))
+            || (request.resource.data.operation == 'delete' && historyDelete(request.resource.data.attemptId)));
+      }
+
       match /customQuizzes/{slotId} {
         function owner() {
           return request.auth != null && request.auth.uid == userId;

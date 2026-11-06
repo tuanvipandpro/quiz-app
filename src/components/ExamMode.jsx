@@ -11,7 +11,16 @@ import { useExplanation } from '../hooks/useExplanation';
 import { useStudySession } from '../hooks/useStudySession';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../contexts/LanguageContext';
-import { createExamSession, examStats, finishExam, sessionKey } from '../utils/studySession';
+import {
+  createExamSession,
+  examStats,
+  finishExam,
+  sessionKey,
+  answerExamQuestion,
+} from '../utils/studySession';
+import { EXAM_HISTORY_ENABLED } from '../config/examHistoryConfig';
+import { useExamArchive } from '../hooks/useExamArchive';
+import ExamArchiveStatus from './ExamArchiveStatus';
 import { isAnswerComplete, isAnswerCorrect } from '../utils/questionModel';
 import { scrollToTop } from '../utils/scroll';
 import { getExamFeedbackMode } from '../data/examModes';
@@ -29,6 +38,9 @@ export default function ExamMode({
   examQuestionCount = 50,
   feedbackMode,
   fresh,
+  historySource,
+  onHistory,
+  onSignIn,
 }) {
   const { user } = useAuth();
   const { t } = useLanguage();
@@ -37,9 +49,21 @@ export default function ExamMode({
     sessionKey(user?.uid, quizId, 'exam'),
     questions,
     'exam',
-    () => createExamSession(questions, examQuestionCount, examTimeMinutes, { feedbackMode }),
-    { fresh }
+    () =>
+      createExamSession(questions, examQuestionCount, examTimeMinutes, {
+        feedbackMode,
+        historyOwner: user?.uid || null,
+        captureHistory: EXAM_HISTORY_ENABLED && !!historySource,
+        historySource,
+      }),
+    {
+      fresh,
+      historyOwner: user?.uid || null,
+      captureHistory: EXAM_HISTORY_ENABLED && !!historySource,
+      historySource,
+    }
   );
+  const archive = useExamArchive(session, user?.uid, questions);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [filter, setFilter] = useState('all');
   const stats = useMemo(() => examStats(session), [session]);
@@ -95,19 +119,7 @@ export default function ExamMode({
     if (first >= 0) setSession((previous) => ({ ...previous, index: first }));
   };
   const position = indexes.indexOf(session.index);
-  const answer = (value) =>
-    setSession((previous) =>
-      previous.submitted
-        ? previous
-        : Date.now() >= previous.deadline
-          ? { ...previous, submitted: true, timeExpired: true }
-          : {
-              ...previous,
-              answers: previous.answers.map((item, index) =>
-                index === previous.index ? value : item
-              ),
-            }
-    );
+  const answer = (value) => setSession((previous) => answerExamQuestion(previous, value));
   const toggleFlag = () =>
     setSession((previous) => ({
       ...previous,
@@ -133,6 +145,7 @@ export default function ExamMode({
       {session.submitted && (
         <>
           {session.timeExpired && <Alert type="info" showIcon message={t('Time is up')} />}
+          <ExamArchiveStatus state={archive} onHistory={onHistory} onSignIn={onSignIn} />
           <section className="exam-score">
             <div>
               <Text type="secondary">{t('Score')}</Text>
