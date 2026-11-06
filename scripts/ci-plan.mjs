@@ -4,6 +4,24 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const SHA = /^[a-f0-9]{40}$/;
+export function isValidationBranch(branch) {
+  if (['main', 'master', 'develop'].includes(branch)) return true;
+  const match = /^work\/release-m[1-9]\d*-(\d{4})(\d{2})(\d{2})$/.exec(branch || '');
+  if (!match) return false;
+  const date = `${match[1]}-${match[2]}-${match[3]}`;
+  const parsed = new Date(`${date}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === date;
+}
+
+export function validationBranch(eventName, event) {
+  const branch =
+    eventName === 'pull_request'
+      ? event?.pull_request?.base?.ref
+      : eventName === 'push' && event?.ref?.startsWith('refs/heads/')
+        ? event.ref.slice('refs/heads/'.length)
+        : undefined;
+  return isValidationBranch(branch) ? branch : undefined;
+}
 const imageAssets = new Set([
   'public/quizmos.svg',
   'public/providers/anthropic.png',
@@ -141,12 +159,21 @@ export function classifyReleases(changes) {
   return { frontend, backend };
 }
 
-export function createReleasePlan({ eventName, event, head, cwd }) {
+export function createReleasePlan({ eventName, event, head, cwd, productionBranch = 'master' }) {
   const none = { releaseFrontend: false, releaseBackend: false };
   if (eventName === 'pull_request') return { ...none, releaseValid: true };
   try {
-    if (eventName !== 'push' || event?.ref !== 'refs/heads/master' || event.after !== head)
-      throw new Error('Not a verified master push.');
+    const branch = validationBranch(eventName, event);
+    if (
+      eventName !== 'push' ||
+      !branch ||
+      !SHA.test(head || '') ||
+      event.after !== head ||
+      !['main', 'master'].includes(productionBranch)
+    )
+      throw new Error('Not a verified validation-branch push.');
+    // Integration branches are validated without publishing production artifacts.
+    if (branch !== productionBranch) return { ...none, releaseValid: true };
     const releases = classifyReleases(changesBetween(event.before, head, cwd));
     return {
       releaseFrontend: releases.frontend,
@@ -158,16 +185,17 @@ export function createReleasePlan({ eventName, event, head, cwd }) {
     return {
       ...none,
       releaseValid: false,
-      releaseReason: 'Cannot verify the master push diff; release gate blocked.',
+      releaseReason: 'Cannot verify the production push/configuration; release gate blocked.',
     };
   }
 }
 
-export function selectValidatedBase(data, repository) {
+export function selectValidatedBase(data, repository, branch = 'master') {
   const run = data?.workflow_runs?.[0];
   if (
+    !isValidationBranch(branch) ||
     run?.event !== 'push' ||
-    run.head_branch !== 'master' ||
+    run.head_branch !== branch ||
     run.status !== 'completed' ||
     run.conclusion !== 'success' ||
     run.path !== '.github/workflows/test.yml' ||
@@ -179,11 +207,16 @@ export function selectValidatedBase(data, repository) {
   return run.head_sha;
 }
 
-export async function lookupValidatedBase({ repository, token, fetchImpl = fetch }) {
-  if (!/^[\w.-]+\/[\w.-]+$/.test(repository || '')) return undefined;
+export async function lookupValidatedBase({
+  repository,
+  token,
+  branch = 'master',
+  fetchImpl = fetch,
+}) {
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repository || '') || !isValidationBranch(branch)) return undefined;
   try {
     const response = await fetchImpl(
-      `https://api.github.com/repos/${repository}/actions/workflows/test.yml/runs?branch=master&event=push&status=success&per_page=1`,
+      `https://api.github.com/repos/${repository}/actions/workflows/test.yml/runs?branch=${encodeURIComponent(branch)}&event=push&status=success&per_page=1`,
       {
         headers: {
           Accept: 'application/vnd.github+json',
@@ -193,7 +226,7 @@ export async function lookupValidatedBase({ repository, token, fetchImpl = fetch
         signal: AbortSignal.timeout(15000),
       }
     );
-    return response.ok ? selectValidatedBase(await response.json(), repository) : undefined;
+    return response.ok ? selectValidatedBase(await response.json(), repository, branch) : undefined;
   } catch {
     return undefined;
   }
@@ -216,26 +249,36 @@ export function createPlan({ eventName, validatedBase, head, cwd }) {
       frontend: true,
       backend: true,
       head,
-      reason: 'No trusted successful master ancestor available; full validation required.',
+      reason: 'No trusted successful target-branch ancestor available; full validation required.',
     };
   }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-  const validatedBase = await lookupValidatedBase({
-    repository: process.env.GITHUB_REPOSITORY,
-    token: process.env.GH_TOKEN,
-  });
   let event;
   try {
     event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
   } catch {
     /* Gate blocks unverifiable push evidence. */
   }
+  const branch = validationBranch(process.env.GITHUB_EVENT_NAME, event);
+  const validatedBase = branch
+    ? await lookupValidatedBase({
+        repository: process.env.GITHUB_REPOSITORY,
+        token: process.env.GH_TOKEN,
+        branch,
+      })
+    : undefined;
   const plan = {
     ...createPlan({ eventName: process.env.GITHUB_EVENT_NAME, validatedBase, head }),
-    ...createReleasePlan({ eventName: process.env.GITHUB_EVENT_NAME, event, head }),
+    ...createReleasePlan({
+      eventName: process.env.GITHUB_EVENT_NAME,
+      event,
+      head,
+      productionBranch: event?.repository?.default_branch || null,
+    }),
+    branch: branch || null,
   };
   const shards = plan.profile === 'full' ? [1, 2] : [1];
   if (process.env.GITHUB_OUTPUT)
@@ -246,7 +289,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   if (process.env.GITHUB_STEP_SUMMARY)
     fs.appendFileSync(
       process.env.GITHUB_STEP_SUMMARY,
-      `CI profile: **${plan.profile}**, frontend: **${plan.frontend}**, backend: **${plan.backend}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files since successful master ${plan.baseline}.`}\n\nRelease: frontend **${plan.releaseFrontend}**, backend **${plan.releaseBackend}**, valid **${plan.releaseValid}**. ${plan.releaseReason || (plan.releaseBaseline ? `Push baseline: ${plan.releaseBaseline}.` : 'PR does not release.')}\n`
+      `CI profile: **${plan.profile}**, frontend: **${plan.frontend}**, backend: **${plan.backend}**. Head: \`${head}\`.\n\n${plan.reason || `${plan.changedFiles} changed files since successful ${plan.branch} ${plan.baseline}.`}\n\nRelease: frontend **${plan.releaseFrontend}**, backend **${plan.releaseBackend}**, valid **${plan.releaseValid}**. ${plan.releaseReason || (plan.releaseBaseline ? `Production push baseline: ${plan.releaseBaseline}.` : 'No production release.')}\n`
     );
   console.log(JSON.stringify({ ...plan, shards }));
 }
