@@ -16,6 +16,8 @@ What problem does this solve, and what does the user see now?
 
 ## Scope
 
+- Source → target follows the [Git process](https://github.com/tuanvipandpro/quiz-app/blob/develop/docs/git-process.md): production PRs must come only from this repository's `develop`; issue PRs target their milestone release.
+
 - Completed acceptance criteria:
 - Partial/deferred work:
 

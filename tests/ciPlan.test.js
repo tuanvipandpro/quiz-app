@@ -11,6 +11,8 @@ import {
   selectValidatedBase,
   lookupValidatedBase,
   createReleasePlan,
+  isValidationBranch,
+  validationBranch,
 } from '../scripts/ci-plan.mjs';
 import { checkGate } from '../scripts/ci-gate.mjs';
 import { checkAgentBudget, checkLinks, headingIds } from '../scripts/check-docs.mjs';
@@ -184,6 +186,21 @@ test('release uses the complete current push, while CI can include older unvalid
   assert.equal(fallback.backend, true);
   assert.equal(release(push(base)).releaseFrontend, false);
   assert.equal(release(push(base)).releaseBackend, true);
+  assert.equal(
+    createReleasePlan({
+      eventName: 'push',
+      event: { ...push(base), ref: 'refs/heads/main' },
+      head,
+      cwd,
+      productionBranch: 'main',
+    }).releaseBackend,
+    true
+  );
+  assert.equal(
+    createReleasePlan({ eventName: 'push', event: push(base), head, cwd, productionBranch: 'main' })
+      .releaseBackend,
+    false
+  );
   assert.deepEqual(release(undefined, 'pull_request'), {
     releaseFrontend: false,
     releaseBackend: false,
@@ -206,6 +223,76 @@ test('release uses the complete current push, while CI can include older unvalid
 });
 
 const repository = 'tuanvipandpro/quiz-app';
+
+test('milestone branches require a positive milestone and a real yyyyMMdd date', () => {
+  for (const branch of [
+    'main',
+    'master',
+    'develop',
+    'work/release-m1-20261106',
+    'work/release-m12-20280229',
+  ])
+    assert.equal(isValidationBranch(branch), true, branch);
+  for (const branch of [
+    undefined,
+    'feature',
+    'work/release-m0-20261106',
+    'work/release-m1-20260229',
+    'work/release-m1-20261301',
+    'work/release-m1-2026116',
+    'work/release-m1-20261106/extra',
+  ])
+    assert.equal(isValidationBranch(branch), false, String(branch));
+  assert.equal(
+    validationBranch('pull_request', {
+      pull_request: { base: { ref: 'develop' }, head: { ref: 'untrusted' } },
+    }),
+    'develop'
+  );
+  assert.equal(
+    validationBranch('push', { ref: 'refs/heads/work/release-m1-20261106' }),
+    'work/release-m1-20261106'
+  );
+  assert.equal(validationBranch('push', { ref: 'refs/tags/develop' }), undefined);
+  assert.equal(validationBranch('workflow_dispatch', { ref: 'refs/heads/master' }), undefined);
+});
+
+test('integration pushes validate without publishing and invalid production configuration fails closed', () => {
+  const head = 'b'.repeat(40);
+  for (const branch of ['develop', 'work/release-m1-20261106', 'main']) {
+    assert.deepEqual(
+      createReleasePlan({
+        eventName: 'push',
+        event: { ref: 'refs/heads/' + branch, after: head },
+        head,
+        productionBranch: 'master',
+      }),
+      {
+        releaseFrontend: false,
+        releaseBackend: false,
+        releaseValid: true,
+      }
+    );
+  }
+  for (const productionBranch of [null, 'develop', 'work/release-m1-20261106'])
+    assert.equal(
+      createReleasePlan({
+        eventName: 'push',
+        event: { ref: 'refs/heads/develop', after: head },
+        head,
+        productionBranch,
+      }).releaseValid,
+      false
+    );
+  assert.equal(
+    createReleasePlan({
+      eventName: 'push',
+      event: { ref: 'refs/heads/develop', after: 'c'.repeat(40) },
+      head,
+    }).releaseValid,
+    false
+  );
+});
 const successfulMaster = {
   event: 'push',
   head_branch: 'master',
@@ -267,6 +354,69 @@ test('baseline lookup uses read-only workflow history and falls back on API/netw
     }),
   ])
     assert.equal(await lookupValidatedBase({ repository, fetchImpl }), undefined);
+});
+
+test('baseline lookup isolates target branch/repository and encodes milestone refs', async () => {
+  for (const branch of ['main', 'develop', 'work/release-m1-20261106']) {
+    const run = { ...successfulMaster, head_branch: branch };
+    assert.equal(
+      selectValidatedBase({ workflow_runs: [successfulMaster] }, repository, branch),
+      undefined
+    );
+    assert.equal(selectValidatedBase({ workflow_runs: [run] }, repository, branch), run.head_sha);
+    assert.equal(
+      selectValidatedBase(
+        { workflow_runs: [{ ...run, head_repository: { full_name: 'fork/repo' } }] },
+        repository,
+        branch
+      ),
+      undefined
+    );
+    let url;
+    assert.equal(
+      await lookupValidatedBase({
+        repository,
+        branch,
+        fetchImpl: async (requested) => {
+          url = requested;
+          return { ok: true, json: async () => ({ workflow_runs: [run] }) };
+        },
+      }),
+      run.head_sha
+    );
+    assert.equal(new URL(url).searchParams.get('branch'), branch);
+    assert(url.includes('branch=' + encodeURIComponent(branch)));
+  }
+  assert.equal(
+    await lookupValidatedBase({
+      repository,
+      branch: 'develop&event=pull_request',
+      fetchImpl: () => {
+        throw new Error('Must not request an invalid branch');
+      },
+    }),
+    undefined
+  );
+});
+
+test('reviewable protection requires PRs/current GitHub Actions checks for admins with no bypass', () => {
+  const policy = JSON.parse(
+    fs.readFileSync(new URL('../.github/branch-protection.json', import.meta.url))
+  );
+  assert.equal(policy.enforce_admins, true);
+  assert.equal(policy.required_status_checks.strict, true);
+  assert.equal(Object.hasOwn(policy.required_status_checks, 'contexts'), false);
+  assert.deepEqual(policy.required_status_checks.checks, [
+    { context: 'test-and-build', app_id: 15368 },
+  ]);
+  assert.equal(policy.required_pull_request_reviews.required_approving_review_count, 0);
+  // Personal repositories reject organization-only bypass/user/team settings.
+  assert.equal(
+    Object.hasOwn(policy.required_pull_request_reviews, 'bypass_pull_request_allowances'),
+    false
+  );
+  assert.equal(policy.allow_force_pushes, false);
+  assert.equal(policy.allow_deletions, false);
 });
 
 for (const kind of ['docs', 'assets']) {

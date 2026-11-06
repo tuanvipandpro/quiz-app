@@ -1,0 +1,26 @@
+name: Git process policy
+
+on:
+  pull_request:
+    branches: [main, master, develop, 'work/release-m*-*']
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: git-process-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-source-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/git-process.mjs check
