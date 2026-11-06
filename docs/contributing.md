@@ -36,22 +36,7 @@ Choose a primary type and note secondary types when useful. Record risk as low, 
 
 ### Branch and milestone flow
 
-Tracking: [#97](https://github.com/tuanvipandpro/quiz-app/issues/97). The current production/default branch is `master`; `main` is the same role if the owner explicitly renames it. CI supports both names and publishes only from the repository's main/master default branch. Creating `develop` does not change the default branch.
-
-```mermaid
-flowchart LR
-  I["codex/issue branch"] --> R["work/release-mN-yyyyMMdd"]
-  R --> D["develop"]
-  D --> P["master / main: production"]
-```
-
-- Start each milestone release from the current `develop`. Use a positive milestone number and an eight-digit calendar date in Asia/Saigon, for example `work/release-m1-20261106`. M2/M3 receive separate dated release branches; never reset an earlier milestone branch containing work.
-- Create each issue branch from its milestone release and target its issue PR at that release. Keep one cohesive issue per PR and retain draft/dependency/acceptance status when moving an existing PR. M1 delivery PRs #89–#95 and coordination #88 target `work/release-m1-20261106`.
-- Promote an accepted milestone with a PR from its release into `develop`, then a PR from `develop` into the production/default branch. Use merge commits for these promotions to retain ancestry for the next milestone; do not squash the entire shared development history. Required checks and an owner merge request apply at each step. Changing the flow does not authorize merging the pending feature PRs or publishing Firebase policy/AI resources.
-- Production and `develop` require a PR and current-base `test-and-build` from GitHub Actions, including administrators. Force pushes, branch deletion and PR bypass allowances are disabled. The reviewable API payload is [branch-protection.json](../.github/branch-protection.json). It requires zero independent approvals because a sole maintainer cannot approve their own PR; PR/CI requirements still apply. Extra reviewer requirements can be added when there is an independent reviewer.
-- Milestone branches remain writable for issue-branch integration; agent merges still require an owner request and successful latest-head CI. No source branch's earlier green check proves the new integration base. Update a moved PR against the release before its final checks, and preserve its issue-only diff when reconciling dependencies.
-
-The #97 setup PR bootstraps these CI triggers on the M1 release branch. Until that checked PR is merged there, existing feature heads/base still contain the previous master-only workflow; retargeting alone does not provide current-base CI. After bootstrap, update the feature heads against the release and verify their actual checks. #92 remains dependent on #89 landing on the release; its History client remains disabled through its separate policy/rollout gate. Promote the setup/feature changes through protected `develop`/production with PRs, never a direct push.
+Follow the canonical [Git process](git-process.md) for branch roles, milestone naming, PR targets, protected-branch requirements and the governance-bootstrap sequence. Production PRs come only from this repository's `develop`; GitHub's required `pr-source-policy` gate rejects other sources, including forks named `develop`. Issue PRs target their dated milestone release. Dedicated Git/CI maintenance PRs target `develop`; accepted maintenance baselines enter an existing release through a separate baseline-sync PR. Production promotion, owner-requested merges and issue closure remain separate acceptance steps.
 
 ### CI profiles
 
