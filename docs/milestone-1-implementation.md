@@ -1,57 +1,61 @@
 # M1 delivery coordination
 
-Tracking: [#87](https://github.com/tuanvipandpro/quiz-app/issues/87), [Milestone 1](https://github.com/tuanvipandpro/quiz-app/milestone/1). Implementation status reconciled 2026-11-06; inspected master baseline `648d9e1`.
+Tracking: [#87](https://github.com/tuanvipandpro/quiz-app/issues/87), [Milestone 1](https://github.com/tuanvipandpro/quiz-app/milestone/1). Branch-flow migration: [#97](https://github.com/tuanvipandpro/quiz-app/issues/97), [setup MR #98](https://github.com/tuanvipandpro/quiz-app/pull/98). Status reconciled 2026-11-06 (Asia/Saigon).
 
-This MR owns only sequencing and acceptance coordination. Each of the seven delivery issues continues in its original issue MR, including its code/content, specs, tests and maintained evidence. No delivery payload is bundled into this coordination diff. M1 is not complete while integration, output-quality or production acceptance remains open.
+Each of the seven delivery issues keeps its original issue MR, code/content, specs and evidence. This MR owns only M1 coordination. All seven delivery MRs and coordination #88 now target `work/release-m1-20261106`, created from `develop` at the production baseline `648d9e1`. Production is currently named `master`; no rename or feature merge is implied by retargeting.
 
-## Confirmed scope
+## Confirmed product scope
 
-- Profile: read-only Google account information plus the existing QuizMos language/theme settings; identity/avatar editing is outside the MVP.
-- History: Exam first; Practice retains current drafts/checkpoints. #80 implements 50 retained private attempts, 20-row metadata queries and immutable scored snapshots. Independent saved-quiz archive retention and minimal anti-replay receipts are disclosed.
-- App AI activation already shipped. Wider v6 output quality remains in M1. The CPU-boundary benchmark is explicitly owner-deferred and is neither a passing claim nor a reinstated M1 gate.
+- Profile: read-only Google information plus existing QuizMos language/theme settings; identity/avatar editing is outside the MVP.
+- History: Exam first; Practice keeps current drafts/checkpoints. #80 implements 50 retained private attempts, 20-row metadata queries, immutable scored snapshots, independent archive retention and minimal disclosed anti-replay receipts.
+- App AI activation already shipped. Wider v6 quality remains in M1; the CPU-boundary benchmark is owner-deferred, not passed or reinstated as a gate.
 - Storage migration #52 and Practice event/revision queues remain outside M1.
 
-## Seven issue MRs
-
-| Issue                                                      | MR                                                       | Implemented/prepared result                                                                                                                                                                 | Remaining acceptance                                                                                                                   |
-| ---------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [#74](https://github.com/tuanvipandpro/quiz-app/issues/74) | [#89](https://github.com/tuanvipandpro/quiz-app/pull/89) | Stale dock measurements ignored after unmount/replacement; local regression and required CI passed.                                                                                         | Owner-requested merge, master CI/deploy and public dock smoke.                                                                         |
-| [#77](https://github.com/tuanvipandpro/quiz-app/issues/77) | [#90](https://github.com/tuanvipandpro/quiz-app/pull/90) | Included references open without key/profile/quota/inference IO; AI generation is explicit. Local acceptance and required CI passed.                                                        | Integrate after #89; owner-requested merge/deploy and reference-only public smoke.                                                     |
-| [#75](https://github.com/tuanvipandpro/quiz-app/issues/75) | [#91](https://github.com/tuanvipandpro/quiz-app/pull/91) | Profile, Manage quizzes, reviewed Quiz updates and native-hash Cancel correction; local acceptance and required CI passed.                                                                  | Integrate after #90; owner-requested merge/deploy and account/public smoke.                                                            |
-| [#80](https://github.com/tuanvipandpro/quiz-app/issues/80) | [#92](https://github.com/tuanvipandpro/quiz-app/pull/92) | Exam archive/dashboard/review/delete and atomic Rules implemented; 220 Node, 27 real SDK/Rules and 32 History UI checks passed. Client defaults off.                                        | Draft stacked on #89; master integration/latest-head CI, compatible policy/index publication and designated-account persistence smoke. |
-| [#78](https://github.com/tuanvipandpro/quiz-app/issues/78) | [#93](https://github.com/tuanvipandpro/quiz-app/pull/93) | Four guides substantively reviewed, all 554 current IDs mapped; bank files/answers unchanged. Local acceptance and latest-head CI passed on 47390ce.                                        | Owner-requested merge/deploy and published guide/link smoke. #96 is separate bank-content follow-up.                                   |
-| [#79](https://github.com/tuanvipandpro/quiz-app/issues/79) | [#94](https://github.com/tuanvipandpro/quiz-app/pull/94) | Published Console policy/index provenance reconciled; complete candidate and real SDK tests prepared; required CI passed.                                                                   | Explicit policy-publication permission, fresh full-config drift check and designated-account bounded custom-quiz smoke.                |
-| [#53](https://github.com/tuanvipandpro/quiz-app/issues/53) | [#95](https://github.com/tuanvipandpro/quiz-app/pull/95) | Historical v6 single-answer output reviewed; eight public missing-case samples and bounded protocol prepared. 193 Node/18 local Worker tests, dry-run and latest-head CI passed on 0da1e21. | Draft: current account/budget authorization and actual output-quality findings; CPU benchmark stays deferred.                          |
-
-The full History integration run had 200 passes, 24 local loading timeouts and two intentional skips; all 24 failed cases passed in a focused serial rerun with unchanged source/assertions/timeouts. The original run is not reported as green. Each issue MR records its own precise evidence, retained diagnostics and limitations; these are not combined-suite or production-acceptance claims.
-
-## Integration and release order
+## Milestone integration flow
 
 ```mermaid
 flowchart LR
-  A["#89 / #74 Dock"] --> B["#90 / #77 References"]
-  B --> C["#91 / #75 Profile + updates"]
-  C --> D["#92 / #80 History"]
-  R["#94 / #79 Reconciled policy"] -->|before cloud-history enablement| D
-  D --> M["M1 accepted"]
-  G["#93 / #78 Guides"] --> M
-  Q["#95 / #53 Actual AI quality"] --> M
+  I["Issue MRs #89–#95"] --> R["work/release-m1-20261106"]
+  C["Coordination #88"] --> R
+  B["CI bootstrap #98"] --> R
+  R --> D["develop: protected"]
+  D --> P["master / main: protected production"]
 ```
 
-The main UI integration sequence is #89 → #90 → #91 → #92, checking/rebasing each current head and resolving shared header/App changes before its required CI. #93 and #94 can integrate independently when their checks and owner-requested merge gates are satisfied. #95's preparation/CI does not satisfy its missing model-quality review.
+Create each future `work/release-mN-yyyyMMdd` from the then-current `develop`, using the milestone number and Asia/Saigon calendar date. Issue branches target that milestone release. After acceptance, promote with PRs release → develop → production; use merge commits for promotions to preserve ancestry. The production/default branch and `develop` require PRs and current-base `test-and-build` from GitHub Actions, including admins; force push/deletion/bypass are blocked. A single-maintainer flow has zero independent required approvals while retaining PR/CI gates.
 
-#92 is temporarily based on `codex/plan-study-dock-74`: its own diff excludes the #74 fix while local tests consume verified foundation `f3cf769`. The workflow currently triggers PR checks only against master, so #92 has **no current feature-head CI pass**. After the owner requests #89 merge, integrate/retarget #92 to master and wait for required CI on that resulting head. Do not use its old planning checks or waive the gate. Retain #75's account navigation during integration.
+No application is deployed from a milestone release or `develop`. The production workflow publishes only on the main/master repository default branch, after the existing component/release/artifact/migration gates. Branch protection changes are GitHub repository policy; Firebase policy publication, history enablement and real AI usage retain separate authorization/acceptance.
 
-#79 observed a published parent-profile-only policy with no custom-quiz descendant grant, and no manual indexes/exemptions. Its complete custom-quiz candidate still needs explicit publication authorization and fresh drift reconciliation. #80 adds its own policy/payload-index contract; approval of the custom-only candidate does not authorize the history candidate or enable its client. Publish and verify compatible complete Rules/indexes before history enablement. Preserve unrelated configuration and roll back the client setting first.
+## Seven issue MRs
 
-## Shared acceptance and owner actions
+| Issue                                                      | MR                                                       | Implemented/prepared evidence                                                                                                                                                   | Remaining acceptance                                                                                                                       |
+| ---------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [#74](https://github.com/tuanvipandpro/quiz-app/issues/74) | [#89](https://github.com/tuanvipandpro/quiz-app/pull/89) | Dock observer lifecycle corrected; local regression/prior-base CI passed.                                                                                                       | Current release CI, owner-requested issue merge, milestone promotion and public dock smoke.                                                |
+| [#77](https://github.com/tuanvipandpro/quiz-app/issues/77) | [#90](https://github.com/tuanvipandpro/quiz-app/pull/90) | Included references open without credential/profile/quota/inference IO; explicit AI generation; local/prior-base CI passed.                                                     | Integrate after #89 on the release; required CI, issue merge, promotion and public reference-only smoke.                                   |
+| [#75](https://github.com/tuanvipandpro/quiz-app/issues/75) | [#91](https://github.com/tuanvipandpro/quiz-app/pull/91) | Profile, Manage quizzes, reviewed Quiz updates and native-hash Cancel fix; local/prior-base CI passed.                                                                          | Integrate after #90; required release CI, issue merge, promotion and account/public smoke.                                                 |
+| [#80](https://github.com/tuanvipandpro/quiz-app/issues/80) | [#92](https://github.com/tuanvipandpro/quiz-app/pull/92) | Archive/dashboard/review/delete and atomic policy implemented; 220 Node, 27 real SDK/Rules and 32 History UI checks passed on the recorded #74 foundation. Client defaults off. | Draft: bootstrap #98, #89 on release, update/current-base CI; compatible policy/index publication and designated-account production smoke. |
+| [#78](https://github.com/tuanvipandpro/quiz-app/issues/78) | [#93](https://github.com/tuanvipandpro/quiz-app/pull/93) | Four guides reviewed, all 554 current IDs mapped; bank files/answers unchanged. Local/prior-base CI passed.                                                                     | Required release CI, issue merge, promotion and published guide/link smoke; #96 is separate bank-content follow-up.                        |
+| [#79](https://github.com/tuanvipandpro/quiz-app/issues/79) | [#94](https://github.com/tuanvipandpro/quiz-app/pull/94) | Published Console policy/index provenance reconciled; complete candidate/SDK tests prepared; prior-base CI passed.                                                              | Required release CI, explicit policy-publication permission, fresh drift check and designated-account custom-quiz smoke.                   |
+| [#53](https://github.com/tuanvipandpro/quiz-app/issues/53) | [#95](https://github.com/tuanvipandpro/quiz-app/pull/95) | One retained v6 output reviewed; eight missing-case samples/protocol prepared; 193 Node/18 local Worker checks, dry-run and prior-base CI passed.                               | Draft: required release CI, current account/eight-attempt staging authorization and actual quality findings; CPU stays deferred.           |
 
-- Keep stable question IDs/aliases, account-scoped drafts/checkpoints and private instance/version identity. No guest-upload migration or silent archive pruning.
-- Keep each issue's current OpenSpec tasks and evidence authoritative; avoid duplicating stale task counts here. Local fixtures/emulators and browser geometry are not real-account persistence, model-quality or physical-device evidence.
-- UI acceptance uses existing Ant Design/tokens/translations and 320/360/390/412/768/1280px plus landscape, VN/EN, themes, keyboard/focus and reduced motion. Disposable captures/logs/traces remain ignored or CI artifacts.
-- Already requested owner decisions: merge #89; publish #79's concrete policy candidate and designate the bounded smoke account; authorize the concrete #53 pack for at most eight staging attempts/current account. Pending requests are not permission. No M1 merge, Firebase publication or new live inference was performed in implementation preparation.
-- After every owner-requested merge, wait for required master CI/deploy and perform the issue's applicable public or designated-account smoke. Keep all seven delivery issues open until their accepted scopes and rollout gates actually pass.
+These counts and prior green checks identify earlier verified integration states; they are not a new-base CI pass. The full History integration run had 200 passes, 24 local loading timeouts and two intentional skips; a focused unchanged serial rerun passed all 24 failures. Retained traces and per-issue matrices remain authoritative, not a combined full-run or production claim.
 
-## Coordination checks and closure
+## Bootstrap and dependency order
 
-This documentation-only MR verifies formatting, local links, issue/MR mapping, current dependency boundaries and the absence of delivery code/content in its diff. Its own required CI and owner-requested merge remain separate. #87 tracks preparation/coordination; completing or merging it does not complete M1.
+First merge the checked setup MR #98 into the milestone release when the owner requests it. Until then, the release and existing feature heads carry the previous master-only workflow; retargeting alone cannot establish branch-aware current-base checks. #98's opening PR exercises the new release-target trigger. After bootstrap, update feature heads against the release and verify their actual checks; do not treat old planning/prior-base checks as sufficient.
+
+The main feature order within the release remains #89 → #90 → #91 → #92. #93/#94 progress independently; #95 still needs actual quality acceptance. Handle shared App/header changes in the appropriate issue branch. Neither a workflow migration nor a CI setup merge authorizes merging these feature MRs.
+
+#92 was replayed from its original #80 plan plus unchanged History runtime/tests, removing inherited #74 commits from the former stacked branch. Its issue-only release diff does not duplicate the dock correction. The earlier verified combination remains History `599a5ec` plus dock foundation `f3cf769`; its new source does not inherit that dock fix. Land #89 on the release first, update #92, and pass required CI before a requested History merge. Keep #75 navigation and #79 policy reconciliation during integration.
+
+## Release and closure gates
+
+- #79 observed a parent-profile-only published policy with no custom-quiz descendant grant and no manual indexes/exemptions. Publish its complete candidate only with explicit permission after rechecking drift. History's additional policy/index candidate and client enablement are separate.
+- Pending production-policy/designated-account and at-most-eight staging AI requests remain pending, not consent. The old request to merge #89 directly into master is superseded by this milestone flow; subsequent issue integration targets the release.
+- Preserve IDs/aliases, account drafts/checkpoints and private instance/version identity. No guest migration or silent archive pruning. Use existing UI tokens/components and the verified 320/360/390/412/768/1280 plus landscape, VN/EN/theme/focus/motion acceptance; emulation is not physical-device evidence.
+- An issue merge into the milestone release is integration, not production delivery. Promote the accepted release through protected `develop` and production with owner-requested PR merges, required latest-head/master-or-main CI/deploy and the issue's real public/designated-account smoke before closing a delivery issue.
+- Keep per-issue tasks and evidence current. Local fixtures/emulators cannot replace real persistence, model quality or rollout acceptance. No M1 feature merge, Firebase publication or additional live inference was performed by this migration.
+
+## Coordination verification
+
+This MR changes only this document. Check formatting, links, MR mapping and dependency/branch facts, scan outgoing commits and wait for its current release-base CI after bootstrap. #87 owns preparation/coordination; merging this document does not complete M1 or close the seven delivery issues.
