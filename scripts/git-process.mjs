@@ -80,27 +80,50 @@ export async function enforceProductionRouting({
     pr.number < 1
   )
     throw new Error('Untrusted production-routing event.');
-  try {
-    assertPullRequestSource({ eventName: 'pull_request', event, repository, repositoryId });
-    return { closed: false };
-  } catch {
-    // A rejected source is handled below; no code or instructions from it run.
-  }
   if (typeof token !== 'string' || !token) throw new Error('Missing routing permission.');
-  let response;
-  try {
-    response = await fetchImpl(`https://api.github.com/repos/${repository}/pulls/${pr.number}`, {
-      method: 'PATCH',
+  const url = `https://api.github.com/repos/${repository}/pulls/${pr.number}`;
+  const request = (method, body) =>
+    fetchImpl(url, {
+      method,
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/vnd.github+json',
         'Content-Type': 'application/json',
         'X-GitHub-Api-Version': '2022-11-28',
       },
-      body: JSON.stringify({ state: 'closed' }),
+      ...(body ? { body: JSON.stringify(body) } : {}),
       signal: AbortSignal.timeout(15000),
     });
-    if (!response.ok) throw new Error('Request rejected.');
+  try {
+    // Queued webhook data can be stale after a base edit or manual closure.
+    const read = await request('GET');
+    if (!read.ok) throw new Error('Read rejected.');
+    const current = await read.json();
+    if (
+      current.number !== pr.number ||
+      current.base?.repo?.id !== expectedId ||
+      repoName(current.base?.repo?.full_name) !== repoName(repository) ||
+      !['open', 'closed'].includes(current.state)
+    )
+      throw new Error('Current PR identity unavailable.');
+    if (!production(current.base.ref)) return { closed: false };
+    let allowed = false;
+    try {
+      assertPullRequestSource({
+        eventName: 'pull_request',
+        event: { pull_request: current },
+        repository,
+        repositoryId,
+      });
+      allowed = true;
+    } catch {
+      // Only a currently rejected production source can be closed below.
+    }
+    if (allowed) return { closed: false };
+    if (current.merged === true) throw new Error('Invalid source already merged.');
+    if (current.state === 'closed') return { closed: false };
+    const response = await request('PATCH', { state: 'closed' });
+    if (!response.ok) throw new Error('Closure rejected.');
     const result = await response.json();
     if (result.state !== 'closed' || result.merged === true)
       throw new Error('Closure not verified.');
@@ -128,7 +151,9 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       token: process.env.GITHUB_TOKEN,
     });
     console.log(
-      result.closed ? 'Closed an invalid-source production PR.' : 'Production PR source accepted.'
+      result.closed
+        ? 'Closed an invalid-source production PR.'
+        : 'No production PR closure required.'
     );
   } else if (process.argv[2] === 'protection' && process.argv.length === 4)
     console.log(JSON.stringify(branchProtectionFor(process.argv[3]), null, 2));

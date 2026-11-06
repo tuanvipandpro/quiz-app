@@ -30,26 +30,39 @@ test('trusted production routing closes only the invalid PR even when heads shar
   accepted.eventName = 'pull_request_target';
   accepted.event.pull_request.number = 10;
   accepted.event.pull_request.head.sha = 'a'.repeat(40);
-  let calls = 0;
+  let writes = 0;
+  const rejected = structuredClone(accepted);
+  rejected.event.pull_request.number = 11;
+  rejected.event.pull_request.head.repo = { id: 456, full_name: 'fork/quiz-app' };
   const fetchImpl = async (url, options) => {
-    calls++;
+    if (options.method === 'GET') {
+      const sample = url.endsWith('/10') ? accepted : rejected;
+      return {
+        ok: true,
+        json: async () => ({ ...structuredClone(sample.event.pull_request), state: 'open' }),
+      };
+    }
+    writes++;
     assert.equal(url, 'https://api.github.com/repos/' + repository + '/pulls/11');
     assert.equal(options.method, 'PATCH');
     assert.deepEqual(JSON.parse(options.body), { state: 'closed' });
     return { ok: true, json: async () => ({ state: 'closed', merged: false }) };
   };
-  assert.deepEqual(await enforceProductionRouting({ ...accepted, fetchImpl }), { closed: false });
-  assert.equal(calls, 0);
-  const rejected = structuredClone(accepted);
-  rejected.event.pull_request.number = 11;
-  rejected.event.pull_request.head.repo = { id: 456, full_name: 'fork/quiz-app' };
+  assert.deepEqual(
+    await enforceProductionRouting({ ...accepted, token: 'fixture-token', fetchImpl }),
+    { closed: false }
+  );
+  assert.equal(writes, 0);
   assert.deepEqual(
     await enforceProductionRouting({ ...rejected, token: 'fixture-token', fetchImpl }),
     { closed: true }
   );
-  assert.equal(calls, 1);
-  assert.deepEqual(await enforceProductionRouting({ ...accepted, fetchImpl }), { closed: false });
-  assert.equal(calls, 1);
+  assert.equal(writes, 1);
+  assert.deepEqual(
+    await enforceProductionRouting({ ...accepted, token: 'fixture-token', fetchImpl }),
+    { closed: false }
+  );
+  assert.equal(writes, 1);
 });
 
 test('trusted routing rejects forged base/permissions and does not claim closure after API failure', async () => {
@@ -69,13 +82,26 @@ test('trusted routing rejects forged base/permissions and does not claim closure
       /Untrusted/
     );
   await assert.rejects(enforceProductionRouting(sample), /Missing routing permission/);
-  for (const fetchImpl of [
+  for (const invalidResponse of [
     async () => ({ ok: false }),
     async () => ({ ok: true, json: async () => ({ state: 'open' }) }),
     async () => ({ ok: true, json: async () => ({ state: 'closed', merged: true }) }),
   ])
     await assert.rejects(
-      enforceProductionRouting({ ...sample, token: 'fixture-token', fetchImpl }),
+      enforceProductionRouting({
+        ...sample,
+        token: 'fixture-token',
+        fetchImpl: async (_url, options) =>
+          options.method === 'GET'
+            ? {
+                ok: true,
+                json: async () => ({
+                  ...structuredClone(sample.event.pull_request),
+                  state: 'open',
+                }),
+              }
+            : invalidResponse(),
+      }),
       /Unable to enforce/
     );
 });
@@ -94,6 +120,26 @@ test('trusted routing checks out only protected base code with narrow PR permiss
     workflow,
     /pull_request.head|npm|yarn|secrets\.|contents: write|statuses: write|checks: write/
   );
+});
+
+test('the guard refreshes current PR metadata before closing a PR whose base already moved', async () => {
+  const sample = input('master', 'codex/feature');
+  sample.eventName = 'pull_request_target';
+  sample.event.pull_request.number = 14;
+  const calls = [];
+  const fetchImpl = async (_url, options) => {
+    calls.push(options.method);
+    assert.equal(options.method, 'GET');
+    const current = structuredClone(sample.event.pull_request);
+    current.base.ref = 'develop';
+    current.state = 'open';
+    return { ok: true, json: async () => current };
+  };
+  assert.deepEqual(
+    await enforceProductionRouting({ ...sample, token: 'fixture-token', fetchImpl }),
+    { closed: false }
+  );
+  assert.deepEqual(calls, ['GET']);
 });
 
 test('production accepts only the same repository develop, including a main rename', () => {
