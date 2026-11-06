@@ -8,6 +8,7 @@ import {
   assertPullRequestSource,
   branchProtectionFor,
   SOURCE_CHECK,
+  enforceProductionRouting,
 } from '../scripts/git-process.mjs';
 
 const repository = 'tuanvipandpro/quiz-app',
@@ -22,6 +23,77 @@ const input = (base = 'master', head = 'develop') => ({
       head: { ref: head, repo: { id: repositoryId, full_name: repository } },
     },
   },
+});
+
+test('trusted production routing closes only the invalid PR even when heads share a SHA', async () => {
+  const accepted = input();
+  accepted.eventName = 'pull_request_target';
+  accepted.event.pull_request.number = 10;
+  accepted.event.pull_request.head.sha = 'a'.repeat(40);
+  let calls = 0;
+  const fetchImpl = async (url, options) => {
+    calls++;
+    assert.equal(url, 'https://api.github.com/repos/' + repository + '/pulls/11');
+    assert.equal(options.method, 'PATCH');
+    assert.deepEqual(JSON.parse(options.body), { state: 'closed' });
+    return { ok: true, json: async () => ({ state: 'closed', merged: false }) };
+  };
+  assert.deepEqual(await enforceProductionRouting({ ...accepted, fetchImpl }), { closed: false });
+  assert.equal(calls, 0);
+  const rejected = structuredClone(accepted);
+  rejected.event.pull_request.number = 11;
+  rejected.event.pull_request.head.repo = { id: 456, full_name: 'fork/quiz-app' };
+  assert.deepEqual(
+    await enforceProductionRouting({ ...rejected, token: 'fixture-token', fetchImpl }),
+    { closed: true }
+  );
+  assert.equal(calls, 1);
+  assert.deepEqual(await enforceProductionRouting({ ...accepted, fetchImpl }), { closed: false });
+  assert.equal(calls, 1);
+});
+
+test('trusted routing rejects forged base/permissions and does not claim closure after API failure', async () => {
+  const sample = input('master', 'codex/feature');
+  sample.eventName = 'pull_request_target';
+  sample.event.pull_request.number = 11;
+  for (const patch of [{ eventName: 'pull_request' }, { repositoryId: 456 }])
+    await assert.rejects(
+      enforceProductionRouting({
+        ...sample,
+        ...patch,
+        token: 'fixture-token',
+        fetchImpl: () => {
+          throw Error('Must not request');
+        },
+      }),
+      /Untrusted/
+    );
+  await assert.rejects(enforceProductionRouting(sample), /Missing routing permission/);
+  for (const fetchImpl of [
+    async () => ({ ok: false }),
+    async () => ({ ok: true, json: async () => ({ state: 'open' }) }),
+    async () => ({ ok: true, json: async () => ({ state: 'closed', merged: true }) }),
+  ])
+    await assert.rejects(
+      enforceProductionRouting({ ...sample, token: 'fixture-token', fetchImpl }),
+      /Unable to enforce/
+    );
+});
+
+test('trusted routing checks out only protected base code with narrow PR permission and no head execution', () => {
+  const workflow = fs.readFileSync(
+    new URL('../.github/workflows/production-routing.yml', import.meta.url),
+    'utf8'
+  );
+  assert.match(workflow, /pull_request_target:/);
+  assert.match(workflow, /branches: \[master, main\]/);
+  assert.match(workflow, /ref: \$\{\{ github.event.pull_request.base.sha \}\}/);
+  assert.match(workflow, /pull-requests: write/);
+  assert.match(workflow, /persist-credentials: false/);
+  assert.doesNotMatch(
+    workflow,
+    /pull_request.head|npm|yarn|secrets\.|contents: write|statuses: write|checks: write/
+  );
 });
 
 test('production accepts only the same repository develop, including a main rename', () => {

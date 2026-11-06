@@ -56,6 +56,60 @@ export function branchProtectionFor(
   return policy;
 }
 
+// This runs only from a protected-base checkout in pull_request_target. It
+// changes the exact PR's state, not a commit-scoped verdict shared by PRs.
+export async function enforceProductionRouting({
+  eventName,
+  event,
+  repository,
+  repositoryId,
+  token,
+  fetchImpl = fetch,
+}) {
+  const pr = event?.pull_request;
+  const expectedId = Number(repositoryId);
+  if (
+    eventName !== 'pull_request_target' ||
+    !production(pr?.base?.ref) ||
+    !repoName(repository) ||
+    repoName(pr?.base?.repo?.full_name) !== repoName(repository) ||
+    !Number.isSafeInteger(expectedId) ||
+    expectedId < 1 ||
+    pr.base.repo.id !== expectedId ||
+    !Number.isSafeInteger(pr.number) ||
+    pr.number < 1
+  )
+    throw new Error('Untrusted production-routing event.');
+  try {
+    assertPullRequestSource({ eventName: 'pull_request', event, repository, repositoryId });
+    return { closed: false };
+  } catch {
+    // A rejected source is handled below; no code or instructions from it run.
+  }
+  if (typeof token !== 'string' || !token) throw new Error('Missing routing permission.');
+  let response;
+  try {
+    response = await fetchImpl(`https://api.github.com/repos/${repository}/pulls/${pr.number}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify({ state: 'closed' }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) throw new Error('Request rejected.');
+    const result = await response.json();
+    if (result.state !== 'closed' || result.merged === true)
+      throw new Error('Closure not verified.');
+  } catch {
+    throw new Error('Unable to enforce production PR routing.');
+  }
+  return { closed: true };
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   if (process.argv[2] === 'check') {
     const role = assertPullRequestSource({
@@ -65,7 +119,18 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       repositoryId: process.env.GITHUB_REPOSITORY_ID,
     });
     console.log(`Pull-request source policy passed for ${role}.`);
+  } else if (process.argv[2] === 'enforce') {
+    const result = await enforceProductionRouting({
+      eventName: process.env.GITHUB_EVENT_NAME,
+      event: JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')),
+      repository: process.env.GITHUB_REPOSITORY,
+      repositoryId: process.env.GITHUB_REPOSITORY_ID,
+      token: process.env.GITHUB_TOKEN,
+    });
+    console.log(
+      result.closed ? 'Closed an invalid-source production PR.' : 'Production PR source accepted.'
+    );
   } else if (process.argv[2] === 'protection' && process.argv.length === 4)
     console.log(JSON.stringify(branchProtectionFor(process.argv[3]), null, 2));
-  else throw new Error('Use git-process.mjs check or git-process.mjs protection <branch>.');
+  else throw new Error('Use git-process.mjs check, enforce or protection <branch>.');
 }

@@ -1,0 +1,30 @@
+name: Trusted production routing
+
+on:
+  pull_request_target:
+    branches: [master, main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: production-routing-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  enforce-production-routing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/git-process.mjs enforce
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

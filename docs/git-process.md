@@ -22,7 +22,9 @@ flowchart LR
 
 The production branch is currently `master`; do not create or rename it to `main` implicitly. A fork branch named `develop`, a milestone release, a feature branch or a direct hotfix branch is not an accepted production PR source. Bring fixes through `develop` before production promotion. Repository identity uses both the repository name and immutable ID.
 
-GitHub branch protection does not prevent someone opening a wrong-source PR. The required `pr-source-policy` check rejects its merge. The workflow also handles PR base edits, so acceptance from an earlier integration target is reevaluated. It uses read-only permissions and no secrets, provider keys, production data or inference. Its job name is unique, and it does not run on push events where a skipped job could stand in for a PR-source decision. Changes to CI/policy still require review; repository administrators retain the ability to edit repository settings.
+GitHub branch protection does not prevent someone opening a wrong-source PR. The required `pr-source-policy` check rejects its merge and handles base edits, so acceptance from an earlier integration target is reevaluated. This ordinary PR check is read-only, has a unique job name and never creates a skipped push-event success.
+
+PR head code can edit its own ordinary workflow, so production also has a trusted routing guard. Its `pull_request_target` workflow checks out exactly the protected base SHA, installs no dependencies and never checks out or executes head code. With only read-content/pull-request-state permission, it closes the exact wrong-source production PR; valid same-repository develop PRs cause no API mutation. It never publishes commit-scoped verdicts that could conflate different PRs sharing a head SHA. API failure or an already-merged response is reported as enforcement failure, not successful closure. This guard becomes active when the governance workflow reaches production through the permitted develop promotion. No provider secret, production data or inference is used. CI/policy changes still require review; administrators retain the ability to edit repository settings.
 
 ## Branches and milestones
 
@@ -61,6 +63,6 @@ After the governance MR is accepted into `develop`, synchronize that accepted ba
 
 ## Verification and configuration changes
 
-Policy tests cover same-repository production promotion, wrong source branches, forks named develop, missing/mismatched metadata, base changes and immutable role-specific protection. The CLI is tested with synthetic event files. Use local fixtures/emulators for routine application tests; metadata-policy tests need no live account or credential.
+Policy tests cover same-repository production promotion, wrong source branches, forks named develop, missing/mismatched metadata, base changes and immutable role-specific protection. The CLI uses synthetic event files. Trusted-guard tests verify exact-PR closure, same-SHA independence, valid-source zero writes, mismatched-base rejection and API failures through a stub fetch. They close no real PRs. Use local fixtures/emulators for routine application tests; metadata-policy tests need no live account or credential.
 
 When applying branch settings, review the generated payload against current remote settings, preserve unrelated requirements, and verify API readback of the pinned check providers/admin/PR/force/delete controls. Do not silently replace drifted settings. Do not infer enforcement from a dry-run push. Keep policy/routing changes reviewable in their own PR and record actual configuration/CI evidence in the tracking issue.
